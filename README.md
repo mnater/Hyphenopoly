@@ -22,3 +22,10 @@ Hyphenopoly.js is based on Hyphenator.js (they share some code) but - in favor o
 - and some more…
 
 If you need one of those features use Hyphenator.js – or give some feedback and proof that the feature is really useful and should be implemented in Hyphenopoly.js
+
+#Usage
+See tests in the testsuite-directory.
+
+#Todo
+- [ ] documentation (general, how-tos and API)
+- [ ] more tests
