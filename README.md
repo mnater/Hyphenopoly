@@ -29,3 +29,4 @@ See tests in the testsuite-directory.
 #Todo
 - [ ] documentation (general, how-tos and API)
 - [ ] more tests
+- [ ] tools: concat and minify
