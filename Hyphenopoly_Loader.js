@@ -14,6 +14,21 @@
         if (document.currentScript) {
             var src = document.currentScript.src;
             return src.substring(0, src.lastIndexOf("/") + 1);
+        } else {
+            var scripts = document.getElementsByTagName('script');
+            var basePath;
+            Array.prototype.some.call(scripts, function (currScript) {
+                var src, p;
+                if (currScript.hasAttribute("src")) {
+                    src = currScript.src;
+                    p = src.indexOf("Hyphenopoly_Loader.js");
+                    if (p !== -1) {
+                        basePath = src.substring(0, p);
+                        return true;
+                    }
+                }
+            });
+            return basePath;
         }
     }());
 
@@ -104,7 +119,6 @@
             };
         }
         if (result.needsPolyfill) {
-            console.dir(d);
             d.documentElement.style.visibility = "hidden";
 
             H.timeOutHandler = window.setTimeout(function () {

@@ -68,7 +68,6 @@
 
     //copy settings if not yet set
     Object.keys(H).forEach(function (key) {
-        console.log(key);
         if (!Hyphenopoly.hasOwnProperty(key)) {
             Hyphenopoly[key] = H[key];
         }
