@@ -201,7 +201,14 @@
         if (Hyphenopoly) {
             Hyphenopoly.onHyphenationDone = assert;
         } else {
-            assert();
+            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + "CSS</p>";
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 4,
+                    result: "CSS"
+                }), window.location.href);
+            }
         }
         </script>
     </body>

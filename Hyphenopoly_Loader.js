@@ -10,7 +10,7 @@
 (function H9YL() {
     "use strict";
     var d = document;
-    var scriptPath = (function () {
+    var scriptPath = (function getScriptPath() {
         if (document.currentScript) {
             var src = document.currentScript.src;
             return src.substring(0, src.lastIndexOf("/") + 1);
@@ -104,10 +104,11 @@
             };
         }
         if (result.needsPolyfill) {
-            d.firstElementChild.style.visibility = "hidden";
+            console.dir(d);
+            d.documentElement.style.visibility = "hidden";
 
             H.timeOutHandler = window.setTimeout(function () {
-                d.firstElementChild.style.visibility = "visible";
+                d.documentElement.style.visibility = "visible";
                 H.onTimeOut();
             }, H.timeout);
 

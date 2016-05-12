@@ -68,13 +68,12 @@
 
     //copy settings if not yet set
     Object.keys(H).forEach(function (key) {
+        console.log(key);
         if (!Hyphenopoly.hasOwnProperty(key)) {
             Hyphenopoly[key] = H[key];
         }
     });
 }());
-
-
 
 (function H9Y(w) {
     "use strict";
@@ -781,11 +780,11 @@
             break;
         case "hyphenationDone":
             w.clearTimeout(H.timeOutHandler);
-            w.document.firstElementChild.style.visibility = "visible";
+            w.document.documentElement.style.visibility = "visible";
             H.onHyphenationDone();
             break;
         case "timeout":
-            w.document.firstElementChild.style.visibility = "visible";
+            w.document.documentElement.style.visibility = "visible";
             H.onTimeOut();
             break;
         }
