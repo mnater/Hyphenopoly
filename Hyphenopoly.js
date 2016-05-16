@@ -44,6 +44,7 @@
          * level 3: last word is not hyphenated and last space is non breaking
          */
         orphanControl: 1,
+        compound: "hyphen",
         onHyphenopolyStart: function () {
             window.console.timeStamp("Hyphenopoly start!");
         },
@@ -284,7 +285,7 @@
         function add(newValue) {
             if (!code2int[newValue]) {
                 int2code.push(newValue);
-                code2int[newValue] = int2code.length - 1;
+                code2int[newValue] = (int2code.length - 1);
             }
         }
         return {
@@ -414,7 +415,10 @@
         trieRowLength = lo.charMap.int2code.length * 2;
 
         Object.keys(lo.patterns).forEach(function parsePat(i) {
+            var start = window.performance.now();
             extract(parseInt(i, 10), lo.patterns[i]);
+            var end = window.performance.now();
+            window.console.log(end - start);
         });
         lo.converted = true;
     }
@@ -512,9 +516,39 @@
     var wwAsMappedCharCodeStore = new window.Int32Array(64);
     var wwhpStore = new window.Uint8Array(64);
 
-    function hyphenateWord(lo, lang, word) {
+    function hyphenateCompound(lo, lang, word) {
+        var hw = word;
         var parts;
         var i = 0;
+        var zeroWidthSpace = String.fromCharCode(8203);
+        switch (H.compound) {
+        case "auto":
+            parts = word.split('-');
+            while (i < parts.length) {
+                if (parts[i].length >= H.minWordLength) {
+                    parts[i] = hyphenateWord(lo, lang, parts[i]);
+                }
+                i += 1;
+            }
+            hw = parts.join('-');
+            break;
+        case "all":
+            parts = word.split('-');
+            while (i < parts.length) {
+                if (parts[i].length >= H.minWordLength) {
+                    parts[i] = hyphenateWord(lo, lang, parts[i]);
+                }
+                i += 1;
+            }
+            hw = parts.join('-' + zeroWidthSpace);
+            break;
+        default: //"hyphen" and others
+            hw = word.replace('-', '-' + zeroWidthSpace);
+        }
+        return hw;
+    }
+
+    function hyphenateWord(lo, lang, word) {
         var ww;
         var wwlen;
         var wwhp = wwhpStore;
@@ -544,13 +578,7 @@
         } else if (lo.exceptions.hasOwnProperty(word)) { //the word is in the exceptions list
             hw = lo.exceptions[word].replace(/-/g, H.hyphen);
         } else if (word.indexOf('-') !== -1) {
-            //word contains '-' -> hyphenate the parts separated with '-'
-            parts = word.split('-');
-            while (i < parts.length) {
-                parts[i] = hyphenateWord(lo, lang, parts[i]);
-                i += 1;
-            }
-            hw = parts.join('-');
+            hw = hyphenateCompound(lo, lang, word);
         } else {
             ww = word.toLowerCase();
             if (String.prototype.normalize) {
