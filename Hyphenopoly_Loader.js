@@ -18,12 +18,13 @@
             var scripts = document.getElementsByTagName('script');
             var basePath;
             Array.prototype.some.call(scripts, function (currScript) {
-                var src, p;
+                var src2;
+                var p;
                 if (currScript.hasAttribute("src")) {
-                    src = currScript.src;
-                    p = src.indexOf("Hyphenopoly_Loader.js");
+                    src2 = currScript.src;
+                    p = src2.indexOf("Hyphenopoly_Loader.js");
                     if (p !== -1) {
-                        basePath = src.substring(0, p);
+                        basePath = src2.substring(0, p);
                         return true;
                     }
                 }
@@ -110,21 +111,21 @@
     function run() {
         var result = makeTests();
         var H = Hyphenopoly;
-        if (!H.hasOwnProperty("timeout")) {
-            H.timeout = 1000;
+        if (!H.setup.hasOwnProperty("timeout")) {
+            H.setup.timeout = 1000;
         }
-        if (!H.hasOwnProperty("onTimeOut")) {
-            H.onTimeOut = function () {
-                window.console.warn("Hyphenopoly timed out after " + H.timeout + "ms");
+        if (!H.setup.hasOwnProperty("onTimeOut")) {
+            H.setup.onTimeOut = function () {
+                window.console.warn("Hyphenopoly timed out after " + H.setup.timeout + "ms");
             };
         }
         if (result.needsPolyfill) {
             d.documentElement.style.visibility = "hidden";
 
-            H.timeOutHandler = window.setTimeout(function () {
+            H.setup.timeOutHandler = window.setTimeout(function () {
                 d.documentElement.style.visibility = "visible";
-                H.onTimeOut();
-            }, H.timeout);
+                H.setup.onTimeOut();
+            }, H.setup.timeout);
 
             H.testResults = result;
             H.languages = {};

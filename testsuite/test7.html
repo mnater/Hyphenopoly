@@ -7,8 +7,41 @@
         var Hyphenopoly = {
             require: {
                 "en-us": "hyphenation"
+            },
+            setup: {
+                classnames: {
+                    "hyphenate": {}
+                }
             }
         };
+
+        function assert() {
+            var tests = 1;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = false;
+            while (i <= tests) {
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                    result = result || true;
+                } else {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                    result = result || false;
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 7,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        Hyphenopoly.setup.onHyphenationDone = assert;
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
@@ -40,7 +73,7 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test6.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="index.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test6.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test8.html">Next&nbsp;&rarr;</a></div>
 
         <h1>Test 007</h1>
         <p id="desc">Hyphenate compound words only at a hyphen.</p>
@@ -51,34 +84,5 @@
         <p id="ref1" class="ref" lang="en-us">hyphenation-&#8203;two</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
-        <script type="text/javascript">
-        function assert() {
-            var tests = 1;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = false;
-            while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result || true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = result || false;
-                }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 7,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
-        Hyphenopoly.onHyphenationDone = assert;
-        </script>
     </body>
 </html>

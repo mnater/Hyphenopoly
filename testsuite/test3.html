@@ -8,8 +8,29 @@
         var Hyphenopoly = {
             require: {
                 "en-us": "hyphenation"
+            },
+            setup: {
+                classnames: {
+                    "hyphenate": {}
+                }
             }
         };
+        function assert() {
+            var endTime = performance.now();
+            document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">" + (Math.round((endTime - startTime) * 100) / 100).toString() + " ms</p>";
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 3,
+                    result: Math.round((endTime - startTime) * 100) / 100
+                }), window.location.href);
+            }
+        }
+        if (Hyphenopoly) {
+            Hyphenopoly.setup.onHyphenationDone = assert;
+        } else {
+            assert();
+        }
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
@@ -182,24 +203,6 @@
 <p>&ldquo;Good-bye,&rdquo; I answered, and strolled on to my hotel, considerably interested in my new acquaintance.</p>
 </div>
 
-        <hr>
-        <script type="text/javascript">
-        function assert() {
-            var endTime = performance.now();
-            document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">" + (Math.round((endTime - startTime) * 100) / 100).toString() + " ms</p>";
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 3,
-                    result: Math.round((endTime - startTime) * 100) / 100
-                }), window.location.href);
-            }
-        }
-        if (Hyphenopoly) {
-            Hyphenopoly.onHyphenationDone = assert;
-        } else {
-            assert();
-        }
-        </script>
+<hr>
     </body>
 </html>

@@ -1,16 +1,13 @@
 ;/*jslint browser*/
-/*global window, Hyphenopoly, NodeFilter*/
-(function config() {
+/*global window, Hyphenopoly*/
+
+(function configurationFactory() {
     "use strict";
-    var H = {
+    var config = Object.create(null);
+
+    var generalDefaults = {
         timeout: 3000,
         defaultLanguage: "en",
-        minWordLength: 6,
-        leftmin: 0,
-        rightmin: 0,
-        //hyphen: "|",
-        hyphen: String.fromCharCode(173), //soft hyphen
-        hyphenateClass: "hyphenate",
         dontHyphenateClass: "donthyphenate",
         dontHyphenate: {
             'video': true,
@@ -37,22 +34,8 @@
             'style': true
         },
         safeCopy: false,
-        /**
-         * Control how the last words of a line are handled:
-         * level 1 (default): last word is hyphenated
-         * level 2: last word is not hyphenated
-         * level 3: last word is not hyphenated and last space is non breaking
-         */
-        orphanControl: 1,
-        compound: "hyphen",
         onHyphenopolyStart: function () {
             window.console.timeStamp("Hyphenopoly start!");
-        },
-        onBeforeWordHyphenation: function (word) {
-            return word;
-        },
-        onAfterWordHyphenation: function (word) {
-            return word;
         },
         onHyphenationDone: function () {
             window.console.timeStamp("Hyphenation done!");
@@ -66,11 +49,103 @@
         }
         */
     };
+    var perClassDefaults = {
+        minWordLength: 6,
+        leftmin: 0,
+        rightmin: 0,
+        hyphen: String.fromCharCode(173), //soft hyphen
+        /**
+         * Control how the last words of a line are handled:
+         * level 1 (default): last word is hyphenated
+         * level 2: last word is not hyphenated
+         * level 3: last word is not hyphenated and last space is non breaking
+         */
+        orphanControl: 1,
+        compound: "hyphen",
+        onBeforeWordHyphenation: function (word) {
+            return word;
+        },
+        onAfterWordHyphenation: function (word) {
+            return word;
+        }
+    };
 
+    var data = {
+        classnames: {}
+    };
+    var state = undefined;
+    Object.defineProperty(config, "state", {
+        configurable: false,
+        enumerable: false,
+        get: function () {
+            return state;
+        },
+        set: function (value) {
+            state = value;
+            if (!data.classnames.hasOwnProperty(state)) {
+                data.classnames[state] = {};
+            }
+        }
+    });
+
+    //General settings
+    Object.keys(generalDefaults).forEach(function (name) {
+        Object.defineProperty(config, name, {
+            get: function () {
+                if (data.hasOwnProperty(name)) {
+                    return data[name];
+                }
+                return generalDefaults[name];
+            },
+            set: function (value) {
+                data[name] = value;
+            }
+        });
+    });
+
+    //per class settings
+    Object.keys(perClassDefaults).forEach(function (name) {
+        Object.defineProperty(config, name, {
+            get: function () {
+                if (data.classnames[state].hasOwnProperty(name)) {
+                    return data.classnames[state][name];
+                }
+                return perClassDefaults[name];
+            },
+            set: function (value) {
+                data.classnames[state][name] = value;
+            }
+        });
+    });
+
+    Object.defineProperty(config, "toString", {
+        value: function () {
+            return data;
+        }
+    });
+
+    Object.defineProperty(config, "getClassNames", {
+        value: function () {
+            return Object.keys(data.classnames);
+        }
+    });
+
+    Hyphenopoly.config = config;
+}());
+
+(function config() {
+    "use strict";
     //copy settings if not yet set
-    Object.keys(H).forEach(function (key) {
-        if (!Hyphenopoly.hasOwnProperty(key)) {
-            Hyphenopoly[key] = H[key];
+    Object.keys(Hyphenopoly.setup).forEach(function (key) {
+        if (key === "classnames") {
+            Object.keys(Hyphenopoly.setup.classnames).forEach(function (cn) {
+                Hyphenopoly.config.state = cn;
+                Object.keys(Hyphenopoly.setup.classnames[cn]).forEach(function (pcnkey) {
+                    Hyphenopoly.config[pcnkey] = Hyphenopoly.setup.classnames[cn][pcnkey];
+                });
+            });
+        } else {
+            Hyphenopoly.config[key] = Hyphenopoly.setup[key];
         }
     });
 }());
@@ -84,11 +159,12 @@
 
     var elements = (function () {
 
-        function makeElement(element) {
+        function makeElement(element, cn) {
             return {
                 element: element,
                 hyphenated: false,
-                treated: false
+                treated: false,
+                class: cn
             };
         }
 
@@ -99,7 +175,7 @@
             var list = {};
 
             function add(el, lang) {
-                var elo = makeElement(el);
+                var elo = makeElement(el, H.config.state);
                 if (!list.hasOwnProperty(lang)) {
                     list[lang] = [];
                 }
@@ -128,11 +204,12 @@
         return makeElementCollection();
     }());
 
-    function removeHyphenationFromElement(el) {
+    function removeHyphenationFromElement(el, cn) {
         var h;
         var i = 0;
         var n;
-        switch (H.hyphen) {
+        H.config.state = cn;
+        switch (H.config.hyphen) {
         case '|':
             h = '\\|';
             break;
@@ -143,7 +220,7 @@
             h = '\\*';
             break;
         default:
-            h = H.hyphen;
+            h = H.config.hyphen;
         }
         n = el.childNodes[i];
         while (!!n) {
@@ -187,18 +264,17 @@
 
     var copy = (function () {
         var makeCopy = function () {
-            function oncopyHandler(e) {
+            function oncopyHandler(e, cn) {
                 e = e || window.event;
                 var shadow;
                 var selection;
                 var range;
-                var rangeShadow;
                 var restore;
                 var target = e.target || e.srcElement;
                 var currDoc = target.ownerDocument;
                 var bdy = currDoc.getElementsByTagName('body')[0];
                 var targetWindow = currDoc.defaultView || currDoc.parentWindow;
-                if (target.tagName && H.dontHyphenate[target.tagName.toLowerCase()]) {
+                if (target.tagName && H.config.dontHyphenate[target.tagName.toLowerCase()]) {
                     //Safari needs this
                     return;
                 }
@@ -209,36 +285,17 @@
                     : '#FFFFFF';
                 shadow.style.fontSize = '0px';
                 bdy.appendChild(shadow);
-                if (!!window.getSelection) {
-                    //FF3, Webkit, IE9
-                    e.stopPropagation();
-                    selection = targetWindow.getSelection();
-                    range = selection.getRangeAt(0);
-                    shadow.appendChild(range.cloneContents());
-                    removeHyphenationFromElement(shadow);
-                    selection.selectAllChildren(shadow);
-                    restore = function () {
-                        shadow.parentNode.removeChild(shadow);
-                        selection.removeAllRanges(); //IE9 needs that
-                        selection.addRange(range);
-                    };
-                } else {
-                    // IE<9
-                    e.cancelBubble = true;
-                    selection = targetWindow.document.selection;
-                    range = selection.createRange();
-                    shadow.innerHTML = range.htmlText;
-                    removeHyphenationFromElement(shadow);
-                    rangeShadow = bdy.createTextRange();
-                    rangeShadow.moveToElementText(shadow);
-                    rangeShadow.select();
-                    restore = function () {
-                        shadow.parentNode.removeChild(shadow);
-                        if (range.text !== "") {
-                            range.select();
-                        }
-                    };
-                }
+                e.stopPropagation();
+                selection = targetWindow.getSelection();
+                range = selection.getRangeAt(0);
+                shadow.appendChild(range.cloneContents());
+                removeHyphenationFromElement(shadow, cn);
+                selection.selectAllChildren(shadow);
+                restore = function () {
+                    shadow.parentNode.removeChild(shadow);
+                    selection.removeAllRanges(); //IE9 needs that
+                    selection.addRange(range);
+                };
                 zeroTimeOut(restore);
             }
             function removeOnCopy(el) {
@@ -253,16 +310,20 @@
                     el.detachEvent("oncopy", oncopyHandler);
                 }
             }
-            function registerOnCopy(el) {
+            function registerOnCopy(el, cn) {
                 var body = el.ownerDocument.getElementsByTagName('body')[0];
                 if (!body) {
                     return;
                 }
                 el = el || body;
                 if (window.addEventListener) {
-                    el.addEventListener("copy", oncopyHandler, true);
+                    el.addEventListener("copy", function (e) {
+                        oncopyHandler(e, cn);
+                    }, true);
                 } else {
-                    el.attachEvent("oncopy", oncopyHandler);
+                    el.attachEvent("oncopy", function (e) {
+                        oncopyHandler(e, cn);
+                    });
                 }
             }
             return {
@@ -272,7 +333,7 @@
             };
         };
 
-        return (H.safeCopy
+        return (H.config.safeCopy
             ? makeCopy()
             : false);
     }());
@@ -415,10 +476,7 @@
         trieRowLength = lo.charMap.int2code.length * 2;
 
         Object.keys(lo.patterns).forEach(function parsePat(i) {
-            var start = window.performance.now();
             extract(parseInt(i, 10), lo.patterns[i]);
-            var end = window.performance.now();
-            window.console.log(end - start);
         });
         lo.converted = true;
     }
@@ -461,15 +519,15 @@
             }
         }
         //fallback to defaultLang if set
-        if (!mainLanguage && H.defaultLanguage !== '') {
-            mainLanguage = H.defaultLanguage;
+        if (!mainLanguage && H.config.defaultLanguage !== '') {
+            mainLanguage = H.config.defaultLanguage;
         }
         el.lang = mainLanguage;
     }
 
 
     function collectElements() {
-        var nl = w.document.querySelectorAll("." + H.hyphenateClass);
+        var nl;
         function processText(el, pLang, isChild) {
             var eLang;
             var n;
@@ -490,16 +548,20 @@
             n = el.childNodes[j];
             while (!!n) {
                 if (n.nodeType === 1 &&
-                        !H.dontHyphenate[n.nodeName.toLowerCase()] &&
-                        n.className.indexOf(H.dontHyphenateClass) === -1) {
+                        !H.config.dontHyphenate[n.nodeName.toLowerCase()] &&
+                        n.className.indexOf(H.config.dontHyphenateClass) === -1) {
                     processText(n, eLang, true);
                 }
                 j += 1;
                 n = el.childNodes[j];
             }
         }
-        Array.prototype.forEach.call(nl, function (n) {
-            processText(n, getLang(n), false);
+        Hyphenopoly.config.getClassNames().forEach(function (cn) {
+            H.config.state = cn;
+            nl = w.document.querySelectorAll("." + cn);
+            Array.prototype.forEach.call(nl, function (n) {
+                processText(n, getLang(n), false);
+            });
         });
 
         Hyphenopoly.elementsReady = true;
@@ -521,11 +583,11 @@
         var parts;
         var i = 0;
         var zeroWidthSpace = String.fromCharCode(8203);
-        switch (H.compound) {
+        switch (H.config.compound) {
         case "auto":
             parts = word.split('-');
             while (i < parts.length) {
-                if (parts[i].length >= H.minWordLength) {
+                if (parts[i].length >= H.config.minWordLength) {
                     parts[i] = hyphenateWord(lo, lang, parts[i]);
                 }
                 i += 1;
@@ -535,7 +597,7 @@
         case "all":
             parts = word.split('-');
             while (i < parts.length) {
-                if (parts[i].length >= H.minWordLength) {
+                if (parts[i].length >= H.config.minWordLength) {
                     parts[i] = hyphenateWord(lo, lang, parts[i]);
                 }
                 i += 1;
@@ -567,16 +629,16 @@
         var indexedTrie = lo.indexedTrie;
         var valueStore = lo.valueStore.keys;
         var wwAsMappedCharCode = wwAsMappedCharCodeStore;
-        word = H.onBeforeWordHyphenation(word, lang);
+        word = H.config.onBeforeWordHyphenation(word, lang);
         if (word === '') {
             hw = '';
-        } else if (lo.cache && lo.cache.hasOwnProperty(word)) { //the word is in the cache
-            hw = lo.cache[word];
-        } else if (word.indexOf(H.hyphen) !== -1) {
+        } else if (lo.cache && lo.cache.hasOwnProperty(H.config.state) && lo.cache[H.config.state].hasOwnProperty(word)) { //the word is in the cache
+            hw = lo.cache[H.config.state][word];
+        } else if (word.indexOf(H.config.hyphen) !== -1) {
             //word already contains shy; -> leave at it is!
             hw = word;
         } else if (lo.exceptions.hasOwnProperty(word)) { //the word is in the exceptions list
-            hw = lo.exceptions[word].replace(/-/g, H.hyphen);
+            hw = lo.exceptions[word].replace(/-/g, H.config.hyphen);
         } else if (word.indexOf('-') !== -1) {
             hw = hyphenateCompound(lo, lang, word);
         } else {
@@ -637,15 +699,18 @@
             hp = 0;
             while (hp < wordLength) {
                 if (hp >= lo.leftmin && hp <= (wordLength - lo.rightmin) && (wwhp[hp + 1] % 2) !== 0) {
-                    hw += H.hyphen + word.charAt(hp);
+                    hw += H.config.hyphen + word.charAt(hp);
                 } else {
                     hw += word.charAt(hp);
                 }
                 hp += 1;
             }
         }
-        hw = H.onAfterWordHyphenation(hw, lang);
-        lo.cache[word] = hw;
+        hw = H.config.onAfterWordHyphenation(hw, lang);
+        if (!lo.cache.hasOwnProperty(H.config.state)) {
+            lo.cache[H.config.state] = {};
+        }
+        lo.cache[H.config.state][word] = hw;
         return hw;
     }
 
@@ -659,7 +724,7 @@
     function controlOrphans(part) {
         var h;
         var r;
-        switch (H.hyphen) {
+        switch (H.config.hyphen) {
         case '|':
             h = '\\|';
             break;
@@ -670,17 +735,17 @@
             h = '\\*';
             break;
         default:
-            h = H.hyphen;
+            h = H.config.hyphen;
         }
         //strip off blank space at the end (omitted closing tags)
         part = part.replace(/[\s]*$/, '');
-        if (H.orphanControl >= 2) {
+        if (H.config.orphanControl >= 2) {
             //remove hyphen points from last word
             r = part.split(' ');
             r[1] = r[1].replace(new RegExp(h, 'g'), '');
             r = r.join(' ');
         }
-        if (H.orphanControl === 3) {
+        if (H.config.orphanControl === 3) {
             //replace spaces by non breaking spaces
             r = r.replace(/[\ ]+/g, String.fromCharCode(160));
         }
@@ -690,6 +755,7 @@
     function hyphenateElement(lang, elo) {
         var el = elo.element;
         var lo = Hyphenopoly.languages[lang];
+        Hyphenopoly.config.state = elo.class;
         function hyphenate(word) {
             return hyphenateWord(lo, lang, word);
         }
@@ -698,9 +764,9 @@
         while (!!n) {
             if (n.nodeType === 3 //type 3 = #text
                     && (/\S/).test(n.data) //not just white space
-                    && n.data.length >= H.minWordLength) { //longer then min
-                n.data = n.data.replace(lo.genRegExp, hyphenate);
-                if (H.orphanControl !== 1) {
+                    && n.data.length >= H.config.minWordLength) { //longer then min
+                n.data = n.data.replace(lo.genRegExps[elo.class], hyphenate);
+                if (H.config.orphanControl !== 1) {
                     n.data = n.data.replace(/[\S]+\ [\S]+[\s]*$/, controlOrphans);
                 }
             }
@@ -709,8 +775,8 @@
         }
         elo.hyphenated = true;
         elements.counters[1] += 1;
-        if (H.safeCopy && (el.tagName.toLowerCase() !== 'body')) {
-            copy.registerOnCopy(el);
+        if (H.config.safeCopy && (el.tagName.toLowerCase() !== 'body')) {
+            copy.registerOnCopy(el, H.config.state);
         }
     }
 
@@ -741,14 +807,13 @@
 
     function prepareLanguagesObj(lang) {
         var lo = Hyphenopoly.languages[lang];
-        var wrd;
         if (!lo.prepared) {
             lo.cache = {};
-            if (H.leftmin > lo.leftmin) {
-                lo.leftmin = H.leftmin;
+            if (H.config.leftmin > lo.leftmin) {
+                lo.leftmin = H.config.leftmin;
             }
-            if (H.rightmin > lo.rightmin) {
-                lo.rightmin = H.rightmin;
+            if (H.config.rightmin > lo.rightmin) {
+                lo.rightmin = H.config.rightmin;
             }
             //add exceptions from the pattern file to the local 'exceptions'-obj
             if (lo.hasOwnProperty('exceptions')) {
@@ -771,12 +836,17 @@
                 lo.exceptions = {};
             }
             convertPatternsToArray(lo);
-            if (String.prototype.normalize) {
-                wrd = '[\\w' + lo.specialChars + lo.specialChars.normalize("NFD") + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + H.minWordLength + ',}';
-            } else {
-                wrd = '[\\w' + lo.specialChars + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + H.minWordLength + ',}';
-            }
-            lo.genRegExp = new RegExp(wrd, 'gi');
+            lo.genRegExps = {};
+            H.config.getClassNames().forEach(function (cn) {
+                var wrd;
+                H.config.state = cn;
+                if (String.prototype.normalize) {
+                    wrd = '[\\w' + lo.specialChars + lo.specialChars.normalize("NFD") + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + H.config.minWordLength + ',}';
+                } else {
+                    wrd = '[\\w' + lo.specialChars + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + H.config.minWordLength + ',}';
+                }
+                lo.genRegExps[cn] = new RegExp(wrd, "gi");
+            });
             lo.prepared = true;
         }
     }
@@ -806,13 +876,13 @@
             } //else wait for "ElementsReady"-evt
             break;
         case "hyphenationDone":
-            w.clearTimeout(H.timeOutHandler);
+            w.clearTimeout(H.config.timeOutHandler);
             w.document.documentElement.style.visibility = "visible";
-            H.onHyphenationDone();
+            H.config.onHyphenationDone();
             break;
         case "timeout":
             w.document.documentElement.style.visibility = "visible";
-            H.onTimeOut();
+            H.config.onTimeOut();
             break;
         }
     }
@@ -828,13 +898,13 @@
         }
     };
 
-    Hyphenopoly.onHyphenopolyStart();
+    Hyphenopoly.config.onHyphenopolyStart();
     //clear Loader-timeout
-    w.clearTimeout(H.timeOutHandler);
+    w.clearTimeout(H.setup.timeOutHandler);
     //renew timeout for the case something fails
-    H.timeOutHandler = w.setTimeout(function () {
+    H.config.timeOutHandler = w.setTimeout(function () {
         handleEvt(["timeout"]);
-    }, H.timeout);
+    }, H.config.timeout);
 
     //import and exec triggered events from loader
     w.Hyphenopoly.evt = function (m) {

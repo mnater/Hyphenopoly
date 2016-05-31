@@ -2,20 +2,24 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 1</title>
+        <title>Test 8</title>
         <script>
         var Hyphenopoly = {
             require: {
-                "en-us": "hyphenation",
-                "hy": "ձայնավորձայնավոր"
+                "en-us": "hyphenation"
             },
             setup: {
                 classnames: {
-                    "hyphenate": {}
+                    "hyphenate": {
+                        hyphen: "·",
+                        minWordLength: 10
+                    },
+                    "debug": {
+                        hyphen: "|"
+                    }
                 }
             }
         };
-
         function assert() {
             var tests = 2;
             var i = 1;
@@ -37,7 +41,7 @@
             if (parent != window) {
                 parent.postMessage(JSON.stringify({
                     desc: document.getElementById("desc").innerHTML,
-                    index: 1,
+                    index: 8,
                     result: (result ? "passed" : "failed")
                 }), window.location.href);
             }
@@ -68,21 +72,19 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="index.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test2.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test7.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="index.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 001</h1>
-        <p id="desc">Hyphenate two texts – en-us (where CSS-hyphenation is mostly supported) and hy (where CSS-hyphenation is unsupported).</p>
+        <h1>Test 008</h1>
+        <p id="desc">Class-based settings.</p>
         <div id="result"></div>
         <hr>
-        <h2>1: en-us</h2>
-        <p id="test1" class="test hyphenate" lang="en-us">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
-        <p id="ref1" class="ref" lang="en-us">A hy&shy;phen&shy;ation al&shy;go&shy;rithm is a set of rules that de&shy;cides at which points a word can be bro&shy;ken over two lines with a hy&shy;phen.</p>
-
-        <h2>2: hy (Armenian)</h2>
-        <p id="test2" class="test hyphenate" lang="hy">Հայերենն ունի վեց ձայնավոր, մեկ կիսաձայն և երեսուն բաղաձայն հնչյուններ</p>
-        <p id="ref2" class="ref" lang="hy">Հա&shy;յե&shy;րենն ունի վեց ձայնա&shy;վոր, մեկ կի&shy;սա&shy;ձայն և ե&shy;րե&shy;սուն բա&shy;ղա&shy;ձայն հնչյուններ</p>
+        <h2>1: class: hyphenate</h2>
+        <p id="test1" class="test hyphenate" lang="en-us">hyphenation algorithm</p>
+        <p id="ref1" class="ref" lang="en-us">hy·phen·ation algorithm</p>
+        <h2>2: class: debug</h2>
+        <p id="test2" class="test debug" lang="en-us">hyphenation algorithm</p>
+        <p id="ref2" class="ref" lang="en-us">hy|phen|ation al|go|rithm</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
-
     </body>
 </html>

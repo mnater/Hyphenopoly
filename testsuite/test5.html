@@ -33,9 +33,45 @@
                 "et": "FORCEHYPHENOPOLY",
                 "ga": "FORCEHYPHENOPOLY"
             },
-            hyphen: "|",
-            compound: "auto"
+            setup: {
+                classnames: {
+                    "hyphenate": {
+                        hyphen: "|",
+                        compound: "auto"
+                    }
+                }
+            }
         };
+
+        function assert() {
+            var tests = 26;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = false;
+            while (i <= tests) {
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
+                    result = result || true;
+                } else {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + i + "</span> ";
+                    result = result || false;
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 5,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        Hyphenopoly.setup.onHyphenationDone = assert;
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
@@ -147,36 +183,5 @@
         <p id="ref26" class="ref" lang="ga">Dear|adh foirm|eacha na lit|reacha le húsáid mar chló-aghaidh|eanna, agus rogh|nú na gcló-aghaidh|eanna i gcomh|air cáip|éisí cló|chur|tha.</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
-        <script type="text/javascript">
-        function assert() {
-            var tests = 26;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = false;
-            while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
-                        return (i < 10) ? "0" + i : i; 
-                    }(i)) + "</span> ";
-                    result = result || true;
-                } else {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + i + "</span> ";
-                    result = result || false;
-                }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 5,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
-        Hyphenopoly.onHyphenationDone = assert;
-        </script>
     </body>
 </html>
