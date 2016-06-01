@@ -6,7 +6,7 @@
         <script>
         var Hyphenopoly = {
             require: {
-                "en-us": "hyphenation"
+                "en-us": "FORCEHYPHENOPOLY"
             },
             setup: {
                 classnames: {
@@ -14,7 +14,9 @@
                 }
             }
         };
-
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
         function assert() {
             var tests = 1;
             var i = 1;
@@ -41,9 +43,14 @@
                 }), window.location.href);
             }
         }
-        Hyphenopoly.setup.onHyphenationDone = assert;
+        if (Hyphenopoly) {
+            Hyphenopoly.setup.onHyphenationDone = assert;
+        } else {
+            document.addEventListener("DOMContentLoaded", function() {
+                assert();
+            });
+        }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;

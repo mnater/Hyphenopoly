@@ -7,7 +7,7 @@
         var startTime = performance.now();
         var Hyphenopoly = {
             require: {
-                "en-us": "hyphenation"
+                "en-us": "FORCEHYPHENOPOLY"
             },
             setup: {
                 classnames: {
@@ -15,6 +15,9 @@
                 }
             }
         };
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
         function assert() {
             var endTime = performance.now();
             document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">" + (Math.round((endTime - startTime) * 100) / 100).toString() + " ms</p>";
@@ -26,13 +29,15 @@
                 }), window.location.href);
             }
         }
+
         if (Hyphenopoly) {
             Hyphenopoly.setup.onHyphenationDone = assert;
         } else {
-            assert();
+            document.addEventListener("DOMContentLoaded", function() {
+                assert();
+            });
         }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;
@@ -204,5 +209,5 @@
 </div>
 
 <hr>
-    </body>
+</body>
 </html>

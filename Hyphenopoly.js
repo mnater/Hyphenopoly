@@ -61,6 +61,12 @@
          * level 3: last word is not hyphenated and last space is non breaking
          */
         orphanControl: 1,
+        /**
+         * Control how compound words are handled
+         * "auto": hyphenate all parts, now zwsp insertion
+         * "hyphen": insert zero width space as breaking opportunity after "-"
+         * "all": hyphenate all parts, insert zero width space after "-"
+         */
         compound: "hyphen",
         onBeforeWordHyphenation: function (word) {
             return word;
@@ -155,7 +161,6 @@
     var H = Hyphenopoly;
 
     var mainLanguage = null;
-
 
     var elements = (function () {
 
@@ -525,9 +530,15 @@
         el.lang = mainLanguage;
     }
 
+    function sortOutSubclasses(x, y) {
+        return x.filter(function (i) {
+            return y.indexOf(i) !== -1;
+        });
+    }
 
     function collectElements() {
         var nl;
+        var classNames = Hyphenopoly.config.getClassNames();
         function processText(el, pLang, isChild) {
             var eLang;
             var n;
@@ -550,20 +561,22 @@
                 if (n.nodeType === 1 &&
                         !H.config.dontHyphenate[n.nodeName.toLowerCase()] &&
                         n.className.indexOf(H.config.dontHyphenateClass) === -1) {
-                    processText(n, eLang, true);
+                    if (sortOutSubclasses(n.className.split(" "), classNames).length === 0) {
+                        //this child element doesn't contain a hyphenopoly-class
+                        processText(n, eLang, true);
+                    }
                 }
                 j += 1;
                 n = el.childNodes[j];
             }
         }
-        Hyphenopoly.config.getClassNames().forEach(function (cn) {
+        classNames.forEach(function (cn) {
             H.config.state = cn;
             nl = w.document.querySelectorAll("." + cn);
             Array.prototype.forEach.call(nl, function (n) {
                 processText(n, getLang(n), false);
             });
         });
-
         Hyphenopoly.elementsReady = true;
     }
 
@@ -635,7 +648,7 @@
         } else if (lo.cache && lo.cache.hasOwnProperty(H.config.state) && lo.cache[H.config.state].hasOwnProperty(word)) { //the word is in the cache
             hw = lo.cache[H.config.state][word];
         } else if (word.indexOf(H.config.hyphen) !== -1) {
-            //word already contains shy; -> leave at it is!
+            //word already contains the hyphen -> leave at it is!
             hw = word;
         } else if (lo.exceptions.hasOwnProperty(word)) { //the word is in the exceptions list
             hw = lo.exceptions[word].replace(/-/g, H.config.hyphen);
@@ -809,6 +822,7 @@
         var lo = Hyphenopoly.languages[lang];
         if (!lo.prepared) {
             lo.cache = {};
+            //merge leftmin/rightmin to config
             if (H.config.leftmin > lo.leftmin) {
                 lo.leftmin = H.config.leftmin;
             }
