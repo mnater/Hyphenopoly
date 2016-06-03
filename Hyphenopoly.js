@@ -583,26 +583,96 @@
         return hw;
     }
 
-    //todo class based handling of leftmin/rigthmin
-    function hyphenateWord(lo, lang, word) {
-        var ww;
-        var wwlen;
+    function liang(lo, word) {
+        var hw = "";
         var wwhp = wwhpStore;
-        var pstart = 0;
-        var plen;
-        var hp;
-        var hpc;
-        var wordLength = word.length;
-        var hw = '';
-        var charMap = lo.charMap.code2int;
         var charCode;
-        var mappedCharCode;
+        var wwAsMappedCharCode = wwAsMappedCharCodeStore;
+        var charMap = lo.charMap.code2int;
         var row = 0;
         var link = 0;
         var value = 0;
+        var plen;
+        var hp;
+        var hpc;
+        var mappedCharCode;
         var indexedTrie = lo.indexedTrie;
         var valueStore = lo.valueStore.keys;
-        var wwAsMappedCharCode = wwAsMappedCharCodeStore;
+        var wordLength = word.length;
+        var ww = word.toLowerCase();
+        var hyphen = C.hyphen;
+        if (String.prototype.normalize) {
+            ww = ww.normalize("NFC");
+        }
+        if (lo.hasOwnProperty("charSubstitution")) {
+            ww = doCharSubst(lo.charSubstitution, ww);
+        }
+        if (word.indexOf("'") !== -1) {
+            ww = ww.replace(/'/g, "’"); //replace APOSTROPHE with RIGHT SINGLE QUOTATION MARK (since the latter is used in the patterns)
+        }
+        ww = '_' + ww + '_';
+        var wwlen = ww.length;
+        var pstart = 0;
+        //prepare wwhp and wwAsMappedCharCode
+        while (pstart < wwlen) {
+            wwhp[pstart] = 0;
+            charCode = ww.charCodeAt(pstart);
+            /*wwAsMappedCharCode[pstart] = charMap.hasOwnProperty(charCode)
+                ? charMap[charCode]
+                : -1;*/
+            wwAsMappedCharCode[pstart] = (charMap[charCode] !== undefined
+                ? charMap[charCode]
+                : -1);
+            pstart += 1;
+        }
+        //get hyphenation points for all substrings
+        pstart = 0;
+        while (pstart < wwlen) {
+            row = 0;
+            plen = pstart;
+            while (plen < wwlen) {
+                mappedCharCode = wwAsMappedCharCode[plen];
+                if (mappedCharCode === -1) {
+                    break;
+                }
+                link = indexedTrie[row + mappedCharCode * 2];
+                value = indexedTrie[row + mappedCharCode * 2 + 1];
+                if (value > 0) {
+                    hpc = 0;
+                    hp = valueStore[value + hpc];
+                    while (hp !== 255) {
+                        if (hp > wwhp[pstart + hpc]) {
+                            wwhp[pstart + hpc] = hp;
+                        }
+                        hpc += 1;
+                        hp = valueStore[value + hpc];
+                    }
+                }
+                if (link > 0) {
+                    row = link;
+                } else {
+                    break;
+                }
+                plen += 1;
+            }
+            pstart += 1;
+        }
+        //create hyphenated word
+        hp = 0;
+        while (hp < wordLength) {
+            if (hp >= lo.leftmin && hp <= (wordLength - lo.rightmin) && (wwhp[hp + 1] % 2) !== 0) {
+                hw += hyphen + word.charAt(hp);
+            } else {
+                hw += word.charAt(hp);
+            }
+            hp += 1;
+        }
+        return hw;
+    }
+
+    //todo class based handling of leftmin/rigthmin
+    function hyphenateWord(lo, lang, word) {
+        var hw = '';
         word = C.onBeforeWordHyphenation(word, lang);
         if (word === '') {
             hw = '';
@@ -616,69 +686,7 @@
         } else if (word.indexOf('-') !== -1) {
             hw = hyphenateCompound(lo, lang, word);
         } else {
-            ww = word.toLowerCase();
-            if (String.prototype.normalize) {
-                ww = ww.normalize("NFC");
-            }
-            if (lo.hasOwnProperty("charSubstitution")) {
-                ww = doCharSubst(lo.charSubstitution, ww);
-            }
-            if (word.indexOf("'") !== -1) {
-                ww = ww.replace(/'/g, "’"); //replace APOSTROPHE with RIGHT SINGLE QUOTATION MARK (since the latter is used in the patterns)
-            }
-            ww = '_' + ww + '_';
-            wwlen = ww.length;
-            //prepare wwhp and wwAsMappedCharCode
-            while (pstart < wwlen) {
-                wwhp[pstart] = 0;
-                charCode = ww.charCodeAt(pstart);
-                wwAsMappedCharCode[pstart] = charMap.hasOwnProperty(charCode)
-                    ? charMap[charCode]
-                    : -1;
-                pstart += 1;
-            }
-            //get hyphenation points for all substrings
-            pstart = 0;
-            while (pstart < wwlen) {
-                row = 0;
-                plen = pstart;
-                while (plen < wwlen) {
-                    mappedCharCode = wwAsMappedCharCode[plen];
-                    if (mappedCharCode === -1) {
-                        break;
-                    }
-                    link = indexedTrie[row + mappedCharCode * 2];
-                    value = indexedTrie[row + mappedCharCode * 2 + 1];
-                    if (value > 0) {
-                        hpc = 0;
-                        hp = valueStore[value + hpc];
-                        while (hp !== 255) {
-                            if (hp > wwhp[pstart + hpc]) {
-                                wwhp[pstart + hpc] = hp;
-                            }
-                            hpc += 1;
-                            hp = valueStore[value + hpc];
-                        }
-                    }
-                    if (link > 0) {
-                        row = link;
-                    } else {
-                        break;
-                    }
-                    plen += 1;
-                }
-                pstart += 1;
-            }
-            //create hyphenated word
-            hp = 0;
-            while (hp < wordLength) {
-                if (hp >= lo.leftmin && hp <= (wordLength - lo.rightmin) && (wwhp[hp + 1] % 2) !== 0) {
-                    hw += C.hyphen + word.charAt(hp);
-                } else {
-                    hw += word.charAt(hp);
-                }
-                hp += 1;
-            }
+            hw = liang(lo, word);
         }
         hw = C.onAfterWordHyphenation(hw, lang);
         if (!lo.cache.hasOwnProperty(C.state)) {
