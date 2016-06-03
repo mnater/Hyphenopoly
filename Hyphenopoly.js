@@ -33,7 +33,7 @@
             'svg': true,
             'style': true
         },
-        safeCopy: false,
+        safeCopy: true,
         onHyphenopolyStart: function () {
             window.console.timeStamp("Hyphenopoly start!");
         },
@@ -136,7 +136,7 @@
         }
     });
 
-    Hyphenopoly.config = config;
+    Hyphenopoly.c = config;
 }());
 
 (function config() {
@@ -145,13 +145,13 @@
     Object.keys(Hyphenopoly.setup).forEach(function (key) {
         if (key === "classnames") {
             Object.keys(Hyphenopoly.setup.classnames).forEach(function (cn) {
-                Hyphenopoly.config.state = cn;
+                Hyphenopoly.c.state = cn;
                 Object.keys(Hyphenopoly.setup.classnames[cn]).forEach(function (pcnkey) {
-                    Hyphenopoly.config[pcnkey] = Hyphenopoly.setup.classnames[cn][pcnkey];
+                    Hyphenopoly.c[pcnkey] = Hyphenopoly.setup.classnames[cn][pcnkey];
                 });
             });
         } else {
-            Hyphenopoly.config[key] = Hyphenopoly.setup[key];
+            Hyphenopoly.c[key] = Hyphenopoly.setup[key];
         }
     });
 }());
@@ -159,6 +159,7 @@
 (function H9Y(w) {
     "use strict";
     var H = Hyphenopoly;
+    var C = H.c;
 
     var mainLanguage = null;
 
@@ -180,7 +181,7 @@
             var list = {};
 
             function add(el, lang) {
-                var elo = makeElement(el, H.config.state);
+                var elo = makeElement(el, C.state);
                 if (!list.hasOwnProperty(lang)) {
                     list[lang] = [];
                 }
@@ -210,22 +211,12 @@
     }());
 
     function removeHyphenationFromElement(el, cn) {
-        var h;
         var i = 0;
         var n;
-        H.config.state = cn;
-        switch (H.config.hyphen) {
-        case '|':
-            h = '\\|';
-            break;
-        case '+':
-            h = '\\+';
-            break;
-        case '*':
-            h = '\\*';
-            break;
-        default:
-            h = H.config.hyphen;
+        C.state = cn;
+        var h = C.hyphen;
+        if (".\\+*?[^]$(){}=!<>|:-".indexOf(C.hyphen) !== -1) {
+            h = "\\" + h;
         }
         n = el.childNodes[i];
         while (!!n) {
@@ -279,7 +270,7 @@
                 var currDoc = target.ownerDocument;
                 var bdy = currDoc.getElementsByTagName('body')[0];
                 var targetWindow = currDoc.defaultView || currDoc.parentWindow;
-                if (target.tagName && H.config.dontHyphenate[target.tagName.toLowerCase()]) {
+                if (target.tagName && C.dontHyphenate[target.tagName.toLowerCase()]) {
                     //Safari needs this
                     return;
                 }
@@ -309,11 +300,7 @@
                     return;
                 }
                 el = el || body;
-                if (window.removeEventListener) {
-                    el.removeEventListener("copy", oncopyHandler, true);
-                } else {
-                    el.detachEvent("oncopy", oncopyHandler);
-                }
+                el.removeEventListener("copy", oncopyHandler, true);
             }
             function registerOnCopy(el, cn) {
                 var body = el.ownerDocument.getElementsByTagName('body')[0];
@@ -321,15 +308,9 @@
                     return;
                 }
                 el = el || body;
-                if (window.addEventListener) {
-                    el.addEventListener("copy", function (e) {
-                        oncopyHandler(e, cn);
-                    }, true);
-                } else {
-                    el.attachEvent("oncopy", function (e) {
-                        oncopyHandler(e, cn);
-                    });
-                }
+                el.addEventListener("copy", function (e) {
+                    oncopyHandler(e, cn);
+                }, true);
             }
             return {
                 oncopyHandler: oncopyHandler,
@@ -338,7 +319,7 @@
             };
         };
 
-        return (H.config.safeCopy
+        return (C.safeCopy
             ? makeCopy()
             : false);
     }());
@@ -490,42 +471,21 @@
         try {
             return !!el.getAttribute('lang')
                 ? el.getAttribute('lang').toLowerCase()
-                : !!el.getAttribute('xml:lang')
-                    ? el.getAttribute('xml:lang').toLowerCase()
-                    : el.tagName.toLowerCase() !== 'html'
-                        ? getLang(el.parentNode, fallback)
-                        : fallback
-                            ? mainLanguage
-                            : null;
+                : el.tagName.toLowerCase() !== 'html'
+                    ? getLang(el.parentNode, fallback)
+                    : fallback
+                        ? mainLanguage
+                        : null;
         } catch (ignore) {}
     }
 
     function autoSetMainLanguage() {
         var el = w.document.getElementsByTagName('html')[0];
-        var m = w.document.getElementsByTagName('meta');
-        var i = 0;
 
         mainLanguage = getLang(el, false);
-        if (!mainLanguage) {
-            while (i < m.length) {
-                //<meta http-equiv = "content-language" content="xy">
-                if (!!m[i].getAttribute('http-equiv') && (m[i].getAttribute('http-equiv').toLowerCase() === 'content-language')) {
-                    mainLanguage = m[i].getAttribute('content').toLowerCase();
-                }
-                //<meta name = "DC.Language" content="xy">
-                if (!!m[i].getAttribute('name') && (m[i].getAttribute('name').toLowerCase() === 'dc.language')) {
-                    mainLanguage = m[i].getAttribute('content').toLowerCase();
-                }
-                //<meta name = "language" content = "xy">
-                if (!!m[i].getAttribute('name') && (m[i].getAttribute('name').toLowerCase() === 'language')) {
-                    mainLanguage = m[i].getAttribute('content').toLowerCase();
-                }
-                i += 1;
-            }
-        }
         //fallback to defaultLang if set
-        if (!mainLanguage && H.config.defaultLanguage !== '') {
-            mainLanguage = H.config.defaultLanguage;
+        if (!mainLanguage && C.defaultLanguage !== '') {
+            mainLanguage = C.defaultLanguage;
         }
         el.lang = mainLanguage;
     }
@@ -538,7 +498,7 @@
 
     function collectElements() {
         var nl;
-        var classNames = Hyphenopoly.config.getClassNames();
+        var classNames = C.getClassNames();
         function processText(el, pLang, isChild) {
             var eLang;
             var n;
@@ -559,8 +519,8 @@
             n = el.childNodes[j];
             while (!!n) {
                 if (n.nodeType === 1 &&
-                        !H.config.dontHyphenate[n.nodeName.toLowerCase()] &&
-                        n.className.indexOf(H.config.dontHyphenateClass) === -1) {
+                        !C.dontHyphenate[n.nodeName.toLowerCase()] &&
+                        n.className.indexOf(C.dontHyphenateClass) === -1) {
                     if (sortOutSubclasses(n.className.split(" "), classNames).length === 0) {
                         //this child element doesn't contain a hyphenopoly-class
                         processText(n, eLang, true);
@@ -571,13 +531,13 @@
             }
         }
         classNames.forEach(function (cn) {
-            H.config.state = cn;
+            C.state = cn;
             nl = w.document.querySelectorAll("." + cn);
             Array.prototype.forEach.call(nl, function (n) {
                 processText(n, getLang(n), false);
             });
         });
-        Hyphenopoly.elementsReady = true;
+        H.elementsReady = true;
     }
 
     function doCharSubst(loCharSubst, w) {
@@ -588,19 +548,19 @@
         return r;
     }
 
-    var wwAsMappedCharCodeStore = new window.Int32Array(64);
-    var wwhpStore = new window.Uint8Array(64);
+    var wwAsMappedCharCodeStore = new Int32Array(64);
+    var wwhpStore = new Uint8Array(64);
 
     function hyphenateCompound(lo, lang, word) {
         var hw = word;
         var parts;
         var i = 0;
         var zeroWidthSpace = String.fromCharCode(8203);
-        switch (H.config.compound) {
+        switch (C.compound) {
         case "auto":
             parts = word.split('-');
             while (i < parts.length) {
-                if (parts[i].length >= H.config.minWordLength) {
+                if (parts[i].length >= C.minWordLength) {
                     parts[i] = hyphenateWord(lo, lang, parts[i]);
                 }
                 i += 1;
@@ -610,7 +570,7 @@
         case "all":
             parts = word.split('-');
             while (i < parts.length) {
-                if (parts[i].length >= H.config.minWordLength) {
+                if (parts[i].length >= C.minWordLength) {
                     parts[i] = hyphenateWord(lo, lang, parts[i]);
                 }
                 i += 1;
@@ -623,6 +583,7 @@
         return hw;
     }
 
+    //todo class based handling of leftmin/rigthmin
     function hyphenateWord(lo, lang, word) {
         var ww;
         var wwlen;
@@ -642,16 +603,16 @@
         var indexedTrie = lo.indexedTrie;
         var valueStore = lo.valueStore.keys;
         var wwAsMappedCharCode = wwAsMappedCharCodeStore;
-        word = H.config.onBeforeWordHyphenation(word, lang);
+        word = C.onBeforeWordHyphenation(word, lang);
         if (word === '') {
             hw = '';
-        } else if (lo.cache && lo.cache.hasOwnProperty(H.config.state) && lo.cache[H.config.state].hasOwnProperty(word)) { //the word is in the cache
-            hw = lo.cache[H.config.state][word];
-        } else if (word.indexOf(H.config.hyphen) !== -1) {
+        } else if (lo.cache && lo.cache.hasOwnProperty(C.state) && lo.cache[C.state].hasOwnProperty(word)) { //the word is in the cache
+            hw = lo.cache[C.state][word];
+        } else if (word.indexOf(C.hyphen) !== -1) {
             //word already contains the hyphen -> leave at it is!
             hw = word;
         } else if (lo.exceptions.hasOwnProperty(word)) { //the word is in the exceptions list
-            hw = lo.exceptions[word].replace(/-/g, H.config.hyphen);
+            hw = lo.exceptions[word].replace(/-/g, C.hyphen);
         } else if (word.indexOf('-') !== -1) {
             hw = hyphenateCompound(lo, lang, word);
         } else {
@@ -712,18 +673,18 @@
             hp = 0;
             while (hp < wordLength) {
                 if (hp >= lo.leftmin && hp <= (wordLength - lo.rightmin) && (wwhp[hp + 1] % 2) !== 0) {
-                    hw += H.config.hyphen + word.charAt(hp);
+                    hw += C.hyphen + word.charAt(hp);
                 } else {
                     hw += word.charAt(hp);
                 }
                 hp += 1;
             }
         }
-        hw = H.config.onAfterWordHyphenation(hw, lang);
-        if (!lo.cache.hasOwnProperty(H.config.state)) {
-            lo.cache[H.config.state] = {};
+        hw = C.onAfterWordHyphenation(hw, lang);
+        if (!lo.cache.hasOwnProperty(C.state)) {
+            lo.cache[C.state] = {};
         }
-        lo.cache[H.config.state][word] = hw;
+        lo.cache[C.state][word] = hw;
         return hw;
     }
 
@@ -735,30 +696,20 @@
      * orphanControl === 3: prevent one word on a last line (inserts a nobreaking space)
      */
     function controlOrphans(part) {
-        var h;
         var r;
-        switch (H.config.hyphen) {
-        case '|':
-            h = '\\|';
-            break;
-        case '+':
-            h = '\\+';
-            break;
-        case '*':
-            h = '\\*';
-            break;
-        default:
-            h = H.config.hyphen;
+        var h = C.hyphen;
+        if (".\\+*?[^]$(){}=!<>|:-".indexOf(C.hyphen) !== -1) {
+            h = "\\" + h;
         }
         //strip off blank space at the end (omitted closing tags)
         part = part.replace(/[\s]*$/, '');
-        if (H.config.orphanControl >= 2) {
+        if (C.orphanControl >= 2) {
             //remove hyphen points from last word
             r = part.split(' ');
             r[1] = r[1].replace(new RegExp(h, 'g'), '');
             r = r.join(' ');
         }
-        if (H.config.orphanControl === 3) {
+        if (C.orphanControl === 3) {
             //replace spaces by non breaking spaces
             r = r.replace(/[\ ]+/g, String.fromCharCode(160));
         }
@@ -767,8 +718,8 @@
 
     function hyphenateElement(lang, elo) {
         var el = elo.element;
-        var lo = Hyphenopoly.languages[lang];
-        Hyphenopoly.config.state = elo.class;
+        var lo = H.languages[lang];
+        C.state = elo.class;
         function hyphenate(word) {
             return hyphenateWord(lo, lang, word);
         }
@@ -777,9 +728,9 @@
         while (!!n) {
             if (n.nodeType === 3 //type 3 = #text
                     && (/\S/).test(n.data) //not just white space
-                    && n.data.length >= H.config.minWordLength) { //longer then min
+                    && n.data.length >= C.minWordLength) { //longer then min
                 n.data = n.data.replace(lo.genRegExps[elo.class], hyphenate);
-                if (H.config.orphanControl !== 1) {
+                if (C.orphanControl !== 1) {
                     n.data = n.data.replace(/[\S]+\ [\S]+[\s]*$/, controlOrphans);
                 }
             }
@@ -788,8 +739,8 @@
         }
         elo.hyphenated = true;
         elements.counters[1] += 1;
-        if (H.config.safeCopy && (el.tagName.toLowerCase() !== 'body')) {
-            copy.registerOnCopy(el, H.config.state);
+        if (C.safeCopy && (el.tagName.toLowerCase() !== 'body')) {
+            copy.registerOnCopy(el, C.state);
         }
     }
 
@@ -819,19 +770,19 @@
     }
 
     function prepareLanguagesObj(lang) {
-        var lo = Hyphenopoly.languages[lang];
+        var lo = H.languages[lang];
         if (!lo.prepared) {
             lo.cache = {};
             //merge leftmin/rightmin to config
-            if (H.config.leftmin > lo.leftmin) {
-                lo.leftmin = H.config.leftmin;
+            if (C.leftmin > lo.leftmin) {
+                lo.leftmin = C.leftmin;
             }
-            if (H.config.rightmin > lo.rightmin) {
-                lo.rightmin = H.config.rightmin;
+            if (C.rightmin > lo.rightmin) {
+                lo.rightmin = C.rightmin;
             }
             //add exceptions from the pattern file to the local 'exceptions'-obj
             if (lo.hasOwnProperty('exceptions')) {
-                Hyphenopoly.addExceptions(lang, lo.exceptions);
+                H.addExceptions(lang, lo.exceptions);
                 delete lo.exceptions;
             }
             //copy global exceptions to the language specific exceptions
@@ -851,13 +802,13 @@
             }
             convertPatternsToArray(lo);
             lo.genRegExps = {};
-            H.config.getClassNames().forEach(function (cn) {
+            C.getClassNames().forEach(function (cn) {
                 var wrd;
-                H.config.state = cn;
+                C.state = cn;
                 if (String.prototype.normalize) {
-                    wrd = '[\\w' + lo.specialChars + lo.specialChars.normalize("NFD") + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + H.config.minWordLength + ',}';
+                    wrd = '[\\w' + lo.specialChars + lo.specialChars.normalize("NFD") + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + C.minWordLength + ',}';
                 } else {
-                    wrd = '[\\w' + lo.specialChars + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + H.config.minWordLength + ',}';
+                    wrd = '[\\w' + lo.specialChars + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + C.minWordLength + ',}';
                 }
                 lo.genRegExps[cn] = new RegExp(wrd, "gi");
             });
@@ -875,7 +826,7 @@
             break;
         case "ElementsReady":
             elements.each(function (lang, values) {
-                if (Hyphenopoly.languages.hasOwnProperty(lang) && Hyphenopoly.languages[lang].converted) {
+                if (H.languages.hasOwnProperty(lang) && H.languages[lang].converted) {
                     hyphenateLangElements(lang, values);
                 }//else wait for "patternReady"-evt
             });
@@ -885,23 +836,23 @@
             w.Hyphenopoly.evt(["patternReady", evt[1]]);
             break;
         case "patternReady":
-            if (Hyphenopoly.elementsReady) {
+            if (H.elementsReady) {
                 hyphenateLangElements(evt[1], elements.list[evt[1]]);
             } //else wait for "ElementsReady"-evt
             break;
         case "hyphenationDone":
-            w.clearTimeout(H.config.timeOutHandler);
+            w.clearTimeout(C.timeOutHandler);
             w.document.documentElement.style.visibility = "visible";
-            H.config.onHyphenationDone();
+            C.onHyphenationDone();
             break;
         case "timeout":
             w.document.documentElement.style.visibility = "visible";
-            H.config.onTimeOut();
+            C.onTimeOut();
             break;
         }
     }
     //public methods
-    Hyphenopoly.addExceptions = function (lang, words) {
+    H.addExceptions = function (lang, words) {
         if (lang === '') {
             lang = 'global';
         }
@@ -912,13 +863,13 @@
         }
     };
 
-    Hyphenopoly.config.onHyphenopolyStart();
+    C.onHyphenopolyStart();
     //clear Loader-timeout
     w.clearTimeout(H.setup.timeOutHandler);
     //renew timeout for the case something fails
-    H.config.timeOutHandler = w.setTimeout(function () {
+    C.timeOutHandler = w.setTimeout(function () {
         handleEvt(["timeout"]);
-    }, H.config.timeout);
+    }, C.timeout);
 
     //import and exec triggered events from loader
     w.Hyphenopoly.evt = function (m) {
