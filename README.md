@@ -33,6 +33,7 @@ The algorithm used for hyphenation was developped by Franklin M. Liang for TeX. 
 5. Repeat 2. - 4. for all words longer than minWordLength
 
 Example:
+````
 Hyphenation
 h y p h e n a t i o n
 h y3p h
@@ -46,6 +47,7 @@ h y3p h
                   o2n
 h0y3p0h0e2n5a4t2i0o2n
 Hy-phen-ation
+````
 
 The patterns are precomputed and available for many languages on CTAN. Hyphenopoly.js uses a slightly different format (compacted and with some metadata). Patterns are computed from a large list of hyphenated words by a program called patgen. They aim to find some hyphenation points – not all – because it's better to miss a hyphenation point then to have some false hyphenation points. Most patterns are really good but none is error free.
 
