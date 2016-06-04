@@ -9,31 +9,16 @@
         timeout: 3000,
         defaultLanguage: "en",
         dontHyphenateClass: "donthyphenate",
-        dontHyphenate: {
-            'video': true,
-            'audio': true,
-            'script': true,
-            'code': true,
-            'pre': true,
-            'img': true,
-            'br': true,
-            'samp': true,
-            'kbd': true,
-            'var': true,
-            'abbr': true,
-            'acronym': true,
-            'sub': true,
-            'sup': true,
-            'button': true,
-            'option': true,
-            'label': true,
-            'textarea': true,
-            'input': true,
-            'math': true,
-            'svg': true,
-            'style': true
-        },
+        dontHyphenate: (function () {
+            var r = {};
+            var list = "video,audio,script,code,pre,img,br,samp,kbd,var,abbr,acronym,sub,sup,button,option,label,textarea,input,math,svg,style";
+            list.split(",").forEach(function (value) {
+                r[value] = true;
+            });
+            return r;
+        }()),
         safeCopy: true,
+        normalize: false,
         onHyphenopolyStart: function () {
             window.console.timeStamp("Hyphenopoly start!");
         },
@@ -88,7 +73,7 @@
         },
         set: function (value) {
             state = value;
-            if (!data.classnames.hasOwnProperty(state)) {
+            if (data.classnames[state] === undefined) {
                 data.classnames[state] = {};
             }
         }
@@ -98,10 +83,7 @@
     Object.keys(generalDefaults).forEach(function (name) {
         Object.defineProperty(config, name, {
             get: function () {
-                if (data.hasOwnProperty(name)) {
-                    return data[name];
-                }
-                return generalDefaults[name];
+                return data[name] || generalDefaults[name];
             },
             set: function (value) {
                 data[name] = value;
@@ -113,10 +95,7 @@
     Object.keys(perClassDefaults).forEach(function (name) {
         Object.defineProperty(config, name, {
             get: function () {
-                if (data.classnames[state].hasOwnProperty(name)) {
-                    return data.classnames[state][name];
-                }
-                return perClassDefaults[name];
+                return data.classnames[state][name] || perClassDefaults[name];
             },
             set: function (value) {
                 data.classnames[state][name] = value;
@@ -182,7 +161,7 @@
 
             function add(el, lang) {
                 var elo = makeElement(el, C.state);
-                if (!list.hasOwnProperty(lang)) {
+                if (list[lang] === undefined) {
                     list[lang] = [];
                 }
                 list[lang].push(elo);
@@ -342,43 +321,35 @@
         };
     }
 
-    function makeValueStore(len) {
-        var indexes = new Uint32Array(3);
-        indexes[0] = 1;
-        indexes[1] = 1;
-        indexes[2] = 1;
-        var keys = new Uint8Array(len);
-        function add(p) {
-            keys[indexes[1]] = p;
-            indexes[2] = indexes[1];
-            indexes[1] += 1;
-        }
-        function add0() {
-            //just do a step, since array is initialized with zeroes
-            indexes[1] += 1;
-        }
-        function finalize() {
-            var start = indexes[0];
-            keys[indexes[2] + 1] = 255; //mark end of pattern
-            indexes[0] = indexes[2] + 2;
-            indexes[1] = indexes[0];
-            return start;
-        }
-        return {
-            keys: keys,
-            add: add,
-            add0: add0,
-            finalize: finalize
-        };
-    }
-
     function convertPatternsToArray(lo) {
         var trieNextEmptyRow = 0;
         var i;
         var charMapc2i;
-        var valueStore;
+        var valueStore = new Uint8Array(lo.valueStoreLength);
+        var indexes = new Uint32Array(3);
+        indexes[0] = 1;
+        indexes[1] = 1;
+        indexes[2] = 1;
         var indexedTrie;
         var trieRowLength;
+
+        function add(p) {
+            valueStore[indexes[1]] = p;
+            indexes[2] = indexes[1];
+            indexes[1] += 1;
+        }
+
+        function add0() {
+            indexes[1] += 1;
+        }
+
+        function finalize() {
+            var start = indexes[0];
+            valueStore[indexes[2] + 1] = 255; //mark end of pattern
+            indexes[0] = indexes[2] + 2;
+            indexes[1] = indexes[0];
+            return start;
+        }
 
         function extract(patternSizeInt, patterns) {
             var charPos = 0;
@@ -393,12 +364,12 @@
                     //more to come…
                     if (charCode <= 57 && charCode >= 49) {
                         //charCode is a digit
-                        valueStore.add(charCode - 48);
+                        add(charCode - 48);
                         prevWasDigit = true;
                     } else {
                         //charCode is alphabetical
                         if (!prevWasDigit) {
-                            valueStore.add0();
+                            add0();
                         }
                         prevWasDigit = false;
                         if (nextRowStart === -1) {
@@ -418,14 +389,14 @@
                     //last part of pattern
                     if (charCode <= 57 && charCode >= 49) {
                         //the last charCode is a digit
-                        valueStore.add(charCode - 48);
-                        indexedTrie[rowStart + mappedCharCode * 2 + 1] = valueStore.finalize();
+                        add(charCode - 48);
+                        indexedTrie[rowStart + mappedCharCode * 2 + 1] = finalize();
                     } else {
                         //the last charCode is alphabetical
                         if (!prevWasDigit) {
-                            valueStore.add0();
+                            add0();
                         }
-                        valueStore.add0();
+                        add0();
                         if (nextRowStart === -1) {
                             nextRowStart = trieNextEmptyRow + trieRowLength;
                             trieNextEmptyRow = nextRowStart;
@@ -436,7 +407,7 @@
                         if (indexedTrie[rowStart + mappedCharCode * 2] === 0) {
                             indexedTrie[rowStart + mappedCharCode * 2] = -1;
                         }
-                        indexedTrie[rowStart + mappedCharCode * 2 + 1] = valueStore.finalize();
+                        indexedTrie[rowStart + mappedCharCode * 2 + 1] = finalize();
                     }
                     rowStart = 0;
                     nextRowStart = 0;
@@ -454,7 +425,6 @@
         }
         charMapc2i = lo.charMap.code2int;
 
-        valueStore = makeValueStore(lo.valueStoreLength);
         lo.valueStore = valueStore;
 
         lo.indexedTrie = new Int32Array(lo.patternArrayLength * 2);
@@ -548,20 +518,19 @@
         return r;
     }
 
-    var wwAsMappedCharCodeStore = new Int32Array(64);
-    var wwhpStore = new Uint8Array(64);
-
     function hyphenateCompound(lo, lang, word) {
         var hw = word;
         var parts;
         var i = 0;
         var zeroWidthSpace = String.fromCharCode(8203);
+        var wordHyphenator;
         switch (C.compound) {
         case "auto":
             parts = word.split('-');
+            wordHyphenator = createWordHyphenator(lo, lang);
             while (i < parts.length) {
                 if (parts[i].length >= C.minWordLength) {
-                    parts[i] = hyphenateWord(lo, lang, parts[i]);
+                    parts[i] = wordHyphenator(parts[i]);
                 }
                 i += 1;
             }
@@ -569,9 +538,10 @@
             break;
         case "all":
             parts = word.split('-');
+            wordHyphenator = createWordHyphenator(lo, lang);
             while (i < parts.length) {
                 if (parts[i].length >= C.minWordLength) {
-                    parts[i] = hyphenateWord(lo, lang, parts[i]);
+                    parts[i] = wordHyphenator(parts[i]);
                 }
                 i += 1;
             }
@@ -583,126 +553,129 @@
         return hw;
     }
 
-    function liang(lo, word) {
-        var hw = "";
-        var wwhp = wwhpStore;
-        var charCode;
-        var wwAsMappedCharCode = wwAsMappedCharCodeStore;
+    var wordHyphenatorPool = {};
+
+    function createWordHyphenator(lo, lang) {
+        var wwhp = new Uint8Array(64);
+        var wwAsMappedCharCode = new Int32Array(64);
         var charMap = lo.charMap.code2int;
-        var row = 0;
-        var link = 0;
-        var value = 0;
-        var plen;
-        var hp;
-        var hpc;
-        var mappedCharCode;
         var indexedTrie = lo.indexedTrie;
-        var valueStore = lo.valueStore.keys;
-        var wordLength = word.length;
-        var ww = word.toLowerCase();
+        var valueStore = lo.valueStore;
+        var cache = {};
+        var normalize = C.normalize && !!String.prototype.normalize;
+        var charSubst = !!lo.hasOwnProperty("charSubstitution");
         var hyphen = C.hyphen;
-        if (String.prototype.normalize) {
-            ww = ww.normalize("NFC");
+
+        function prepare(word) {
+            var ww = word.toLowerCase();
+            if (normalize) {
+                ww = ww.normalize("NFC");
+            }
+            if (charSubst) {
+                ww = doCharSubst(lo.charSubstitution, ww);
+            }
+            if (word.indexOf("'") !== -1) {
+                ww = ww.replace(/'/g, "’"); //replace APOSTROPHE with RIGHT SINGLE QUOTATION MARK (since the latter is used in the patterns)
+            }
+            ww = '_' + ww + '_';
+            return ww;
         }
-        if (lo.hasOwnProperty("charSubstitution")) {
-            ww = doCharSubst(lo.charSubstitution, ww);
-        }
-        if (word.indexOf("'") !== -1) {
-            ww = ww.replace(/'/g, "’"); //replace APOSTROPHE with RIGHT SINGLE QUOTATION MARK (since the latter is used in the patterns)
-        }
-        ww = '_' + ww + '_';
-        var wwlen = ww.length;
-        var pstart = 0;
-        //prepare wwhp and wwAsMappedCharCode
-        while (pstart < wwlen) {
-            wwhp[pstart] = 0;
-            charCode = ww.charCodeAt(pstart);
-            /*wwAsMappedCharCode[pstart] = charMap.hasOwnProperty(charCode)
-                ? charMap[charCode]
-                : -1;*/
-            wwAsMappedCharCode[pstart] = (charMap[charCode] !== undefined
-                ? charMap[charCode]
-                : -1);
-            pstart += 1;
-        }
-        //get hyphenation points for all substrings
-        pstart = 0;
-        while (pstart < wwlen) {
-            row = 0;
-            plen = pstart;
-            while (plen < wwlen) {
-                mappedCharCode = wwAsMappedCharCode[plen];
-                if (mappedCharCode === -1) {
-                    break;
-                }
-                link = indexedTrie[row + mappedCharCode * 2];
-                value = indexedTrie[row + mappedCharCode * 2 + 1];
-                if (value > 0) {
-                    hpc = 0;
-                    hp = valueStore[value + hpc];
-                    while (hp !== 255) {
-                        if (hp > wwhp[pstart + hpc]) {
-                            wwhp[pstart + hpc] = hp;
-                        }
-                        hpc += 1;
-                        hp = valueStore[value + hpc];
+
+        function liang(word) {
+            var hw = "";
+            var row = 0;
+            var link = 0;
+            var value = 0;
+            var plen;
+            var hp;
+            var hpc;
+            var mappedCharCode;
+            var wordLength = word.length;
+            var ww = prepare(word);
+            var wwlen = ww.length;
+            var pstart = 0;
+            var charCode;
+            //prepare wwhp and wwAsMappedCharCode
+            while (pstart < wwlen) {
+                wwhp[pstart] = 0;
+                charCode = ww.charCodeAt(pstart);
+                wwAsMappedCharCode[pstart] = (charMap[charCode] !== undefined
+                    ? charMap[charCode]
+                    : -1);
+                pstart += 1;
+            }
+            //get hyphenation points for all substrings
+            pstart = 0;
+            while (pstart < wwlen) {
+                row = 0;
+                plen = pstart;
+                while (plen < wwlen) {
+                    mappedCharCode = wwAsMappedCharCode[plen];
+                    if (mappedCharCode === -1) {
+                        break;
                     }
+                    link = indexedTrie[row + mappedCharCode * 2];
+                    value = indexedTrie[row + mappedCharCode * 2 + 1];
+                    if (value > 0) {
+                        hpc = 0;
+                        hp = valueStore[value + hpc];
+                        while (hp !== 255) {
+                            if (hp > wwhp[pstart + hpc]) {
+                                wwhp[pstart + hpc] = hp;
+                            }
+                            hpc += 1;
+                            hp = valueStore[value + hpc];
+                        }
+                    }
+                    if (link > 0) {
+                        row = link;
+                    } else {
+                        break;
+                    }
+                    plen += 1;
                 }
-                if (link > 0) {
-                    row = link;
-                } else {
-                    break;
-                }
-                plen += 1;
+                pstart += 1;
             }
-            pstart += 1;
-        }
-        //create hyphenated word
-        hp = 0;
-        while (hp < wordLength) {
-            if (hp >= lo.leftmin && hp <= (wordLength - lo.rightmin) && (wwhp[hp + 1] % 2) !== 0) {
-                hw += hyphen + word.charAt(hp);
-            } else {
+            //create hyphenated word
+            hp = 0;
+            while (hp < wordLength) {
+                if (hp >= lo.leftmin && hp <= (wordLength - lo.rightmin) && (wwhp[hp + 1] % 2) !== 0) {
+                    hw += hyphen;
+                }
                 hw += word.charAt(hp);
+                hp += 1;
             }
-            hp += 1;
+            return hw;
         }
-        return hw;
+
+        function hyphenator(word) {
+            var hw = "";
+            word = C.onBeforeWordHyphenation(word, lang);
+            if (word === '') {
+                hw = '';
+            } else if (cache[C.state] !== undefined && cache[C.state][word] !== undefined) { //the word is in the cache
+                hw = cache[C.state][word];
+            } else if (word.indexOf(hyphen) !== -1) {
+                //word already contains the hyphen -> leave at it is!
+                hw = word;
+            } else if (lo.exceptions[word] !== undefined) { //the word is in the exceptions list
+                hw = lo.exceptions[word].replace(/-/g, C.hyphen);
+            } else if (word.indexOf('-') !== -1) {
+                hw = hyphenateCompound(lo, lang, word);
+            } else {
+                hw = liang(word);
+            }
+            hw = C.onAfterWordHyphenation(hw, lang);
+            if (cache[C.state] === undefined) {
+                cache[C.state] = {};
+            }
+            cache[C.state][word] = hw;
+            return hw;
+        }
+        wordHyphenatorPool[lang] = hyphenator;
+        return hyphenator;
     }
 
-    //todo class based handling of leftmin/rigthmin
-    function hyphenateWord(lo, lang, word) {
-        var hw = '';
-        word = C.onBeforeWordHyphenation(word, lang);
-        if (word === '') {
-            hw = '';
-        } else if (lo.cache && lo.cache.hasOwnProperty(C.state) && lo.cache[C.state].hasOwnProperty(word)) { //the word is in the cache
-            hw = lo.cache[C.state][word];
-        } else if (word.indexOf(C.hyphen) !== -1) {
-            //word already contains the hyphen -> leave at it is!
-            hw = word;
-        } else if (lo.exceptions.hasOwnProperty(word)) { //the word is in the exceptions list
-            hw = lo.exceptions[word].replace(/-/g, C.hyphen);
-        } else if (word.indexOf('-') !== -1) {
-            hw = hyphenateCompound(lo, lang, word);
-        } else {
-            hw = liang(lo, word);
-        }
-        hw = C.onAfterWordHyphenation(hw, lang);
-        if (!lo.cache.hasOwnProperty(C.state)) {
-            lo.cache[C.state] = {};
-        }
-        lo.cache[C.state][word] = hw;
-        return hw;
-    }
-
-
-    /**
-     * removes orphans depending on the 'orphanControl'-setting:
-     * orphanControl === 1: do nothing
-     * orphanControl === 2: prevent last word to be hyphenated
-     * orphanControl === 3: prevent one word on a last line (inserts a nobreaking space)
-     */
     function controlOrphans(part) {
         var r;
         var h = C.hyphen;
@@ -728,16 +701,16 @@
         var el = elo.element;
         var lo = H.languages[lang];
         C.state = elo.class;
-        function hyphenate(word) {
-            return hyphenateWord(lo, lang, word);
-        }
+        var wordHyphenator = (wordHyphenatorPool[lang] !== undefined
+            ? wordHyphenatorPool[lang]
+            : createWordHyphenator(lo, lang));
         var i = 0;
         var n = el.childNodes[i];
         while (!!n) {
             if (n.nodeType === 3 //type 3 = #text
                     && (/\S/).test(n.data) //not just white space
                     && n.data.length >= C.minWordLength) { //longer then min
-                n.data = n.data.replace(lo.genRegExps[elo.class], hyphenate);
+                n.data = n.data.replace(lo.genRegExps[elo.class], wordHyphenator);
                 if (C.orphanControl !== 1) {
                     n.data = n.data.replace(/[\S]+\ [\S]+[\s]*$/, controlOrphans);
                 }
@@ -813,7 +786,7 @@
             C.getClassNames().forEach(function (cn) {
                 var wrd;
                 C.state = cn;
-                if (String.prototype.normalize) {
+                if (C.normalize && !!String.prototype.normalize) {
                     wrd = '[\\w' + lo.specialChars + lo.specialChars.normalize("NFD") + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + C.minWordLength + ',}';
                 } else {
                     wrd = '[\\w' + lo.specialChars + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + C.minWordLength + ',}';
