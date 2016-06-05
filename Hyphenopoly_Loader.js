@@ -116,7 +116,7 @@
         }
         if (!H.setup.hasOwnProperty("onTimeOut")) {
             H.setup.onTimeOut = function () {
-                window.console.warn("Hyphenopoly timed out after " + H.setup.timeout + "ms");
+                window.console.warn("Hyphenopolies 'flash of unhyphenated content'-prevention timed out after " + H.setup.timeout + "ms");
             };
         }
         if (result.needsPolyfill) {
