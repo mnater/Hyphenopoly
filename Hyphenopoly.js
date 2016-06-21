@@ -565,7 +565,6 @@
         var normalize = C.normalize && !!String.prototype.normalize;
         var charSubst = !!lo.hasOwnProperty("charSubstitution");
         var hyphen = C.hyphen;
-
         function prepare(word) {
             var ww = word.toLowerCase();
             if (normalize) {
@@ -581,20 +580,33 @@
             return ww;
         }
 
+        var hw = "";
+        var row = 0;
+        var link = 0;
+        var value = 0;
+        var plen;
+        var hp;
+        var hpc;
+        var mappedCharCode;
+        var pstart = 0;
+        var charCode;
+
         function liang(word) {
-            var hw = "";
-            var row = 0;
-            var link = 0;
-            var value = 0;
-            var plen;
-            var hp;
-            var hpc;
-            var mappedCharCode;
-            var wordLength = word.length;
             var ww = prepare(word);
+            var wordLength = word.length;
             var wwlen = ww.length;
-            var pstart = 0;
-            var charCode;
+            hw = "";
+            row = 0;
+            link = 0;
+            value = 0;
+            plen = 0;
+            hp = 0;
+            hpc = 0;
+            mappedCharCode = 0;
+            ww = prepare(word);
+            wwlen = ww.length;
+            pstart = 0;
+            charCode = 0;
             //prepare wwhp and wwAsMappedCharCode
             while (pstart < wwlen) {
                 wwhp[pstart] = 0;
@@ -649,7 +661,7 @@
         }
 
         function hyphenator(word) {
-            var hw = "";
+            hw = "";
             word = C.onBeforeWordHyphenation(word, lang);
             if (word === '') {
                 hw = '';
@@ -732,6 +744,7 @@
         if (elements.counters[0] === elements.counters[1]) {
             handleEvt(["hyphenationDone"]);
         }
+
     }
 
     function convertExceptionsToObject(exc) {

@@ -10,102 +10,104 @@
 (function H9YL() {
     "use strict";
     var d = document;
-    var scriptPath = (function getScriptPath() {
-        if (document.currentScript) {
-            var src = document.currentScript.src;
-            return src.substring(0, src.lastIndexOf("/") + 1);
-        } else {
-            var scripts = document.getElementsByTagName('script');
-            var basePath;
-            Array.prototype.some.call(scripts, function (currScript) {
-                var src2;
-                var p;
-                if (currScript.hasAttribute("src")) {
-                    src2 = currScript.src;
-                    p = src2.indexOf("Hyphenopoly_Loader.js");
-                    if (p !== -1) {
-                        basePath = src2.substring(0, p);
-                        return true;
-                    }
-                }
-            });
-            return basePath;
-        }
-    }());
 
-    var loadScriptList = {};
-
-    function loadScript(path, filename, msg) {
-        var script = d.createElement("script");
-        var H = Hyphenopoly;
-        if (loadScriptList[filename]) {
-            return;
-        }
-        loadScriptList[filename] = true;
-        script.src = path + filename;
-        script.type = "text/javascript";
-        script.addEventListener("load", function () {
-            H.evt(msg);
-        });
-        d.getElementsByTagName('head')[0].appendChild(script);
+    function scriptLoader(loadTarget, messageTarget) {
+        var loadedScripts = {};
+        return function loadScript(path, filename, msg) {
+            var script;
+            if (!loadedScripts[filename]) {
+                script = loadTarget.createElement("script");
+                loadedScripts[filename] = true;
+                script.src = path + filename;
+                script.addEventListener("load", function () {
+                    messageTarget.evt(msg);
+                });
+                loadTarget.head.appendChild(script);
+                //loadTarget.getElementsByTagName("head")[0].appendChild(script);
+            }
+        };
     }
 
     function makeTests() {
-        var needsPolyfill = false;
-        var languages = {};
-        var fakeBody = d.createElement("body");
+        var results = {
+            needsPolyfill: false,
+            languages: {}
+        };
 
-        function createTest(lang) {
-            if (Hyphenopoly.require[lang] === "FORCEHYPHENOPOLY") {
-                return;
+        var tester = (function () {
+            var fakeBody;
+            function createTest(lang) {
+                if (!fakeBody) {
+                    fakeBody = d.createElement("body");
+                }
+                var testDiv = d.createElement("div");
+                var s = testDiv.style;
+                testDiv.lang = lang;
+                testDiv.id = lang;
+                s.visibility = "hidden";
+                s.MozHyphens = "auto";
+                s["-webkit-hyphens"] = "auto";
+                s["-ms-hyphens"] = "auto";
+                s.hyphens = "auto";
+                s.width = "48px";
+                s.fontSize = "12px";
+                s.lineHeight = "12px";
+                s.border = "none";
+                s.padding = "0";
+                s.wordWrap = "normal";
+                testDiv.appendChild(d.createTextNode(Hyphenopoly.require[lang]));
+                fakeBody.appendChild(testDiv);
             }
-            var testDiv = d.createElement("div");
-            var s = testDiv.style;
-            testDiv.lang = lang;
-            testDiv.id = lang;
-            s.visibility = "hidden";
-            s.MozHyphens = "auto";
-            s["-webkit-hyphens"] = "auto";
-            s["-ms-hyphens"] = "auto";
-            s.hyphens = "auto";
-            s.width = "48px";
-            s.fontSize = "12px";
-            s.lineHeight = "12px";
-            s.border = "none";
-            s.padding = "0";
-            s.wordWrap = "normal";
-            testDiv.appendChild(d.createTextNode(Hyphenopoly.require[lang]));
-            fakeBody.appendChild(testDiv);
+            function appendTests(target) {
+                if (!!fakeBody) {
+                    target.appendChild(fakeBody);
+                }
+            }
+            function clearTests() {
+                if (!!fakeBody) {
+                    fakeBody.parentNode.removeChild(fakeBody);
+                }
+            }
+            return {
+                createTest: createTest,
+                appendTests: appendTests,
+                clearTests: clearTests
+            };
+        }());
+
+        var myScriptLoader;
+        function loadBothScripts(lang) {
+            if (!myScriptLoader) {
+                myScriptLoader = scriptLoader(document, Hyphenopoly);
+            }
+            myScriptLoader(Hyphenopoly.paths.maindir, "Hyphenopoly.js", ["void"]);
+            myScriptLoader(Hyphenopoly.paths.patterndir, lang + ".js", ["loaded", lang]);
         }
 
-        Object.keys(Hyphenopoly.require).forEach(createTest);
-
-        d.documentElement.appendChild(fakeBody);
-
-        Object.keys(Hyphenopoly.require).forEach(function measure(lang) {
+        Object.keys(Hyphenopoly.require).forEach(function (lang) {
             if (Hyphenopoly.require[lang] === "FORCEHYPHENOPOLY") {
-                needsPolyfill = needsPolyfill || true;
-                languages[lang] = "H9Y";
-                loadScript(scriptPath, "Hyphenopoly.js", ["void"]);
-                loadScript(scriptPath + "patterns/", lang + ".js", ["loaded", lang]);
+                results.needsPolyfill = true;
+                results.languages[lang] = "H9Y";
+                loadBothScripts(lang);
             } else {
+                tester.createTest(lang);
+            }
+        });
+        tester.appendTests(d.documentElement);
+        Object.keys(Hyphenopoly.require).forEach(function (lang) {
+            if (Hyphenopoly.require[lang] !== "FORCEHYPHENOPOLY") {
                 if (d.getElementById(lang).offsetHeight > 12) {
-                    needsPolyfill = needsPolyfill || false;
-                    languages[lang] = "CSS";
+                    results.needsPolyfill = results.needsPolyfill || false;
+                    results.languages[lang] = "CSS";
                 } else {
-                    needsPolyfill = needsPolyfill || true;
-                    languages[lang] = "H9Y";
-                    loadScript(scriptPath, "Hyphenopoly.js", ["void"]);
-                    loadScript(scriptPath + "patterns/", lang + ".js", ["loaded", lang]);
+                    results.needsPolyfill = true;
+                    results.languages[lang] = "H9Y";
+                    loadBothScripts(lang);
                 }
             }
         });
-
-        fakeBody.parentNode.removeChild(fakeBody);
-        return {
-            needsPolyfill: needsPolyfill,
-            languages: languages
-        };
+        tester.clearTests();
+        return results;
     }
 
     function run() {
@@ -116,7 +118,7 @@
         }
         if (!H.setup.hasOwnProperty("onTimeOut")) {
             H.setup.onTimeOut = function () {
-                window.console.warn("Hyphenopolies 'flash of unhyphenated content'-prevention timed out after " + H.setup.timeout + "ms");
+                window.console.warn("Hyphenopolys 'flash of unhyphenated content'-prevention timed out after " + H.setup.timeout + "ms");
             };
         }
         if (result.needsPolyfill) {

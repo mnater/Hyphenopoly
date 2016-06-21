@@ -9,6 +9,10 @@
             require: {
                 "en-us": "hyphenation"
             },
+            paths: {
+                patterndir: "../patterns/",
+                maindir: "../"
+            },
             setup: {
                 onHyphenopolyStart: function () {
                     startTime = performance.now();
