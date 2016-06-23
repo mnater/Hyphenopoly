@@ -688,25 +688,16 @@
         return hyphenator;
     }
 
-    function controlOrphans(part) {
-        var r;
+    function controlOrphans(ignore, leadingWhiteSpace, lastWord, trailingWhiteSpace) {
         var h = C.hyphen;
+        //escape hyphen
         if (".\\+*?[^]$(){}=!<>|:-".indexOf(C.hyphen) !== -1) {
-            h = "\\" + h;
+            h = "\\" + C.hyphen;
         }
-        //strip off blank space at the end (omitted closing tags)
-        part = part.replace(/[\s]*$/, '');
-        if (C.orphanControl >= 2) {
-            //remove hyphen points from last word
-            r = part.split(' ');
-            r[1] = r[1].replace(new RegExp(h, 'g'), '');
-            r = r.join(' ');
+        if (C.orphanControl === 3 && leadingWhiteSpace === " ") {
+            leadingWhiteSpace = String.fromCharCode(160);
         }
-        if (C.orphanControl === 3) {
-            //replace spaces by non breaking spaces
-            r = r.replace(/[\ ]+/g, String.fromCharCode(160));
-        }
-        return r;
+        return leadingWhiteSpace + lastWord.replace(new RegExp(h, 'g'), '') + trailingWhiteSpace;
     }
 
     function hyphenateElement(lang, elo) {
@@ -724,7 +715,8 @@
                     && n.data.length >= C.minWordLength) { //longer then min
                 n.data = n.data.replace(lo.genRegExps[elo.class], wordHyphenator);
                 if (C.orphanControl !== 1) {
-                    n.data = n.data.replace(/[\S]+\ [\S]+[\s]*$/, controlOrphans);
+                    //prevent last word from being hyphenated
+                    n.data = n.data.replace(/(\ *)(\S+)(\s*)$/, controlOrphans);
                 }
             }
             i += 1;
