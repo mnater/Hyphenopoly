@@ -41,20 +41,9 @@
                     fakeBody = d.createElement("body");
                 }
                 var testDiv = d.createElement("div");
-                var s = testDiv.style;
                 testDiv.lang = lang;
                 testDiv.id = lang;
-                s.visibility = "hidden";
-                s.MozHyphens = "auto";
-                s["-webkit-hyphens"] = "auto";
-                s["-ms-hyphens"] = "auto";
-                s.hyphens = "auto";
-                s.width = "48px";
-                s.fontSize = "12px";
-                s.lineHeight = "12px";
-                s.border = "none";
-                s.padding = "0";
-                s.wordWrap = "normal";
+                testDiv.style.cssText = "visibility:hidden;-moz-hyphens:auto;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;width:48px;font-size:12px;line-height:12px;boder:none;padding:0;word-wrap:normal";
                 testDiv.appendChild(d.createTextNode(Hyphenopoly.require[lang]));
                 fakeBody.appendChild(testDiv);
             }
@@ -111,8 +100,8 @@
     }
 
     function run() {
-        var result = makeTests();
         var H = Hyphenopoly;
+        H.testResults = makeTests();
         if (!H.setup.hasOwnProperty("timeout")) {
             H.setup.timeout = 1000;
         }
@@ -121,15 +110,13 @@
                 window.console.warn("Hyphenopolys 'flash of unhyphenated content'-prevention timed out after " + H.setup.timeout + "ms");
             };
         }
-        if (result.needsPolyfill) {
+        if (H.testResults.needsPolyfill) {
             d.documentElement.style.visibility = "hidden";
 
             H.setup.timeOutHandler = window.setTimeout(function () {
                 d.documentElement.style.visibility = "visible";
                 H.setup.onTimeOut();
             }, H.setup.timeout);
-
-            H.testResults = result;
             H.languages = {};
             H.evtList = [];
             H.evt = function (m) {
