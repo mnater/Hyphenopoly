@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 8</title>
+        <title>Test 9</title>
         <script>
         var Hyphenopoly = {
             require: {
@@ -16,27 +16,19 @@
                 classnames: {
                     "class1": {
                         hyphen: "·",
-                        minWordLength: 10,
-                        leftmin: 3
+                        onBeforeElementHyphenation: function (element, lang) {
+                                element.style.opacity = "0";
+                        },
+                        onAfterElementHyphenation: function (element, lang) {
+                            window.setTimeout(function () {
+                                element.style.opacity = "1";
+                                element.style.transition = "opacity 1000ms ease";
+                            }, 0);
+                        }
                     },
                     "class2": {
                         hyphen: "|",
                         compound: "auto"
-                    },
-                    "class3": {
-                        hyphen: "¬",
-                        rightmin: 6,
-                        onBeforeWordHyphenation: function (word) {
-                            console.log("hyphenate: " + word);
-                            return word;
-                        },
-                        onAfterWordHyphenation: function (word) {
-                            console.log("hyphenated: " + word);
-                            return word;
-                        }
-                    },
-                    "class4": {
-                        hyphen: "•"
                     }
                 }
             }
@@ -45,7 +37,7 @@
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         function assert() {
-            var tests = 4;
+            var tests = 2;
             var i = 1;
             var test = "";
             var ref = "";
@@ -65,7 +57,7 @@
             if (parent != window) {
                 parent.postMessage(JSON.stringify({
                     desc: document.getElementById("desc").innerHTML,
-                    index: 8,
+                    index: 9,
                     result: (result ? "passed" : "failed")
                 }), window.location.href);
             }
@@ -85,6 +77,9 @@
                 margin-left:25%;
                 margin-right:25%;
             }
+            #result {
+                height: 100px;
+            }
 
             .test {
                 background-color: #D8E2F9;
@@ -102,24 +97,18 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test7.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test9.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test8.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="index.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 008</h1>
-        <p id="desc">Class-based settings.</p>
+        <h1>Test 009</h1>
+        <p id="desc">Ease</p>
         <div id="result"></div>
         <hr>
         <h2>1: class1</h2>
         <p id="test1" class="test class1" lang="en-us">hyphenation algorithm</p>
-        <p id="ref1" class="ref" lang="en-us">hyphen·ation algorithm</p>
+        <p id="ref1" class="ref" lang="en-us">hy·phen·ation al·go·rithm</p>
         <h2>2: class2</h2>
         <p id="test2" class="test class2" lang="en-us">hyphenation algorithm</p>
         <p id="ref2" class="ref" lang="en-us">hy|phen|ation al|go|rithm</p>
-        <h2>3: class3</h2>
-        <p id="test3" class="test class3" lang="en-us">hyphenation algorithm</p>
-        <p id="ref3" class="ref" lang="en-us">hy¬phenation al¬gorithm</p>
-        <h2>4: class4 (subelement)</h2>
-        <p id="test4" class="test class3" lang="en-us">superclass <span class="class4">subclass</span></p>
-        <p id="ref4" class="ref" lang="en-us">su¬perclass <span class="class4">sub•class</span></p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
     </body>

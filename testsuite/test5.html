@@ -62,7 +62,9 @@
                     }(i)) + "</span> ";
                     result = result && true;
                 } else {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + i + "</span> ";
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
                     result = false;
                 }
                 i += 1;

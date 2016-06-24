@@ -12,7 +12,8 @@
         {exec: true, path: 'test5.html'},
         {exec: true, path: 'test6.html'},
         {exec: true, path: 'test7.html'},
-        {exec: true, path: 'test8.html'}
+        {exec: true, path: 'test8.html'},
+        {exec: true, path: 'test9.html'}
     ];
     var testframe = document.getElementById('testframe');
     var currentTest = 1;

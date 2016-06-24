@@ -37,7 +37,9 @@
     var perClassDefaults = {
         minWordLength: 6,
         leftmin: 0,
+        leftminPerLang: 0,
         rightmin: 0,
+        rightminPerLang: 0,
         hyphen: String.fromCharCode(173), //soft hyphen
         /**
          * Control how the last words of a line are handled:
@@ -58,6 +60,12 @@
         },
         onAfterWordHyphenation: function (word) {
             return word;
+        },
+        onBeforeElementHyphenation: function (element, lang) {
+            return {element, lang};
+        },
+        onAfterElementHyphenation: function (element, lang) {
+            return {element, lang};
         }
     };
 
@@ -591,7 +599,7 @@
         var pstart = 0;
         var charCode;
 
-        function liang(word) {
+        function liang(word, hyphen) {
             var ww = prepare(word);
             var wordLength = word.length;
             var wwlen = ww.length;
@@ -651,7 +659,7 @@
             //create hyphenated word
             hp = 0;
             while (hp < wordLength) {
-                if (hp >= lo.leftmin && hp <= (wordLength - lo.rightmin) && (wwhp[hp + 1] % 2) !== 0) {
+                if (hp >= C.leftminPerLang[lang] && hp <= (wordLength - C.rightminPerLang[lang]) && (wwhp[hp + 1] % 2) !== 0) {
                     hw += hyphen;
                 }
                 hw += word.charAt(hp);
@@ -675,7 +683,7 @@
             } else if (word.indexOf('-') !== -1) {
                 hw = hyphenateCompound(lo, lang, word);
             } else {
-                hw = liang(word);
+                hw = liang(word, C.hyphen);
             }
             hw = C.onAfterWordHyphenation(hw, lang);
             if (cache[C.state] === undefined) {
@@ -704,6 +712,7 @@
         var el = elo.element;
         var lo = H.languages[lang];
         C.state = elo.class;
+        C.onBeforeElementHyphenation(el, lang);
         var wordHyphenator = (wordHyphenatorPool[lang] !== undefined
             ? wordHyphenatorPool[lang]
             : createWordHyphenator(lo, lang));
@@ -727,6 +736,7 @@
         if (C.safeCopy && (el.tagName.toLowerCase() !== 'body')) {
             copy.registerOnCopy(el, C.state);
         }
+        C.onAfterElementHyphenation(el, lang);
     }
 
     function hyphenateLangElements(lang, elArr) {
@@ -759,13 +769,6 @@
         var lo = H.languages[lang];
         if (!lo.prepared) {
             lo.cache = {};
-            //merge leftmin/rightmin to config
-            if (C.leftmin > lo.leftmin) {
-                lo.leftmin = C.leftmin;
-            }
-            if (C.rightmin > lo.rightmin) {
-                lo.rightmin = C.rightmin;
-            }
             //add exceptions from the pattern file to the local 'exceptions'-obj
             if (lo.hasOwnProperty('exceptions')) {
                 H.addExceptions(lang, lo.exceptions);
@@ -791,6 +794,23 @@
             C.getClassNames().forEach(function (cn) {
                 var wrd;
                 C.state = cn;
+                //merge leftmin/rightmin to config
+                if (C.leftminPerLang === 0) {
+                    C.leftminPerLang = {};
+                }
+                if (C.rightminPerLang === 0) {
+                    C.rightminPerLang = {};
+                }
+                if (C.leftminPerLang[lang] === undefined) {
+                    C.leftminPerLang[lang] = Math.max(lo.leftmin, C.leftmin);
+                } else {
+                    C.leftminPerLang[lang] = Math.max(lo.leftmin, C.leftmin, C.leftminPerLang[lang]);
+                }
+                if (C.rightminPerLang[lang] === undefined) {
+                    C.rightminPerLang[lang] = Math.max(lo.rightmin, C.rightmin);
+                } else {
+                    C.rightminPerLang[lang] = Math.max(lo.rightmin, C.rightmin, C.rightminPerLang[lang]);
+                }
                 if (C.normalize && !!String.prototype.normalize) {
                     wrd = '[\\w' + lo.specialChars + lo.specialChars.normalize("NFD") + String.fromCharCode(173) + String.fromCharCode(8204) + '-]{' + C.minWordLength + ',}';
                 } else {
@@ -803,7 +823,6 @@
     }
 
     function handleEvt(evt) {
-        //w.console.log("event: ", evt);
         switch (evt[0]) {
         case "DOMContentLoaded":
             autoSetMainLanguage();
