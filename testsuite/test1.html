@@ -25,16 +25,16 @@
             var i = 1;
             var test = "";
             var ref = "";
-            var result = false;
+            var result = true;
             while (i <= tests) {
                 test = document.getElementById("test" + i).innerHTML;
                 ref = document.getElementById("ref" + i).innerHTML;
                 if (test === ref) {
                     document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result || true;
+                    result = result && true;
                 } else {
                     document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = result || false;
+                    result = false;
                 }
                 i += 1;
             }
