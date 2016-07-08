@@ -7,6 +7,7 @@
  */
 /*jslint browser*/
 /*global window, Hyphenopoly*/
+
 (function H9YL() {
     "use strict";
     var d = document;
