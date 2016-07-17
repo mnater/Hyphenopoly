@@ -155,7 +155,7 @@
                 if (n.nodeType === 3) {
                     n.data = n.data.replace(new RegExp(h, "g"), "");
                 } else if (n.nodeType === 1) {
-                    removeHyphenationFromElement(n);
+                    removeHyphenationFromElement(n, cn);
                 }
                 i += 1;
                 n = el.childNodes[i];
@@ -454,7 +454,7 @@
             C.classNames.forEach(function (cn) {
                 nl = w.document.querySelectorAll("." + cn);
                 Array.prototype.forEach.call(nl, function (n) {
-                    processText(n, getLang(n), cn, false);
+                    processText(n, getLang(n, true), cn, false);
                 });
             });
             H.elementsReady = true;
