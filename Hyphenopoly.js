@@ -493,7 +493,6 @@
                 if (word.indexOf("'") !== -1) {
                     ww = ww.replace(/'/g, "’"); //replace APOSTROPHE with RIGHT SINGLE QUOTATION MARK (since the latter is used in the patterns)
                 }
-                ww = "_" + ww + "_";
                 return ww;
             }
 
@@ -513,16 +512,24 @@
                 var charCode = 0;
                 var leftmin = classSettings.leftminPerLang[lang];
                 var rightmin = classSettings.rightminPerLang[lang];
-                wwlen = ww.length;
-                //prepare wwhp and wwAsMappedCharCode
+                //prepend "_"
+                var worddelim = (charMap[95] !== undefined
+                    ? charMap[95]
+                    : -1);
+                wwAsMappedCharCode[0] = worddelim;
+                wwhp[0] = 0;
                 while (pstart < wwlen) {
-                    wwhp[pstart] = 0;
                     charCode = ww.charCodeAt(pstart);
+                    pstart += 1;
                     wwAsMappedCharCode[pstart] = (charMap[charCode] !== undefined
                         ? charMap[charCode]
                         : -1);
-                    pstart += 1;
+                    wwhp[pstart] = 0;
                 }
+                //postpend "_"
+                wwAsMappedCharCode[pstart + 1] = worddelim;
+                wwhp[wwlen] = 0;
+                wwlen += 2;
                 //get hyphenation points for all substrings
                 pstart = 0;
                 while (pstart < wwlen) {
