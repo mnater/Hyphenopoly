@@ -313,11 +313,11 @@
                 var prevWasDigit = false;
                 while (charPos < patterns.length) {
                     charCode = patterns.charCodeAt(charPos);
-                    if ((charPos + 1) % patternSizeInt !== 0) {
+                    if (!!((charPos + 1) % patternSizeInt)) {
                         //more to come…
                         if (charCode <= 57 && charCode >= 49) {
                             //charCode is a digit
-                            add(charCode - 48);
+                            add(charCode);
                             prevWasDigit = true;
                         } else {
                             //charCode is alphabetical
@@ -328,13 +328,13 @@
                             if (nextRowStart === -1) {
                                 nextRowStart = trieNextEmptyRow + trieRowLength;
                                 trieNextEmptyRow = nextRowStart;
-                                indexedTrie[rowStart + mappedCharCode * 2] = nextRowStart;
+                                indexedTrie[rowStart + (mappedCharCode << 1)] = nextRowStart;
                             }
                             mappedCharCode = charMapc2i[charCode];
                             rowStart = nextRowStart;
-                            nextRowStart = indexedTrie[rowStart + mappedCharCode * 2];
-                            if (nextRowStart === 0) {
-                                indexedTrie[rowStart + mappedCharCode * 2] = -1;
+                            nextRowStart = indexedTrie[rowStart + (mappedCharCode << 1)];
+                            if (!nextRowStart) {
+                                indexedTrie[rowStart + (mappedCharCode << 1)] = -1;
                                 nextRowStart = -1;
                             }
                         }
@@ -342,8 +342,8 @@
                         //last part of pattern
                         if (charCode <= 57 && charCode >= 49) {
                             //the last charCode is a digit
-                            add(charCode - 48);
-                            indexedTrie[rowStart + mappedCharCode * 2 + 1] = finalize();
+                            add(charCode);
+                            indexedTrie[rowStart + (mappedCharCode << 1) + 1] = finalize();
                         } else {
                             //the last charCode is alphabetical
                             if (!prevWasDigit) {
@@ -353,14 +353,14 @@
                             if (nextRowStart === -1) {
                                 nextRowStart = trieNextEmptyRow + trieRowLength;
                                 trieNextEmptyRow = nextRowStart;
-                                indexedTrie[rowStart + mappedCharCode * 2] = nextRowStart;
+                                indexedTrie[rowStart + (mappedCharCode << 1)] = nextRowStart;
                             }
                             mappedCharCode = charMapc2i[charCode];
                             rowStart = nextRowStart;
-                            if (indexedTrie[rowStart + mappedCharCode * 2] === 0) {
-                                indexedTrie[rowStart + mappedCharCode * 2] = -1;
+                            if (!(indexedTrie[rowStart + (mappedCharCode << 1)])) {
+                                indexedTrie[rowStart + (mappedCharCode << 1)] = -1;
                             }
-                            indexedTrie[rowStart + mappedCharCode * 2 + 1] = finalize();
+                            indexedTrie[rowStart + (mappedCharCode << 1) + 1] = finalize();
                         }
                         rowStart = 0;
                         nextRowStart = 0;
@@ -565,7 +565,7 @@
                 //create hyphenated word
                 hp = 0;
                 while (hp < wordLength) {
-                    if (hp >= leftmin && hp <= (wordLength - rightmin) && (wwhp[hp + 1] % 2) !== 0) {
+                    if (hp >= leftmin && hp <= (wordLength - rightmin) && wwhp[hp + 1] & 1) {
                         hw += hyphen;
                     }
                     hw += word.charAt(hp);
@@ -784,6 +784,7 @@
         }
 
         function handleEvt(evt) {
+            window.console.timeStamp(evt[0]);
             switch (evt[0]) {
             case "DOMContentLoaded":
                 autoSetMainLanguage();
