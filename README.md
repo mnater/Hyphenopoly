@@ -5,7 +5,7 @@ API and behaviour may change often.
 # Hyphenopoly.js
 Hyphenopoly.js is a JavaScript-polyfill for hyphenation in HTML.
 There are two parts:
-- Hyphenopoly_Loader.js (4KB unpacked): checks if hyphenation of the requested language is supported on the client and loads Hyphenopoly.js and the specific language patterns if necessary.
+- Hyphenopoly_Loader.js (~4KB unpacked): checks if hyphenation of the requested language is supported on the client and loads Hyphenopoly.js (~34KB unpacked) and the specific language patterns (sizes differ) if necessary.
 - Hyphenopoly.js and language-patterns: client-side hyphenation of text using Franklin M. Liangs hyphenation algorithm known from TeX.
 
 #Hyphenopoly.js vs. Hyphenator.js
@@ -60,12 +60,85 @@ These pattern vary in size. English patterns are around 27KB (unzipped), german 
 
 
 #FOUHC – Flash Of UnHyphenated Content
-If a browser doesn't support native hyphenation and thus loads Hyphenopoly.js text may first be rendered unhyphenated and the be repainted as soon as Hyphenopoly.js has benn loaded and run.
+To prevent a Flash of UnHyphenated Content (FOUHC) while the browser is downloading resources, Hyphenator_Loader.js hides all content of the document until text is hyphenated. If something goes wrong the hiding times out after 1s.
 
 #Usage
-At the 
+Place all code for Hyphenopoly at the top of the header (immediatly after the `<title>` tag) to ensure ressources are loaded as early as possible.
+You'll have to insert two script blocks. In the first block provide the initial configurations for Hyphenopoly_Loader as inline script. In the second block load Hyphenopoly_Loader.js as external script.
+Also, don't forget to enable CSS hyphenation.
+
+Example:
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Example 1</title>
+        <script>
+        var Hyphenopoly = {
+            require: {
+                "la": "honorificabilitudinitas"
+            },
+            paths: {
+                patterndir: "../patterns/",
+                maindir: "../"
+            },
+            setup: {
+                classnames: {
+                    "hyphenate": {}
+                }
+            }
+        };
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Example 1</h1>
+        <p class="hyphenate" lang="la">Qua de causa Helvetii quoque reliquos Gallos virtute praecedunt, quod fere cotidianis proeliis cum Germanis contendunt, cum aut suis finibus eos prohibent aut ipsi in eorum finibus bellum gerunt.</p>
+    </body>
+</html>
+```
+Let's go through this example step by step:
+
+##UTF-8
+Make sure your page is encoded as utf-8.
+
+##First script block – configurations
+Hyphenopoly_Loader.js needs some information to run. This information is provided in a globally accessible Object called `Hyphenopoly`. Hyphenopoly_Loader.js and (if necessary) Hyphenopoly.js will add other methods and properties only to this object – there will be no other global variables/functions outside this object.
+
+###require
+The `Hyphenopoly` object must have exactly one property called `require` which is itself an object containing at least one nameValuePair where the name is a language code string and the value is a long word string in that language (preferably more than 12 characters long).
+
+Hyphenator_Loader.js will feature test the client (aka browser, aka user agent) for CSS-hyphens support for the given languages with the given words respectivly. In the example above it will test if the client supports CSS-hyphenation for latin. If your page contains more than just one language just add more lines.
+
+If you want to force the usage of Hyphenopoly.js for a language (e.g. for testing purposes) write `"FORCEHYPHENOPOLY"` instead of the long word.
+
+###paths
+Hyphenopoly_Loader.js needs to know where hyphenation patterns and Hyphenopoly.js is located. Therefor the `Hyphenopoly` object must have exactly one property called `paths` containing an object with two properties:
+- `patterndir` with the path of the directory containing the patterns
+- `maindir` with the path of the directory containing Hyphenopoly.js
+
+###setup
+If Hyphenopoly.js is executed (either because the browser doesn't support the language provided in `require` or because you `FORCEHYPHENOPOLY`'d) setup defines what is hyphenated and how.
+The `Hyphenopoly` object must have exactly one property called `setup` containing an object with keyValuePairs. There are many things you can set. Some configurations are general others are set per CSS class.
+
+The `setup` object must at least have one property called `classnames`: an object containing all CSS classes you want to be hyphenated. Typically these are the same classes you use in CSS to enable hyphenation.
+
+In the example above we configure Hyphenopoly.js to hyphenate all elements having the `hyphenate`-class without any special settings (the value is an empty object).
+
+##Second script block – load and run Hyphenopoly_Loader.js
+Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary patterns. Hyphenopoly.js once loaded will hyphenate the elements according to the settings in `setup` and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and undhides the document and writes a message to the console.
+If the browser supports all languages the script deletes the `Hyphenopoly`-object and terminates without further ado.
 
 #Todo
-- [ ] documentation (general, how-tos and API)
+- [ ] documentation (general, how-tos and API, wiki)
 - [ ] more tests
 - [ ] tools: concat and minify
