@@ -65,10 +65,10 @@
                 return word;
             }, 2),
             onBeforeElementHyphenation: setProp(function (element, lang) {
-                return {element, lang};
+                return {"element": element, "lang": lang};
             }, 2),
             onAfterElementHyphenation: setProp(function (element, lang) {
-                return {element, lang};
+                return {"element": element, "lang": lang};
             }, 2)
         });
 
