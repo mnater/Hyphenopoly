@@ -837,9 +837,7 @@
                 exceptions[lang] = words;
             }
         };
-        Object.keys(C).forEach(function (k) {
-            console.log(k);
-        });
+
         C.onHyphenopolyStart();
 
         //clear Loader-timeout
