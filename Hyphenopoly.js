@@ -6,6 +6,12 @@
     function empty() {
         return Object.create(null);
     }
+
+    function makeTimeStamp(label) {
+        if (!!window.console.timeStamp) {
+            window.console.timeStamp(label);
+        }
+    }
     function setProp(val, props) {
         /* props is a bit pattern:
          * 1. bit: configurable
@@ -37,10 +43,10 @@
             safeCopy: setProp(true, 2),
             normalize: setProp(false, 2),
             onHyphenopolyStart: setProp(function () {
-                window.console.timeStamp("Hyphenopoly start!");
+                makeTimeStamp("Hyphenopoly start!");
             }, 2),
             onHyphenationDone: setProp(function () {
-                window.console.timeStamp("Hyphenation done!");
+                makeTimeStamp("Hyphenation done!");
             }, 2),
             onHyphenationFailed: setProp(function (e) {
                 window.console.error("Hyphenopoly.js error", e);
@@ -88,7 +94,9 @@
                 Object.defineProperty(settings, key, setProp(H.setup[key], 3));
             }
         });
+
         H.c = settings;
+
     }());
 
     (function H9Y(w) {
@@ -686,7 +694,7 @@
                     n.data = n.data.replace(lo.genRegExps[cn], wordHyphenator);
                     if (classSettings.orphanControl !== 1) {
                         //prevent last word from being hyphenated
-                        n.data = n.data.replace(/(\ *)(\S+)(\s*)$/, orphanController);
+                        n.data = n.data.replace(/(\u0020*)(\S+)(\s*)$/, orphanController);
                     }
                 }
                 i += 1;
@@ -784,7 +792,7 @@
         }
 
         function handleEvt(evt) {
-            window.console.timeStamp(evt[0]);
+            makeTimeStamp(evt[0]);
             switch (evt[0]) {
             case "DOMContentLoaded":
                 autoSetMainLanguage();
@@ -829,8 +837,11 @@
                 exceptions[lang] = words;
             }
         };
-
+        Object.keys(C).forEach(function (k) {
+            console.log(k);
+        });
         C.onHyphenopolyStart();
+
         //clear Loader-timeout
         w.clearTimeout(H.setup.timeOutHandler);
         //renew timeout for the case something fails
