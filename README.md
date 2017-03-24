@@ -115,7 +115,7 @@ Make sure your page is encoded as utf-8.
 Hyphenopoly_Loader.js needs some information to run. This information is provided in a globally accessible Object called `Hyphenopoly`. Hyphenopoly_Loader.js and (if necessary) Hyphenopoly.js will add other methods and properties only to this object – there will be no other global variables/functions outside this object.
 
 ###require
-The `Hyphenopoly` object must have exactly one property called `require` which is itself an object containing at least one nameValuePair where the name is a language code string and the value is a long word string in that language (preferably more than 12 characters long).
+The `Hyphenopoly` object must have exactly one property called `require` which is itself an object containing at least one nameValuePair where the name is a language code string (Some patterns are region-specific. See the patterns directory for supported languages. E.g. just using `en` won't work, use either `en-us`or `en-gb`) and the value is a long word string in that language (preferably more than 12 characters long).
 
 Hyphenator_Loader.js will feature test the client (aka browser, aka user agent) for CSS-hyphens support for the given languages with the given words respectivly. In the example above it will test if the client supports CSS-hyphenation for latin. If your page contains more than just one language just add more lines.
 
