@@ -315,13 +315,13 @@
             function extract(patternSizeInt, patterns) {
                 var charPos = 0;
                 var charCode = 0;
-                var mappedCharCode = 0;
+                var rowOffset = 0;
                 var rowStart = 0;
                 var nextRowStart = 0;
                 var prevWasDigit = false;
                 while (charPos < patterns.length) {
                     charCode = patterns.charCodeAt(charPos);
-                    if (!!((charPos + 1) % patternSizeInt)) {
+                    if (((charPos + 1) % patternSizeInt) !== 0) {
                         //more to come…
                         if (charCode <= 57 && charCode >= 49) {
                             //charCode is a digit
@@ -336,13 +336,13 @@
                             if (nextRowStart === -1) {
                                 nextRowStart = trieNextEmptyRow + trieRowLength;
                                 trieNextEmptyRow = nextRowStart;
-                                indexedTrie[rowStart + (mappedCharCode << 1)] = nextRowStart;
+                                indexedTrie[rowStart + rowOffset] = nextRowStart;
                             }
-                            mappedCharCode = charMapc2i[charCode];
+                            rowOffset = charMapc2i[charCode] << 1;
                             rowStart = nextRowStart;
-                            nextRowStart = indexedTrie[rowStart + (mappedCharCode << 1)];
+                            nextRowStart = indexedTrie[rowStart + rowOffset];
                             if (!nextRowStart) {
-                                indexedTrie[rowStart + (mappedCharCode << 1)] = -1;
+                                indexedTrie[rowStart + rowOffset] = -1;
                                 nextRowStart = -1;
                             }
                         }
@@ -351,7 +351,7 @@
                         if (charCode <= 57 && charCode >= 49) {
                             //the last charCode is a digit
                             add(charCode);
-                            indexedTrie[rowStart + (mappedCharCode << 1) + 1] = finalize();
+                            indexedTrie[rowStart + rowOffset + 1] = finalize();
                         } else {
                             //the last charCode is alphabetical
                             if (!prevWasDigit) {
@@ -361,14 +361,14 @@
                             if (nextRowStart === -1) {
                                 nextRowStart = trieNextEmptyRow + trieRowLength;
                                 trieNextEmptyRow = nextRowStart;
-                                indexedTrie[rowStart + (mappedCharCode << 1)] = nextRowStart;
+                                indexedTrie[rowStart + rowOffset] = nextRowStart;
                             }
-                            mappedCharCode = charMapc2i[charCode];
+                            rowOffset = charMapc2i[charCode] << 1;
                             rowStart = nextRowStart;
-                            if (!(indexedTrie[rowStart + (mappedCharCode << 1)])) {
-                                indexedTrie[rowStart + (mappedCharCode << 1)] = -1;
+                            if (!(indexedTrie[rowStart + rowOffset])) {
+                                indexedTrie[rowStart + rowOffset] = -1;
                             }
-                            indexedTrie[rowStart + (mappedCharCode << 1) + 1] = finalize();
+                            indexedTrie[rowStart + rowOffset + 1] = finalize();
                         }
                         rowStart = 0;
                         nextRowStart = 0;
@@ -480,7 +480,7 @@
 
         function createWordHyphenator(lo, lang, cn) {
             var wwhp = new Uint8Array(64);
-            var wwAsMappedCharCode = new Int32Array(64);
+            var wwAsMappedCharCode = new Int8Array(64);
             var charMap = lo.charMap.code2int;
             var indexedTrie = lo.indexedTrie;
             var valueStore = lo.valueStore;
@@ -515,7 +515,7 @@
                 var plen = 0;
                 var hp = 0;
                 var hpc = 0;
-                var mappedCharCode = 0;
+                var rowOffset = 0;
                 var pstart = 0;
                 var charCode = 0;
                 var leftmin = classSettings.leftminPerLang[lang];
@@ -544,12 +544,12 @@
                     row = 0;
                     plen = pstart;
                     while (plen < wwlen) {
-                        mappedCharCode = wwAsMappedCharCode[plen];
-                        if (mappedCharCode === -1) {
+                        rowOffset = wwAsMappedCharCode[plen] << 1;
+                        if (rowOffset < 0) {
                             break;
                         }
-                        link = indexedTrie[row + mappedCharCode * 2];
-                        value = indexedTrie[row + mappedCharCode * 2 + 1];
+                        link = indexedTrie[row + rowOffset];
+                        value = indexedTrie[row + rowOffset + 1];
                         if (value > 0) {
                             hpc = 0;
                             hp = valueStore[value + hpc];
