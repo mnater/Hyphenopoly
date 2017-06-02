@@ -26,15 +26,23 @@
             var test = "";
             var ref = "";
             var result = true;
+            var lang = "";
             while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                lang = document.getElementById("test" + i).lang;
+                console.log(Hyphenopoly);
+                if (Hyphenopoly.testResults.languages[lang] === "CSS") {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
                     result = result && true;
                 } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = false;
+                    test = document.getElementById("test" + i).innerHTML;
+                    ref = document.getElementById("ref" + i).innerHTML;
+                    if (test === ref) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        result = result && true;
+                    } else {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        result = false;
+                    }
                 }
                 i += 1;
             }
