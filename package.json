@@ -1,0 +1,18 @@
+{
+  "name": "Hyphenopoly",
+  "version": "1.0.0",
+  "description": "Polyfill for client-side hyphenation. This is still in development. Feel free to test and provide feed-back. API and behaviour may change often.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mnater/Hyphenopoly.git"
+  },
+  "keywords": [
+    "hyphenation"
+  ],
+  "author": "Mathias Nater",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mnater/Hyphenopoly/issues"
+  },
+  "homepage": "https://github.com/mnater/Hyphenopoly#readme"
+}
