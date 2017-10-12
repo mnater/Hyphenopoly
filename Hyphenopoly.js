@@ -1,4 +1,4 @@
-;/*jslint browser*/
+;/*jslint browser, bitwise, es6*/
 /*global window, Hyphenopoly*/
 (function mainWrapper(w) {
     "use strict";
@@ -447,9 +447,7 @@
 
                 n = el.childNodes[j];
                 while (!!n) {
-                    if (n.nodeType === 1 &&
-                            !C.dontHyphenate[n.nodeName.toLowerCase()] &&
-                            n.className.indexOf(C.dontHyphenateClass) === -1) {
+                    if (n.nodeType === 1 && !C.dontHyphenate[n.nodeName.toLowerCase()] && n.className.indexOf(C.dontHyphenateClass) === -1) {
                         if (sortOutSubclasses(n.className.split(" "), C.classNames).length === 0) {
                             //this child element doesn't contain a hyphenopoly-class
                             processText(n, eLang, cn, true);
@@ -688,9 +686,11 @@
             var i = 0;
             var n = el.childNodes[i];
             while (!!n) {
-                if (n.nodeType === 3 //type 3 = #text
+                if (
+                    n.nodeType === 3 //type 3 = #text
                         && (/\S/).test(n.data) //not just white space
-                        && n.data.length >= classSettings.minWordLength) { //longer then min
+                        && n.data.length >= classSettings.minWordLength
+                ) { //longer then min
                     n.data = n.data.replace(lo.genRegExps[cn], wordHyphenator);
                     if (classSettings.orphanControl !== 1) {
                         //prevent last word from being hyphenated
