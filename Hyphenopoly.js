@@ -151,19 +151,22 @@
             return makeElementCollection();
         }());
 
-        function removeHyphenationFromElement(el, cn) {
+        function sortOutSubclasses(x, y) {
+            return x.filter(function (i) {
+                return y.indexOf(i) !== -1;
+            });
+        }
+
+        function removeHyphenationFromElement(el) {
+            //only removes shy, other chars are not removed
             var i = 0;
             var n;
-            var h = C[cn].hyphen;
-            if (".\\+*?[^]$(){}=!<>|:-".indexOf(C[cn].hyphen) !== -1) {
-                h = "\\" + h;
-            }
             n = el.childNodes[i];
             while (!!n) {
                 if (n.nodeType === 3) {
-                    n.data = n.data.replace(new RegExp(h, "g"), "");
+                    n.data = n.data.replace(new RegExp(String.fromCharCode(173), "g"), "");
                 } else if (n.nodeType === 1) {
-                    removeHyphenationFromElement(n, cn);
+                    removeHyphenationFromElement(n);
                 }
                 i += 1;
                 n = el.childNodes[i];
@@ -199,68 +202,45 @@
         }());
 
         var copy = (function () {
-            var makeCopy = function () {
-                function oncopyHandler(e, cn) {
-                    e = e || window.event;
+            var factory = function () {
+                var oncopyHandler = function (e) {
                     var shadow;
                     var selection;
                     var range;
                     var restore;
-                    var target = e.target || e.srcElement;
+                    var target = e.target;
                     var currDoc = target.ownerDocument;
                     var bdy = currDoc.getElementsByTagName("body")[0];
-                    var targetWindow = currDoc.defaultView || currDoc.parentWindow;
+                    var targetWindow = currDoc.defaultView;
                     if (target.tagName && C.dontHyphenate[target.tagName.toLowerCase()]) {
-                        //Safari needs this
                         return;
                     }
-                    //create a hidden shadow element
                     shadow = currDoc.createElement("div");
-                    shadow.style.color = window.getComputedStyle
-                        ? targetWindow.getComputedStyle(bdy, null).backgroundColor
-                        : "#FFFFFF";
+                    shadow.style.color = targetWindow.getComputedStyle(bdy, null).backgroundColor;
                     shadow.style.fontSize = "0px";
                     bdy.appendChild(shadow);
-                    e.stopPropagation();
                     selection = targetWindow.getSelection();
                     range = selection.getRangeAt(0);
+                    shadow.hyphenateClassName = target.hyphenateClassName;
                     shadow.appendChild(range.cloneContents());
-                    removeHyphenationFromElement(shadow, cn);
+                    removeHyphenationFromElement(shadow);
                     selection.selectAllChildren(shadow);
                     restore = function () {
                         shadow.parentNode.removeChild(shadow);
-                        selection.removeAllRanges(); //IE9 needs that
+                        selection.removeAllRanges();
                         selection.addRange(range);
                     };
                     zeroTimeOut(restore);
-                }
-                function removeOnCopy(el) {
-                    var body = el.ownerDocument.getElementsByTagName("body")[0];
-                    if (!body) {
-                        return;
-                    }
-                    el = el || body;
-                    el.removeEventListener("copy", oncopyHandler, true);
-                }
-                function registerOnCopy(el, cn) {
-                    var body = el.ownerDocument.getElementsByTagName("body")[0];
-                    if (!body) {
-                        return;
-                    }
-                    el = el || body;
-                    el.addEventListener("copy", function (e) {
-                        oncopyHandler(e, cn);
-                    }, true);
-                }
+                };
+                var registerOnCopy = function (el) {
+                    el.addEventListener("copy", oncopyHandler, true);
+                };
                 return {
-                    oncopyHandler: oncopyHandler,
-                    removeOnCopy: removeOnCopy,
                     registerOnCopy: registerOnCopy
                 };
             };
-
             return (C.safeCopy
-                ? makeCopy()
+                ? factory()
                 : false);
         }());
 
@@ -423,11 +403,6 @@
 
         function collectElements() {
             var nl;
-            function sortOutSubclasses(x, y) {
-                return x.filter(function (i) {
-                    return y.indexOf(i) !== -1;
-                });
-            }
             function processText(el, pLang, cn, isChild) {
                 var eLang;
                 var n;
@@ -443,6 +418,9 @@
                 }
                 if (H.testResults.languages[eLang] === "H9Y") {
                     elements.add(el, eLang, cn);
+                    if (!isChild && C.safeCopy) {
+                        copy.registerOnCopy(el, cn);
+                    }
                 }
 
                 n = el.childNodes[j];
@@ -616,25 +594,6 @@
             }
 
             function hyphenator(word) {
-                /*var hw = "";
-                word = classSettings.onBeforeWordHyphenation(word, lang);
-                if (word === "") {
-                    hw = "";
-                } else if (cache[word] !== undefined) { //the word is in the cache
-                    hw = cache[word];
-                } else if (word.indexOf(hyphen) !== -1) {
-                    //word already contains the hyphen -> leave at it is!
-                    hw = word;
-                } else if (lo.exceptions[word] !== undefined) { //the word is in the exceptions list
-                    hw = lo.exceptions[word].replace(/-/g, classSettings.hyphen);
-                } else if (word.indexOf("-") !== -1) {
-                    hw = hyphenateCompound(lo, lang, word);
-                } else {
-                    hw = liang(word, classSettings.hyphen);
-                }
-                hw = classSettings.onAfterWordHyphenation(hw, lang);
-                cache[word] = hw;
-                return hw;*/
                 word = classSettings.onBeforeWordHyphenation(word, lang);
                 var hw = cache[word] || undefined;
                 if (!hw) {
@@ -689,8 +648,8 @@
                 if (
                     n.nodeType === 3 //type 3 = #text
                         && (/\S/).test(n.data) //not just white space
-                        && n.data.length >= classSettings.minWordLength
-                ) { //longer then min
+                        && n.data.length >= classSettings.minWordLength //longer then min
+                ) {
                     n.data = n.data.replace(lo.genRegExps[cn], wordHyphenator);
                     if (classSettings.orphanControl !== 1) {
                         //prevent last word from being hyphenated
@@ -702,9 +661,6 @@
             }
             elo.hyphenated = true;
             elements.counters[1] += 1;
-            if (C.safeCopy && (el.tagName.toLowerCase() !== "body")) {
-                copy.registerOnCopy(el, cn);
-            }
             classSettings.onAfterElementHyphenation(el, lang);
         }
 
