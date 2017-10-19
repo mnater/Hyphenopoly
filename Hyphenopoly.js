@@ -3,6 +3,7 @@
 (function mainWrapper(w) {
     "use strict";
     var H = Hyphenopoly;
+    var SOFTHYPHEN = String.fromCharCode(173);
     function empty() {
         return Object.create(null);
     }
@@ -61,7 +62,7 @@
             leftminPerLang: setProp(0, 2),
             rightmin: setProp(0, 2),
             rightminPerLang: setProp(0, 2),
-            hyphen: setProp(String.fromCharCode(173), 2), //soft hyphen
+            hyphen: setProp(SOFTHYPHEN, 2), //soft hyphen
             orphanControl: setProp(1, 2),
             compound: setProp("hyphen", 2),
             onBeforeWordHyphenation: setProp(function (word) {
@@ -151,98 +152,13 @@
             return makeElementCollection();
         }());
 
-        function sortOutSubclasses(x, y) {
-            return x.filter(function (i) {
-                return y.indexOf(i) !== -1;
-            });
-        }
-
-        function removeHyphenationFromElement(el) {
-            //only removes shy, other chars are not removed
-            var i = 0;
-            var n;
-            n = el.childNodes[i];
-            while (!!n) {
-                if (n.nodeType === 3) {
-                    n.data = n.data.replace(new RegExp(String.fromCharCode(173), "g"), "");
-                } else if (n.nodeType === 1) {
-                    removeHyphenationFromElement(n);
-                }
-                i += 1;
-                n = el.childNodes[i];
-            }
-        }
-
-        var zeroTimeOut = (function () {
-            if (window.postMessage && window.addEventListener) {
-                return (function () {
-                    var timeouts = [];
-                    var msg = "Hyphenator_zeroTimeOut_message";
-                    function setZeroTimeOut(fn) {
-                        timeouts.push(fn);
-                        window.postMessage(msg, "*");
-                    }
-                    function handleMessage(event) {
-                        if (event.source === window && event.data === msg) {
-                            event.stopPropagation();
-                            if (timeouts.length > 0) {
-                                //var efn = timeouts.shift();
-                                //efn();
-                                timeouts.shift()();
-                            }
-                        }
-                    }
-                    window.addEventListener("message", handleMessage, true);
-                    return setZeroTimeOut;
-                }());
-            }
-            return function (fn) {
-                window.setTimeout(fn, 0);
-            };
-        }());
-
-        var copy = (function () {
-            var factory = function () {
-                var oncopyHandler = function (e) {
-                    var shadow;
-                    var selection;
-                    var range;
-                    var restore;
-                    var target = e.target;
-                    var currDoc = target.ownerDocument;
-                    var bdy = currDoc.getElementsByTagName("body")[0];
-                    var targetWindow = currDoc.defaultView;
-                    if (target.tagName && C.dontHyphenate[target.tagName.toLowerCase()]) {
-                        return;
-                    }
-                    shadow = currDoc.createElement("div");
-                    shadow.style.color = targetWindow.getComputedStyle(bdy, null).backgroundColor;
-                    shadow.style.fontSize = "0px";
-                    bdy.appendChild(shadow);
-                    selection = targetWindow.getSelection();
-                    range = selection.getRangeAt(0);
-                    shadow.hyphenateClassName = target.hyphenateClassName;
-                    shadow.appendChild(range.cloneContents());
-                    removeHyphenationFromElement(shadow);
-                    selection.selectAllChildren(shadow);
-                    restore = function () {
-                        shadow.parentNode.removeChild(shadow);
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    };
-                    zeroTimeOut(restore);
-                };
-                var registerOnCopy = function (el) {
-                    el.addEventListener("copy", oncopyHandler, true);
-                };
-                return {
-                    registerOnCopy: registerOnCopy
-                };
-            };
-            return (C.safeCopy
-                ? factory()
-                : false);
-        }());
+        var registerOnCopy = function (el) {
+            el.addEventListener("copy", function (e) {
+                e.preventDefault();
+                var selectedText = window.getSelection().toString();
+                e.clipboardData.setData("text/plain", selectedText.replace(new RegExp(SOFTHYPHEN, "g"), ""));
+            }, true);
+        };
 
         var exceptions = empty();
 
@@ -401,6 +317,12 @@
             el.lang = mainLanguage;
         }
 
+        function sortOutSubclasses(x, y) {
+            return x.filter(function (i) {
+                return y.indexOf(i) !== -1;
+            });
+        }
+
         function collectElements() {
             var nl;
             function processText(el, pLang, cn, isChild) {
@@ -419,7 +341,7 @@
                 if (H.testResults.languages[eLang] === "H9Y") {
                     elements.add(el, eLang, cn);
                     if (!isChild && C.safeCopy) {
-                        copy.registerOnCopy(el, cn);
+                        registerOnCopy(el);
                     }
                 }
 
@@ -737,9 +659,9 @@
                         classSettings.rightminPerLang[lang] = Math.max(lo.rightmin, classSettings.rightmin, classSettings.rightminPerLang[lang]);
                     }
                     if (C.normalize && !!String.prototype.normalize) {
-                        wrd = "[\\w" + lo.specialChars + lo.specialChars.normalize("NFD") + String.fromCharCode(173) + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}";
+                        wrd = "[\\w" + lo.specialChars + lo.specialChars.normalize("NFD") + SOFTHYPHEN + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}";
                     } else {
-                        wrd = "[\\w" + lo.specialChars + String.fromCharCode(173) + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}";
+                        wrd = "[\\w" + lo.specialChars + SOFTHYPHEN + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}";
                     }
                     lo.genRegExps[cn] = new RegExp(wrd, "gi");
                 });
