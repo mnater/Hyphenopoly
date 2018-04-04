@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Example 1</title>
+        <script>
+        var Hyphenopoly = {
+            require: {
+                "la": "honorificabilitudinitas"
+            },
+            paths: {
+                patterndir: "./patterns/",
+                maindir: "./"
+            },
+            setup: {
+                classnames: {
+                    "hyphenate": {}
+                }
+            }
+        };
+        </script>
+        <script src="./Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            body {
+                width:30%;
+                margin-left:35%;
+                margin-right:35%;
+            }
+            p {
+                text-align:justify;
+            }
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Example 1</h1>
+        <p class="hyphenate" lang="la">Qua de causa Helvetii quoque reliquos Gallos virtute praecedunt, quod fere cotidianis proeliis cum Germanis contendunt, cum aut suis finibus eos prohibent aut ipsi in eorum finibus bellum gerunt.</p>
+    </body>
+</html>

@@ -14,5 +14,7 @@ echo 'running asm2wasm...'
 echo 'optimize > WASM...'
 ~/Sites/binaryen/bin/wasm-opt $WASTNAME -O3 -o $WASMNAME
 
-echo 'disassemble WASM...'
-~/Sites/wabt/bin/wasm2wat $WASMNAME > $DISNAME
+rm $WASTNAME
+
+#echo 'disassemble WASM...'
+#~/Sites/wabt/bin/wasm2wat $WASMNAME > $DISNAME
