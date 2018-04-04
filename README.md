@@ -4,9 +4,12 @@ API and behaviour may change often.
 
 # Hyphenopoly.js
 Hyphenopoly.js is a JavaScript-polyfill for hyphenation in HTML.
-There are two parts:
-- Hyphenopoly_Loader.js (~4KB unpacked): checks if hyphenation of the requested language is supported on the client and loads Hyphenopoly.js (~34KB unpacked) and the specific language patterns (sizes differ) if necessary.
-- Hyphenopoly.js and language-patterns: client-side hyphenation of text using Franklin M. Liangs hyphenation algorithm known from TeX.
+The package consists of the following parts:
+- _Hyphenopoly_Loader.js_ (~9KB unpacked, ~2KB minified and compressed): feature-checks the client and loads other ressources if necessary.
+- _Hyphenopoly.js_ (~30KB unpacked, ~4KB minified and compressed): does the whole DOM-foo and wraps asm/wasm.
+- _wasmHyphenEngine.wasm_ (~1KB uncompressed): wasm code for creating pattern trie and finding hyphenation points.
+- _asmHyphenEngine.js_ (~7KB uncompressed, ~1KB minified and compressed): fallback for clients that don't support wasm.
+- _pattern.hpb_ (sizes differ! e.g. en-us.hpb: ~29KB): space saving binary format of the hyphenation patterns (including their license).
 
 # Hyphenopoly.js vs. Hyphenator.js
 Hyphenator.js (https://github.com/mnater/Hyphenator) started 2007 and has evolved ever since.
@@ -22,6 +25,9 @@ Hyphenopoly.js is based on Hyphenator.js (they share some code) but - in favor o
 - and some more…
 
 If you need one of those features use Hyphenator.js – or give some feedback and proof that the feature is really useful and should be implemented in Hyphenopoly.js
+
+On the other hand Hyphenopoly has a much finer-grained configuration system that allows you to make settings based on CSS-classes.
+And last but not least it is faster then Hyphenator.js
 
 # Automatic hyphenation
 The algorithm used for hyphenation was developped by Franklin M. Liang for TeX. It works more or less like this:
@@ -49,14 +55,14 @@ h0y3p0h0e2n5a4t2i0o2n
 Hy-phen-ation
 ````
 
-The patterns are precomputed and available for many languages on CTAN. Hyphenopoly.js uses a slightly different format (compacted and with some metadata). Patterns are computed from a large list of hyphenated words by a program called patgen. They aim to find some hyphenation points – not all – because it's better to miss a hyphenation point then to have some false hyphenation points. Most patterns are really good but none is error free.
+The patterns are precomputed and available for many languages on CTAN. Hyphenopoly.js uses a proprietary binary format (including pattern licence, metadata and the patterns). Patterns are computed from a large list of hyphenated words by a program called patgen. They aim to find some hyphenation points – not all – because it's better to miss a hyphenation point then to have some false hyphenation points. Most patterns are really good but none is error free.
 
-These pattern vary in size. English patterns are around 27KB (unzipped), german patterns 81KB and hungarian 465KB! This is mostly due to the different linguistic characteristics of the languages.
+These pattern vary in size. This is mostly due to the different linguistic characteristics of the languages.
 
 # Hyphenopoly.js – typical course of action
 1. The (one and only) global variable "Hyphenopoly" is set. At this point it's an object containing the required languages.
-2. Hyphenopoly_Loader.js is executed. It tests if the client it runs on supports native hyphenation for all of the required languages. If at least one of these languages isn't supported Hyphenopoly.js is loaded as well as all necessary language specific patterns.
-3. When the document, Hyphenopoly.js and the pattern(s) are all loaded, text in the document gets hyphenated.
+2. Hyphenopoly_Loader.js is executed. It tests if the client it runs on supports native hyphenation for all of the required languages and runs a wasm-feature-test. If at least one of these languages isn't supported all necessary ressources are loaded.
+3. When the document, Hyphenopoly.js, the (w)asmHyphenEngine and the pattern(s) are all loaded, text in the document gets hyphenated.
 
 
 # FOUHC – Flash Of UnHyphenated Content
@@ -124,7 +130,7 @@ If you want to force the usage of Hyphenopoly.js for a language (e.g. for testin
 ### paths
 Hyphenopoly_Loader.js needs to know where hyphenation patterns and Hyphenopoly.js is located. Therefor the `Hyphenopoly` object must have exactly one property called `paths` containing an object with two properties:
 - `patterndir` with the path of the directory containing the patterns
-- `maindir` with the path of the directory containing Hyphenopoly.js
+- `maindir` with the path of the directory containing Hyphenopoly.js, asmHyphenEngine.js and wasmHyphenEngine.wasm
 
 ### setup
 If Hyphenopoly.js is executed (either because the browser doesn't support the language provided in `require` or because you `FORCEHYPHENOPOLY`'d) setup defines what is hyphenated and how.
@@ -135,7 +141,7 @@ The `setup` object must at least have one property called `classnames`: an objec
 In the example above we configure Hyphenopoly.js to hyphenate all elements having the `hyphenate`-class without any special settings (the value is an empty object).
 
 ## Second script block – load and run Hyphenopoly_Loader.js
-Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary patterns. Hyphenopoly.js once loaded will hyphenate the elements according to the settings in `setup` and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and undhides the document and writes a message to the console.
+Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary patterns. Hyphenopoly.js – once loaded – will hyphenate the elements according to the settings in `setup` and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and undhides the document and writes a message to the console.
 If the browser supports all languages the script deletes the `Hyphenopoly`-object and terminates without further ado.
 
 # Todo
