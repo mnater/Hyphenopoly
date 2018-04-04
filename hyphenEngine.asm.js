@@ -1,3 +1,10 @@
+/** @license asmHyphenEngine 0.2(beta) - client side hyphenation for webbrowsers
+ *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ *  https://github.com/mnater/Hyphenopoly
+ *
+ *  Released under the MIT license
+ *  http://mnater.github.io/Hyphenopoly/LICENSE
+ */
 function asmHyphenEngine(std, ext, heap) {
     "use asm";
     var hpbTranslateOffset = ext.hpbTranslateOffset | 0;

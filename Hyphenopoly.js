@@ -1,3 +1,11 @@
+/** @license Hyphenopoly 0.2(beta) - client side hyphenation for webbrowsers
+ *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ *  https://github.com/mnater/Hyphenopoly
+ *
+ *  Released under the MIT license
+ *  http://mnater.github.io/Hyphenopoly/LICENSE
+ */
+
 ;/*jslint browser, bitwise*/
 /*global window, Hyphenopoly, TextDecoder, WebAssembly, asmHyphenEngine*/
 (function mainWrapper(w) {

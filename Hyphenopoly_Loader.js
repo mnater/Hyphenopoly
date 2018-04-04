@@ -1,9 +1,9 @@
-/** @license Hyphenopoly_Loader 0.1(beta) - client side hyphenation for webbrowsers
- *  ©2016  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+/** @license Hyphenopoly_Loader 0.2(beta) - client side hyphenation for webbrowsers
+ *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  *  https://github.com/mnater/Hyphenopoly
  *
  *  Released under the MIT license
- *  http://mnater.github.io/Hyphenopoly/LICENSE.txt
+ *  http://mnater.github.io/Hyphenopoly/LICENSE
  */
 /*jslint browser*/
 /*global window, Hyphenopoly, fetch, WebAssembly*/
