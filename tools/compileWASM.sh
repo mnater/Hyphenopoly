@@ -1,17 +1,15 @@
 #!/bin/sh
 # -*- coding: utf-8 -*-
 
-# sh compileWASM.sh <asmHyphenEngine>
+# sh compileWASM.sh hyphenEngine
 
-SRCFILE="$1.js"
-WASTNAME="w$1.wast"
-WASMNAME="w$1.wasm"
-DISNAME="w$1.txt"
+SRCFILE="$1.asm.js"
+WASTNAME="$1.wast"
+WASMNAME="$1.wasm"
+DISNAME="$1.wat"
 
 echo 'running asm2wasm...'
-#~/Sites/binaryen/bin/asm2wasm $SRCFILE -Oz -m 8388608 -mm 16777216 -t de.bin > $WASTNAME
 ~/Sites/binaryen/bin/asm2wasm $SRCFILE -Oz -m 2097152 -mm 16777216 > $WASTNAME
-#~/Sites/binaryen/bin/asm2wasm $SRCFILE -Oz -m 8388608 > $WASTNAME
 
 echo 'optimize > WASM...'
 ~/Sites/binaryen/bin/wasm-opt $WASTNAME -O3 -o $WASMNAME

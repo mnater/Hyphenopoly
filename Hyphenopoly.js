@@ -601,7 +601,7 @@
         }
 
         function instantiateWasmEngine(lang) {
-            Promise.all([H.assets[lang], H.assets.wasmHyphenEngine]).then(
+            Promise.all([H.assets[lang], H.assets.hyphenEngine]).then(
                 function onAll(assets) {
                     const hpbBuf = assets[0];
                     const baseData = calculateBaseData(hpbBuf);

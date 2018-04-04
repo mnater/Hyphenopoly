@@ -62,7 +62,7 @@
                 fetch(path + filename).then(
                     function (response) {
                         if (response.ok) {
-                            if (assetName === "wasmHyphenEngine") {
+                            if (assetName === "hyphenEngine") {
                                 Hyphenopoly.assets[assetName] = response.arrayBuffer().then(
                                     function (buf) {
                                         return new WebAssembly.Module(buf);
@@ -169,9 +169,9 @@
         function loadRessources(lang) {
             scriptLoader(Hyphenopoly.paths.maindir, "Hyphenopoly.js", ["Hyphenopoly loaded"]);
             if (isWASMsupported) {
-                assetLoader(Hyphenopoly.paths.maindir, "wasmHyphenEngine.wasm", "wasmHyphenEngine", ["engineLoaded", "wasm"]);
+                assetLoader(Hyphenopoly.paths.maindir, "hyphenEngine.wasm", "hyphenEngine", ["engineLoaded", "wasm"]);
             } else {
-                scriptLoader(Hyphenopoly.paths.maindir, "asmHyphenEngine.js", ["engineLoaded", "asm"]);
+                scriptLoader(Hyphenopoly.paths.maindir, "hyphenEngine.asm.js", ["engineLoaded", "asm"]);
             }
             assetLoader(Hyphenopoly.paths.patterndir, lang + ".hpb", lang, ["hpbLoaded", lang]);
             allocateSpeculativeMemory(lang);
