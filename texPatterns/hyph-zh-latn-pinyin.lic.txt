@@ -1,0 +1,33 @@
+% This file has been converted for the hyph-utf8 project from pyhyph.tex, whose
+% author has been identified as Werner Lemberg <wl at gnu.org>.  The licence
+% terms are unchanged.
+%
+% See http://www.hyphenation.org for details on the project.
+%------------------------------------------------------------------------------
+%
+% This is the file pyhyph.tex of the CJK package
+%   for hyphenating Chinese pinyin syllables.
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.0 (22-May-2008)
+%
+% Copyright (C) 1994-2008  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+%
+% \message{Hyphenation patterns for unaccented pinyin syllables (CJK 4.7.0)}
+%

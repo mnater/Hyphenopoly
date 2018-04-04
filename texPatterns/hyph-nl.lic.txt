@@ -1,0 +1,43 @@
+% This file has been converted for the hyph-utf8 project from nehyph96.tex,
+% whose author has been identified as Piet Tutelaers.  The licence terms are
+% unchanged.
+%
+% See http://www.hyphenation.org for details on the project.
+%------------------------------------------------------------------------------
+%
+% PURPOSE: 8-bit hyphenation patterns for TeX based upon the new Dutch
+%          spelling, officially since 1 August 1996. These patterns follow
+%          the new hyphenation rules in the `Woordenlijst Nederlandse
+%          Taal, SDU Uitgevers, Den Haag 1995' (the so called `Groene
+%          Boekje') described in section 5.2 (Het afbreekteken).
+%
+%          The main differences with our earlier patterns based upon the
+%          CELEX dictionary are:
+%           (1) provide 8-bit patterns based upon the T1 character encoding
+%               (the encoding for DC/EC compatible TeX fonts)
+%           (2) don't hyphenate if this results in a syllable of one letter
+%               before or after the hyphen (hence hyphens in a-drenaline,
+%               studi-o, mensa-pen and vide-oachtig are invalid)
+%           (3) handle words derived from other languages (`bastaard
+%               woorden') according to the new rules
+%
+%          Like the CELEX patterns these patterns don't hyphenate:
+%           (4) in a changing syllable (menuutje can not be hyphenated as
+%               menu-tje)
+%           (5) in words that have different hyphenations according to
+%               there meaning (buur-tje/buurt-je)
+%
+% COPYRIGHT (C) 1996: Piet Tutelaers
+%
+% -----------------------------------------------------------------
+% IMPORTANT NOTICE:
+%
+% This program can be redistributed and/or modified under the terms
+% of the LaTeX Project Public License Distributed from CTAN
+% archives in directory macros/latex/base/lppl.txt; either
+% version 1 of the License, or any later version.
+% -----------------------------------------------------------------
+% VERSION: 1.1 (November 1996) Copyright changed March 2000
+%
+% AUTHOR:  Piet Tutelaers P.T.H.Tutelaers@tue.nl
+%

@@ -1,0 +1,57 @@
+% title: Unicode hyphenation patterns for Ancient Greek.
+% copyright: Dimitrios Filippou, (c) 2008-2016
+% notice: >
+%     This file is part of the hyph-utf8 package.
+%     See http://www.hyphenation.org for more information.
+% language:
+%    name: Ancient Greek
+%    tag: grc
+% licence:
+%     name: LPPL
+%     url: http://www.latex-project.org/lppl/
+% changes:
+%   -
+%     date: 2016-05-12
+%     author: Arthur Reutenauer
+%     description: added support for curly beta
+%   -
+%     date: 2011-09-12
+%     author: Dimitrios Filippou
+%     description: updated headers and added the LPPL licence statement
+%   -
+%     date: 2008-06-06
+%     author: Dimitrios Filippou
+%     description: removed guillemets (»)
+%   -
+%     date: 2008-05-27
+%     author: Dimitrios Filippou
+%
+% ==========================================
+% This file was first created by mechanical translation from
+% GRAhyph5.tex via "elhyph-utf8 -a -c" (version 0.1 by Peter
+% Heslin -- p.j.heslin at durham dot ac dot uk). Some additions
+% were also made by hand.
+%
+% Created by Dimitrios Filippou with some ideas borrowed from
+% Yannis Haralambous, Kostis Dryllerakis and Claudio Beccari.
+% Mojca Miklavec adapted it for the "hyph-utf8" package.
+%
+% These hyphenation patterns are explained in "ancient.pdf", which
+% can be found in the "elhyphen" or "hyphenation-greek" package.
+% Hyphenation examples are given in the file "anc-test.pdf", also
+% to be found in the "elhyphen" or "hyphenation-greek" package.
+% Questionable patterns are marked by three question marks "???".
+%
+% Documentation in English can be found in: D. Filippou,
+% "Hyphenation patterns for Ancient and Modern Greek," in
+% "TeX, XML, and Digital Typography" (A. Syropoulos et al.,
+% eds.), Lecture Notes in Computer Science 3130, Springer-Verlag
+% Berlin-Heidelberg, 2004. ISBN 3-540-22801-2.
+%
+% Thanks to Thomas Schmitz (thomas.schmitz at uni-bonn dot de)
+% for pointing out a few mistakes. (Marked by %%%TS%%%)
+%
+% ****************************************************************
+%
+% \message{UTF-8 hyphenation patterns for Ancient Greek}
+%

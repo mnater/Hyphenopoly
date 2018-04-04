@@ -6,7 +6,7 @@
         <script>
         var Hyphenopoly = {
             require: {
-                "en-us": "hyphenation",
+                "en-us": "FORCEHYPHENOPOLY",
                 "hy": "ձայնավորձայնավոր"
             },
             paths: {
@@ -29,7 +29,6 @@
             var lang = "";
             while (i <= tests) {
                 lang = document.getElementById("test" + i).lang;
-                console.log(Hyphenopoly);
                 if (Hyphenopoly.testResults.languages[lang] === "CSS") {
                     document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
                     result = result && true;

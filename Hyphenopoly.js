@@ -1,15 +1,16 @@
-;/*jslint browser, bitwise, es6*/
-/*global window, Hyphenopoly*/
+;/*jslint browser, bitwise*/
+/*global window, Hyphenopoly, TextDecoder, WebAssembly, asmHyphenEngine*/
 (function mainWrapper(w) {
     "use strict";
-    var H = Hyphenopoly;
-    var SOFTHYPHEN = String.fromCharCode(173);
+    const H = Hyphenopoly;
+    const SOFTHYPHEN = String.fromCharCode(173);
+
     function empty() {
         return Object.create(null);
     }
 
     function makeTimeStamp(label) {
-        if (!!window.console.timeStamp) {
+        if (window.console.timeStamp) {
             window.console.timeStamp(label);
         }
     }
@@ -29,13 +30,13 @@
     }
 
     (function configurationFactory() {
-        var generalDefaults = Object.create(null, {
+        const generalDefaults = Object.create(null, {
             timeout: setProp(3000, 2),
             defaultLanguage: setProp("en", 2),
             dontHyphenateClass: setProp("donthyphenate", 2),
             dontHyphenate: setProp((function () {
-                var r = empty();
-                var list = "video,audio,script,code,pre,img,br,samp,kbd,var,abbr,acronym,sub,sup,button,option,label,textarea,input,math,svg,style";
+                const r = empty();
+                const list = "video,audio,script,code,pre,img,br,samp,kbd,var,abbr,acronym,sub,sup,button,option,label,textarea,input,math,svg,style";
                 list.split(",").forEach(function (value) {
                     r[value] = true;
                 });
@@ -54,9 +55,9 @@
             }, 2)
         });
 
-        var settings = Object.create(generalDefaults);
+        const settings = Object.create(generalDefaults);
 
-        var perClassDefaults = Object.create(null, {
+        const perClassDefaults = Object.create(null, {
             minWordLength: setProp(6, 2),
             leftmin: setProp(0, 2),
             leftminPerLang: setProp(0, 2),
@@ -82,10 +83,10 @@
         //copy settings if not yet set
         Object.keys(H.setup).forEach(function (key) {
             if (key === "classnames") {
-                var classNames = Object.keys(H.setup.classnames);
+                const classNames = Object.keys(H.setup.classnames);
                 Object.defineProperty(settings, "classNames", setProp(classNames, 2));
                 classNames.forEach(function (cn) {
-                    var tmp = {};
+                    const tmp = {};
                     Object.keys(H.setup.classnames[cn]).forEach(function (pcnkey) {
                         tmp[pcnkey] = setProp(H.setup.classnames[cn][pcnkey], 2);
                     });
@@ -101,11 +102,11 @@
     }());
 
     (function H9Y(w) {
-        var C = H.c;
+        const C = H.c;
 
-        var mainLanguage = null;
+        let mainLanguage = null;
 
-        var elements = (function () {
+        const elements = (function () {
 
             function makeElement(element, cn) {
                 return {
@@ -118,12 +119,12 @@
 
             function makeElementCollection() {
                 // array of [number of collected elements, number of hyphenated elements]
-                var counters = [0, 0];
+                const counters = [0, 0];
 
-                var list = empty();
+                const list = empty();
 
                 function add(el, lang, cn) {
-                    var elo = makeElement(el, cn);
+                    const elo = makeElement(el, cn);
                     if (list[lang] === undefined) {
                         list[lang] = [];
                     }
@@ -152,151 +153,19 @@
             return makeElementCollection();
         }());
 
-        var registerOnCopy = function (el) {
+        const registerOnCopy = function (el) {
             el.addEventListener("copy", function (e) {
                 e.preventDefault();
-                var selectedText = window.getSelection().toString();
+                const selectedText = window.getSelection().toString();
                 e.clipboardData.setData("text/plain", selectedText.replace(new RegExp(SOFTHYPHEN, "g"), ""));
             }, true);
         };
 
-        var exceptions = empty();
-
-        function makeCharMap() {
-            var int2code = [];
-            var code2int = empty();
-            function add(newValue) {
-                if (!code2int[newValue]) {
-                    int2code.push(newValue);
-                    code2int[newValue] = (int2code.length - 1);
-                }
-            }
-            var r = empty();
-            r.int2code = int2code;
-            r.code2int = code2int;
-            r.add = add;
-            return Object.freeze(r);
-        }
-
-        function convertPatternsToArray(lo) {
-            var trieNextEmptyRow = 0;
-            var i;
-            var charMapc2i;
-            var valueStore = new Uint8Array(lo.valueStoreLength);
-            var indexes = new Uint32Array(3);
-            indexes[0] = 1;
-            indexes[1] = 1;
-            indexes[2] = 1;
-            var indexedTrie;
-            var trieRowLength;
-
-            function add(p) {
-                valueStore[indexes[1]] = p;
-                indexes[2] = indexes[1];
-                indexes[1] += 1;
-            }
-
-            function add0() {
-                indexes[1] += 1;
-            }
-
-            function finalize() {
-                var start = indexes[0];
-                valueStore[indexes[2] + 1] = 255; //mark end of pattern
-                indexes[0] = indexes[2] + 2;
-                indexes[1] = indexes[0];
-                return start;
-            }
-
-            function extract(patternSizeInt, patterns) {
-                var charPos = 0;
-                var charCode = 0;
-                var rowOffset = 0;
-                var rowStart = 0;
-                var nextRowStart = 0;
-                var prevWasDigit = false;
-                while (charPos < patterns.length) {
-                    charCode = patterns.charCodeAt(charPos);
-                    if (((charPos + 1) % patternSizeInt) !== 0) {
-                        //more to come…
-                        if (charCode <= 57 && charCode >= 49) {
-                            //charCode is a digit
-                            add(charCode);
-                            prevWasDigit = true;
-                        } else {
-                            //charCode is alphabetical
-                            if (!prevWasDigit) {
-                                add0();
-                            }
-                            prevWasDigit = false;
-                            if (nextRowStart === -1) {
-                                nextRowStart = trieNextEmptyRow + trieRowLength;
-                                trieNextEmptyRow = nextRowStart;
-                                indexedTrie[rowStart + rowOffset] = nextRowStart;
-                            }
-                            rowOffset = charMapc2i[charCode] << 1;
-                            rowStart = nextRowStart;
-                            nextRowStart = indexedTrie[rowStart + rowOffset];
-                            if (!nextRowStart) {
-                                indexedTrie[rowStart + rowOffset] = -1;
-                                nextRowStart = -1;
-                            }
-                        }
-                    } else {
-                        //last part of pattern
-                        if (charCode <= 57 && charCode >= 49) {
-                            //the last charCode is a digit
-                            add(charCode);
-                            indexedTrie[rowStart + rowOffset + 1] = finalize();
-                        } else {
-                            //the last charCode is alphabetical
-                            if (!prevWasDigit) {
-                                add0();
-                            }
-                            add0();
-                            if (nextRowStart === -1) {
-                                nextRowStart = trieNextEmptyRow + trieRowLength;
-                                trieNextEmptyRow = nextRowStart;
-                                indexedTrie[rowStart + rowOffset] = nextRowStart;
-                            }
-                            rowOffset = charMapc2i[charCode] << 1;
-                            rowStart = nextRowStart;
-                            if (!(indexedTrie[rowStart + rowOffset])) {
-                                indexedTrie[rowStart + rowOffset] = -1;
-                            }
-                            indexedTrie[rowStart + rowOffset + 1] = finalize();
-                        }
-                        rowStart = 0;
-                        nextRowStart = 0;
-                        prevWasDigit = false;
-                    }
-                    charPos += 1;
-                }
-            }
-
-            lo.charMap = makeCharMap();
-            i = 0;
-            while (i < lo.patternChars.length) {
-                lo.charMap.add(lo.patternChars.charCodeAt(i));
-                i += 1;
-            }
-            charMapc2i = lo.charMap.code2int;
-
-            lo.valueStore = valueStore;
-
-            lo.indexedTrie = new Int32Array(lo.patternArrayLength * 2);
-            indexedTrie = lo.indexedTrie;
-            trieRowLength = lo.charMap.int2code.length * 2;
-
-            Object.keys(lo.patterns).forEach(function parsePat(i) {
-                extract(parseInt(i, 10), lo.patterns[i]);
-            });
-            lo.converted = true;
-        }
+        const exceptions = empty();
 
         function getLang(el, fallback) {
             try {
-                return !!el.getAttribute("lang")
+                return (el.getAttribute("lang"))
                     ? el.getAttribute("lang").toLowerCase()
                     : el.tagName.toLowerCase() !== "html"
                         ? getLang(el.parentNode, fallback)
@@ -307,33 +176,34 @@
         }
 
         function autoSetMainLanguage() {
-            var el = w.document.getElementsByTagName("html")[0];
+            const el = w.document.getElementsByTagName("html")[0];
 
             mainLanguage = getLang(el, false);
             //fallback to defaultLang if set
             if (!mainLanguage && C.defaultLanguage !== "") {
                 mainLanguage = C.defaultLanguage;
             }
-            el.lang = mainLanguage;
+            //el.lang = mainLanguage; //this trigger recalculate style! is it really necessary?
         }
 
         function sortOutSubclasses(x, y) {
-            return x.filter(function (i) {
-                return y.indexOf(i) !== -1;
-            });
+            return (x[0] === "")
+                ? []
+                : x.filter(function (i) {
+                    return y.indexOf(i) !== -1;
+                });
         }
 
         function collectElements() {
-            var nl;
             function processText(el, pLang, cn, isChild) {
-                var eLang;
-                var n;
-                var j = 0;
+                let eLang;
+                let n;
+                let j = 0;
                 isChild = isChild || false;
                 //set eLang to the lang of the element
                 if (el.lang && typeof el.lang === "string") {
                     eLang = el.lang.toLowerCase(); //copy attribute-lang to internal eLang
-                } else if (!!pLang && pLang !== "") {
+                } else if (pLang !== undefined && pLang !== "") {
                     eLang = pLang.toLowerCase();
                 } else {
                     eLang = getLang(el, true);
@@ -346,8 +216,9 @@
                 }
 
                 n = el.childNodes[j];
-                while (!!n) {
+                while (n !== undefined) {
                     if (n.nodeType === 1 && !C.dontHyphenate[n.nodeName.toLowerCase()] && n.className.indexOf(C.dontHyphenateClass) === -1) {
+                        //console.log(sortOutSubclasses(n.className.split(" "), C.classNames));
                         if (sortOutSubclasses(n.className.split(" "), C.classNames).length === 0) {
                             //this child element doesn't contain a hyphenopoly-class
                             processText(n, eLang, cn, true);
@@ -358,7 +229,7 @@
                 }
             }
             C.classNames.forEach(function (cn) {
-                nl = w.document.querySelectorAll("." + cn);
+                const nl = w.document.querySelectorAll("." + cn);
                 Array.prototype.forEach.call(nl, function (n) {
                     processText(n, getLang(n, true), cn, false);
                 });
@@ -366,126 +237,20 @@
             H.elementsReady = true;
         }
 
-        function doCharSubst(loCharSubst, w) {
-            var r = w;
-            Object.keys(loCharSubst).forEach(function (subst) {
-                r = r.replace(new RegExp(subst, "g"), loCharSubst[subst]);
-            });
-            return r;
-        }
-
-        var wordHyphenatorPool = empty();
+        const wordHyphenatorPool = empty();
 
         function createWordHyphenator(lo, lang, cn) {
-            var wwhp = new Uint8Array(64);
-            var wwAsMappedCharCode = new Int8Array(64);
-            var charMap = lo.charMap.code2int;
-            var indexedTrie = lo.indexedTrie;
-            var valueStore = lo.valueStore;
-            var cache = empty();
-            var normalize = C.normalize && !!String.prototype.normalize;
-            var charSubst = !!lo.hasOwnProperty("charSubstitution");
-            var classSettings = C[cn];
-            var hyphen = classSettings.hyphen;
-
-            function prepare(word) {
-                var ww = word.toLowerCase();
-                if (normalize) {
-                    ww = ww.normalize("NFC");
-                }
-                if (charSubst) {
-                    ww = doCharSubst(lo.charSubstitution, ww);
-                }
-                if (word.indexOf("'") !== -1) {
-                    ww = ww.replace(/'/g, "’"); //replace APOSTROPHE with RIGHT SINGLE QUOTATION MARK (since the latter is used in the patterns)
-                }
-                return ww;
-            }
-
-            function liang(word, hyphen) {
-                var ww = prepare(word);
-                var wordLength = word.length;
-                var wwlen = ww.length;
-                var hw = "";
-                var row = 0;
-                var link = 0;
-                var value = 0;
-                var plen = 0;
-                var hp = 0;
-                var hpc = 0;
-                var rowOffset = 0;
-                var pstart = 0;
-                var charCode = 0;
-                var leftmin = classSettings.leftminPerLang[lang];
-                var rightmin = classSettings.rightminPerLang[lang];
-                //prepend "_"
-                var worddelim = (charMap[95] !== undefined
-                    ? charMap[95]
-                    : -1);
-                wwAsMappedCharCode[0] = worddelim;
-                wwhp[0] = 0;
-                while (pstart < wwlen) {
-                    charCode = ww.charCodeAt(pstart);
-                    pstart += 1;
-                    wwAsMappedCharCode[pstart] = (charMap[charCode] !== undefined
-                        ? charMap[charCode]
-                        : -1);
-                    wwhp[pstart] = 0;
-                }
-                //postpend "_"
-                wwAsMappedCharCode[pstart + 1] = worddelim;
-                wwhp[wwlen] = 0;
-                wwlen += 2;
-                //get hyphenation points for all substrings
-                pstart = 0;
-                while (pstart < wwlen) {
-                    row = 0;
-                    plen = pstart;
-                    while (plen < wwlen) {
-                        rowOffset = wwAsMappedCharCode[plen] << 1;
-                        if (rowOffset < 0) {
-                            break;
-                        }
-                        link = indexedTrie[row + rowOffset];
-                        value = indexedTrie[row + rowOffset + 1];
-                        if (value > 0) {
-                            hpc = 0;
-                            hp = valueStore[value + hpc];
-                            while (hp !== 255) {
-                                if (hp > wwhp[pstart + hpc]) {
-                                    wwhp[pstart + hpc] = hp;
-                                }
-                                hpc += 1;
-                                hp = valueStore[value + hpc];
-                            }
-                        }
-                        if (link > 0) {
-                            row = link;
-                        } else {
-                            break;
-                        }
-                        plen += 1;
-                    }
-                    pstart += 1;
-                }
-                //create hyphenated word
-                hp = 0;
-                while (hp < wordLength) {
-                    if (hp >= leftmin && hp <= (wordLength - rightmin) && wwhp[hp + 1] & 1) {
-                        hw += hyphen;
-                    }
-                    hw += word.charAt(hp);
-                    hp += 1;
-                }
-                return hw;
-            }
+            const classSettings = C[cn];
+            const cache = empty();
+            const normalize = C.normalize && (String.prototype.normalize !== undefined);
+            const hyphen = classSettings.hyphen;
 
             function hyphenateCompound(lo, lang, word) {
-                var parts;
-                var i = 0;
-                var zeroWidthSpace = String.fromCharCode(8203);
-                var wordHyphenator;
-                var hw = word;
+                const zeroWidthSpace = String.fromCharCode(8203);
+                let parts;
+                let i = 0;
+                let wordHyphenator;
+                let hw = word;
                 switch (classSettings.compound) {
                 case "auto":
                     parts = word.split("-");
@@ -517,17 +282,17 @@
 
             function hyphenator(word) {
                 word = classSettings.onBeforeWordHyphenation(word, lang);
-                var hw = cache[word] || undefined;
+                if (normalize) {
+                    word = word.normalize("NFC");
+                }
+                let hw = cache[word] || undefined;
                 if (!hw) {
-                    if (word.indexOf(hyphen) !== -1) {
-                        //word already contains the hyphen -> leave at it is!
-                        hw = word;
-                    } else if (lo.exceptions[word] !== undefined) { //the word is in the exceptions list
+                    if (lo.exceptions[word] !== undefined) { //the word is in the exceptions list
                         hw = lo.exceptions[word].replace(/-/g, classSettings.hyphen);
                     } else if (word.indexOf("-") !== -1) {
                         hw = hyphenateCompound(lo, lang, word);
                     } else {
-                        hw = liang(word, classSettings.hyphen);
+                        hw = lo.hyphenateFunction(word, hyphen, classSettings.leftminPerLang[lang], classSettings.rightminPerLang[lang]);
                     }
                 }
                 hw = classSettings.onAfterWordHyphenation(hw, lang);
@@ -538,10 +303,12 @@
             return hyphenator;
         }
 
+        const orphanControllerPool = empty();
+
         function createOrphanController(cn) {
             function controlOrphans(ignore, leadingWhiteSpace, lastWord, trailingWhiteSpace) {
-                var classSettings = C[cn];
-                var h = classSettings.hyphen;
+                const classSettings = C[cn];
+                let h = classSettings.hyphen;
                 //escape hyphen
                 if (".\\+*?[^]$(){}=!<>|:-".indexOf(classSettings.hyphen) !== -1) {
                     h = "\\" + classSettings.hyphen;
@@ -551,32 +318,38 @@
                 }
                 return leadingWhiteSpace + lastWord.replace(new RegExp(h, "g"), "") + trailingWhiteSpace;
             }
+            orphanControllerPool[cn] = controlOrphans;
             return controlOrphans;
         }
 
         function hyphenateElement(lang, elo) {
-            var el = elo.element;
-            var lo = H.languages[lang];
-            var cn = elo.class;
-            var classSettings = C[cn];
+            const el = elo.element;
+            const lo = H.languages[lang];
+            const cn = elo.class;
+            const classSettings = C[cn];
+            const minWordLength = classSettings.minWordLength;
             classSettings.onBeforeElementHyphenation(el, lang);
-            var wordHyphenator = (wordHyphenatorPool[lang + "-" + cn] !== undefined
+            const wordHyphenator = (wordHyphenatorPool[lang + "-" + cn] !== undefined)
                 ? wordHyphenatorPool[lang + "-" + cn]
-                : createWordHyphenator(lo, lang, cn));
-            var orphanController = createOrphanController(cn);
-            var i = 0;
-            var n = el.childNodes[i];
-            while (!!n) {
+                : createWordHyphenator(lo, lang, cn);
+            const orphanController = (orphanControllerPool[cn] !== undefined)
+                ? orphanControllerPool[cn]
+                : createOrphanController(cn);
+            const re = lo.genRegExps[cn];
+            let i = 0;
+            let n = el.childNodes[i];
+            let tn;
+            while (n) {
                 if (
                     n.nodeType === 3 //type 3 = #text
-                        && (/\S/).test(n.data) //not just white space
-                        && n.data.length >= classSettings.minWordLength //longer then min
+                        && n.data.length >= minWordLength //longer then min
                 ) {
-                    n.data = n.data.replace(lo.genRegExps[cn], wordHyphenator);
+                    tn = n.data.replace(re, wordHyphenator);
                     if (classSettings.orphanControl !== 1) {
                         //prevent last word from being hyphenated
-                        n.data = n.data.replace(/(\u0020*)(\S+)(\s*)$/, orphanController);
+                        tn = tn.replace(/(\u0020*)(\S+)(\s*)$/, orphanController);
                     }
+                    n.data = tn;
                 }
                 i += 1;
                 n = el.childNodes[i];
@@ -597,11 +370,11 @@
         }
 
         function convertExceptionsToObject(exc) {
-            var words = exc.split(", ");
-            var r = empty();
-            var i = 0;
-            var l = words.length;
-            var key;
+            const words = exc.split(", ");
+            const r = empty();
+            const l = words.length;
+            let i = 0;
+            let key;
             while (i < l) {
                 key = words[i].replace(/-/g, "");
                 if (r[key] === undefined) {
@@ -612,15 +385,16 @@
             return r;
         }
 
-        function prepareLanguagesObj(lang) {
-            var lo = H.languages[lang];
-            if (!lo.prepared) {
+        function prepareLanguagesObj(lang, hyphenateFunction, alphabet, leftmin, rightmin) {
+            if (!H.hasOwnProperty("languages")) {
+                H.languages = {};
+            }
+            if (!H.languages.hasOwnProperty(lang)) {
+                H.languages[lang] = empty();
+            }
+            const lo = H.languages[lang];
+            if (!lo.engineReady) {
                 lo.cache = empty();
-                //add exceptions from the pattern file to the local "exceptions"-obj
-                if (lo.hasOwnProperty("exceptions")) {
-                    H.addExceptions(lang, lo.exceptions);
-                    delete lo.exceptions;
-                }
                 //copy global exceptions to the language specific exceptions
                 if (exceptions.global !== undefined) {
                     if (exceptions.lang !== undefined) {
@@ -636,11 +410,12 @@
                 } else {
                     lo.exceptions = empty();
                 }
-                convertPatternsToArray(lo);
                 lo.genRegExps = empty();
+                lo.leftmin = leftmin;
+                lo.rightmin = rightmin;
+                lo.hyphenateFunction = hyphenateFunction;
                 C.classNames.forEach(function (cn) {
-                    var wrd;
-                    var classSettings = C[cn];
+                    const classSettings = C[cn];
                     //merge leftmin/rightmin to config
                     if (classSettings.leftminPerLang === 0) {
                         Object.defineProperty(classSettings, "leftminPerLang", setProp(empty(), 2));
@@ -658,19 +433,264 @@
                     } else {
                         classSettings.rightminPerLang[lang] = Math.max(lo.rightmin, classSettings.rightmin, classSettings.rightminPerLang[lang]);
                     }
-                    if (C.normalize && !!String.prototype.normalize) {
-                        wrd = "[\\w" + lo.specialChars + lo.specialChars.normalize("NFD") + SOFTHYPHEN + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}";
-                    } else {
-                        wrd = "[\\w" + lo.specialChars + SOFTHYPHEN + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}";
-                    }
-                    lo.genRegExps[cn] = new RegExp(wrd, "gi");
+                    lo.genRegExps[cn] = new RegExp("[\\w" + alphabet + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}", "gi");
                 });
-                lo.prepared = true;
+                lo.engineReady = true;
+            }
+            H.evt(["engineReady", lang]);
+        }
+
+        function calculateHeapSize(targetSize) {
+            if (H.isWASMsupported) {
+                //wasm page size: 65536 = 64 Ki
+                return Math.ceil(targetSize / 65536) * 65536;
+            } else {
+                //http://asmjs.org/spec/latest/#linking-0
+                const exp = Math.ceil(Math.log2(targetSize));
+                if (exp <= 12) {
+                    return 1 << 12;
+                }
+                if (exp < 24) {
+                    return 1 << exp;
+                }
+                return Math.ceil(targetSize / (1 << 24)) * (1 << 24);
+            }
+        }
+
+        function decode(ui16) {
+            if (window.TextDecoder !== undefined) {
+                const utf16ledecoder = new TextDecoder("utf-16le");
+                const characters = utf16ledecoder
+                    .decode(ui16)
+                    .replace(/-/g, "");
+                return characters;
+            } else {
+                let i = 0;
+                let str = "";
+                while (i < ui16.length) {
+                    str += String.fromCharCode(ui16[i]);
+                    i += 1;
+                }
+                str = str.replace(/-/g, "");
+                return str;
+            }
+        }
+
+        function calculateBaseData(hpbBuf) {
+            /* Build Heap (the heap object's byteLength must be either 2^n for n in [12, 24) or 2^24 · n for n ≥ 1;)
+             * -------------------- <- Offset: 0           -
+             * |     HEADER       |                        |
+             * |    6*4 Bytes     |                        |
+             * |    24 Bytes      |                        |
+             * --------------------                        |
+             * |    PATTERN LIC   |                        |
+             * |  variable Length |                        |
+             * --------------------                        |
+             * | align to 4Bytes  |                        } this is the .hpb-file
+             * -------------------- <- hpbTranslateOffset  |
+             * |    TRANSLATE     |                        |
+             * | 2 + [0] * 2Bytes |                        |
+             * -------------------- <- hpbPatternsOffset   |
+             * |     PATTERNS     |                        |
+             * |  patternsLength  |                        |
+             * --------------------                        |
+             * | align to 4Bytes  |                        |
+             * -------------------- <- charMapOffset       -
+             * |     charMap      |
+             * |     2 Bytes      |
+             * |  * 65536 (BMP)   |
+             * -------------------- <- valueStoreOffset
+             * |    valueStore    |
+             * |      1 Byte      |
+             * |* valueStoreLength|
+             * --------------------
+             * | align to 4Bytes  |
+             * -------------------- <- patternTrieOffset
+             * |    patternTrie   |
+             * |     4 Bytes      |
+             * |*patternTrieLength|
+             * -------------------- <- wordOffset
+             * |    wordStore     |
+             * |    Uint16[64]    | 128 bytes
+             * -------------------- <- hyphenPointsOffset
+             * |   hyphenPoints   |
+             * |    Uint8[64]     |
+             * -------------------- <- heapEnd
+             * |  align heapSize  |
+             * -------------------- <- heapSize
+             */
+            const hpbMetaData = new Uint32Array(hpbBuf).subarray(0, 8);
+            const hpbTranslateOffset = hpbMetaData[1];
+            const hpbPatternsOffset = hpbMetaData[2];
+            const patternsLength = hpbMetaData[3];
+            const charMapLength = 65536 << 1; //16bit
+            const patternTrieLength = hpbMetaData[6] * 4;
+            const valueStoreLength = hpbMetaData[7];
+            const leftmin = hpbMetaData[4];
+            const rightmin = hpbMetaData[5];
+            const charMapOffset = hpbBuf.byteLength + (4 - (hpbBuf.byteLength % 4));
+            const valueStoreOffset = charMapOffset + charMapLength;
+            const patternTrieOffset = valueStoreOffset + valueStoreLength + (4 - ((valueStoreOffset + valueStoreLength) % 4));
+            const wordOffset = patternTrieOffset + patternTrieLength;
+            const hyphenPointsOffset = wordOffset + 128;
+            const heapEnd = hyphenPointsOffset + 64;
+            const heapSize = Math.max(calculateHeapSize(heapEnd), 32 * 1024 * 64);
+            const characters = decode(new Uint16Array(hpbBuf).subarray((hpbTranslateOffset + 6) >> 1, hpbPatternsOffset >> 1));
+            return {
+                characters: characters,
+                hpbTranslateOffset: hpbTranslateOffset,
+                hpbPatternsOffset: hpbPatternsOffset,
+                leftmin: leftmin,
+                rightmin: rightmin,
+                patternsLength: patternsLength,
+                charMapOffset: charMapOffset,
+                valueStoreOffset: valueStoreOffset,
+                patternTrieOffset: patternTrieOffset,
+                wordOffset: wordOffset,
+                hyphenPointsOffset: hyphenPointsOffset,
+                heapSize: heapSize
+            };
+        }
+
+        function createImportObject(baseData) {
+            return {
+                hpbTranslateOffset: baseData.hpbTranslateOffset,
+                hpbPatternsOffset: baseData.hpbPatternsOffset,
+                patternsLength: baseData.patternsLength,
+                charMapOffset: baseData.charMapOffset,
+                valueStoreOffset: baseData.valueStoreOffset,
+                patternTrieOffset: baseData.patternTrieOffset,
+                wordOffset: baseData.wordOffset,
+                hyphenPointsOffset: baseData.hyphenPointsOffset
+            };
+        }
+
+        function encloseHyphenateFunction(baseData, hyphenateFunc) {
+            const heapBuffer = H.isWASMsupported
+                ? baseData.wasmMemory.buffer
+                : baseData.heapBuffer;
+            const wordOffset = baseData.wordOffset;
+            const hyphenPointsOffset = baseData.hyphenPointsOffset;
+            const wordStore = (new Uint16Array(heapBuffer)).subarray(wordOffset >> 1, (wordOffset >> 1) + 64);
+            const hyphenPointsStore = (new Uint8Array(heapBuffer)).subarray(hyphenPointsOffset, hyphenPointsOffset + 64);
+            const defLeftmin = baseData.leftmin;
+            const defRightmin = baseData.rightmin;
+
+            return function hyphenate(word, hyphenchar, leftmin, rightmin) {
+                let i = 0;
+                const wordLength = word.length;
+                leftmin = leftmin || defLeftmin;
+                rightmin = rightmin || defRightmin;
+                wordStore[0] = wordLength + 2;
+                wordStore[1] = 95;
+                while (i < wordLength) {
+                    wordStore[i + 2] = word.charCodeAt(i);
+                    i += 1;
+                }
+                wordStore[i + 2] = 95;
+                hyphenateFunc();
+                i = wordLength - rightmin;
+                while (i >= leftmin) {
+                    if ((hyphenPointsStore[i + 1] & 1) === 1) {
+                        word = word.substring(0, i) + hyphenchar + word.substring(i);
+                    }
+                    i -= 1;
+                }
+                return word;
+            };
+        }
+
+        function instantiateWasmEngine(lang) {
+            Promise.all([H.assets[lang], H.assets.wasmHyphenEngine]).then(
+                function onAll(assets) {
+                    const hpbBuf = assets[0];
+                    const baseData = calculateBaseData(hpbBuf);
+                    const wasmModule = assets[1];
+                    const wasmMemory = (H.specMems[lang].buffer.byteLength >= baseData.heapSize)
+                        ? H.specMems[lang]
+                        : new WebAssembly.Memory({
+                            initial: baseData.heapSize / 65536,
+                            maximum: 256
+                        });
+                    const ui32wasmMemory = new Uint32Array(wasmMemory.buffer);
+                    ui32wasmMemory.set(new Uint32Array(hpbBuf), 0);
+                    baseData.wasmMemory = wasmMemory;
+                    WebAssembly.instantiate(wasmModule, {
+                        ext: createImportObject(baseData),
+                        env: {
+                            memory: baseData.wasmMemory,
+                            memoryBase: 0
+                        }
+                    }).then(
+                        function runWasm(result) {
+                            result.exports.convert();
+                            prepareLanguagesObj(
+                                lang,
+                                encloseHyphenateFunction(baseData, result.exports.hyphenate),
+                                baseData.characters,
+                                baseData.leftmin,
+                                baseData.rightmin
+                            );
+                        }
+                    );
+                }
+            );
+        }
+
+        function instantiateAsmEngine(lang) {
+            const hpbBuf = H.assets[lang];
+            const baseData = calculateBaseData(hpbBuf);
+            const heapBuffer = (H.specMems[lang].byteLength >= baseData.heapSize)
+                ? H.specMems[lang]
+                : new ArrayBuffer(baseData.heapSize);
+            const ui8Heap = new Uint8Array(heapBuffer);
+            const ui8Patterns = new Uint8Array(hpbBuf);
+            ui8Heap.set(ui8Patterns, 0);
+            baseData.heapBuffer = heapBuffer;
+            const theHyphenEngine = asmHyphenEngine(
+                {
+                    Uint8Array: window.Uint8Array,
+                    Uint16Array: window.Uint16Array,
+                    Int32Array: window.Int32Array
+                },
+                createImportObject(baseData),
+                baseData.heapBuffer
+            );
+            //console.time("convert(asm)");
+            theHyphenEngine.convert();
+            //console.timeEnd("convert(asm)");
+            prepareLanguagesObj(
+                lang,
+                encloseHyphenateFunction(baseData, theHyphenEngine.hyphenate),
+                baseData.characters,
+                baseData.leftmin,
+                baseData.rightmin
+            );
+        }
+
+        let engineInstantiator;
+        const hpb = [];
+        function prepare(lang, engineType) {
+            if (lang === "*") {
+                if (engineType === "wasm") {
+                    engineInstantiator = instantiateWasmEngine;
+                } else if (engineType === "asm") {
+                    engineInstantiator = instantiateAsmEngine;
+                }
+                hpb.forEach(function (lang) {
+                    engineInstantiator(lang);
+                });
+            } else {
+                if (engineInstantiator) {
+                    engineInstantiator(lang);
+                } else {
+                    hpb.push(lang);
+                }
             }
         }
 
         function handleEvt(evt) {
-            makeTimeStamp(evt[0]);
+            //makeTimeStamp(evt[0]);
             switch (evt[0]) {
             case "DOMContentLoaded":
                 autoSetMainLanguage();
@@ -679,16 +699,19 @@
                 break;
             case "ElementsReady":
                 elements.each(function (lang, values) {
-                    if (H.languages.hasOwnProperty(lang) && H.languages[lang].converted) {
+                    if (H.hasOwnProperty("languages") && H.languages.hasOwnProperty(lang) && H.languages[lang].engineReady) {
                         hyphenateLangElements(lang, values);
                     }//else wait for "patternReady"-evt
                 });
                 break;
-            case "loaded":
-                prepareLanguagesObj(evt[1]);
-                H.evt(["patternReady", evt[1]]);
+            case "engineLoaded":
+                prepare("*", evt[1]);
                 break;
-            case "patternReady":
+            case "hpbLoaded":
+                prepare(evt[1], "*");
+                //fires H.evt(["engineReady", evt[1]]);
+                break;
+            case "engineReady":
                 if (H.elementsReady) {
                     hyphenateLangElements(evt[1], elements.list[evt[1]]);
                 } //else wait for "ElementsReady"-evt

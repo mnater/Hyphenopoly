@@ -1,0 +1,22 @@
+% This file has been converted for the hyph-utf8 project from fihyph.tex, whose
+% author has been identified as Kauko Saarinen.  The licence terms are unchanged.
+%
+% See http://www.hyphenation.org for details on the project.
+%------------------------------------------------------------------------------
+%
+% ----->  Finnish hyphenation patterns for MLPCTeX  <------
+% First release January -86 by Kauko Saarinen,
+% Computing Centre, University of Jyvaskyla, Finland
+%
+% Completely rewritten January -88. The new patterns make
+% much less mistakes with foreign and compound words.
+% The article "Automatic Hyphenation of Finnish"
+% by Professor Fred Karlsson is also referred
+% ---------------------------------------------------------
+%
+% 8th March -89 (vers. 2.2), some vowel triples by Fred Karlsson added.
+% 9th January - 95: added \uccode and \lccode by Thomas Esser
+%
+% *********     Patterns may be freely distributed   **********
+%
+%

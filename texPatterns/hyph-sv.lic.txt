@@ -1,0 +1,57 @@
+% This file has been converted for the hyph-utf8 project from sehyph.tex, whose
+% author has been identified as Jan Michael Rynning (2003-09-08).  The licence
+% terms are unchanged.
+%
+% See http://www.hyphenation.org for details on the project.
+%------------------------------------------------------------------------------
+%
+% Swedish hyphenation patterns.
+%
+% Copyright 1994 by Jan Michael Rynning. All rights reserved.
+% This program may be distributed and/or modified under the conditions of
+% the LaTeX Project Public License, either version 1.2 of this license or
+% (at your option) any later version.  The latest version of this license
+% is in http://www.latex-project.org/lppl.txt and version 1.2 or later is
+% part of all distributions of LaTeX version 1999/12/01 or later.
+%
+% Last update: 1994-03-03 (March 3, 1994).
+% Revision history:
+% 1991-01-08: First version available for anonymous FTP.
+% 1991-08-08: Changed \aa to \aa0 at end of line, to stop TeX from
+%             concatenating the patterns.
+% 1991-09-03: Cleaned up lots of inconsistencies in the dictionary.
+%             As a consequence, the patterns shrunk a lot.  Also
+%             added some 4000 one-syllable words, some of which were
+%             hyphenated by the old patterns, and some 1500 compound
+%             words, about half of which were incorrectly hyphenated
+%             by the old patterns.
+% 1991-11-01: Added another some 6200 compound words, all of which were
+%             incorrectly hyphenated by the old patterns.
+% 1991-11-13: Added another some 6500 compound words, all of which were
+%             incorrectly hyphenated by the old patterns.
+% 1992-01-30: Changed macros to ^^, for use with LaTeX and dc fonts.
+% 1994-03-03: The hyphenated dictionary now contains about 118,000 words.
+%             The hyphenation now works much better for compound words.
+%             Patgen parameters: 1 2 20, 2 1 8, 1 4 7, 3 2 1, 1 10000 4.
+%
+% This file contains Swedish hyphenation patterns for TeX.  It assumes
+% that you have fonts with the Swedish letters in the positions where
+% they occur in ISO Latin 1 (ISO 8859/1):
+% Letter:   \AA  \"A  \"O  \'E  \aa  \"a  \"o  \'e
+% Position: "C5  "C4  "D6  "C9  "E5  "E4  "F6  "E9
+%
+% Load this file into initex after plain.tex (or lplain.tex, splain.tex,
+% or whatever).
+%
+% The patterns were generated in such a way that they will hyphenate
+% correctly if \lefthyphenmin>=1 and \righthyphenmin>=2.
+%
+% These hyphenation patterns work quite well for simple words, but not
+% quite as well for compound words.  I'm working on improving the quality,
+% by adding more words.  If you know any Swedish words which are not
+% correctly hypheneted using these patterns, or if you have questions or
+% comments, please contact me:
+%
+% Jan Michael Rynning <jmr@incolumitas.se>
+% --------------------------------------------------------------------------
+%

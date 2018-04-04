@@ -28,7 +28,6 @@
                 "ca": "FORCEHYPHENOPOLY",
                 "sk": "FORCEHYPHENOPOLY",
                 "eo": "FORCEHYPHENOPOLY",
-                "sr-latn": "FORCEHYPHENOPOLY",
                 "ro": "FORCEHYPHENOPOLY",
                 "et": "FORCEHYPHENOPOLY",
                 "ga": "FORCEHYPHENOPOLY"
@@ -54,18 +53,20 @@
             var ref = "";
             var result = true;
             while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
-                        return (i < 10) ? "0" + i : i; 
-                    }(i)) + "</span> ";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
-                        return (i < 10) ? "0" + i : i; 
-                    }(i)) + "</span> ";
-                    result = false;
+                if (i !== 23) {
+                    test = document.getElementById("test" + i).innerHTML;
+                    ref = document.getElementById("ref" + i).innerHTML;
+                    if (test === ref) {
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                            return (i < 10) ? "0" + i : i; 
+                        }(i)) + "</span> ";
+                        result = result && true;
+                    } else {
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
+                            return (i < 10) ? "0" + i : i; 
+                        }(i)) + "</span> ";
+                        result = false;
+                    }
                 }
                 i += 1;
             }
@@ -121,7 +122,7 @@
 
         <h2>5: fr</h2>
         <p id="test5" class="test hyphenate" lang="fr">En typographie, la coupure de mot (parfois aussi appelée césure) est l'opération qui consiste à couper en fin de ligne un mot qui n'entrerait pas dans la justification.</p>
-        <p id="ref5" class="ref" class="ref" lang="fr">En typo|gra|phie, la cou|pure de mot (par|fois aussi appe|lée césure) est l'opé|ra|tion qui consiste à cou|per en fin de ligne un mot qui n'en|tre|rait pas dans la jus|ti|fi|ca|tion.</p>
+        <p id="ref5" class="ref" class="ref" lang="fr">En ty|po|gra|phie, la cou|pure de mot (par|fois aussi ap|pe|lée cé|sure) est l'opé|ra|tion qui consiste à cou|per en fin de ligne un mot qui n'en|tre|rait pas dans la jus|ti|fi|ca|tion.</p>
 
         <h2>6: nl</h2>
         <p id="test6" class="test hyphenate" lang="nl">Een lettergreep of syllabe is een prosodische eenheid in gesproken taal.</p>
@@ -130,6 +131,7 @@
         <h2>7: es</h2>
         <p id="test7" class="test hyphenate" lang="es">Las palabras en español suelen ser, en promedio, más largas que en inglés pero más cortas que en alemán. <span lang="de">«Silbentrennungsalgorithmus»</span>, por ejemplo, es una palabra bastante larga.</p>
         <p id="ref7" class="ref" lang="es">Las pa|la|bras en es|pa|ñol sue|len ser, en pro|me|dio, más lar|gas que en in|glés pero más cor|tas que en ale|mán. <span lang="de">«Sil|ben|tren|nungs|al|go|rith|mus»</span>, por ejem|plo, es una pa|la|bra bas|tan|te larga.</p>
+
         <h2>8: sv</h2>
         <p id="test8" class="test hyphenate" lang="sv">En algoritm är inom matematiken och datavetenskapen begränsad uppsättning (mängd) väldefinierade instruktioner för att lösa en uppgift, som från givna utgångstillstånd (starttillstånd) med säkerhet leder till något givet sluttillstånd.</p>
         <p id="ref8" class="ref" lang="sv">En al|go|ritm är inom ma|te|ma|ti|ken och data|ve|ten|ska|pen be|grän|sad upp|sätt|ning (mängd) väl|de|fi|ni|e|ra|de in|struk|tio|ner för att lösa en upp|gift, som från givna ut|gångs|till|stånd (start|till|stånd) med sä|ker|het leder till något givet slut|till|stånd.</p>
@@ -141,10 +143,10 @@
         <p id="ref10" class="ref" lang="fi">Ty|po|gra|fia tar|koit|taa ny|kyi|sin mitä ta|han|sa teks|tiin, teks|ti|tyyp|piin, kir|jain|ten aset|te|luun, vä|ri|tyk|seen ja muu|hun liit|ty|vää suun|nit|te|lua.</p>
         <h2>11: pl</h2>
         <p id="test11" class="test hyphenate" lang="pl">Typografia - termin mający szereg pokrewnych znaczeń związanych z użyciem znaków pisarskich w druku, prezentacją ich na ekranie monitora komputerowego itp.</p>
-        <p id="ref11" class="ref" lang="fi">Ty|po|gra|fia - ter|min ma|ją|cy sze|reg po|krew|nych zna|czeń zwią|za|nych z uży|ciem zna|ków pi|sar|skich w druku, pre|zen|ta|cją ich na ekra|nie mo|ni|to|ra kom|pu|te|ro|we|go itp.</p>
+        <p id="ref11" class="ref" lang="pl">Ty|po|gra|fia - ter|min ma|ją|cy sze|reg po|krew|nych zna|czeń zwią|za|nych z uży|ciem zna|ków pi|sar|skich w druku, pre|zen|ta|cją ich na ekra|nie mo|ni|to|ra kom|pu|te|ro|we|go itp.</p>
         <h2>12: pt</h2>
         <p id="test12" class="test hyphenate" lang="pt">A tipografia é a arte e o processo de criação na composição de um texto, física ou digitalmente.</p>
-        <p id="ref12" class="ref" lang="pt">A ti|po|grafia é a arte e o pro|cesso de cri|ação na com|po|sição de um texto, fí|sica ou di|gi|tal|mente.</p>
+        <p id="ref12" class="ref" lang="pt">A ti|po|gra|fia é a arte e o pro|cesso de cri|a|ção na com|po|si|ção de um texto, fí|sica ou di|gi|tal|mente.</p>
         <h2>13: hu</h2>
         <p id="test13" class="test hyphenate" lang="hu">A weboldal nyelvét nem sikerült automatikusan megállapítani. Kérem adja meg a nyelvet.</p>
         <p id="ref13" class="ref" lang="hu">A web|ol|dal nyel|vét nem si|ke|rült au|to|ma|ti|ku|san meg|ál|la|pí|ta|ni. Kérem adja meg a nyel|vet.</p>
@@ -165,25 +167,25 @@
         <p id="ref18" class="ref" lang="nb-no">Ty|po|gra|fi er ut|for|ming og be|hand|ling av skrift, bok|sta|ver og andre gra|fis|ke ele|men|ter i tryk|ker|fa|get og i gra|fisk de|sign.</p>
         <h2>19: lv</h2>
         <p id="test19" class="test hyphenate" lang="lv">Šīs lapas valodu nevarēja noteikt automātiski. Lūdzu norādiet pamata valodu:</p>
-        <p id="ref19" class="ref" lang="no">Šīs lapas va|lodu ne|va|rēja no|teikt au|to|mā|tiski. Lūdzu no|rā|diet pa|mata va|lodu:</p>
+        <p id="ref19" class="ref" lang="no">Šīs lapas va|lo|du ne|va|rē|ja no|teikt au|to|mā|tis|ki. Lūdzu no|rā|diet pa|ma|ta va|lo|du:</p>
         <h2>20: ca</h2>
         <p id="test20" class="test hyphenate" lang="ca">Una manera especial de provar la partició de paraules en català a la web.</p>
-        <p id="ref20" class="ref" lang="ca">Una manera espe|cial de pro|var la par|ti|ció de parau|les en català a la web.</p>
+        <p id="ref20" class="ref" lang="ca">Una ma|ne|ra es|pe|ci|al de pro|var la par|ti|ció de pa|rau|les en ca|ta|là a la web.</p>
         <h2>21: sk</h2>
         <p id="test21" class="test hyphenate" lang="sk">Typografia sa zaoberá problematikou grafickej úpravy tlačených dokumentov s použitím vhodných rezov písma a usporiadania jednotlivých znakov a odsekov vo vhodnej, pre čitateľa zrozumiteľnej a esteticky akceptovateľnej forme. Zaoberá sa tiež dizajnom písma, výberom farebnej schémy dokumentov, ilustrácií, zalamovaním textu do odsekov až po výber papiera pre tlač.</p>
         <p id="ref21" class="ref" lang="sk">Ty|po|gra|fia sa za|obe|rá prob|le|ma|ti|kou gra|fic|kej úp|ra|vy tla|če|ných do|ku|men|tov s po|u|ži|tím vhod|ných rezov písma a uspo|ria|da|nia jed|not|li|vých zna|kov a od|se|kov vo vhod|nej, pre či|ta|te|ľa zro|zu|mi|teľ|nej a es|te|tic|ky ak|cep|to|va|teľ|nej forme. Za|obe|rá sa tiež di|zaj|nom písma, vý|be|rom fa|reb|nej sché|my do|ku|men|tov, ilus|trá|cií, za|la|mo|va|ním textu do od|se|kov až po výber pa|pie|ra pre tlač.</p>
         <h2>22: eo</h2>
         <p id="test22" class="test hyphenate" lang="eo">Tipografio unuavice estas la kreo de komunikaĵo per reproduktebla skribo, sed duavice ankaŭ la dezajno de tia skriba komunikaĵo per linioj, areoj kaj la specifa aranĝo de literoj.</p>
         <p id="ref22" class="ref" lang="eo">Ti|po|gra|fio unu|a|vi|ce estas la kreo de ko|mu|ni|k|aĵo per re|pro|duk|t|ebla skri|bo, sed du|a|vi|ce ankaŭ la de|zaj|no de tia skri|ba ko|mu|ni|k|aĵo per li|ni|oj, areoj kaj la spe|ci|fa aran|ĝo de li|te|roj.</p>
-        <h2>23: sr-latn</h2>
+        <!--<h2>23: sr-latn</h2>
         <p id="test23" class="test hyphenate" lang="sr-latn">Tipografija se bavi izborom i organizacijom oblika slova i drugih grafičkih karakteristika štampane strane.</p>
-        <p id="ref23" class="ref" lang="sr-Latn">Ti|po|gra|fi|ja se bavi iz|bo|rom i or|ga|ni|za|ci|jom obli|ka slova i dru|gih gra|fič|kih ka|rak|te|ri|sti|ka štam|pa|ne stra|ne.</p>
+        <p id="ref23" class="ref" lang="sr-Latn">Ti|po|gra|fi|ja se bavi iz|bo|rom i or|ga|ni|za|ci|jom obli|ka slova i dru|gih gra|fič|kih ka|rak|te|ri|sti|ka štam|pa|ne stra|ne.</p>-->
         <h2>24: ro</h2>
         <p id="test24" class="test hyphenate" lang="ro">Tipografia reprezintă arta și tehnica tipăritului, a formei și aranjării literelor pe un document scris.</p>
-        <p id="ref24" class="ref" lang="ro">Ti|po|gra|fia re|pre|zintă arta și teh|nica ti|pă|ri|tu|lui, a for|mei și aran|jă|rii li|te|re|lor pe un do|cu|ment scris.</p>
+        <p id="ref24" class="ref" lang="ro">Ti|po|gra|fia re|pre|zin|tă arta și teh|ni|ca ti|pă|ri|tu|lui, a for|mei și aran|jă|rii li|te|re|lor pe un do|cu|ment scris.</p>
         <h2>25: et</h2>
         <p id="test25" class="test hyphenate" lang="et">Tüpograafia ehk trükikunst on trükiste valmistamise oskus, täpsemini sõnastatult trükimärkide kujundamise ja paigutamise kunst ja tehnika.</p>
-        <p id="ref25" class="ref" lang="et">Tüpog|raa|fia ehk trü|ki|kunst on trükiste val|mis|ta|mise oskus, täp|se|mini sõnas|ta|tult trü|ki|mär|kide kujun|da|mise ja pai|gu|ta|mise kunst ja teh|nika.</p>
+        <p id="ref25" class="ref" lang="et">Tü|pog|raa|fia ehk trü|ki|kunst on trükiste val|mis|ta|mise oskus, täp|se|mini sõ|nas|ta|tult trü|ki|mär|kide ku|jun|da|mise ja pai|gu|ta|mise kunst ja teh|nika.</p>
         <h2>26: ga</h2>
         <p id="test26" class="test hyphenate" lang="ga">Dearadh foirmeacha na litreacha le húsáid mar chló-aghaidheanna, agus roghnú na gcló-aghaidheanna i gcomhair cáipéisí clóchurtha.</p>
         <p id="ref26" class="ref" lang="ga">Dear|adh foirm|eacha na lit|reacha le húsáid mar chló-aghaidh|eanna, agus rogh|nú na gcló-aghaidh|eanna i gcomh|air cáip|éisí cló|chur|tha.</p>
