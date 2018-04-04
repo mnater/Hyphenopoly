@@ -73,7 +73,7 @@ Place all code for Hyphenopoly at the top of the header (immediatly after the `<
 You'll have to insert two script blocks. In the first block provide the initial configurations for Hyphenopoly_Loader as inline script. In the second block load Hyphenopoly_Loader.js as external script.
 Also, don't forget to enable CSS hyphenation.
 
-Example:
+Example (http://mnater.github.io/Hyphenopoly/example1.html):
 ```html
 <!DOCTYPE html>
 <html>
