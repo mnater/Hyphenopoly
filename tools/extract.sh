@@ -57,7 +57,7 @@ hpbName[16]='lt'
 texName[17]='sl'
 hpbName[17]='sl'
 
-texName[18]='la'
+texName[18]='la-x-classic'
 hpbName[18]='la'
 
 texName[19]='nb'

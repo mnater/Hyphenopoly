@@ -486,28 +486,19 @@
 
         function calculateBaseData(hpbBuf) {
             /* Build Heap (the heap object's byteLength must be either 2^n for n in [12, 24) or 2^24 · n for n ≥ 1;)
-             * -------------------- <- Offset: 0           -
-             * |     HEADER       |                        |
-             * |    6*4 Bytes     |                        |
-             * |    24 Bytes      |                        |
-             * --------------------                        |
-             * |    PATTERN LIC   |                        |
-             * |  variable Length |                        |
-             * --------------------                        |
-             * | align to 4Bytes  |                        } this is the .hpb-file
-             * -------------------- <- hpbTranslateOffset  |
-             * |    TRANSLATE     |                        |
-             * | 2 + [0] * 2Bytes |                        |
-             * -------------------- <- hpbPatternsOffset   |
-             * |     PATTERNS     |                        |
-             * |  patternsLength  |                        |
-             * --------------------                        |
-             * | align to 4Bytes  |                        |
-             * -------------------- <- charMapOffset       -
-             * |     charMap      |
-             * |     2 Bytes      |
-             * |  * 65536 (BMP)   |
-             * -------------------- <- valueStoreOffset
+             * NEW MEMORY LAYOUT:
+             *
+             * -------------------- <- Offset 0
+             * |   translateMap   |
+             * |        keys:     |
+             * |256 chars * 2Bytes|
+             * |         +        |
+             * |      values:     |
+             * |256 chars * 1Byte |
+             * -------------------- <- 768 Bytes
+             * |     alphabet     |
+             * |256 chars * 2Bytes|
+             * -------------------- <- valueStoreOffset = 1280
              * |    valueStore    |
              * |      1 Byte      |
              * |* valueStoreLength|
@@ -522,41 +513,66 @@
              * |    Uint16[64]    | 128 bytes
              * -------------------- <- hyphenPointsOffset
              * |   hyphenPoints   |
-             * |    Uint8[64]     |
-             * -------------------- <- heapEnd
-             * |  align heapSize  |
+             * |    Uint8[64]     | 64 bytes
+             * -------------------- <- hpbOffset           -
+             * |     HEADER       |                        |
+             * |    6*4 Bytes     |                        |
+             * |    24 Bytes      |                        |
+             * --------------------                        |
+             * |    PATTERN LIC   |                        |
+             * |  variable Length |                        |
+             * --------------------                        |
+             * | align to 4Bytes  |                        } this is the .hpb-file
+             * -------------------- <- hpbTranslateOffset  |
+             * |    TRANSLATE     |                        |
+             * | 2 + [0] * 2Bytes |                        |
+             * -------------------- <- hpbPatternsOffset   |
+             * |     PATTERNS     |                        |
+             * |  patternsLength  |                        |
+             * -------------------- <- heapEnd             -
+             * | align to 4Bytes  |
              * -------------------- <- heapSize
              */
+
+            /*
+             * [0]: magic number 0x01627068 (\hpb1, 1 is the version)
+             * [1]: TRANSLATE offset (to skip LICENSE)
+             * [2]: PATTERNS offset (skip LICENSE + TRANSLATE)
+             * [3]: patternlength (bytes)
+             * [4]: leftmin
+             * [5]: rightmin
+             * [6]: Trie Array Size (needed to preallocate memory)
+             * [7]: Values Size (needed to preallocate memory)
+             */
             const hpbMetaData = new Uint32Array(hpbBuf).subarray(0, 8);
-            const hpbTranslateOffset = hpbMetaData[1];
-            const hpbPatternsOffset = hpbMetaData[2];
-            const patternsLength = hpbMetaData[3];
-            const charMapLength = 65536 << 1; //16bit
             const patternTrieLength = hpbMetaData[6] * 4;
             const valueStoreLength = hpbMetaData[7];
             const leftmin = hpbMetaData[4];
             const rightmin = hpbMetaData[5];
-            const charMapOffset = hpbBuf.byteLength + (4 - (hpbBuf.byteLength % 4));
-            const valueStoreOffset = charMapOffset + charMapLength;
+            const valueStoreOffset = 1280;
             const patternTrieOffset = valueStoreOffset + valueStoreLength + (4 - ((valueStoreOffset + valueStoreLength) % 4));
             const wordOffset = patternTrieOffset + patternTrieLength;
             const hyphenPointsOffset = wordOffset + 128;
-            const heapEnd = hyphenPointsOffset + 64;
+            const hpbOffset = hyphenPointsOffset + 64;
+            const hpbTranslateOffset = hpbOffset + hpbMetaData[1];
+            const hpbPatternsOffset = hpbOffset + hpbMetaData[2];
+            const patternsLength = hpbMetaData[3];
+            const heapEnd = hpbPatternsOffset + patternsLength;
             const heapSize = Math.max(calculateHeapSize(heapEnd), 32 * 1024 * 64);
-            const characters = decode(new Uint16Array(hpbBuf).subarray((hpbTranslateOffset + 6) >> 1, hpbPatternsOffset >> 1));
+            //const characters = decode(new Uint16Array(hpbBuf).subarray((hpbMetaData[1] + 6) >> 1, hpbMetaData[2] >> 1));
             return {
-                characters: characters,
+                //characters: characters,
                 hpbTranslateOffset: hpbTranslateOffset,
                 hpbPatternsOffset: hpbPatternsOffset,
                 leftmin: leftmin,
                 rightmin: rightmin,
                 patternsLength: patternsLength,
-                charMapOffset: charMapOffset,
                 valueStoreOffset: valueStoreOffset,
                 patternTrieOffset: patternTrieOffset,
                 wordOffset: wordOffset,
                 hyphenPointsOffset: hyphenPointsOffset,
-                heapSize: heapSize
+                heapSize: heapSize,
+                hpbOffset: hpbOffset
             };
         }
 
@@ -565,7 +581,6 @@
                 hpbTranslateOffset: baseData.hpbTranslateOffset,
                 hpbPatternsOffset: baseData.hpbPatternsOffset,
                 patternsLength: baseData.patternsLength,
-                charMapOffset: baseData.charMapOffset,
                 valueStoreOffset: baseData.valueStoreOffset,
                 patternTrieOffset: baseData.patternTrieOffset,
                 wordOffset: baseData.wordOffset,
@@ -583,7 +598,6 @@
             const hyphenPointsStore = (new Uint8Array(heapBuffer)).subarray(hyphenPointsOffset, hyphenPointsOffset + 64);
             const defLeftmin = baseData.leftmin;
             const defRightmin = baseData.rightmin;
-
             return function hyphenate(word, hyphenchar, leftmin, rightmin) {
                 let i = 0;
                 const wordLength = word.length;
@@ -596,7 +610,9 @@
                     i += 1;
                 }
                 wordStore[i + 2] = 95;
+                //console.log(wordStore);
                 hyphenateFunc();
+                //console.log(wordStore);
                 i = wordLength - rightmin;
                 while (i >= leftmin) {
                     if ((hyphenPointsStore[i + 1] & 1) === 1) {
@@ -621,7 +637,7 @@
                             maximum: 256
                         });
                     const ui32wasmMemory = new Uint32Array(wasmMemory.buffer);
-                    ui32wasmMemory.set(new Uint32Array(hpbBuf), 0);
+                    ui32wasmMemory.set(new Uint32Array(hpbBuf), baseData.hpbOffset >> 2);
                     baseData.wasmMemory = wasmMemory;
                     WebAssembly.instantiate(wasmModule, {
                         ext: createImportObject(baseData),
@@ -635,7 +651,7 @@
                             prepareLanguagesObj(
                                 lang,
                                 encloseHyphenateFunction(baseData, result.exports.hyphenate),
-                                baseData.characters,
+                                decode((new Uint16Array(wasmMemory.buffer)).subarray(384, 640)),
                                 baseData.leftmin,
                                 baseData.rightmin
                             );
@@ -653,24 +669,26 @@
                 : new ArrayBuffer(baseData.heapSize);
             const ui8Heap = new Uint8Array(heapBuffer);
             const ui8Patterns = new Uint8Array(hpbBuf);
-            ui8Heap.set(ui8Patterns, 0);
+            ui8Heap.set(ui8Patterns, baseData.hpbOffset);
             baseData.heapBuffer = heapBuffer;
             const theHyphenEngine = asmHyphenEngine(
                 {
                     Uint8Array: window.Uint8Array,
                     Uint16Array: window.Uint16Array,
-                    Int32Array: window.Int32Array
+                    Int32Array: window.Int32Array,
+                    Math: Math
                 },
                 createImportObject(baseData),
                 baseData.heapBuffer
             );
             //console.time("convert(asm)");
             theHyphenEngine.convert();
+            //console.log((new Uint16Array(heapBuffer)).subarray(384, 640));
             //console.timeEnd("convert(asm)");
             prepareLanguagesObj(
                 lang,
                 encloseHyphenateFunction(baseData, theHyphenEngine.hyphenate),
-                baseData.characters,
+                decode((new Uint16Array(heapBuffer)).subarray(384, 640)),
                 baseData.leftmin,
                 baseData.rightmin
             );

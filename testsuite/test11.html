@@ -4,44 +4,50 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 11</title>
         <script>
-        var Hyphenopoly = {
-            require: {
-                "de": "FORCEHYPHENOPOLY"
-            },
-            paths: {
-                patterndir: "../patterns/",
-                maindir: "../"
-            },
-            setup: {
-                classnames: {
-                    "hyphenate": {
-                        hyphen: "|",
-                        compound: "auto",
-                        minWordLength: 4
+            var Hyphenopoly = {
+                require: {
+                    "de": "FORCEHYPHENOPOLY"
+                },
+                paths: {
+                    patterndir: "../patterns/",
+                    maindir: "../"
+                },
+                setup: {
+                    classnames: {
+                        "hyphenate": {
+                            hyphen: "•"
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        function assert() {
-            var test = "";
-            var ref = "";
-            test = document.getElementById("test").innerHTML;
-            ref = document.getElementById("ref").innerHTML;
-            if (test === ref) {
-                document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">OK</span> ";
-            } else {
-                document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">Fail</span> ";
+            function assert() {
+                var tests = 1;
+                var i = 1;
+                var test = "";
+                var ref = "";
+                var result = false;
+                while (i <= tests) {
+                    test = document.getElementById("test" + i).innerHTML;
+                    ref = document.getElementById("ref" + i).innerHTML;
+                    if (test === ref) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        result = result || true;
+                    } else {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        result = result || false;
+                    }
+                    i += 1;
+                }
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 11,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
             }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 5,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
-        Hyphenopoly.setup.onHyphenationDone = assert;
+            Hyphenopoly.setup.onHyphenationDone = assert;
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
@@ -58,15 +64,26 @@
                 background-color: #FEEFC0;
             }
 
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
         </style>
     </head>
     <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test10.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test11.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 011</h1>
+        <p id="desc">Check character substitution.</p>
         <div id="result"></div>
         <hr>
-        <h2>1: de</h2>
-        <p id="test" class="test hyphenate" lang="de">Fürstenberg Fürſtenberg nørsky</p>
-        <p id="ref" class="ref" lang="de">Fürs|ten|berg Fürſ|ten|berg</p>
+        <p id="test1" class="test hyphenate" lang="de">Fürstenberg Fürſtenberg</p>
+        <p id="ref1" class="ref" lang="de">Fürs•ten•berg Fürſ•ten•berg</p>
+
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
     </body>
 </html>
