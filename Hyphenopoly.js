@@ -249,7 +249,6 @@
 
         function createWordHyphenator(lo, lang, cn) {
             const classSettings = C[cn];
-            //const cache = empty();
             const normalize = C.normalize && (String.prototype.normalize !== undefined);
             const hyphen = classSettings.hyphen;
 
@@ -294,7 +293,7 @@
                 if (normalize) {
                     word = word.normalize("NFC");
                 }
-                let hw = lo.cache[cn][word] || undefined;
+                let hw = lo.cache[cn][word];
                 if (!hw) {
                     if (lo.exceptions[word] !== undefined) { //the word is in the exceptions list
                         hw = lo.exceptions[word].replace(/-/g, classSettings.hyphen);
@@ -347,13 +346,12 @@
             const re = lo.genRegExps[cn];
             let i = 0;
             let n = el.childNodes[i];
-            let tn;
             while (n) {
                 if (
                     n.nodeType === 3 //type 3 = #text
                         && n.data.length >= minWordLength //longer then min
                 ) {
-                    tn = n.data.replace(re, wordHyphenator);
+                    let tn = n.data.replace(re, wordHyphenator);
                     if (classSettings.orphanControl !== 1) {
                         //prevent last word from being hyphenated
                         tn = tn.replace(/(\u0020*)(\S+)(\s*)$/, orphanController);
