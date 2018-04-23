@@ -18,7 +18,9 @@ function asmHyphenEngine(std, ext, heap) {
     var valueStoreOffset = ext.valueStoreOffset | 0;
     var patternTrieOffset = ext.patternTrieOffset | 0;
     var wordOffset = ext.wordOffset | 0;
+    var translatedWordOffset = ext.translatedWordOffset | 0;
     var hyphenPointsOffset = ext.hyphenPointsOffset | 0;
+    var hyphenatedWordOffset = ext.hyphenatedWordOffset | 0;
 
     var trieRowLength = 0;
     var alphabetCount = 0;
@@ -30,7 +32,7 @@ function asmHyphenEngine(std, ext, heap) {
         cc = cc | 0;
         var h = 0;
         h = imul(cc, 40503); // 2^16 (-1 + sqrt(5)) / 2 = 40’503.475...
-        h = (h >> 8) & 255; //shift and mask 8bits
+        h = (h >> 8) + 1 & 255; //shift and mask 8bits
         return h << 1;
     }
 
@@ -180,7 +182,9 @@ function asmHyphenEngine(std, ext, heap) {
         }
     }
 
-    function hyphenate() {
+    function hyphenate(lm, rm) {
+        lm = lm | 0;
+        rm = rm | 0;
         var patternStartPos = 0;
         var wordLength = 0;
         var charOffset = 0;
@@ -204,7 +208,7 @@ function asmHyphenEngine(std, ext, heap) {
                 unknownChar = 1;
                 break;
             }
-            ui16[(wordStartOffset + charOffset) >> 1] = translatedChar | 0;
+            ui16[(translatedWordOffset + charOffset) >> 1] = translatedChar | 0;
             charOffset = (charOffset + 2) | 0;
         }
 
@@ -219,11 +223,12 @@ function asmHyphenEngine(std, ext, heap) {
 
         hpPos = 0;
 
+
         while ((patternStartPos | 0) < (wordLength | 0)) {
             row = 0;
             charOffset = patternStartPos | 0;
             while ((charOffset | 0) < (wordLength | 0)) {
-                rowOffset2 = ui16[(wordStartOffset + charOffset) >> 1] | 0;
+                rowOffset2 = ui16[(translatedWordOffset + charOffset) >> 1] | 0;
                 link = i32[(patternTrieOffset + row + rowOffset2) >> 2] | 0;
                 value = i32[(patternTrieOffset + row + rowOffset2 + 4) >> 2] | 0;
                 if ((value | 0) > 0) {
@@ -247,6 +252,22 @@ function asmHyphenEngine(std, ext, heap) {
             }
             patternStartPos = (patternStartPos + 2) | 0;
         }
+
+        charOffset = 0;
+        hyphenPointsCount = 0;
+        while ((charOffset | 0) <= (wordLength | 0)) {
+            ui16[(hyphenatedWordOffset + charOffset + hyphenPointsCount) >> 1] = ui16[(wordStartOffset + charOffset) >> 1] | 0;
+            if ((charOffset >> 1) >= (lm | 0)) {
+                if ((charOffset >> 1) <= (((wordLength >> 1) - rm - 2) | 0)) {
+                    if (ui8[(hyphenPointsOffset + (charOffset >> 1) + 1) | 0] & 1 == 1) {
+                        ui16[(hyphenatedWordOffset + charOffset + hyphenPointsCount + 2) >> 1] = 173;
+                        hyphenPointsCount = (hyphenPointsCount + 2) | 0
+                    }
+                }
+            }
+            charOffset = (charOffset + 2) | 0;
+        }
+        ui16[hyphenatedWordOffset >> 1] = ((wordLength >> 1) + (hyphenPointsCount >> 1) - 2) | 0;
     }
 
     return {

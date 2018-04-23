@@ -249,10 +249,11 @@
 
         function createWordHyphenator(lo, lang, cn) {
             const classSettings = C[cn];
-            const cache = empty();
+            //const cache = empty();
             const normalize = C.normalize && (String.prototype.normalize !== undefined);
             const hyphen = classSettings.hyphen;
 
+            lo.cache[cn] = empty();
             function hyphenateCompound(lo, lang, word) {
                 const zeroWidthSpace = String.fromCharCode(8203);
                 let parts;
@@ -293,7 +294,7 @@
                 if (normalize) {
                     word = word.normalize("NFC");
                 }
-                let hw = cache[word] || undefined;
+                let hw = lo.cache[cn][word] || undefined;
                 if (!hw) {
                     if (lo.exceptions[word] !== undefined) { //the word is in the exceptions list
                         hw = lo.exceptions[word].replace(/-/g, classSettings.hyphen);
@@ -302,9 +303,9 @@
                     } else {
                         hw = lo.hyphenateFunction(word, hyphen, classSettings.leftminPerLang[lang], classSettings.rightminPerLang[lang]);
                     }
+                    hw = classSettings.onAfterWordHyphenation(hw, lang);
+                    lo.cache[cn][word] = hw;
                 }
-                hw = classSettings.onAfterWordHyphenation(hw, lang);
-                cache[word] = hw;
                 return hw;
             }
             wordHyphenatorPool[lang + "-" + cn] = hyphenator;
@@ -394,6 +395,7 @@
         }
 
         function prepareLanguagesObj(lang, hyphenateFunction, alphabet, leftmin, rightmin) {
+            alphabet = alphabet.replace(/-/g, "");
             if (!H.hasOwnProperty("languages")) {
                 H.languages = {};
             }
@@ -465,24 +467,26 @@
             }
         }
 
-        function decode(ui16) {
+        const decode = (function makeDecoder() {
+            let decoder;
             if (window.TextDecoder !== undefined) {
                 const utf16ledecoder = new TextDecoder("utf-16le");
-                const characters = utf16ledecoder
-                    .decode(ui16)
-                    .replace(/-/g, "");
-                return characters;
+                decoder = function (ui16) {
+                    return utf16ledecoder.decode(ui16);
+                };
             } else {
-                let i = 0;
-                let str = "";
-                while (i < ui16.length) {
-                    str += String.fromCharCode(ui16[i]);
-                    i += 1;
-                }
-                str = str.replace(/-/g, "");
-                return str;
+                decoder = function (ui16) {
+                    let i = 0;
+                    let str = "";
+                    while (i < ui16.length) {
+                        str += String.fromCharCode(ui16[i]);
+                        i += 1;
+                    }
+                    return str;
+                };
             }
-        }
+            return decoder;
+        }());
 
         function calculateBaseData(hpbBuf) {
             /* Build Heap (the heap object's byteLength must be either 2^n for n in [12, 24) or 2^24 · n for n ≥ 1;)
@@ -511,9 +515,15 @@
              * -------------------- <- wordOffset
              * |    wordStore     |
              * |    Uint16[64]    | 128 bytes
+             * -------------------- <- translatedWordOffset
+             * | transl.WordStore |
+             * |    Uint16[64]     | 128 bytes
              * -------------------- <- hyphenPointsOffset
              * |   hyphenPoints   |
              * |    Uint8[64]     | 64 bytes
+             * -------------------- <- hyphenatedWordOffset
+             * |  hyphenatedWord  |
+             * |   Uint16[128]    | 256 Bytes
              * -------------------- <- hpbOffset           -
              * |     HEADER       |                        |
              * |    6*4 Bytes     |                        |
@@ -552,16 +562,16 @@
             const valueStoreOffset = 1280;
             const patternTrieOffset = valueStoreOffset + valueStoreLength + (4 - ((valueStoreOffset + valueStoreLength) % 4));
             const wordOffset = patternTrieOffset + patternTrieLength;
-            const hyphenPointsOffset = wordOffset + 128;
-            const hpbOffset = hyphenPointsOffset + 64;
+            const translatedWordOffset = wordOffset + 128;
+            const hyphenPointsOffset = translatedWordOffset + 128;
+            const hyphenatedWordOffset = hyphenPointsOffset + 64;
+            const hpbOffset = hyphenatedWordOffset + 256;
             const hpbTranslateOffset = hpbOffset + hpbMetaData[1];
             const hpbPatternsOffset = hpbOffset + hpbMetaData[2];
             const patternsLength = hpbMetaData[3];
             const heapEnd = hpbPatternsOffset + patternsLength;
             const heapSize = Math.max(calculateHeapSize(heapEnd), 32 * 1024 * 64);
-            //const characters = decode(new Uint16Array(hpbBuf).subarray((hpbMetaData[1] + 6) >> 1, hpbMetaData[2] >> 1));
             return {
-                //characters: characters,
                 hpbTranslateOffset: hpbTranslateOffset,
                 hpbPatternsOffset: hpbPatternsOffset,
                 leftmin: leftmin,
@@ -570,7 +580,9 @@
                 valueStoreOffset: valueStoreOffset,
                 patternTrieOffset: patternTrieOffset,
                 wordOffset: wordOffset,
+                translatedWordOffset: translatedWordOffset,
                 hyphenPointsOffset: hyphenPointsOffset,
+                hyphenatedWordOffset: hyphenatedWordOffset,
                 heapSize: heapSize,
                 hpbOffset: hpbOffset
             };
@@ -584,7 +596,9 @@
                 valueStoreOffset: baseData.valueStoreOffset,
                 patternTrieOffset: baseData.patternTrieOffset,
                 wordOffset: baseData.wordOffset,
-                hyphenPointsOffset: baseData.hyphenPointsOffset
+                translatedWordOffset: baseData.translatedWordOffset,
+                hyphenPointsOffset: baseData.hyphenPointsOffset,
+                hyphenatedWordOffset: baseData.hyphenatedWordOffset
             };
         }
 
@@ -593,11 +607,11 @@
                 ? baseData.wasmMemory.buffer
                 : baseData.heapBuffer;
             const wordOffset = baseData.wordOffset;
-            const hyphenPointsOffset = baseData.hyphenPointsOffset;
+            const hyphenatedWordOffset = baseData.hyphenatedWordOffset;
             const wordStore = (new Uint16Array(heapBuffer)).subarray(wordOffset >> 1, (wordOffset >> 1) + 64);
-            const hyphenPointsStore = (new Uint8Array(heapBuffer)).subarray(hyphenPointsOffset, hyphenPointsOffset + 64);
             const defLeftmin = baseData.leftmin;
             const defRightmin = baseData.rightmin;
+            const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(hyphenatedWordOffset >> 1, (hyphenatedWordOffset >> 1) + 64);
             return function hyphenate(word, hyphenchar, leftmin, rightmin) {
                 let i = 0;
                 const wordLength = word.length;
@@ -610,15 +624,17 @@
                     i += 1;
                 }
                 wordStore[i + 2] = 95;
-                //console.log(wordStore);
-                hyphenateFunc();
-                //console.log(wordStore);
-                i = wordLength - rightmin;
-                while (i >= leftmin) {
-                    if ((hyphenPointsStore[i + 1] & 1) === 1) {
-                        word = word.substring(0, i) + hyphenchar + word.substring(i);
-                    }
-                    i -= 1;
+
+                hyphenateFunc(leftmin, rightmin);
+
+                i = 1;
+                word = "";
+                while (i < hyphenatedWordStore[0] + 1) {
+                    word += String.fromCharCode(hyphenatedWordStore[i]);
+                    i += 1;
+                }
+                if (hyphenchar !== "\u00AD") {
+                    word = word.replace(/\u00AD/g, hyphenchar);
                 }
                 return word;
             };
