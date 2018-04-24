@@ -27,7 +27,7 @@ Hyphenopoly.js is based on Hyphenator.js (they share some code) but - in favor o
 If you need one of those features use Hyphenator.js – or give some feedback and proof that the feature is really useful and should be implemented in Hyphenopoly.js
 
 On the other hand Hyphenopoly has a much finer-grained configuration system that allows you to make settings based on CSS-classes.
-And last but not least it is faster then Hyphenator.js
+And last but not least it is faster than Hyphenator.js
 
 # Automatic hyphenation
 The algorithm used for hyphenation was developped by Franklin M. Liang for TeX. It works more or less like this:
@@ -118,10 +118,10 @@ Let's go through this example step by step:
 Make sure your page is encoded as utf-8.
 
 ## First script block – configurations
-Hyphenopoly_Loader.js needs some information to run. This information is provided in a globally accessible Object called `Hyphenopoly`. Hyphenopoly_Loader.js and (if necessary) Hyphenopoly.js will add other methods and properties only to this object – there will be no other global variables/functions outside this object.
+Hyphenopoly_Loader.js needs some information to run. This information is provided in a globally accessible Object called `Hyphenopoly`. Hyphenopoly_Loader.js and (if necessary) Hyphenopoly.js will add other methods and properties only to this object – there will be no other global variables/functions beyond this object.
 
 ### require
-The `Hyphenopoly` object must have exactly one property called `require` which is itself an object containing at least one nameValuePair where the name is a language code string (Some patterns are region-specific. See the patterns directory for supported languages. E.g. just using `en` won't work, use either `en-us`or `en-gb`) and the value is a long word string in that language (preferably more than 12 characters long).
+The `Hyphenopoly` object must have exactly one property called `require` which itself is an object containing at least one nameValuePair where the name is a language code string (Some patterns are region-specific. See the patterns directory for supported languages. E.g. just using `en` won't work, use either `en-us`or `en-gb`) and the value is a long word string in that language (preferably more than 12 characters long).
 
 Hyphenator_Loader.js will feature test the client (aka browser, aka user agent) for CSS-hyphens support for the given languages with the given words respectivly. In the example above it will test if the client supports CSS-hyphenation for latin. If your page contains more than just one language just add more lines.
 
@@ -143,6 +143,9 @@ In the example above we configure Hyphenopoly.js to hyphenate all elements havin
 ## Second script block – load and run Hyphenopoly_Loader.js
 Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary patterns. Hyphenopoly.js – once loaded – will hyphenate the elements according to the settings in `setup` and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and undhides the document and writes a message to the console.
 If the browser supports all languages the script deletes the `Hyphenopoly`-object and terminates without further ado.
+
+## enable CSS-hyphenation
+Don't forget to enable CSS-hyphenation for the classes you provided to `classnames`.
 
 # Todo
 - [ ] documentation (general, how-tos and API, wiki)
