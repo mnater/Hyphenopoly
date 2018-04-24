@@ -83,7 +83,6 @@
             }
         });
         H.c = settings;
-
     }());
 
     (function H9Y(w) {
@@ -386,7 +385,7 @@
             if (!lo.engineReady) {
                 lo.cache = empty();
                 //copy global exceptions to the language specific exceptions
-                if (H.exceptions.global !== undefined) {
+                if (H.exceptions && H.exceptions.global !== undefined) {
                     if (H.exceptions[lang] !== undefined) {
                         H.exceptions[lang] += ", " + H.exceptions.global;
                     } else {
@@ -394,7 +393,7 @@
                     }
                 }
                 //move exceptions from the the local "exceptions"-obj to the "language"-object
-                if (H.exceptions[lang] !== undefined) {
+                if (H.exceptions && H.exceptions[lang] !== undefined) {
                     lo.exceptions = convertExceptionsToObject(H.exceptions[lang]);
                     delete H.exceptions[lang];
                 } else {
@@ -566,7 +565,7 @@
                 hyphenatedWordOffset: baseData.hyphenatedWordOffset,
                 hpbTranslateOffset: baseData.hpbTranslateOffset,
                 hpbPatternsOffset: baseData.hpbPatternsOffset,
-                patternsLength: baseData.patternsLength,
+                patternsLength: baseData.patternsLength
             };
         }
 
