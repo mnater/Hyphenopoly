@@ -17,17 +17,13 @@
         return Object.create(null);
     }
 
-    function makeTimeStamp(label) {
-        if (window.console.timeStamp) {
-            window.console.timeStamp(label);
-        }
-    }
     function setProp(val, props) {
         /* props is a bit pattern:
          * 1. bit: configurable
          * 2. bit: enumerable
          * 3. bit writable
          * e.g. 011(2) = 3(10) => configurable: false, enumerable: true, writable: true
+         * or   010(2) = 2(10) => configurable: false, enumerable: true, writable: false
          */
         return {
             configurable: (props & 4) > 0,
@@ -52,12 +48,6 @@
             }()), 2),
             safeCopy: setProp(true, 2),
             normalize: setProp(false, 2),
-            onHyphenopolyStart: setProp(function () {
-                makeTimeStamp("Hyphenopoly start!");
-            }, 2),
-            onHyphenationDone: setProp(function () {
-                makeTimeStamp("Hyphenation done!");
-            }, 2),
             onHyphenationFailed: setProp(function (e) {
                 window.console.error("Hyphenopoly.js error", e);
             }, 2)
@@ -73,19 +63,7 @@
             rightminPerLang: setProp(0, 2),
             hyphen: setProp(SOFTHYPHEN, 2), //soft hyphen
             orphanControl: setProp(1, 2),
-            compound: setProp("hyphen", 2),
-            onBeforeWordHyphenation: setProp(function (word) {
-                return word;
-            }, 2),
-            onAfterWordHyphenation: setProp(function (word) {
-                return word;
-            }, 2),
-            onBeforeElementHyphenation: setProp(function (element, lang) {
-                return {"element": element, "lang": lang};
-            }, 2),
-            onAfterElementHyphenation: setProp(function (element, lang) {
-                return {"element": element, "lang": lang};
-            }, 2)
+            compound: setProp("hyphen", 2)
         });
 
         //copy settings if not yet set
@@ -289,7 +267,9 @@
             }
 
             function hyphenator(word) {
-                word = classSettings.onBeforeWordHyphenation(word, lang);
+                if (classSettings.onBeforeWordHyphenation && (typeof classSettings.onBeforeWordHyphenation === "function")) {
+                    word = classSettings.onBeforeWordHyphenation(word, lang);
+                }
                 if (normalize) {
                     word = word.normalize("NFC");
                 }
@@ -302,7 +282,9 @@
                     } else {
                         hw = lo.hyphenateFunction(word, hyphen, classSettings.leftminPerLang[lang], classSettings.rightminPerLang[lang]);
                     }
-                    hw = classSettings.onAfterWordHyphenation(hw, lang);
+                    if (classSettings.onAfterWordHyphenation && (typeof classSettings.onAfterWordHyphenation === "function")) {
+                        hw = classSettings.onAfterWordHyphenation(hw, lang);
+                    }
                     lo.cache[cn][word] = hw;
                 }
                 return hw;
@@ -336,7 +318,9 @@
             const cn = elo.class;
             const classSettings = C[cn];
             const minWordLength = classSettings.minWordLength;
-            classSettings.onBeforeElementHyphenation(el, lang);
+            if (classSettings.onBeforeElementHyphenation && (typeof classSettings.onBeforeElementHyphenation === "function")) {
+                classSettings.onBeforeElementHyphenation(el, lang);
+            }
             const wordHyphenator = (wordHyphenatorPool[lang + "-" + cn] !== undefined)
                 ? wordHyphenatorPool[lang + "-" + cn]
                 : createWordHyphenator(lo, lang, cn);
@@ -363,7 +347,9 @@
             }
             elo.hyphenated = true;
             elements.counters[1] += 1;
-            classSettings.onAfterElementHyphenation(el, lang);
+            if (classSettings.onAfterElementHyphenation && (typeof classSettings.onAfterElementHyphenation === "function")) {
+                classSettings.onAfterElementHyphenation(el, lang);
+            }
         }
 
         function hyphenateLangElements(lang, elArr) {
@@ -759,7 +745,9 @@
             case "hyphenationDone":
                 w.clearTimeout(C.timeOutHandler);
                 w.document.documentElement.style.visibility = "visible";
-                C.onHyphenationDone();
+                if (C.onHyphenationDone && (typeof C.onHyphenationDone === "function")) {
+                    C.onHyphenationDone();
+                }
                 break;
             case "timeout":
                 w.document.documentElement.style.visibility = "visible";
@@ -779,7 +767,9 @@
             }
         };
 
-        C.onHyphenopolyStart();
+        if (C.onHyphenopolyStart && (typeof C.onHyphenopolyStart === "function")) {
+            C.onHyphenopolyStart();
+        }
 
         //clear Loader-timeout
         w.clearTimeout(H.setup.timeOutHandler);
