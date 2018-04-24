@@ -146,8 +146,6 @@
             }, true);
         };
 
-        const exceptions = empty();
-
         function getLang(el, fallback) {
             try {
                 return (el.getAttribute("lang"))
@@ -388,17 +386,17 @@
             if (!lo.engineReady) {
                 lo.cache = empty();
                 //copy global exceptions to the language specific exceptions
-                if (exceptions.global !== undefined) {
-                    if (exceptions.lang !== undefined) {
-                        exceptions[lang] += ", " + exceptions.global;
+                if (H.exceptions.global !== undefined) {
+                    if (H.exceptions[lang] !== undefined) {
+                        H.exceptions[lang] += ", " + H.exceptions.global;
                     } else {
-                        exceptions[lang] = exceptions.global;
+                        H.exceptions[lang] = H.exceptions.global;
                     }
                 }
                 //move exceptions from the the local "exceptions"-obj to the "language"-object
-                if (exceptions.lang !== undefined) {
-                    lo.exceptions = convertExceptionsToObject(exceptions[lang]);
-                    delete exceptions[lang];
+                if (H.exceptions[lang] !== undefined) {
+                    lo.exceptions = convertExceptionsToObject(H.exceptions[lang]);
+                    delete H.exceptions[lang];
                 } else {
                     lo.exceptions = empty();
                 }
@@ -738,17 +736,7 @@
                 break;
             }
         }
-        //public methods
-        H.addExceptions = function (lang, words) {
-            if (lang === "") {
-                lang = "global";
-            }
-            if (exceptions.lang !== undefined) {
-                exceptions[lang] += ", " + words;
-            } else {
-                exceptions[lang] = words;
-            }
-        };
+
 
         if (C.onHyphenopolyStart && (typeof C.onHyphenopolyStart === "function")) {
             C.onHyphenopolyStart();
@@ -769,7 +757,6 @@
             handleEvt(m);
         });
         delete H.evtList;
-
 
     }(w));
 }(window));
