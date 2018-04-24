@@ -147,4 +147,4 @@ If the browser supports all languages the script deletes the `Hyphenopoly`-objec
 # Todo
 - [ ] documentation (general, how-tos and API, wiki)
 - [ ] more tests
-- [ ] tools: concat and minify
+- [ ] tools: concat and minify, build process
