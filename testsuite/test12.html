@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 11</title>
+        <title>Test 12</title>
         <script>
             var Hyphenopoly = {
                 require: {
@@ -13,10 +13,16 @@
                     maindir: "../"
                 },
                 setup: {
+                    dontHyphenate: {
+                        code: true,
+                        kbd: false,
+                        button: false
+                    },
                     classnames: {
                         "hyphenate": {
                             hyphen: "•"
-                        }
+                        },
+                        "h9n_btn": {}
                     }
                 }
             };
@@ -42,7 +48,7 @@
                 if (parent != window) {
                     parent.postMessage(JSON.stringify({
                         desc: document.getElementById("desc").innerHTML,
-                        index: 11,
+                        index: 12,
                         result: (result ? "passed" : "failed")
                     }), window.location.href);
                 }
@@ -64,6 +70,11 @@
                 background-color: #FEEFC0;
             }
 
+            .h9n_btn {
+                width: 5em;
+                text-align: left;
+            }
+
             .hyphenate {
                 hyphens: auto;
                 -ms-hyphens: auto;
@@ -73,14 +84,14 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test10.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test12.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test11.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test12.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 011</h1>
-        <p id="desc">Check character substitution.</p>
+        <h1>Test 012</h1>
+        <p id="desc">Check dontHyphenate-Elements</p>
         <div id="result"></div>
         <hr>
-        <p id="test1" class="test hyphenate" lang="de">Fürstenberg Fürſtenberg</p>
-        <p id="ref1" class="ref" lang="de">Fürs•ten•berg Fürſ•ten•berg</p>
+        <p id="test1" class="test hyphenate" lang="de">Silbentrennung <code>Silbentrennung</code> <kbd>Silbentrennung</kbd> <button class="h9n_btn">Silbentrennung</button></p>
+        <p id="ref1" class="ref" lang="de">Sil•ben•tren•nung <code>Silbentrennung</code> <kbd>Sil•ben•tren•nung</kbd> <button class="h9n_btn">Sil&shy;ben&shy;tren&shy;nung</button></p>
 
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>

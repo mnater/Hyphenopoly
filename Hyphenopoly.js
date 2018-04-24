@@ -35,8 +35,8 @@
 
     (function configurationFactory() {
         const generalDefaults = Object.create(null, {
-            timeout: setProp(3000, 2),
-            defaultLanguage: setProp("en", 2),
+            timeout: setProp(1000, 2),
+            defaultLanguage: setProp("en-us", 2),
             dontHyphenateClass: setProp("donthyphenate", 2),
             dontHyphenate: setProp((function () {
                 const r = empty();
@@ -82,7 +82,6 @@
                 Object.defineProperty(settings, key, setProp(H.setup[key], 3));
             }
         });
-
         H.c = settings;
 
     }());
@@ -204,7 +203,6 @@
                 n = el.childNodes[j];
                 while (n !== undefined) {
                     if (n.nodeType === 1 && !C.dontHyphenate[n.nodeName.toLowerCase()] && n.className.indexOf(C.dontHyphenateClass) === -1) {
-                        //console.log(sortOutSubclasses(n.className.split(" "), C.classNames));
                         if (sortOutSubclasses(n.className.split(" "), C.classNames).length === 0) {
                             //this child element doesn't contain a hyphenopoly-class
                             processText(n, eLang, cn, true);
@@ -539,50 +537,38 @@
              * [7]: Values Size (needed to preallocate memory)
              */
             const hpbMetaData = new Uint32Array(hpbBuf).subarray(0, 8);
-            const patternTrieLength = hpbMetaData[6] * 4;
             const valueStoreLength = hpbMetaData[7];
-            const leftmin = hpbMetaData[4];
-            const rightmin = hpbMetaData[5];
             const valueStoreOffset = 1280;
             const patternTrieOffset = valueStoreOffset + valueStoreLength + (4 - ((valueStoreOffset + valueStoreLength) % 4));
-            const wordOffset = patternTrieOffset + patternTrieLength;
-            const translatedWordOffset = wordOffset + 128;
-            const hyphenPointsOffset = translatedWordOffset + 128;
-            const hyphenatedWordOffset = hyphenPointsOffset + 64;
-            const hpbOffset = hyphenatedWordOffset + 256;
-            const hpbTranslateOffset = hpbOffset + hpbMetaData[1];
-            const hpbPatternsOffset = hpbOffset + hpbMetaData[2];
-            const patternsLength = hpbMetaData[3];
-            const heapEnd = hpbPatternsOffset + patternsLength;
-            const heapSize = Math.max(calculateHeapSize(heapEnd), 32 * 1024 * 64);
+            const wordOffset = patternTrieOffset + (hpbMetaData[6] * 4);
             return {
-                hpbTranslateOffset: hpbTranslateOffset,
-                hpbPatternsOffset: hpbPatternsOffset,
-                leftmin: leftmin,
-                rightmin: rightmin,
-                patternsLength: patternsLength,
                 valueStoreOffset: valueStoreOffset,
                 patternTrieOffset: patternTrieOffset,
                 wordOffset: wordOffset,
-                translatedWordOffset: translatedWordOffset,
-                hyphenPointsOffset: hyphenPointsOffset,
-                hyphenatedWordOffset: hyphenatedWordOffset,
-                heapSize: heapSize,
-                hpbOffset: hpbOffset
+                translatedWordOffset: wordOffset + 128,
+                hyphenPointsOffset: wordOffset + 256,
+                hyphenatedWordOffset: wordOffset + 320,
+                hpbOffset: wordOffset + 576,
+                hpbTranslateOffset: wordOffset + 576 + hpbMetaData[1],
+                hpbPatternsOffset: wordOffset + 576 + hpbMetaData[2],
+                heapSize: Math.max(calculateHeapSize(wordOffset + 576 + hpbMetaData[2] + hpbMetaData[3]), 32 * 1024 * 64),
+                leftmin: hpbMetaData[4],
+                rightmin: hpbMetaData[5],
+                patternsLength: hpbMetaData[3]
             };
         }
 
         function createImportObject(baseData) {
             return {
-                hpbTranslateOffset: baseData.hpbTranslateOffset,
-                hpbPatternsOffset: baseData.hpbPatternsOffset,
-                patternsLength: baseData.patternsLength,
                 valueStoreOffset: baseData.valueStoreOffset,
                 patternTrieOffset: baseData.patternTrieOffset,
                 wordOffset: baseData.wordOffset,
                 translatedWordOffset: baseData.translatedWordOffset,
                 hyphenPointsOffset: baseData.hyphenPointsOffset,
-                hyphenatedWordOffset: baseData.hyphenatedWordOffset
+                hyphenatedWordOffset: baseData.hyphenatedWordOffset,
+                hpbTranslateOffset: baseData.hpbTranslateOffset,
+                hpbPatternsOffset: baseData.hpbPatternsOffset,
+                patternsLength: baseData.patternsLength,
             };
         }
 
@@ -681,10 +667,7 @@
                 createImportObject(baseData),
                 baseData.heapBuffer
             );
-            //console.time("convert(asm)");
             theHyphenEngine.convert();
-            //console.log((new Uint16Array(heapBuffer)).subarray(384, 640));
-            //console.timeEnd("convert(asm)");
             prepareLanguagesObj(
                 lang,
                 encloseHyphenateFunction(baseData, theHyphenEngine.hyphenate),
