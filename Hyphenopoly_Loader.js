@@ -44,9 +44,6 @@
                 script = d.createElement("script");
                 loadedScripts[filename] = true;
                 script.src = path + filename;
-                script.addEventListener("load", function () {
-                    Hyphenopoly.evt(msg);
-                });
                 d.head.appendChild(script);
             }
         }
@@ -227,9 +224,16 @@
                 d.documentElement.style.visibility = "visible";
                 H.setup.onTimeOut();
             }, H.setup.timeout);
-            d.addEventListener("DOMContentLoaded", function DCL() {
-                H.evt(["DOMContentLoaded"]);
-            });
+            d.addEventListener(
+                "DOMContentLoaded",
+                function DCL() {
+                    H.evt(["DOMContentLoaded"]);
+                },
+                {
+                    passive: true,
+                    once: true
+                }
+            );
 
         } else {
             window.Hyphenopoly = null;
