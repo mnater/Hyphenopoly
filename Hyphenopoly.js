@@ -50,7 +50,8 @@
             normalize: setProp(false, 2),
             onHyphenationFailed: setProp(function (e) {
                 window.console.error("Hyphenopoly.js error", e);
-            }, 2)
+            }, 2),
+            exceptions: setProp(empty(), 2)
         });
 
         const settings = Object.create(generalDefaults);
@@ -385,17 +386,17 @@
             if (!lo.engineReady) {
                 lo.cache = empty();
                 //copy global exceptions to the language specific exceptions
-                if (H.exceptions && H.exceptions.global !== undefined) {
-                    if (H.exceptions[lang] !== undefined) {
-                        H.exceptions[lang] += ", " + H.exceptions.global;
+                if (H.c.exceptions.global !== undefined) {
+                    if (H.c.exceptions[lang] !== undefined) {
+                        H.c.exceptions[lang] += ", " + H.c.exceptions.global;
                     } else {
-                        H.exceptions[lang] = H.exceptions.global;
+                        H.c.exceptions[lang] = H.c.exceptions.global;
                     }
                 }
                 //move exceptions from the the local "exceptions"-obj to the "language"-object
-                if (H.exceptions && H.exceptions[lang] !== undefined) {
-                    lo.exceptions = convertExceptionsToObject(H.exceptions[lang]);
-                    delete H.exceptions[lang];
+                if (H.c.exceptions[lang] !== undefined) {
+                    lo.exceptions = convertExceptionsToObject(H.c.exceptions[lang]);
+                    delete H.c.exceptions[lang];
                 } else {
                     lo.exceptions = empty();
                 }
