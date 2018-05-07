@@ -688,13 +688,13 @@
             function () {
                 autoSetMainLanguage();
                 collectElements();
-                H.events.dispatch("ElementsReady");
+                H.events.dispatch("elementsReady");
             },
             false
         );
 
         H.events.define(
-            "ElementsReady",
+            "elementsReady",
             function () {
                 elements.each(function (lang, values) {
                     if (H.hasOwnProperty("languages") && H.languages.hasOwnProperty(lang) && H.languages[lang].engineReady) {
@@ -727,7 +727,7 @@
             function (e) {
                 if (H.elementsReady) {
                     hyphenateLangElements(e.msg, elements.list[e.msg]);
-                } //else wait for "ElementsReady"-evt
+                } //else wait for "elementsReady"-evt
             },
             false
         );
