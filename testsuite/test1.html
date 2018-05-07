@@ -17,9 +17,13 @@
                 classnames: {
                     "hyphenate": {}
                 }
+            },
+            handleEvent: {
+                hyphenopolyEnd: function (e) {
+                    assert();
+                }
             }
         };
-
         function assert() {
             var tests = 2;
             var i = 1;
@@ -53,7 +57,6 @@
                 }), window.location.href);
             }
         }
-        Hyphenopoly.setup.onHyphenationDone = assert;
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">

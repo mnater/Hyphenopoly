@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 12</title>
+        <title>Test 15</title>
         <script>
             var Hyphenopoly = {
                 require: {
@@ -13,21 +13,22 @@
                     maindir: "../"
                 },
                 setup: {
-                    dontHyphenate: {
-                        code: true,
-                        kbd: false,
-                        button: false
-                    },
+                    safeCopy: false,
                     classnames: {
                         "hyphenate": {
                             hyphen: "•"
-                        },
-                        "h9n_btn": {}
+                        }
                     }
                 },
                 handleEvent: {
                     hyphenopolyEnd: function (e) {
                         assert();
+                    },
+                    beforeElementHyphenation: function (e) {
+                        e.el.firstChild.data = e.lang + ": " + e.el.firstChild.data;
+                    },
+                    afterElementHyphenation: function (e) {
+                        e.el.firstChild.data = e.el.firstChild.data.split("").reverse().join("");
                     }
                 }
             };
@@ -42,10 +43,14 @@
                     test = document.getElementById("test" + i).innerHTML;
                     ref = document.getElementById("ref" + i).innerHTML;
                     if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                            return (i < 10) ? "0" + i : i; 
+                        }(i)) + "</span> ";
                         result = result || true;
                     } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
+                            return (i < 10) ? "0" + i : i; 
+                        }(i)) + "</span> ";
                         result = result || false;
                     }
                     i += 1;
@@ -53,7 +58,7 @@
                 if (parent != window) {
                     parent.postMessage(JSON.stringify({
                         desc: document.getElementById("desc").innerHTML,
-                        index: 12,
+                        index: 15,
                         result: (result ? "passed" : "failed")
                     }), window.location.href);
                 }
@@ -74,11 +79,6 @@
                 background-color: #FEEFC0;
             }
 
-            .h9n_btn {
-                width: 5em;
-                text-align: left;
-            }
-
             .hyphenate {
                 hyphens: auto;
                 -ms-hyphens: auto;
@@ -88,15 +88,14 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test11.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test13.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test14.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test16.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 012</h1>
-        <p id="desc">Check dontHyphenate-Elements</p>
+        <h1>Test 015</h1>
+        <p id="desc">Check before-/onAfterElementHyphenation</p>
         <div id="result"></div>
         <hr>
-        <p id="test1" class="test hyphenate" lang="de">Silbentrennung <code>Silbentrennung</code> <kbd>Silbentrennung</kbd> <button class="h9n_btn">Silbentrennung</button></p>
-        <p id="ref1" class="ref" lang="de">Sil•ben•tren•nung <code>Silbentrennung</code> <kbd>Sil•ben•tren•nung</kbd> <button class="h9n_btn">Sil&shy;ben&shy;tren&shy;nung</button></p>
-
+        <p id="test1" class="test hyphenate" lang="de">Silbentrennungsalgorithmus</p>
+        <p id="ref1" class="ref" lang="de">sum•htir•og•la•sgnun•nert•neb•liS :ed</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 

@@ -14,11 +14,16 @@
                 maindir: "../"
             },
             setup: {
-                onHyphenopolyStart: function () {
-                    startTime = performance.now();
-                },
                 classnames: {
                     "hyphenate": {}
+                }
+            },
+            handleEvent: {
+                hyphenopolyStart: function () {
+                    startTime = performance.now();
+                },
+                hyphenopolyEnd: function (e) {
+                    assert();
                 }
             }
             
@@ -37,9 +42,7 @@
                 }), window.location.href);
             }
         }
-        if (Hyphenopoly) {
-            Hyphenopoly.setup.onHyphenationDone = assert;
-        } else {
+        if (!Hyphenopoly) {
             document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">" + "CSS</p>";
                     if (parent != window) {

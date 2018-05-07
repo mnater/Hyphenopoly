@@ -10,7 +10,114 @@
 
 (function H9YL() {
     "use strict";
-    var d = document;
+    const d = document;
+
+    (function createEventSystem() {
+        const definedEvents = Object.create(null);
+        Hyphenopoly.events = Object.create(null);
+        Hyphenopoly.events.notHandled = [];
+        Hyphenopoly.events.tempRegister = [];
+
+        function defineEvent(name, defFunc, cancellable) {
+            definedEvents[name] = {
+                default: defFunc,
+                cancellable: cancellable,
+                register: []
+            };
+        }
+
+        defineEvent(
+            "timeout",
+            function (e) {
+                d.documentElement.style.visibility = "visible";
+                window.console.info("Hyphenopolys 'flash of unhyphenated content'-prevention timed out after %dms", e.delay);
+            },
+            false
+        );
+
+        defineEvent(
+            "error",
+            function (e) {
+                window.console.error(e.msg);
+            },
+            true
+        );
+
+        defineEvent(
+            "DOMContentLoaded",
+            function (e) {
+                Hyphenopoly.events.notHandled.push({
+                    name: "DOMContentLoaded",
+                    data: e
+                });
+            },
+            false
+        );
+
+        defineEvent(
+            "engineLoaded",
+            function (e) {
+                Hyphenopoly.events.notHandled.push({
+                    name: "engineLoaded",
+                    data: e
+                });
+            },
+            false
+        );
+
+        defineEvent(
+            "hpbLoaded",
+            function (e) {
+                Hyphenopoly.events.notHandled.push({
+                    name: "hpbLoaded",
+                    data: e
+                });
+            },
+            false
+        );
+
+        function dispatchEvent(name, data) {
+            if (!data) {
+                data = Object.create(null);
+            }
+            data.defaultPrevented = false;
+            data.preventDefault = function () {
+                if (definedEvents[name].cancellable) {
+                    data.defaultPrevented = true;
+                }
+            };
+            definedEvents[name].register.forEach(function (currentHandler) {
+                currentHandler(data);
+            });
+            if (!data.defaultPrevented && definedEvents[name].default) {
+                definedEvents[name].default(data);
+            }
+        }
+
+        function addEventListener(name, handler, final) {
+            if (definedEvents[name]) {
+                definedEvents[name].register.push(handler);
+            } else if (!final) {
+                Hyphenopoly.events.tempRegister.push({
+                    name: name,
+                    handler: handler
+                });
+            } else {
+                Hyphenopoly.events.dispatch("error", {msg: "unknown Event \"" + name + "\" discarded"});
+            }
+        }
+
+        if (Hyphenopoly.handleEvent) {
+            Object.keys(Hyphenopoly.handleEvent).forEach(function (name) {
+                addEventListener(name, Hyphenopoly.handleEvent[name]);
+            });
+        }
+
+        Hyphenopoly.events.dispatch = dispatchEvent;
+        Hyphenopoly.events.define = defineEvent;
+        Hyphenopoly.events.addListener = addEventListener;
+
+    }());
 
     //normal wasm feature-test
     /*const isWASMsupported = (function featureTestWASM() {
@@ -23,7 +130,8 @@
         return false;
     }());*/
 
-    //wasm feature test with iOS bug detection
+
+    //wasm feature test with iOS bug detection (https://bugs.webkit.org/show_bug.cgi?id=181781)
     const isWASMsupported = (function featureTestWASM() {
         if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
             const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127, 3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115, 116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2, 0, 11]));
@@ -36,25 +144,26 @@
     }());
 
 
-    var scriptLoader = (function () {
-        var loadedScripts = {};
-        function loadScript(path, filename, msg) {
-            var script;
+    const scriptLoader = (function () {
+        const loadedScripts = {};
+        function loadScript(path, filename) {
             if (!loadedScripts[filename]) {
-                script = d.createElement("script");
+                let script = d.createElement("script");
                 loadedScripts[filename] = true;
                 script.src = path + filename;
-                script.addEventListener("load", function () {
-                    Hyphenopoly.evt(msg);
-                });
+                if (filename === "hyphenEngine.asm.js") {
+                    script.addEventListener("load", function () {
+                        Hyphenopoly.events.dispatch("engineLoaded", {msg: "asm"});
+                    });
+                }
                 d.head.appendChild(script);
             }
         }
         return loadScript;
     }());
 
-    var assetLoader = (function () {
-        var loadedAssets = {};
+    const assetLoader = (function () {
+        const loadedAssets = {};
 
         function fetchBinary(path, filename, assetName, msg) {
             if (!loadedAssets[filename]) {
@@ -71,7 +180,7 @@
                             } else {
                                 Hyphenopoly.assets[assetName] = response.arrayBuffer();
                             }
-                            Hyphenopoly.evt(msg);
+                            Hyphenopoly.events.dispatch(msg[0], {msg: msg[1]});
                         }
                     }
                 );
@@ -83,7 +192,7 @@
             xhr.open("GET", path + filename);
             xhr.onload = function () {
                 Hyphenopoly.assets[assetName] = xhr.response;
-                Hyphenopoly.evt(msg);
+                Hyphenopoly.events.dispatch(msg[0], {msg: msg[1]});
             };
             xhr.responseType = "arraybuffer";
             xhr.send();
@@ -94,28 +203,22 @@
     }());
 
     function allocateSpeculativeMemory(lang) {
-        var wasmPages = 0;
-        var asmSize = 0;
+        let wasmPages;
         switch (lang) {
         case "nl":
-            wasmPages = 43;
-            asmSize = 64;
+            wasmPages = 41;
             break;
         case "de":
-            wasmPages = 77;
-            asmSize = 128;
+            wasmPages = 75;
             break;
         case "nb-no":
-            wasmPages = 94;
-            asmSize = 128;
+            wasmPages = 92;
             break;
         case "hu":
-            wasmPages = 209;
-            asmSize = 256;
+            wasmPages = 207;
             break;
         default:
             wasmPages = 32;
-            asmSize = 32;
         }
         if (!Hyphenopoly.hasOwnProperty("specMems")) {
             Hyphenopoly.specMems = {};
@@ -126,23 +229,23 @@
                 maximum: 256
             });
         } else {
-            Hyphenopoly.specMems[lang] = new ArrayBuffer(asmSize * 64 * 1024);
+            Hyphenopoly.specMems[lang] = new ArrayBuffer((2 << (Math.ceil(Math.log2(wasmPages)) - 1)) * 64 * 1024);
         }
     }
 
     function makeTests() {
-        var results = {
+        const results = {
             needsPolyfill: false,
             languages: {}
         };
 
-        var tester = (function () {
-            var fakeBody;
+        const tester = (function () {
+            let fakeBody;
             function createTest(lang) {
                 if (!fakeBody) {
                     fakeBody = d.createElement("body");
                 }
-                var testDiv = d.createElement("div");
+                const testDiv = d.createElement("div");
                 testDiv.lang = lang;
                 testDiv.id = lang;
                 testDiv.style.cssText = "visibility:hidden;-moz-hyphens:auto;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;width:48px;font-size:12px;line-height:12px;boder:none;padding:0;word-wrap:normal";
@@ -167,11 +270,11 @@
         }());
 
         function loadRessources(lang) {
-            scriptLoader(Hyphenopoly.paths.maindir, "Hyphenopoly.js", ["Hyphenopoly loaded"]);
+            scriptLoader(Hyphenopoly.paths.maindir, "Hyphenopoly.js");
             if (isWASMsupported) {
                 assetLoader(Hyphenopoly.paths.maindir, "hyphenEngine.wasm", "hyphenEngine", ["engineLoaded", "wasm"]);
             } else {
-                scriptLoader(Hyphenopoly.paths.maindir, "hyphenEngine.asm.js", ["engineLoaded", "asm"]);
+                scriptLoader(Hyphenopoly.paths.maindir, "hyphenEngine.asm.js");
             }
             assetLoader(Hyphenopoly.paths.patterndir, lang + ".hpb", lang, ["hpbLoaded", lang]);
             allocateSpeculativeMemory(lang);
@@ -204,33 +307,24 @@
     }
 
     function run() {
-        var H = Hyphenopoly;
+        const H = Hyphenopoly;
         H.isWASMsupported = isWASMsupported;
         H.assets = {};
-        H.evtList = [];
-        H.evt = function (m) {
-            H.evtList.push(m);
-        };
         H.testResults = makeTests();
         if (!H.setup.hasOwnProperty("timeout")) {
             H.setup.timeout = 1000;
-        }
-        if (!H.setup.hasOwnProperty("onTimeOut")) {
-            H.setup.onTimeOut = function () {
-                window.console.warn("Hyphenopolys 'flash of unhyphenated content'-prevention timed out after " + H.setup.timeout + "ms");
-            };
         }
         if (H.testResults.needsPolyfill) {
             d.documentElement.style.visibility = "hidden";
 
             H.setup.timeOutHandler = window.setTimeout(function () {
                 d.documentElement.style.visibility = "visible";
-                H.setup.onTimeOut();
+                H.events.dispatch("timeout", {delay: H.setup.timeout});
             }, H.setup.timeout);
             d.addEventListener(
                 "DOMContentLoaded",
                 function DCL() {
-                    H.evt(["DOMContentLoaded"]);
+                    H.events.dispatch("DOMContentLoaded", {msg: ["DOMContentLoaded"]});
                 },
                 {
                     passive: true,

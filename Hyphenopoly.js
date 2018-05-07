@@ -48,9 +48,6 @@
             }()), 2),
             safeCopy: setProp(true, 2),
             normalize: setProp(false, 2),
-            onHyphenationFailed: setProp(function (e) {
-                window.console.error("Hyphenopoly.js error", e);
-            }, 2),
             exceptions: setProp(empty(), 2)
         });
 
@@ -120,11 +117,7 @@
 
                 function each(fn) {
                     Object.keys(list).forEach(function (k) {
-                        if (fn.length === 2) {
-                            fn(k, list[k]);
-                        } else {
-                            fn(list[k]);
-                        }
+                        fn(k, list[k]);
                     });
                 }
 
@@ -263,9 +256,6 @@
             }
 
             function hyphenator(word) {
-                if (classSettings.onBeforeWordHyphenation && (typeof classSettings.onBeforeWordHyphenation === "function")) {
-                    word = classSettings.onBeforeWordHyphenation(word, lang);
-                }
                 if (normalize) {
                     word = word.normalize("NFC");
                 }
@@ -277,9 +267,6 @@
                         hw = hyphenateCompound(lo, lang, word);
                     } else {
                         hw = lo.hyphenateFunction(word, hyphen, classSettings.leftminPerLang[lang], classSettings.rightminPerLang[lang]);
-                    }
-                    if (classSettings.onAfterWordHyphenation && (typeof classSettings.onAfterWordHyphenation === "function")) {
-                        hw = classSettings.onAfterWordHyphenation(hw, lang);
                     }
                     lo.cache[cn][word] = hw;
                 }
@@ -314,9 +301,7 @@
             const cn = elo.class;
             const classSettings = C[cn];
             const minWordLength = classSettings.minWordLength;
-            if (classSettings.onBeforeElementHyphenation && (typeof classSettings.onBeforeElementHyphenation === "function")) {
-                classSettings.onBeforeElementHyphenation(el, lang);
-            }
+            H.events.dispatch("beforeElementHyphenation", {el: el, lang: lang});
             const wordHyphenator = (wordHyphenatorPool[lang + "-" + cn] !== undefined)
                 ? wordHyphenatorPool[lang + "-" + cn]
                 : createWordHyphenator(lo, lang, cn);
@@ -343,17 +328,19 @@
             }
             elo.hyphenated = true;
             elements.counters[1] += 1;
-            if (classSettings.onAfterElementHyphenation && (typeof classSettings.onAfterElementHyphenation === "function")) {
-                classSettings.onAfterElementHyphenation(el, lang);
-            }
+            H.events.dispatch("afterElementHyphenation", {el: el, lang: lang});
         }
 
         function hyphenateLangElements(lang, elArr) {
-            elArr.forEach(function eachElem(elo) {
-                hyphenateElement(lang, elo);
-            });
+            if (elArr !== undefined) {
+                elArr.forEach(function eachElem(elo) {
+                    hyphenateElement(lang, elo);
+                });
+            } else {
+                H.events.dispatch("error", {msg: "engine for language '" + lang + "' loaded, but no elements found."});
+            }
             if (elements.counters[0] === elements.counters[1]) {
-                handleEvt(["hyphenationDone"]);
+                H.events.dispatch("hyphenopolyEnd");
             }
 
         }
@@ -427,7 +414,7 @@
                 });
                 lo.engineReady = true;
             }
-            H.evt(["engineReady", lang]);
+            Hyphenopoly.events.dispatch("engineReady", {msg: lang});
         }
 
         function calculateHeapSize(targetSize) {
@@ -696,67 +683,104 @@
             }
         }
 
-        function handleEvt(evt) {
-            //makeTimeStamp(evt[0]);
-            switch (evt[0]) {
-            case "DOMContentLoaded":
+        H.events.define(
+            "DOMContentLoaded",
+            function () {
                 autoSetMainLanguage();
                 collectElements();
-                H.evt(["ElementsReady"]);
-                break;
-            case "ElementsReady":
+                H.events.dispatch("ElementsReady");
+            },
+            false
+        );
+
+        H.events.define(
+            "ElementsReady",
+            function () {
                 elements.each(function (lang, values) {
                     if (H.hasOwnProperty("languages") && H.languages.hasOwnProperty(lang) && H.languages[lang].engineReady) {
                         hyphenateLangElements(lang, values);
-                    }//else wait for "patternReady"-evt
+                    }//else wait for "engineReady"-evt
                 });
-                break;
-            case "engineLoaded":
-                prepare("*", evt[1]);
-                break;
-            case "hpbLoaded":
-                prepare(evt[1], "*");
-                //fires H.evt(["engineReady", evt[1]]);
-                break;
-            case "engineReady":
+            },
+            false
+        );
+
+        H.events.define(
+            "engineLoaded",
+            function (e) {
+                prepare("*", e.msg);
+            },
+            false
+        );
+
+        H.events.define(
+            "hpbLoaded",
+            function (e) {
+                prepare(e.msg, "*");
+                //fires "engineReady", e.msg);
+            },
+            false
+        );
+
+        H.events.define(
+            "engineReady",
+            function (e) {
                 if (H.elementsReady) {
-                    hyphenateLangElements(evt[1], elements.list[evt[1]]);
+                    hyphenateLangElements(e.msg, elements.list[e.msg]);
                 } //else wait for "ElementsReady"-evt
-                break;
-            case "hyphenationDone":
+            },
+            false
+        );
+
+        H.events.define(
+            "hyphenopolyStart",
+            null,
+            true
+        );
+
+        H.events.define(
+            "hyphenopolyEnd",
+            function () {
                 w.clearTimeout(C.timeOutHandler);
                 w.document.documentElement.style.visibility = "visible";
-                if (C.onHyphenationDone && (typeof C.onHyphenationDone === "function")) {
-                    C.onHyphenationDone();
-                }
-                break;
-            case "timeout":
-                w.document.documentElement.style.visibility = "visible";
-                C.onTimeOut();
-                break;
-            }
-        }
+            },
+            false
+        );
 
+        H.events.define(
+            "beforeElementHyphenation",
+            null,
+            true
+        );
 
-        if (C.onHyphenopolyStart && (typeof C.onHyphenopolyStart === "function")) {
-            C.onHyphenopolyStart();
+        H.events.define(
+            "afterElementHyphenation",
+            null,
+            true
+        );
+
+        //register temporary defined handlers
+        let eo = H.events.tempRegister.shift();
+        while (eo) {
+            H.events.addListener(eo.name, eo.handler, true);
+            eo = H.events.tempRegister.shift();
         }
+        delete H.events.tempRegister;
+
+        H.events.dispatch("hyphenopolyStart", {msg: "Hyphenopoly started"});
 
         //clear Loader-timeout
         w.clearTimeout(H.setup.timeOutHandler);
         //renew timeout for the case something fails
         Object.defineProperty(C, "timeOutHandler", setProp(w.setTimeout(function () {
-            handleEvt(["timeout"]);
+            H.events.dispatch("timeout", {delay: C.timeout});
         }, C.timeout), 2));
 
         //import and exec triggered events from loader
-        H.evt = function (m) {
-            handleEvt(m);
-        };
-        H.evtList.forEach(function evt(m) {
-            handleEvt(m);
+        H.events.notHandled.forEach(function (eo) {
+            H.events.dispatch(eo.name, eo.data);
         });
-        delete H.evtList;
+        delete H.events.notHandled;
 
     }(w));
 }(window));

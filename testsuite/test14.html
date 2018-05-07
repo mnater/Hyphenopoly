@@ -35,6 +35,11 @@
                             }
                         }
                     }
+                },
+                handleEvent: {
+                    hyphenopolyEnd: function (e) {
+                        assert();
+                    }
                 }
             };
 
@@ -68,8 +73,6 @@
                     }), window.location.href);
                 }
             }
-            Hyphenopoly.setup.onHyphenationDone = assert;
-            
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
@@ -95,7 +98,7 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test13.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test14.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test13.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test15.html">Next&nbsp;&rarr;</a></div>
 
         <h1>Test 014</h1>
         <p id="desc">Test left-/rightmin and left-/rightminPerLang</p>

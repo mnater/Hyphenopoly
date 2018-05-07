@@ -17,6 +17,11 @@
                 classnames: {
                     "hyphenate": {}
                 }
+            },
+            handleEvent: {
+                hyphenopolyEnd: function (e) {
+                    assert();
+                }
             }
         };
         </script>
@@ -34,9 +39,7 @@
             }
         }
 
-        if (Hyphenopoly) {
-            Hyphenopoly.setup.onHyphenationDone = assert;
-        } else {
+        if (!Hyphenopoly) {
             document.addEventListener("DOMContentLoaded", function() {
                 assert();
             });

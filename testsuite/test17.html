@@ -2,51 +2,45 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 1</title>
+        <title>Test 17</title>
         <script>
             var Hyphenopoly = {
                 require: {
-                    "hu": "FORCEHYPHENOPOLY"
+                    "en-us": "FORCEHYPHENOPOLY"
                 },
                 paths: {
                     patterndir: "../patterns/",
                     maindir: "../"
                 },
                 setup: {
+                    safeCopy: false,
                     classnames: {
-                        "hyphenate": {
-                            hyphen: "•"
-                        }
+                        "hyphenate": {}
                     }
                 },
                 handleEvent: {
-                    hyphenopolyEnd: function (e) {
-                        assert();
+                    error: function (e) {
+                        e.preventDefault();
+                        assert(e);
                     }
                 }
             };
-            function assert() {
-                var tests = 1;
-                var i = 1;
-                var test = "";
-                var ref = "";
+
+            function assert(e) {
+                var test = "engine for language 'en-us' loaded, but no elements found.";
+                var ref = e.msg;
                 var result = false;
-                while (i <= tests) {
-                    test = document.getElementById("test" + i).innerHTML;
-                    ref = document.getElementById("ref" + i).innerHTML;
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                        result = result || true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                        result = result || false;
-                    }
-                    i += 1;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
+                    result = result || true;
+                } else {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">failed</span> ";
+                    result = result || false;
                 }
                 if (parent != window) {
                     parent.postMessage(JSON.stringify({
                         desc: document.getElementById("desc").innerHTML,
-                        index: 2,
+                        index: 17,
                         result: (result ? "passed" : "failed")
                     }), window.location.href);
                 }
@@ -76,15 +70,14 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test1.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test3.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test16.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test18.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 002</h1>
-        <p id="desc">Force hyphenate an hungarian word. Use special hyphen character.</p>
+        <h1>Test 017</h1>
+        <p id="desc">Error if no element found.</p>
         <div id="result"></div>
         <hr>
-        <p id="test1" class="test hyphenate" lang="hu">automatikusan</p>
-        <p id="ref1" class="ref" lang="hu">au•to•ma•ti•ku•san</p>
-
+        <p id="test1" class="test hyphenate" lang="en">engine for language 'en-us' loaded, but no elements found.</p>
+        <p id="ref1" class="ref" lang="en">engine for language 'en-us' loaded, but no elements found.</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 

@@ -24,6 +24,11 @@
                         "en-us": "Web-As-sem-bly",
                         "de": "Web-Assembly"
                     }
+                },
+                handleEvent: {
+                    hyphenopolyEnd: function (e) {
+                        assert();
+                    }
                 }
             };
 
@@ -53,8 +58,6 @@
                     }), window.location.href);
                 }
             }
-            Hyphenopoly.setup.onHyphenationDone = assert;
-            
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
