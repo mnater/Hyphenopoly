@@ -17,6 +17,16 @@
         return Object.create(null);
     }
 
+    Math.imul = Math.imul || function(a, b) {
+        var aHi = (a >>> 16) & 0xffff;
+        var aLo = a & 0xffff;
+        var bHi = (b >>> 16) & 0xffff;
+        var bLo = b & 0xffff;
+        // the shift by 0 fixes the sign on the high part
+        // the final |0 converts the unsigned value into a signed value
+        return ((aLo * bLo) + (((aHi * bLo + aLo * bHi) << 16) >>> 0) | 0);
+    };
+
     function setProp(val, props) {
         /* props is a bit pattern:
          * 1. bit: configurable
@@ -88,48 +98,43 @@
 
         let mainLanguage = null;
 
-        const elements = (function () {
+        let elements;
+        function makeElementCollection() {
+            //counter counts the elements to be hyphenated. Needs to be an object (Pass by reference)
+            let counter = [0];
+
+            const list = empty();
 
             function makeElement(element, cn) {
                 return {
                     element: element,
-                    hyphenated: false,
-                    treated: false,
                     class: cn
                 };
             }
 
-            function makeElementCollection() {
-                // array of [number of collected elements, number of hyphenated elements]
-                const counters = [0, 0];
-
-                const list = empty();
-
-                function add(el, lang, cn) {
-                    const elo = makeElement(el, cn);
-                    if (list[lang] === undefined) {
-                        list[lang] = [];
-                    }
-                    list[lang].push(elo);
-                    counters[0] += 1;
-                    return elo;
+            function add(el, lang, cn) {
+                const elo = makeElement(el, cn);
+                if (list[lang] === undefined) {
+                    list[lang] = [];
                 }
-
-                function each(fn) {
-                    Object.keys(list).forEach(function (k) {
-                        fn(k, list[k]);
-                    });
-                }
-
-                return {
-                    counters: counters,
-                    list: list,
-                    add: add,
-                    each: each
-                };
+                list[lang].push(elo);
+                counter[0] += 1;
+                return elo;
             }
-            return makeElementCollection();
-        }());
+
+            function each(fn) {
+                Object.keys(list).forEach(function (k) {
+                    fn(k, list[k]);
+                });
+            }
+
+            return {
+                counter: counter,
+                list: list,
+                add: add,
+                each: each
+            };
+        }
 
         const registerOnCopy = function (el) {
             el.addEventListener("copy", function (e) {
@@ -171,6 +176,7 @@
         }
 
         function collectElements() {
+            elements = makeElementCollection();
             function processText(el, pLang, cn, isChild) {
                 let eLang;
                 let n;
@@ -326,8 +332,7 @@
                 i += 1;
                 n = el.childNodes[i];
             }
-            elo.hyphenated = true;
-            elements.counters[1] += 1;
+            elements.counter[0] -= 1;
             H.events.dispatch("afterElementHyphenation", {el: el, lang: lang});
         }
 
@@ -339,7 +344,7 @@
             } else {
                 H.events.dispatch("error", {msg: "engine for language '" + lang + "' loaded, but no elements found."});
             }
-            if (elements.counters[0] === elements.counters[1]) {
+            if (elements.counter[0] === 0) {
                 H.events.dispatch("hyphenopolyEnd");
             }
 
@@ -684,7 +689,7 @@
         }
 
         H.events.define(
-            "DOMContentLoaded",
+            "contentLoaded",
             function () {
                 autoSetMainLanguage();
                 collectElements();

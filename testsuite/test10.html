@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 10</title>
+        <title>Test 010</title>
         <script>
         var Hyphenopoly = {
             require: {
@@ -29,9 +29,6 @@
                 }
             }
         };
-        </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
-        <script>
         function assert() {
             var tests = 1;
             var i = 1;
@@ -58,18 +55,15 @@
                 }), window.location.href);
             }
         }
-        if (!Hyphenopoly) {
-            document.addEventListener("DOMContentLoaded", function() {
-                assert();
-            });
-        }
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("pastebin").addEventListener("keyup", function(e) {
-                this.value += "\n" + Array.prototype.map.call(this.value, x => x.charCodeAt(0));
+                this.value += "\n" + Array.prototype.map.call(this.value, function (x) {
+                    return x.charCodeAt(0)
+                });
             }, true);
         });
         </script>
-        
+        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;

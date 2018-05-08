@@ -2,37 +2,20 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 014</title>
+        <title>Test 018</title>
         <script>
             var Hyphenopoly = {
                 require: {
-                    "de": "FORCEHYPHENOPOLY",
-                    "en-us": "FORCEHYPHENOPOLY"
+                    "de": "FORCEHYPHENOPOLY"
                 },
                 paths: {
                     patterndir: "../patterns/",
                     maindir: "../"
                 },
                 setup: {
-                    safeCopy: false,
                     classnames: {
-                        "class1": {
-                            hyphen: "•",
-                            leftmin: 0,
-                            rightmin: 0
-                        },
-                        "class2": {
-                            hyphen: "•",
-                            leftmin: 4,
-                            rightmin: 4
-                        },
-                        "class3": {
-                            hyphen: "•",
-                            leftmin: 0,
-                            leftminPerLang: {
-                                "de": 4,
-                                "en-us": 4
-                            }
+                        "hyphenate": {
+                            hyphen: "•"
                         }
                     }
                 },
@@ -42,37 +25,46 @@
                     }
                 }
             };
-
+            var assertRunCount = 0;
             function assert() {
-                var tests = 3;
+                assertRunCount += 1;
+                var tests = (assertRunCount === 1) ? 1 : 3;
                 var i = 1;
                 var test = "";
                 var ref = "";
                 var result = false;
+                document.getElementById("result").innerHTML = "";
                 while (i <= tests) {
                     test = document.getElementById("test" + i).innerHTML;
                     ref = document.getElementById("ref" + i).innerHTML;
                     if (test === ref) {
-                        document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
-                            return (i < 10) ? "0" + i : i; 
-                        }(i)) + "</span> ";
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
                         result = result || true;
                     } else {
-                        document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
-                            return (i < 10) ? "0" + i : i; 
-                        }(i)) + "</span> ";
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
                         result = result || false;
                     }
                     i += 1;
                 }
-                if (parent != window) {
+                if (parent != window && assertRunCount === 2) {
                     parent.postMessage(JSON.stringify({
                         desc: document.getElementById("desc").innerHTML,
-                        index: 14,
+                        index: 18,
                         result: (result ? "passed" : "failed")
                     }), window.location.href);
                 }
             }
+            window.setTimeout(function () {
+                document.getElementById("test1").innerHTML = "Typografie";
+                document.getElementById("ref1").innerHTML = "Ty•po•gra•fie";
+
+                document.getElementById("test2").innerHTML = "Textlayout";
+                document.getElementById("ref2").innerHTML = "Text•lay•out";
+
+                document.getElementById("test3").innerHTML ='<p class="hyphenate">Satzstruktur</p>';
+                document.getElementById("ref3").innerHTML ='<p class="hyphenate">Satz•struk•tur</p>';
+                Hyphenopoly.events.dispatch("contentLoaded");
+            }, 500);
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
@@ -98,18 +90,21 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test13.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test15.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test17.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test19.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 014</h1>
-        <p id="desc">Test left-/rightmin and left-/rightminPerLang</p>
-        <div id="result"></div>
+        <h1>Test 018</h1>
+        <p id="desc">Hyphenate element manually</p>
+        <div id="result">wait for it...</div>
         <hr>
-        <p id="test1" class="test class1" lang="de">Silbentrennungsalgorithmus</p>
+        <h2>1: Hyphenate on load, changed later</h2>
+        <p id="test1" class="test hyphenate" lang="de">Silbentrennungsalgorithmus</p>
         <p id="ref1" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus</p>
-        <p id="test2" class="test class2" lang="de">Silbentrennungsalgorithmus</p>
-        <p id="ref2" class="ref" lang="de">Silben•tren•nungs•al•go•rithmus</p>
-        <p id="test3" class="test class3" lang="de">Silbentrennungsalgorithmus <span lang="en-us">hyphenation</span></p>
-        <p id="ref3" class="ref" lang="de">Silben•tren•nungs•al•go•rith•mus <span lang="en-us">hyphen•ation</span></p>
+        <h2>2: Hyphenate text added to element with class="hyphenate"</h2>
+        <p id="test2" class="test hyphenate" lang="de"></p>
+        <p id="ref2" class="ref" lang="de"></p>
+        <h2>3: Hyphenate element with class="hyphenate" added to container</h2>
+        <div id="test3" class="test" lang="de"></div>
+        <div id="ref3" class="ref" lang="de"></div>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 

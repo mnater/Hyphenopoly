@@ -12,6 +12,10 @@
     "use strict";
     const d = document;
 
+    Math.log2 = Math.log2 || function(x) {
+        return Math.log(x) * Math.LOG2E;
+    };
+
     (function createEventSystem() {
         const definedEvents = Object.create(null);
         Hyphenopoly.events = Object.create(null);
@@ -44,10 +48,10 @@
         );
 
         defineEvent(
-            "DOMContentLoaded",
+            "contentLoaded",
             function (e) {
                 Hyphenopoly.events.notHandled.push({
-                    name: "DOMContentLoaded",
+                    name: "contentLoaded",
                     data: e
                 });
             },
@@ -324,7 +328,7 @@
             d.addEventListener(
                 "DOMContentLoaded",
                 function DCL() {
-                    H.events.dispatch("DOMContentLoaded", {msg: ["DOMContentLoaded"]});
+                    H.events.dispatch("contentLoaded", {msg: ["contentLoaded"]});
                 },
                 {
                     passive: true,
