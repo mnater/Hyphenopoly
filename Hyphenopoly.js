@@ -585,16 +585,16 @@
                 }
                 wordStore[i + 2] = 95;
 
-                hyphenateFunc(leftmin, rightmin);
-
-                i = 1;
-                word = "";
-                while (i < hyphenatedWordStore[0] + 1) {
-                    word += String.fromCharCode(hyphenatedWordStore[i]);
-                    i += 1;
-                }
-                if (hyphenchar !== "\u00AD") {
-                    word = word.replace(/\u00AD/g, hyphenchar);
+                if (hyphenateFunc(leftmin, rightmin) === 1) {
+                    i = 1;
+                    word = "";
+                    while (i < hyphenatedWordStore[0] + 1) {
+                        word += String.fromCharCode(hyphenatedWordStore[i]);
+                        i += 1;
+                    }
+                    if (hyphenchar !== "\u00AD") {
+                        word = word.replace(/\u00AD/g, hyphenchar);
+                    }
                 }
                 return word;
             };

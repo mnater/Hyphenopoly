@@ -218,7 +218,7 @@ function asmHyphenEngine(std, ext, heap) {
         }
 
         if ((unknownChar | 0) == 1) {
-            return;
+            return 0;
         }
 
         hpPos = 0;
@@ -268,6 +268,7 @@ function asmHyphenEngine(std, ext, heap) {
             charOffset = (charOffset + 2) | 0;
         }
         ui16[hyphenatedWordOffset >> 1] = ((wordLength >> 1) + (hyphenPointsCount >> 1) - 2) | 0;
+        return 1;
     }
 
     return {
