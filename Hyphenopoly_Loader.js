@@ -11,18 +11,27 @@
 (function H9YL() {
     "use strict";
     const d = document;
+    const H = Hyphenopoly;
 
-    Math.log2 = Math.log2 || function(x) {
+    //polyfill Math.log2
+    Math.log2 = Math.log2 || function (x) {
         return Math.log(x) * Math.LOG2E;
     };
 
-    (function createEventSystem() {
-        const definedEvents = Object.create(null);
-        Hyphenopoly.events = Object.create(null);
-        Hyphenopoly.events.notHandled = [];
-        Hyphenopoly.events.tempRegister = [];
+    function empty() {
+        return Object.create(null);
+    }
 
-        function defineEvent(name, defFunc, cancellable) {
+    (function setupEvents() {
+        //events known to the system
+        const definedEvents = empty();
+        //default events, execution deferred to Hyphenopoly.js
+        const deferred = [];
+        //register for custom event handlers, where event is not yet defined
+        //these events will be correctly registered in Hyphenopoly.js
+        const tempRegister = [];
+
+        function define(name, defFunc, cancellable) {
             definedEvents[name] = {
                 default: defFunc,
                 cancellable: cancellable,
@@ -30,7 +39,7 @@
             };
         }
 
-        defineEvent(
+        define(
             "timeout",
             function (e) {
                 d.documentElement.style.visibility = "visible";
@@ -39,7 +48,7 @@
             false
         );
 
-        defineEvent(
+        define(
             "error",
             function (e) {
                 window.console.error(e.msg);
@@ -47,10 +56,10 @@
             true
         );
 
-        defineEvent(
+        define(
             "contentLoaded",
             function (e) {
-                Hyphenopoly.events.notHandled.push({
+                deferred.push({
                     name: "contentLoaded",
                     data: e
                 });
@@ -58,10 +67,10 @@
             false
         );
 
-        defineEvent(
+        define(
             "engineLoaded",
             function (e) {
-                Hyphenopoly.events.notHandled.push({
+                deferred.push({
                     name: "engineLoaded",
                     data: e
                 });
@@ -69,10 +78,10 @@
             false
         );
 
-        defineEvent(
+        define(
             "hpbLoaded",
             function (e) {
-                Hyphenopoly.events.notHandled.push({
+                deferred.push({
                     name: "hpbLoaded",
                     data: e
                 });
@@ -80,9 +89,9 @@
             false
         );
 
-        function dispatchEvent(name, data) {
+        function dispatch(name, data) {
             if (!data) {
-                data = Object.create(null);
+                data = empty();
             }
             data.defaultPrevented = false;
             data.preventDefault = function () {
@@ -98,28 +107,31 @@
             }
         }
 
-        function addEventListener(name, handler, final) {
+        function addListener(name, handler, final) {
             if (definedEvents[name]) {
                 definedEvents[name].register.push(handler);
             } else if (!final) {
-                Hyphenopoly.events.tempRegister.push({
+                tempRegister.push({
                     name: name,
                     handler: handler
                 });
             } else {
-                Hyphenopoly.events.dispatch("error", {msg: "unknown Event \"" + name + "\" discarded"});
+                H.events.dispatch("error", {msg: "unknown Event \"" + name + "\" discarded"});
             }
         }
 
-        if (Hyphenopoly.handleEvent) {
-            Object.keys(Hyphenopoly.handleEvent).forEach(function (name) {
-                addEventListener(name, Hyphenopoly.handleEvent[name]);
+        if (H.handleEvent) {
+            Object.keys(H.handleEvent).forEach(function (name) {
+                addListener(name, H.handleEvent[name], false);
             });
         }
 
-        Hyphenopoly.events.dispatch = dispatchEvent;
-        Hyphenopoly.events.define = defineEvent;
-        Hyphenopoly.events.addListener = addEventListener;
+        H.events = empty();
+        H.events.deferred = deferred;
+        H.events.tempRegister = tempRegister;
+        H.events.dispatch = dispatch;
+        H.events.define = define;
+        H.events.addListener = addListener;
 
     }());
 
@@ -149,7 +161,7 @@
 
 
     const scriptLoader = (function () {
-        const loadedScripts = {};
+        const loadedScripts = empty();
         function loadScript(path, filename) {
             if (!loadedScripts[filename]) {
                 let script = d.createElement("script");
@@ -157,7 +169,7 @@
                 script.src = path + filename;
                 if (filename === "hyphenEngine.asm.js") {
                     script.addEventListener("load", function () {
-                        Hyphenopoly.events.dispatch("engineLoaded", {msg: "asm"});
+                        H.events.dispatch("engineLoaded", {msg: "asm"});
                     });
                 }
                 d.head.appendChild(script);
@@ -166,47 +178,51 @@
         return loadScript;
     }());
 
-    const assetLoader = (function () {
-        const loadedAssets = {};
+    const binLoader = (function () {
+        const loadedBins = empty();
 
-        function fetchBinary(path, filename, assetName, msg) {
-            if (!loadedAssets[filename]) {
-                loadedAssets[filename] = true;
+        function fetchBinary(path, filename, name, msg) {
+            if (!loadedBins[filename]) {
+                loadedBins[filename] = true;
                 fetch(path + filename).then(
                     function (response) {
                         if (response.ok) {
-                            if (assetName === "hyphenEngine") {
-                                Hyphenopoly.assets[assetName] = response.arrayBuffer().then(
+                            if (name === "hyphenEngine") {
+                                H.binaries[name] = response.arrayBuffer().then(
                                     function (buf) {
                                         return new WebAssembly.Module(buf);
                                     }
                                 );
                             } else {
-                                Hyphenopoly.assets[assetName] = response.arrayBuffer();
+                                H.binaries[name] = response.arrayBuffer();
                             }
-                            Hyphenopoly.events.dispatch(msg[0], {msg: msg[1]});
+                            H.events.dispatch(msg[0], {msg: msg[1]});
                         }
                     }
                 );
             }
         }
 
-        function requestBinary(path, filename, assetName, msg) {
-            const xhr = new XMLHttpRequest();
-            xhr.open("GET", path + filename);
-            xhr.onload = function () {
-                Hyphenopoly.assets[assetName] = xhr.response;
-                Hyphenopoly.events.dispatch(msg[0], {msg: msg[1]});
-            };
-            xhr.responseType = "arraybuffer";
-            xhr.send();
+        function requestBinary(path, filename, name, msg) {
+            if (!loadedBins[filename]) {
+                loadedBins[filename] = true;
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", path + filename);
+                xhr.onload = function () {
+                    H.binaries[name] = xhr.response;
+                    H.events.dispatch(msg[0], {msg: msg[1]});
+                };
+                xhr.responseType = "arraybuffer";
+                xhr.send();
+            }
         }
+
         return (isWASMsupported)
             ? fetchBinary
             : requestBinary;
     }());
 
-    function allocateSpeculativeMemory(lang) {
+    function allocateMemory(lang) {
         let wasmPages;
         switch (lang) {
         case "nl":
@@ -224,23 +240,23 @@
         default:
             wasmPages = 32;
         }
-        if (!Hyphenopoly.hasOwnProperty("specMems")) {
-            Hyphenopoly.specMems = {};
+        if (!H.hasOwnProperty("specMems")) {
+            H.specMems = empty();
         }
         if (isWASMsupported) {
-            Hyphenopoly.specMems[lang] = new WebAssembly.Memory({
+            H.specMems[lang] = new WebAssembly.Memory({
                 initial: wasmPages,
                 maximum: 256
             });
         } else {
-            Hyphenopoly.specMems[lang] = new ArrayBuffer((2 << (Math.ceil(Math.log2(wasmPages)) - 1)) * 64 * 1024);
+            H.specMems[lang] = new ArrayBuffer((2 << (Math.ceil(Math.log2(wasmPages)) - 1)) * 64 * 1024);
         }
     }
 
     function makeTests() {
         const results = {
             needsPolyfill: false,
-            languages: {}
+            languages: empty()
         };
 
         const tester = (function () {
@@ -253,7 +269,7 @@
                 testDiv.lang = lang;
                 testDiv.id = lang;
                 testDiv.style.cssText = "visibility:hidden;-moz-hyphens:auto;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;width:48px;font-size:12px;line-height:12px;boder:none;padding:0;word-wrap:normal";
-                testDiv.appendChild(d.createTextNode(Hyphenopoly.require[lang]));
+                testDiv.appendChild(d.createTextNode(H.require[lang]));
                 fakeBody.appendChild(testDiv);
             }
             function appendTests(target) {
@@ -274,18 +290,18 @@
         }());
 
         function loadRessources(lang) {
-            scriptLoader(Hyphenopoly.paths.maindir, "Hyphenopoly.js");
+            scriptLoader(H.paths.maindir, "Hyphenopoly.js");
             if (isWASMsupported) {
-                assetLoader(Hyphenopoly.paths.maindir, "hyphenEngine.wasm", "hyphenEngine", ["engineLoaded", "wasm"]);
+                binLoader(H.paths.maindir, "hyphenEngine.wasm", "hyphenEngine", ["engineLoaded", "wasm"]);
             } else {
-                scriptLoader(Hyphenopoly.paths.maindir, "hyphenEngine.asm.js");
+                scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
             }
-            assetLoader(Hyphenopoly.paths.patterndir, lang + ".hpb", lang, ["hpbLoaded", lang]);
-            allocateSpeculativeMemory(lang);
+            binLoader(H.paths.patterndir, lang + ".hpb", lang, ["hpbLoaded", lang]);
+            allocateMemory(lang);
         }
 
-        Object.keys(Hyphenopoly.require).forEach(function (lang) {
-            if (Hyphenopoly.require[lang] === "FORCEHYPHENOPOLY") {
+        Object.keys(H.require).forEach(function (lang) {
+            if (H.require[lang] === "FORCEHYPHENOPOLY") {
                 results.needsPolyfill = true;
                 results.languages[lang] = "H9Y";
                 loadRessources(lang);
@@ -294,8 +310,8 @@
             }
         });
         tester.appendTests(d.documentElement);
-        Object.keys(Hyphenopoly.require).forEach(function (lang) {
-            if (Hyphenopoly.require[lang] !== "FORCEHYPHENOPOLY") {
+        Object.keys(H.require).forEach(function (lang) {
+            if (H.require[lang] !== "FORCEHYPHENOPOLY") {
                 if (d.getElementById(lang).offsetHeight > 12) {
                     results.needsPolyfill = results.needsPolyfill || false;
                     results.languages[lang] = "CSS";
@@ -310,10 +326,9 @@
         return results;
     }
 
-    function run() {
-        const H = Hyphenopoly;
+    (function run() {
         H.isWASMsupported = isWASMsupported;
-        H.assets = {};
+        H.binaries = empty();
         H.testResults = makeTests();
         if (!H.setup.hasOwnProperty("timeout")) {
             H.setup.timeout = 1000;
@@ -339,8 +354,6 @@
         } else {
             window.Hyphenopoly = null;
         }
-    }
-
-    run();
+    }());
 
 }());

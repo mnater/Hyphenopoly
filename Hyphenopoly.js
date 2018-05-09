@@ -601,11 +601,11 @@
         }
 
         function instantiateWasmEngine(lang) {
-            Promise.all([H.assets[lang], H.assets.hyphenEngine]).then(
-                function onAll(assets) {
-                    const hpbBuf = assets[0];
+            Promise.all([H.binaries[lang], H.binaries.hyphenEngine]).then(
+                function onAll(binaries) {
+                    const hpbBuf = binaries[0];
                     const baseData = calculateBaseData(hpbBuf);
-                    const wasmModule = assets[1];
+                    const wasmModule = binaries[1];
                     const wasmMemory = (H.specMems[lang].buffer.byteLength >= baseData.heapSize)
                         ? H.specMems[lang]
                         : new WebAssembly.Memory({
@@ -638,7 +638,7 @@
         }
 
         function instantiateAsmEngine(lang) {
-            const hpbBuf = H.assets[lang];
+            const hpbBuf = H.binaries[lang];
             const baseData = calculateBaseData(hpbBuf);
             const heapBuffer = (H.specMems[lang].byteLength >= baseData.heapSize)
                 ? H.specMems[lang]
@@ -782,10 +782,10 @@
         }, C.timeout), 2));
 
         //import and exec triggered events from loader
-        H.events.notHandled.forEach(function (eo) {
+        H.events.deferred.forEach(function (eo) {
             H.events.dispatch(eo.name, eo.data);
         });
-        delete H.events.notHandled;
+        delete H.events.deferred;
 
     }(w));
 }(window));
