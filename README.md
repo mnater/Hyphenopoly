@@ -5,11 +5,12 @@ API and behaviour may change often.
 # Hyphenopoly.js
 Hyphenopoly.js is a JavaScript-polyfill for hyphenation in HTML.
 The package consists of the following parts:
-- _Hyphenopoly_Loader.js_ (~9KB unpacked, ~2KB minified and compressed): feature-checks the client and loads other ressources if necessary.
+- _Hyphenopoly_Loader.js_ (~13KB unpacked, ~2.5KB minified and compressed): feature-checks the client and loads other ressources if necessary.
 - _Hyphenopoly.js_ (~30KB unpacked, ~4KB minified and compressed): does the whole DOM-foo and wraps asm/wasm.
 - _wasmHyphenEngine.wasm_ (~1KB uncompressed): wasm code for creating pattern trie and finding hyphenation points.
 - _asmHyphenEngine.js_ (~7KB uncompressed, ~1KB minified and compressed): fallback for clients that don't support wasm.
 - _pattern.hpb_ (sizes differ! e.g. en-us.hpb: ~29KB): space saving binary format of the hyphenation patterns (including their license).
+
 
 # Hyphenopoly.js vs. Hyphenator.js
 Hyphenator.js (https://github.com/mnater/Hyphenator) started 2007 and has evolved ever since.
@@ -84,15 +85,6 @@ Example (http://mnater.github.io/Hyphenopoly/example1.html):
         var Hyphenopoly = {
             require: {
                 "la": "honorificabilitudinitas"
-            },
-            paths: {
-                patterndir: "../patterns/",
-                maindir: "../"
-            },
-            setup: {
-                classnames: {
-                    "hyphenate": {}
-                }
             }
         };
         </script>
@@ -127,18 +119,6 @@ Hyphenator_Loader.js will feature test the client (aka browser, aka user agent) 
 
 If you want to force the usage of Hyphenopoly.js for a language (e.g. for testing purposes) write `"FORCEHYPHENOPOLY"` instead of the long word.
 
-### paths
-Hyphenopoly_Loader.js needs to know where hyphenation patterns and Hyphenopoly.js is located. Therefor the `Hyphenopoly` object must have exactly one property called `paths` containing an object with two properties:
-- `patterndir` with the path of the directory containing the patterns
-- `maindir` with the path of the directory containing Hyphenopoly.js, asmHyphenEngine.js and wasmHyphenEngine.wasm
-
-### setup
-If Hyphenopoly.js is executed (either because the browser doesn't support the language provided in `require` or because you `FORCEHYPHENOPOLY`'d) setup defines what is hyphenated and how.
-The `Hyphenopoly` object must have exactly one property called `setup` containing an object with keyValuePairs. There are many things you can set. Some configurations are general others are set per CSS class.
-
-The `setup` object must at least have one property called `classnames`: an object containing all CSS classes you want to be hyphenated. Typically these are the same classes you use in CSS to enable hyphenation.
-
-In the example above we configure Hyphenopoly.js to hyphenate all elements having the `hyphenate`-class without any special settings (the value is an empty object).
 
 ## Second script block – load and run Hyphenopoly_Loader.js
 Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary patterns. Hyphenopoly.js – once loaded – will hyphenate the elements according to the settings in `setup` and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and undhides the document and writes a message to the console.
