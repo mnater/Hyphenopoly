@@ -8,23 +8,10 @@
             require: {
                 "en-us": "FORCEHYPHENOPOLY"
             },
-            paths: {
-                patterndir: "../patterns/",
-                maindir: "../"
-            },
             setup: {
                 classnames: {
                     "class1": {
-                        hyphen: "·",
-                        onBeforeElementHyphenation: function (element, lang) {
-                                element.style.opacity = "0";
-                        },
-                        onAfterElementHyphenation: function (element, lang) {
-                            window.setTimeout(function () {
-                                element.style.opacity = "1";
-                                element.style.transition = "opacity 1000ms ease";
-                            }, 0);
-                        }
+                        hyphen: "·"
                     },
                     "class2": {
                         hyphen: "|",
@@ -33,6 +20,19 @@
                 }
             },
             handleEvent: {
+                beforeElementHyphenation: function (e) {
+                    if (e.el.className.indexOf("class1") !== -1) {
+                        e.el.style.opacity = "0";
+                    }
+                },
+                afterElementHyphenation: function (e) {
+                    if (e.el.className.indexOf("class1") !== -1) {
+                        window.setTimeout(function () {
+                            e.el.style.opacity = "1";
+                            e.el.style.transition = "opacity 1000ms ease";
+                        }, 0);
+                    }
+                },
                 hyphenopolyEnd: function (e) {
                     assert();
                 }

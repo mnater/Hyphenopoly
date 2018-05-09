@@ -327,12 +327,40 @@
     }
 
     (function run() {
+        //set defaults for paths and setup
+        if (!H.hasOwnProperty("paths")) {
+            H.paths = {
+                patterndir: "../patterns/",
+                maindir: "../"
+            };
+        } else {
+            if (!H.paths.hasOwnProperty("patterndir")) {
+                H.paths.patterndir = "../patterns/";
+            }
+            if (!H.paths.hasOwnProperty("maindir")) {
+                H.paths.patterndir = "../";
+            }
+        }
+        if (!H.hasOwnProperty("setup")) {
+            H.setup = {
+                classnames: {
+                    hyphenate: {}
+                },
+                timeout: 1000
+            };
+        } else {
+            if (!H.setup.hasOwnProperty("classnames")) {
+                H.setup.classnames = {
+                    hyphenate: {}
+                };
+            }
+            if (!H.setup.hasOwnProperty("timeout")) {
+                H.setup.timeout = 1000;
+            }
+        }
         H.isWASMsupported = isWASMsupported;
         H.binaries = empty();
         H.testResults = makeTests();
-        if (!H.setup.hasOwnProperty("timeout")) {
-            H.setup.timeout = 1000;
-        }
         if (H.testResults.needsPolyfill) {
             d.documentElement.style.visibility = "hidden";
 
