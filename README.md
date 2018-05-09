@@ -1,32 +1,19 @@
-# Beta warning
-This is still in development. Feel free to test and provide feed-back.
-API and behaviour may change often.
-
 # Hyphenopoly.js
-Hyphenopoly.js is a JavaScript-polyfill for hyphenation in HTML.
+Hyphenopoly.js is a JavaScript-polyfill for hyphenation in HTML: it hyphenates text if the user agent does not support CSS-hyphenation at all or not for the required languages.
+
 The package consists of the following parts:
 - _Hyphenopoly_Loader.js_ (~13KB unpacked, ~2.5KB minified and compressed): feature-checks the client and loads other ressources if necessary.
-- _Hyphenopoly.js_ (~30KB unpacked, ~4KB minified and compressed): does the whole DOM-foo and wraps asm/wasm.
-- _wasmHyphenEngine.wasm_ (~1KB uncompressed): wasm code for creating pattern trie and finding hyphenation points.
-- _asmHyphenEngine.js_ (~7KB uncompressed, ~1KB minified and compressed): fallback for clients that don't support wasm.
+- _Hyphenopoly.js_ (~30KB unpacked, ~4KB minified and compressed): does the whole DOM-foo and wraps (w)asm.
+- _hyphenEngine.wasm_ (~1KB uncompressed): wasm code for creating pattern trie and finding hyphenation points.
+- _hyphenEngine.asm.js_ (~7KB uncompressed, ~1KB minified and compressed): fallback for clients that don't support wasm.
 - _pattern.hpb_ (sizes differ! e.g. en-us.hpb: ~29KB): space saving binary format of the hyphenation patterns (including their license).
-
-
-# Hyphenopoly.js – typical course of action
-1. The (one and only) global variable "Hyphenopoly" is set. At this point it's an object containing the required languages.
-2. Hyphenopoly_Loader.js is executed. It tests if the client it runs on supports native hyphenation for all of the required languages and runs a wasm-feature-test. If at least one of these languages isn't supported all necessary ressources are loaded.
-3. When the document, Hyphenopoly.js, the (w)asmHyphenEngine and the pattern(s) are all loaded, text in the document gets hyphenated.
-
-
-# FOUHC – Flash Of UnHyphenated Content
-To prevent a Flash of UnHyphenated Content (FOUHC) while the browser is downloading resources, Hyphenator_Loader.js hides all content of the document until text is hyphenated. If something goes wrong the hiding times out after 1s.
 
 # Usage
 Place all code for Hyphenopoly at the top of the header (immediatly after the `<title>` tag) to ensure ressources are loaded as early as possible.
 You'll have to insert two script blocks. In the first block provide the initial configurations for Hyphenopoly_Loader as inline script. In the second block load Hyphenopoly_Loader.js as external script.
 Also, don't forget to enable CSS hyphenation.
 
-Example (http://mnater.github.io/Hyphenopoly/example1.html):
+[Example](http://mnater.github.io/Hyphenopoly/example1.html):
 ```html
 <!DOCTYPE html>
 <html>
@@ -36,13 +23,29 @@ Example (http://mnater.github.io/Hyphenopoly/example1.html):
         <script>
         var Hyphenopoly = {
             require: {
-                "la": "honorificabilitudinitas"
+                "la": "honorificabilitudinitas",
+                "de": "Silbentrennungsalgorithmus",
+                "en-us": "Supercalifragilisticexpialidocious"
+            },
+            setup: {
+                classnames: {
+                    "container": {}
+                }
             }
         };
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
+        <script src="./Hyphenopoly_Loader.js"></script>
         <style type="text/css">
-            .hyphenate {
+            body {
+                width:60%;
+                margin-left:20%;
+            }
+            p {
+                text-align: justify;
+                margin: 0 2em 0 0;
+            }
+            .container {
+                display: flex;
                 hyphens: auto;
                 -ms-hyphens: auto;
                 -moz-hyphens: auto;
@@ -52,7 +55,10 @@ Example (http://mnater.github.io/Hyphenopoly/example1.html):
     </head>
     <body>
         <h1>Example 1</h1>
-        <p class="hyphenate" lang="la">Qua de causa Helvetii quoque reliquos Gallos virtute praecedunt, quod fere cotidianis proeliis cum Germanis contendunt, cum aut suis finibus eos prohibent aut ipsi in eorum finibus bellum gerunt.</p>
+        <div class="container">
+        <p lang="la">Qua de causa Helvetii quoque reliquos Gallos virtute praecedunt, quod fere cotidianis proeliis cum Germanis contendunt, cum aut suis finibus eos prohibent aut ipsi in eorum finibus bellum gerunt.</p>
+        <p lang="en-us">For which reason the Helvetii also surpass the rest of the Gauls in valor, as they contend with the Germans in almost daily battles, when they either repel them from their own territories, or themselves wage war on their frontiers.</p>
+        <p lang="de">Aus diesem Grund übertreffen auch die Helvetier die übrigen Gallier an Tapferkeit, weil sie sich in fast täglichen Gefechten mit den Germanen messen, wobei sie diese entweder von ihrem Gebiet fernhalten oder selbst in deren Gebiet kämpfen.</p>
     </body>
 </html>
 ```
@@ -73,8 +79,8 @@ If you want to force the usage of Hyphenopoly.js for a language (e.g. for testin
 
 
 ## Second script block – load and run Hyphenopoly_Loader.js
-Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary patterns. Hyphenopoly.js – once loaded – will hyphenate the elements according to the settings in `setup` and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and undhides the document and writes a message to the console.
-If the browser supports all languages the script deletes the `Hyphenopoly`-object and terminates without further ado.
+Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary patterns. Hyphenopoly.js – once loaded – will hyphenate the elements according to the settings and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and undhides the document and writes a message to the console.
+If the browser supports all required languages the script deletes the `Hyphenopoly`-object and terminates without further ado.
 
 ## enable CSS-hyphenation
 Hyphenopoly by default hyphenates elements (and their children) with the classname `.hyphenate`. Don't forget to enable CSS-hyphenation for the classes eventually handled by Hyphenopoly.
@@ -110,9 +116,9 @@ The patterns are precomputed and available for many languages on CTAN. Hyphenopo
 These pattern vary in size. This is mostly due to the different linguistic characteristics of the languages.
 
 # Hyphenopoly.js vs. Hyphenator.js
-Hyphenator.js (https://github.com/mnater/Hyphenator) started 2007 and has evolved ever since.
+Hyphenator.js (https://github.com/mnater/Hyphenator) started 2007 and had evolved ever since.
 But web browsers have evolved much more!
-Almost all of them support native hyphenation (https://developer.mozilla.org/en-US/docs/Web/CSS/hyphens) for a specific set of languages (https://developer.mozilla.org/en-US/docs/Web/CSS/hyphens#Browser_compatibility). So it's time for something new!
+Almost all of them support native hyphenation (https://developer.mozilla.org/en-US/docs/Web/CSS/hyphens) for a specific set of languages (https://developer.mozilla.org/en-US/docs/Web/CSS/hyphens#Browser_compatibility). So it was time for something new!
 
 Hyphenopoly.js is based on Hyphenator.js (they share some code) but - in favor of simplicity and speed – lacks many features of Hyphenator.js. Most of these features aren't needed in modern webdesign anymore:
 - dropped support for usage as bookmarklet
