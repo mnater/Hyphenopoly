@@ -125,7 +125,7 @@ Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the lang
 If the browser supports all languages the script deletes the `Hyphenopoly`-object and terminates without further ado.
 
 ## enable CSS-hyphenation
-Don't forget to enable CSS-hyphenation for the classes you provided to `classnames`.
+Hyphenopoly by default hyphenates elements (and their children) with the classname `.hyphenate`. Don't forget to enable CSS-hyphenation for the classes eventually handled by Hyphenopoly.
 
 # Todo
 - [ ] documentation (general, how-tos and API, wiki)
