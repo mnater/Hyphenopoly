@@ -1,5 +1,5 @@
 # Hyphenopoly.js
-Hyphenopoly.js is a JavaScript-polyfill for hyphenation in HTML: it hyphenates text if the user agent doesn't support CSS-hyphenation at all or for the required languages.
+Hyphenopoly.js is a JavaScript-polyfill for hyphenation in HTML: it hyphenates text if the user agent does not support CSS-hyphenation at all or not for the required languages.
 
 The package consists of the following parts:
 - _Hyphenopoly_Loader.js_ (~13KB unpacked, ~2.5KB minified and compressed): feature-checks the client and loads other ressources if necessary.
