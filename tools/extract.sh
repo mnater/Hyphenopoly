@@ -103,7 +103,7 @@ hpbName[31]='uk'
 pt='../texPatterns/'
 px='hyph-'
 
-for i in {1..31}; do {
+for i in {1..1}; do {
     node tex2hpb.js ${pt}${px}${texName[${i}]}.lic.txt ${pt}${px}${texName[${i}]}.chr.txt ${pt}${px}${texName[${i}]}.pat.txt ${pt}${px}${texName[${i}]}.hyp.txt ${hpbName[${i}]}
 }
 done
