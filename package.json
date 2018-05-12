@@ -1,18 +1,35 @@
 {
-  "name": "Hyphenopoly",
+  "name": "hyphenopoly",
   "version": "1.0.0",
-  "description": "Polyfill for client-side hyphenation. This is still in development. Feel free to test and provide feed-back. API and behaviour may change often.",
+  "description": "Polyfill for client-side hyphenation.",
+  "keywords": [
+    "hyphenation",
+    "html",
+    "polyfill",
+    "hyphens"
+  ],
+  "homepage": "https://github.com/mnater/Hyphenopoly",
+  "bugs": "https://github.com/mnater/Hyphenopoly/issues",
+  "license": "MIT",
+  "author": {
+    "name": "Mathias Nater",
+    "email": "mathiasnater@gmail.com"
+  },
+  "files": [
+    "hyphenEngine.asm.js",
+    "hyphenEngine.wasm",
+    "Hyphenopoly_Loader.js",
+    "Hyphenopoly.js",
+    "patterns/"
+  ],
+  "browser": "Hyphenopoly_Loader.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mnater/Hyphenopoly.git"
+    "url": "https://github.com/mnater/Hyphenopoly"
   },
-  "keywords": [
-    "hyphenation"
-  ],
-  "author": "Mathias Nater",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/mnater/Hyphenopoly/issues"
-  },
-  "homepage": "https://github.com/mnater/Hyphenopoly#readme"
+  "dependencies": {},
+  "devDependencies": {
+    "binaryen": "^47.0.0",
+    "wabt": "^1.0.0"
+  }
 }
