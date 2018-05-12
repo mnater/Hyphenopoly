@@ -1,4 +1,4 @@
-/** @license asmHyphenEngine 0.2(beta) - client side hyphenation for webbrowsers
+/** @license hyphenEngine.asm.js 1.0.0 - client side hyphenation for webbrowsers
  *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  *  https://github.com/mnater/Hyphenopoly
  *
