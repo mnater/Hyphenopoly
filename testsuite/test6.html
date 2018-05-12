@@ -10,7 +10,8 @@
                 "be": "FORCEHYPHENOPOLY",
                 "ru": "FORCEHYPHENOPOLY",
                 "sr-cyrl": "FORCEHYPHENOPOLY",
-                "uk": "FORCEHYPHENOPOLY"
+                "uk": "FORCEHYPHENOPOLY",
+                "ka": "FORCEHYPHENOPOLY"
             },
             setup: {
                 classnames: {
@@ -27,7 +28,7 @@
             }
         };
         function assert() {
-            var tests = 5;
+            var tests = 6;
             var i = 1;
             var test = "";
             var ref = "";
@@ -94,6 +95,9 @@
         <h2>5: uk</h2>
         <p id="test5" class="test hyphenate" lang="uk">Українська мова належить до індоєвропейської мовної родини, слов'янської групи і разом з російською та білоруською до східнослов'янської підгрупи.</p>
         <p id="ref5" class="ref" lang="uk">Укра|їн|ська мо|ва на|ле|жить до ін|до|єв|ро|пей|ської мов|ної ро|ди|ни, слов'|ян|ської гру|пи і ра|зом з ро|сій|ською та бі|ло|ру|ською до схі|дно|слов'|ян|ської під|гру|пи.</p>
+        <h2>6: ka</h2>
+        <p id="test6" class="test hyphenate" lang="ka">შეგროვება გრაფიკული დიზაინერი, ხატები, ფონტები და დიდაქტიკური და გრამატიკა წიგნების ნივთები</p>
+        <p id="ref6" class="ref" lang="ka">შეგ|რო|ვე|ბა გრა|ფი|კუ|ლი დი|ზა|ი|ნე|რი, ხა|ტე|ბი, ფონ|ტე|ბი და დი|დაქ|ტი|კუ|რი და გრა|მა|ტი|კა წიგ|ნე|ბის ნივ|თე|ბი</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
         
