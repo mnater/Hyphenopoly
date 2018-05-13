@@ -312,7 +312,8 @@
         tester.appendTests(d.documentElement);
         Object.keys(H.require).forEach(function (lang) {
             if (H.require[lang] !== "FORCEHYPHENOPOLY") {
-                if (d.getElementById(lang).offsetHeight > 12) {
+                const el = d.getElementById(lang);
+                if (window.getComputedStyle(el).hyphens === "auto" && el.offsetHeight > 12) {
                     results.needsPolyfill = results.needsPolyfill || false;
                     results.languages[lang] = "CSS";
                 } else {
