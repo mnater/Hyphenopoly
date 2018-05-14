@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "1.0.1(devel)",
+  "version": "1.0.1-devel",
   "description": "Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -29,7 +29,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "binaryen": "^47.0.0",
-    "wabt": "^1.0.0"
+    "uglify-es": "^3.3.9"
+  },
+  "scripts": {
+    "test": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/",
+    "minify": "sh ./tools/minify.sh"
   }
 }
