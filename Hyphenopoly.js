@@ -279,6 +279,8 @@
                     if (!isChild && C.safeCopy) {
                         registerOnCopy(el);
                     }
+                } else if (H.testResults.languages[eLang] === undefined) {
+                    H.events.dispatch("error", {"msg": `Element with '${eLang}' found, but '${eLang}' not supported. Check language tags!`});
                 }
 
                 n = el.childNodes[j];

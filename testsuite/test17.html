@@ -15,17 +15,18 @@
                 },
                 handleEvent: {
                     error: function (e) {
-                        e.preventDefault();
+                        //e.preventDefault();
                         assert(e);
                     }
                 }
             };
 
             function assert(e) {
-                var test = "engine for language 'en-us' loaded, but no elements found.";
+                var test1 = "engine for language 'en-us' loaded, but no elements found.";
+                var test2 = "Element with 'en' found, but 'en' not supported. Check language tags!";
                 var ref = e.msg;
                 var result = false;
-                if (test === ref) {
+                if (test1 === ref || test2 === ref) {
                     document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
                     result = result || true;
                 } else {
