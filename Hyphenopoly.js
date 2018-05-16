@@ -262,7 +262,7 @@
              * @param {boolean} isChild If el is a child element
              * @returns {undefined}
              */
-            function processText(el, pLang, cn, isChild) {
+            function processElements(el, pLang, cn, isChild) {
                 let eLang = null;
                 let n = null;
                 let j = 0;
@@ -289,7 +289,7 @@
                         !C.dontHyphenate[n.nodeName.toLowerCase()] &&
                         n.className.indexOf(C.dontHyphenateClass) === -1) {
                         if (sortOutSubclasses(n.className.split(" "), C.classNames).length === 0) {
-                            processText(n, eLang, cn, true);
+                            processElements(n, eLang, cn, true);
                         }
                     }
                     j += 1;
@@ -299,7 +299,7 @@
             C.classNames.forEach(function eachClassName(cn) {
                 const nl = w.document.querySelectorAll(`.${cn}`);
                 Array.prototype.forEach.call(nl, function eachNode(n) {
-                    processText(n, getLang(n, true), cn, false);
+                    processElements(n, getLang(n, true), cn, false);
                 });
             });
             H.elementsReady = true;
