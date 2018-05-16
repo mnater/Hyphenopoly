@@ -279,7 +279,7 @@
                     if (!isChild && C.safeCopy) {
                         registerOnCopy(el);
                     }
-                } else if (H.testResults.languages[eLang] === undefined) {
+                } else if (!H.testResults.languages[eLang]) {
                     H.events.dispatch("error", {"msg": `Element with '${eLang}' found, but '${eLang}' not supported. Check language tags!`});
                 }
 
