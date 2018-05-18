@@ -33,7 +33,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "napa": "^3.0.0",
     "uglify-es": "^3.3.9",
     "eslint": "^4.19.1"
   },
