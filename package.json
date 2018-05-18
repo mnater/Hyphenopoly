@@ -6,7 +6,11 @@
     "hyphenation",
     "html",
     "polyfill",
-    "hyphens"
+    "hyphens",
+    "hyphen",
+    "soft",
+    "hyphenate",
+    "JavaScript"
   ],
   "homepage": "https://github.com/mnater/Hyphenopoly",
   "bugs": "https://github.com/mnater/Hyphenopoly/issues",
@@ -118,18 +122,14 @@
     }
   },
   "scripts": {
-    "install": "napa",
+    "install": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen && git clone --recursive https://github.com/WebAssembly/wabt.git third-party/wabt",
     "postinstall": "npm run compile-binaryen && npm run compile-wabt",
-    "compile-binaryen": "cd ./node_modules/binaryen/ && cmake . && make",
-    "compile-wabt": "cd ./node_modules/wabt/ && make",
+    "compile-binaryen": "cd ./third-party/binaryen/ && cmake . && make",
+    "compile-wabt": "cd ./third-party/wabt/ && make",
     "test": "npm run lint && npm run testsuite",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/",
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js",
     "prepare": "npm run minify",
     "minify": "sh ./tools/minify.sh"
-  },
-  "napa": {
-    "binaryen": "https://github.com/WebAssembly/binaryen.git",
-    "wabt": "https://github.com/WebAssembly/wabt.git"
   }
 }
