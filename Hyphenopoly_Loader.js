@@ -431,15 +431,15 @@
         // Set defaults for paths and setup
         if (H.paths) {
             if (!H.paths.patterndir) {
-                H.paths.patterndir = "../patterns/";
+                H.paths.patterndir = "../Hyphenopoly/patterns/";
             }
             if (!H.paths.maindir) {
-                H.paths.patterndir = "../";
+                H.paths.maindir = "../Hyphenopoly/";
             }
         } else {
             H.paths = {
-                "maindir": "../",
-                "patterndir": "../patterns/"
+                "maindir": "../Hyphenopoly/",
+                "patterndir": "../Hyphenopoly/patterns/"
             };
         }
         if (H.setup) {
