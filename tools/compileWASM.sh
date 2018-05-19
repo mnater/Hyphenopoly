@@ -14,7 +14,7 @@ asm2wasm $SRCFILE -Oz -m 2097152 -mm 16777216 > $WASTNAME
 echo 'optimize > WASM...'
 wasm-opt $WASTNAME -O3 -o $WASMNAME
 
-#rm $WASTNAME
+rm $WASTNAME
 
-echo 'disassemble WASM...'
-wasm2wat $WASMNAME > $DISNAME
+#echo 'disassemble WASM...'
+#wasm2wat $WASMNAME > $DISNAME

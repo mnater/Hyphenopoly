@@ -24,7 +24,8 @@
     "hyphenEngine.wasm",
     "Hyphenopoly_Loader.js",
     "Hyphenopoly.js",
-    "patterns/"
+    "patterns/",
+    "min/"
   ],
   "browser": "Hyphenopoly_Loader.js",
   "repository": {
@@ -121,10 +122,12 @@
     }
   },
   "scripts": {
-    "install": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen && git clone --recursive https://github.com/WebAssembly/wabt.git third-party/wabt",
-    "postinstall": "npm run compile-binaryen && npm run compile-wabt",
+    "preinstall3rdparty": "rm -fR third-party",
+    "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen && git clone --recursive https://github.com/WebAssembly/wabt.git third-party/wabt",
+    "postinstall3rdparty": "npm run compile-binaryen && npm run compile-wabt",
     "compile-binaryen": "cd ./third-party/binaryen/ && cmake . && make",
     "compile-wabt": "cd ./third-party/wabt/ && make",
+    "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
     "test": "npm run lint && npm run testsuite",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/",
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js",
