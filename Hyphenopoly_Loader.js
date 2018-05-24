@@ -203,7 +203,7 @@
         }
         /* eslint-enable max-len, no-magic-numbers, no-prototype-builtins */
         if (t.isWASMsupported === null) {
-            t.isWASMsupported = runWasmTest();
+            t.isWASMsupported = !runWasmTest();
         }
     }());
 
@@ -325,6 +325,15 @@
             });
         } else {
             /* eslint-disable no-bitwise */
+            /**
+             * Polyfill Math.log2
+             * @param {number} x argument
+             * @return {number} Log2(x)
+             */
+            Math.log2 = Math.log2 || function polyfillLog2(x) {
+                return Math.log(x) * Math.LOG2E;
+            };
+
             const asmPages = (2 << Math.floor(Math.log2(wasmPages))) * 65536;
             /* eslint-enable no-bitwise */
             H.specMems[lang] = new ArrayBuffer(asmPages);
