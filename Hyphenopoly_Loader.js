@@ -203,7 +203,7 @@
         }
         /* eslint-enable max-len, no-magic-numbers, no-prototype-builtins */
         if (t.wasm === null) {
-            t.wasm = !runWasmTest();
+            t.wasm = runWasmTest();
         }
     }());
 
@@ -382,7 +382,7 @@
                 const testDiv = d.createElement("div");
                 testDiv.lang = lang;
                 testDiv.id = lang;
-                testDiv.style.cssText = "visibility:hidden;-moz-hyphens:auto;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;width:48px;font-size:12px;line-height:12px;boder:none;padding:0;word-wrap:normal";
+                testDiv.style.cssText = "visibility:hidden;-moz-hyphens:auto;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal";
                 testDiv.appendChild(d.createTextNode(H.require[lang]));
                 fakeBody.appendChild(testDiv);
             }
