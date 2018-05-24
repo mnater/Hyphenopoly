@@ -1,5 +1,5 @@
 /*
- * @license Hyphenopoly_Loader 2.0.0-devel - client side hyphenation for webbrowsers
+ * @license Hyphenopoly_Loader 2.0.0-devel - client side hyphenation
  *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  *  https://github.com/mnater/Hyphenopoly
  *
@@ -13,21 +13,24 @@
     const H = Hyphenopoly;
 
     /**
-     * Polyfill Math.log2
-     * @param {number} x argument
-     * @return {number} Log2(x)
-     */
-    Math.log2 = Math.log2 || function polyfillLog2(x) {
-        return Math.log(x) * Math.LOG2E;
-    };
-
-    /**
      * Create Object without standard Object-prototype
      * @returns {Object} empty object
      */
     function empty() {
         return Object.create(null);
     }
+
+    if (H.cacheFeatureTests && sessionStorage.getItem("Hyphenopoly_Loader")) {
+        H.testResults = JSON.parse(sessionStorage.getItem("Hyphenopoly_Loader"));
+    } else {
+        H.testResults = {
+            "isWASMsupported": null,
+            "languages": empty(),
+            "needsPolyfill": false
+        };
+    }
+
+    const t = H.testResults;
 
     (function setupEvents() {
         // Events known to the system
@@ -170,33 +173,39 @@
         H.events.addListener = addListener;
     }());
 
-    /* eslint-disable max-len, no-magic-numbers, no-prototype-builtins */
-    /*
-     * Normal wasm feature-test:
-     * const isWASMsupported = (function featureTestWASM() {
-     *      if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
-     *          const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0]));
-     *          if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
-     *              return WebAssembly.Instance.prototype.isPrototypeOf(new WebAssembly.Instance(module));
-     *          }
-     *      }
-     *      return false;
-     *  }());
-     */
+    (function featureTestWasm() {
+        /* eslint-disable max-len, no-magic-numbers, no-prototype-builtins */
+        /**
+         * Feature test for wasm
+         * @returns {boolean} support
+         */
+        function runWasmTest() {
+            /*
+             * This is the original test, without webkit workaround
+             * if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
+             *     const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0]));
+             *     if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
+             *         return WebAssembly.Instance.prototype.isPrototypeOf(new WebAssembly.Instance(module));
+             *     }
+             * }
+             * return false;
+             */
 
-
-    // Wasm feature test with iOS bug detection (https://bugs.webkit.org/show_bug.cgi?id=181781)
-    const isWASMsupported = (function featureTestWASM() {
-        if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
-            const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127, 3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115, 116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2, 0, 11]));
-            if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
-                const inst = new WebAssembly.Instance(module);
-                return WebAssembly.Instance.prototype.isPrototypeOf(inst) && (inst.exports.test(4) !== 0);
+            // Wasm feature test with iOS bug detection (https://bugs.webkit.org/show_bug.cgi?id=181781)
+            if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
+                const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127, 3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115, 116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2, 0, 11]));
+                if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
+                    const inst = new WebAssembly.Instance(module);
+                    return WebAssembly.Instance.prototype.isPrototypeOf(inst) && (inst.exports.test(4) !== 0);
+                }
             }
+            return false;
         }
-        return false;
+        /* eslint-enable max-len, no-magic-numbers, no-prototype-builtins */
+        if (t.isWASMsupported === null) {
+            t.isWASMsupported = runWasmTest();
+        }
     }());
-    /* eslint-enable max-len, no-magic-numbers, no-prototype-builtins */
 
     const scriptLoader = (function scriptLoader() {
         const loadedScripts = empty();
@@ -278,7 +287,7 @@
             }
         }
 
-        return (isWASMsupported)
+        return (t.isWASMsupported)
             ? fetchBinary
             : requestBinary;
     }());
@@ -309,7 +318,7 @@
         if (!H.specMems) {
             H.specMems = empty();
         }
-        if (isWASMsupported) {
+        if (t.isWASMsupported) {
             H.specMems[lang] = new WebAssembly.Memory({
                 "initial": wasmPages,
                 "maximum": 256
@@ -323,15 +332,29 @@
     }
 
     /**
-     * Make feature tests
+     * Load all ressources for a required <lang>
+     * @param {string} lang The language
      * @returns {undefined}
      */
-    function makeTests() {
-        const results = {
-            "languages": empty(),
-            "needsPolyfill": false
-        };
+    function loadRessources(lang) {
+        if (!H.binaries) {
+            H.binaries = empty();
+        }
+        scriptLoader(H.paths.maindir, "Hyphenopoly.js");
+        if (t.isWASMsupported) {
+            binLoader(
+                H.paths.maindir,
+                "hyphenEngine.wasm",
+                ["engineLoaded", "wasm"]
+            );
+        } else {
+            scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
+        }
+        binLoader(H.paths.patterndir, `${lang}.hpb`, ["hpbLoaded", lang]);
+        allocateMemory(lang);
+    }
 
+    (function featureTestCSSHHyphenation() {
         const tester = (function tester() {
             let fakeBody = null;
 
@@ -341,6 +364,9 @@
              * @returns {undefined}
              */
             function createTest(lang) {
+                if (t.languages[lang]) {
+                    return;
+                }
                 if (!fakeBody) {
                     fakeBody = d.createElement("body");
                 }
@@ -355,12 +381,14 @@
             /**
              * Append fakeBody with tests to target (document)
              * @param {Object} target Where to append fakeBody
-             * @returns {undefined}
+             * @returns {Object|null} The body element or null, if no tests
              */
             function appendTests(target) {
                 if (fakeBody) {
                     target.appendChild(fakeBody);
+                    return fakeBody;
                 }
+                return null;
             }
 
             /**
@@ -379,53 +407,39 @@
             };
         }());
 
-        /**
-         * Load all ressources for a required <lang>
-         * @param {string} lang The language
-         * @returns {undefined}
-         */
-        function loadRessources(lang) {
-            scriptLoader(H.paths.maindir, "Hyphenopoly.js");
-            if (isWASMsupported) {
-                binLoader(
-                    H.paths.maindir,
-                    "hyphenEngine.wasm",
-                    ["engineLoaded", "wasm"]
-                );
-            } else {
-                scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
-            }
-            binLoader(H.paths.patterndir, `${lang}.hpb`, ["hpbLoaded", lang]);
-            allocateMemory(lang);
-        }
-
         Object.keys(H.require).forEach(function doReqLangs(lang) {
             if (H.require[lang] === "FORCEHYPHENOPOLY") {
-                results.needsPolyfill = true;
-                results.languages[lang] = "H9Y";
+                t.needsPolyfill = true;
+                t.languages[lang] = "H9Y";
+                loadRessources(lang);
+            } else if (
+                t.languages[lang] &&
+                t.languages[lang] === "H9Y"
+            ) {
                 loadRessources(lang);
             } else {
                 tester.createTest(lang);
             }
         });
-        tester.appendTests(d.documentElement);
-        Object.keys(H.require).forEach(function checkReqLangs(lang) {
-            if (H.require[lang] !== "FORCEHYPHENOPOLY") {
-                const el = d.getElementById(lang);
-                if (window.getComputedStyle(el).hyphens === "auto" &&
-                    el.offsetHeight > 12) {
-                    results.needsPolyfill = results.needsPolyfill || false;
-                    results.languages[lang] = "CSS";
-                } else {
-                    results.needsPolyfill = true;
-                    results.languages[lang] = "H9Y";
-                    loadRessources(lang);
+        const testContainer = tester.appendTests(d.documentElement);
+        if (testContainer !== null) {
+            Object.keys(H.require).forEach(function checkReqLangs(lang) {
+                if (H.require[lang] !== "FORCEHYPHENOPOLY") {
+                    const el = d.getElementById(lang);
+                    if (window.getComputedStyle(el).hyphens === "auto" &&
+                        el.offsetHeight > 12) {
+                        t.needsPolyfill = t.needsPolyfill || false;
+                        t.languages[lang] = "CSS";
+                    } else {
+                        t.needsPolyfill = true;
+                        t.languages[lang] = "H9Y";
+                        loadRessources(lang);
+                    }
                 }
-            }
-        });
-        tester.clearTests();
-        return results;
-    }
+            });
+            tester.clearTests();
+        }
+    }());
 
     (function run() {
         // Set defaults for paths and setup
@@ -455,10 +469,8 @@
                 "timeout": 1000
             };
         }
-        H.isWASMsupported = isWASMsupported;
-        H.binaries = empty();
-        H.testResults = makeTests();
-        if (H.testResults.needsPolyfill) {
+
+        if (t.needsPolyfill) {
             d.documentElement.style.visibility = "hidden";
 
             H.setup.timeOutHandler = window.setTimeout(function timedOut() {
@@ -479,4 +491,8 @@
             window.Hyphenopoly = null;
         }
     }());
+
+    if (H.cacheFeatureTests) {
+        sessionStorage.setItem("Hyphenopoly_Loader", JSON.stringify(t));
+    }
 }());

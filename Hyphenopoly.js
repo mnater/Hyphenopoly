@@ -620,7 +620,7 @@
          */
         function calculateHeapSize(targetSize) {
             /* eslint-disable no-bitwise */
-            if (H.isWASMsupported) {
+            if (H.testResults.isWASMsupported) {
                 return Math.ceil(targetSize / 65536) * 65536;
             }
             const exp = Math.ceil(Math.log2(targetSize));
@@ -771,7 +771,7 @@
          */
         function encloseHyphenateFunction(baseData, hyphenateFunc) {
             /* eslint-disable no-bitwise */
-            const heapBuffer = H.isWASMsupported
+            const heapBuffer = H.testResults.isWASMsupported
                 ? baseData.wasmMemory.buffer
                 : baseData.heapBuffer;
             const wordOffset = baseData.wordOffset;
