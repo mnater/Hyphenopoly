@@ -274,12 +274,12 @@
                 } else {
                     eLang = getLang(el, true);
                 }
-                if (H.testResults.languages[eLang] === "H9Y") {
+                if (H.clientFeat.langs[eLang] === "H9Y") {
                     elements.add(el, eLang, cn);
                     if (!isChild && C.safeCopy) {
                         registerOnCopy(el);
                     }
-                } else if (!H.testResults.languages[eLang]) {
+                } else if (!H.clientFeat.langs[eLang]) {
                     H.events.dispatch("error", {"msg": `Element with '${eLang}' found, but '${eLang}' not supported. Check language tags!`});
                 }
 
@@ -620,7 +620,7 @@
          */
         function calculateHeapSize(targetSize) {
             /* eslint-disable no-bitwise */
-            if (H.testResults.isWASMsupported) {
+            if (H.clientFeat.wasm) {
                 return Math.ceil(targetSize / 65536) * 65536;
             }
             const exp = Math.ceil(Math.log2(targetSize));
@@ -771,7 +771,7 @@
          */
         function encloseHyphenateFunction(baseData, hyphenateFunc) {
             /* eslint-disable no-bitwise */
-            const heapBuffer = H.testResults.isWASMsupported
+            const heapBuffer = H.clientFeat.wasm
                 ? baseData.wasmMemory.buffer
                 : baseData.heapBuffer;
             const wordOffset = baseData.wordOffset;
