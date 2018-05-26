@@ -122,18 +122,18 @@
             if (!data) {
                 data = empty();
             }
-            data.defaultPrevented = false;
-            data.preventDefault = function preventDefault() {
-                if (definedEvents[name].cancellable) {
-                    data.defaultPrevented = true;
-                }
-            };
             definedEvents[name].register.forEach(function call(currentHandler) {
+                let defaultPrevented = false;
+                data.preventDefault = function preventDefault() {
+                    if (definedEvents[name].cancellable) {
+                        defaultPrevented = true;
+                    }
+                };
                 currentHandler(data);
+                if (!defaultPrevented && definedEvents[name].default) {
+                    definedEvents[name].default(data);
+                }
             });
-            if (!data.defaultPrevented && definedEvents[name].default) {
-                definedEvents[name].default(data);
-            }
         }
 
         /**
