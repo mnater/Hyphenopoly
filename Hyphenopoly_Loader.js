@@ -122,6 +122,7 @@
             if (!data) {
                 data = empty();
             }
+            let defaultHasRun = false;
             definedEvents[name].register.forEach(function call(currentHandler) {
                 let defaultPrevented = false;
                 data.preventDefault = function preventDefault() {
@@ -130,10 +131,14 @@
                     }
                 };
                 currentHandler(data);
-                if (!defaultPrevented && definedEvents[name].default) {
+                if (!defaultPrevented && !defaultHasRun && definedEvents[name].default) {
                     definedEvents[name].default(data);
+                    defaultHasRun = true;
                 }
             });
+            if (!defaultHasRun && definedEvents[name].default) {
+                definedEvents[name].default(data);
+            }
         }
 
         /**
@@ -246,7 +251,7 @@
             if (!loadedBins[fne]) {
                 loadedBins[fne] = true;
                 fetch(path + fne).then(
-                    function then(response) {
+                    function resolve(response) {
                         if (response.ok) {
                             const name = fne.slice(0, fne.lastIndexOf("."));
                             if (name === "hyphenEngine") {
