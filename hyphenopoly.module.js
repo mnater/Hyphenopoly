@@ -112,7 +112,9 @@ function loadWasm() {
         `${Hyphenopoly.c.paths.maindir}hyphenEngine.wasm`,
         function cb(err, data) {
             if (err) {
-                // Handle load error
+                Hyphenopoly.events.dispatch("error", {
+                    "msg": `${Hyphenopoly.c.paths.maindir}hyphenEngine.wasm not found.`
+                });
             } else {
                 Hyphenopoly.binaries.hyphenEngine = new Uint8Array(data).buffer;
                 Hyphenopoly.events.dispatch("engineLoaded");
@@ -131,7 +133,10 @@ function loadHpb(lang) {
         `${Hyphenopoly.c.paths.patterndir}${lang}.hpb`,
         function cb(err, data) {
             if (err) {
-                // Handle load error
+                Hyphenopoly.events.dispatch("error", {
+                    "msg": `${Hyphenopoly.c.paths.patterndir}${lang}.hpb not found.`,
+                    "lang": lang
+                });
             } else {
                 Hyphenopoly.binaries[lang] = new Uint8Array(data).buffer;
                 Hyphenopoly.events.dispatch("hpbLoaded", {"msg": lang});
@@ -609,7 +614,10 @@ Hyphenopoly.config = function config(userConfig) {
                 }
             });
             Hyphenopoly.events.addListener("error", function handler(e) {
-                reject(e.msg);
+                e.preventDefault();
+                if (e.lang === lang) {
+                    reject(e.msg);
+                }
             });
         });
         result.set(lang, prom);
@@ -641,7 +649,7 @@ Hyphenopoly.config = function config(userConfig) {
     define(
         "error",
         function def(e) {
-            window.console.error(e.msg);
+            console.error(e.msg);
         },
         true
     );
