@@ -280,7 +280,7 @@
                         registerOnCopy(el);
                     }
                 } else if (!H.clientFeat.langs[eLang]) {
-                    H.events.dispatch("error", {"msg": `Element with '${eLang}' found, but '${eLang}' not supported. Check language tags!`});
+                    H.events.dispatch("error", {"msg": `Element with '${eLang}' found, but '${eLang}.hpb' not loaded. Check language tags!`});
                 }
 
                 n = el.childNodes[j];
