@@ -7,53 +7,6 @@
  *  http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
-/*
- * This is a basic (yet undocumented) Hyphenopoly-module for usage in node.js
- * API will probably change and finally be documented in more detail.
- *
- * Please provide feedback on https://github.com/mnater/Hyphenopoly/issues
- *
- * ## Usage:
- * 1. Configure Hyphenopoly with `Hyphenopoly.config`
- * 2. Depending on how many languages are required:
- *     1. If only one language is required, `Hyphenopoly.config` returns
- *        a promise for a hyphenateText-function for the specified language.
- *     2. If more than one language is required, `Hyphenopoly.config` returns a
- * map of promises
- *
- * ### Example
- * ````javascript
- * const Hyphenopoly = require("./hyphenopoly.module");
- *
- * const textHyphenators = Hyphenopoly.config({
- *     "require": ["de"],
- *     //for more than oe language: "require": ["de", "en-us"],
- *     "paths": {
- *         "maindir": "./",
- *         "patterndir": "./patterns/"
- *     },
- *     "hyphen": "•"
- * });
- *
- * textHyphenators.then(
- * //for more than oe language: textHyphenators.get("de").then(
- *     function ff(hyphenateText) {
- *         console.log(hyphenateText("Silbentrennung verbessert das Layout."));
- *     }
- * );
- * ````
- *
- * ### Performance
- * On my machine with node.js 10.0.1:
- *
- * | module        | setup         | hyphenate 100 de words |
- * | ------------- | -------------:| ----------------------:|
- * | _hyphenopoly_ | _12ms_        | _2ms_                  |
- * | hyphen        | 40ms          | 370ms                  |
- * | hypher        | 70ms          | 3ms                    |
- *
- */
-
 /* eslint-env node */
 /* eslint no-console: 0 */
 "use strict";
@@ -113,6 +66,7 @@ function loadWasm() {
         `${H.c.paths.maindir}hyphenEngine.wasm`,
         function cb(err, data) {
             if (err) {
+                console.log(err);
                 H.events.dispatch("error", {"msg": `${H.c.paths.maindir}hyphenEngine.wasm not found.`});
             } else {
                 H.binaries.hyphenEngine = new Uint8Array(data).buffer;
@@ -587,8 +541,8 @@ H.config = function config(userConfig) {
         "normalize": setProp(false, 2),
         "orphanControl": setProp(1, 2),
         "paths": setProp(Object.create(null, {
-            "maindir": setProp("./", 2),
-            "patterndir": setProp("./patterns/", 2)
+            "maindir": setProp(`${__dirname}/`, 2),
+            "patterndir": setProp(`${__dirname}/patterns/`, 2)
         }), 2),
         "require": setProp([], 2),
         "rightmin": setProp(0, 2)
