@@ -24,9 +24,9 @@
         H.clientFeat = JSON.parse(sessionStorage.getItem("Hyphenopoly_Loader"));
     } else {
         H.clientFeat = {
-            "wasm": null,
             "langs": empty(),
-            "polyfill": false
+            "polyfill": false,
+            "wasm": null
         };
     }
 
@@ -131,7 +131,9 @@
                     }
                 };
                 currentHandler(data);
-                if (!defaultPrevented && !defaultHasRun && definedEvents[name].default) {
+                if (!defaultPrevented &&
+                    !defaultHasRun &&
+                    definedEvents[name].default) {
                     definedEvents[name].default(data);
                     defaultHasRun = true;
                 }

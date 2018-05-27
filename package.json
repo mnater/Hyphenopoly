@@ -34,8 +34,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "uglify-es": "^3.3.9",
-    "eslint": "^4.19.1"
+    "eslint": "^4.19.1",
+    "mocha": "^5.2.0",
+    "uglify-es": "^3.3.9"
   },
   "eslintConfig": {
     "env": {
@@ -53,7 +54,8 @@
       "max-len": [
         1,
         {
-          "ignoreStrings": true
+          "ignoreStrings": true,
+          "ignoreTemplateLiterals": true
         }
       ],
       "max-statements": 0,
@@ -128,9 +130,9 @@
     "compile-binaryen": "cd ./third-party/binaryen/ && cmake . && make",
     "compile-wabt": "cd ./third-party/wabt/ && make",
     "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
-    "test": "npm run lint && npm run testsuite",
+    "test": "npm run lint && mocha && npm run testsuite",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/",
-    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js",
+    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js",
     "prepare": "npm run minify",
     "minify": "sh ./tools/minify.sh"
   }

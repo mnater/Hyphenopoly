@@ -5,7 +5,7 @@ const time = process.hrtime();
 const Hyphenopoly = require("./hyphenopoly.module");
 
 const textHyphenators = Hyphenopoly.config({
-    "require": ["de"],
+    "require": ["en"],
     //"require": ["de", "en-us"],
     "paths": {
         "maindir": "./",
@@ -19,5 +19,8 @@ textHyphenators.then(
     function ff(hyphenateText) {
         console.log(hyphenateText("Silbentrennung verbessert den Blocksatz."));
         console.log(`${process.hrtime(time)[1] / 1e6}ms`);
+    },
+    function err(e) {
+        console.log(e);
     }
 );

@@ -16,8 +16,8 @@
  * ## Usage:
  * 1. Configure Hyphenopoly with `Hyphenopoly.config`
  * 2. Depending on how many languages are required:
- *     1. If only one language is required, `Hyphenopoly.config` returns a promise
- * for a hyphenateText-function for the specified language.
+ *     1. If only one language is required, `Hyphenopoly.config` returns
+ *        a promise for a hyphenateText-function for the specified language.
  *     2. If more than one language is required, `Hyphenopoly.config` returns a
  * map of promises
  *
@@ -38,7 +38,7 @@
  * textHyphenators.then(
  * //for more than oe language: textHyphenators.get("de").then(
  *     function ff(hyphenateText) {
- *         console.log(hyphenateText("Silbentrennung verbessert den Blocksatz."));
+ *         console.log(hyphenateText("Silbentrennung verbessert das Layout."));
  *     }
  * );
  * ````
@@ -55,6 +55,7 @@
  */
 
 /* eslint-env node */
+/* eslint no-console: 0 */
 "use strict";
 
 const fs = require("fs");
@@ -100,8 +101,8 @@ function setProp(val, props) {
     /* eslint-enable no-bitwise, sort-keys */
 }
 
-const Hyphenopoly = empty();
-Hyphenopoly.binaries = empty();
+const H = empty();
+H.binaries = empty();
 
 /**
  * Read a wasm file
@@ -109,15 +110,13 @@ Hyphenopoly.binaries = empty();
  */
 function loadWasm() {
     fs.readFile(
-        `${Hyphenopoly.c.paths.maindir}hyphenEngine.wasm`,
+        `${H.c.paths.maindir}hyphenEngine.wasm`,
         function cb(err, data) {
             if (err) {
-                Hyphenopoly.events.dispatch("error", {
-                    "msg": `${Hyphenopoly.c.paths.maindir}hyphenEngine.wasm not found.`
-                });
+                H.events.dispatch("error", {"msg": `${H.c.paths.maindir}hyphenEngine.wasm not found.`});
             } else {
-                Hyphenopoly.binaries.hyphenEngine = new Uint8Array(data).buffer;
-                Hyphenopoly.events.dispatch("engineLoaded");
+                H.binaries.hyphenEngine = new Uint8Array(data).buffer;
+                H.events.dispatch("engineLoaded");
             }
         }
     );
@@ -130,16 +129,16 @@ function loadWasm() {
  */
 function loadHpb(lang) {
     fs.readFile(
-        `${Hyphenopoly.c.paths.patterndir}${lang}.hpb`,
+        `${H.c.paths.patterndir}${lang}.hpb`,
         function cb(err, data) {
             if (err) {
-                Hyphenopoly.events.dispatch("error", {
-                    "msg": `${Hyphenopoly.c.paths.patterndir}${lang}.hpb not found.`,
-                    "lang": lang
+                H.events.dispatch("error", {
+                    "lang": lang,
+                    "msg": `${H.c.paths.patterndir}${lang}.hpb not found.`
                 });
             } else {
-                Hyphenopoly.binaries[lang] = new Uint8Array(data).buffer;
-                Hyphenopoly.events.dispatch("hpbLoaded", {"msg": lang});
+                H.binaries[lang] = new Uint8Array(data).buffer;
+                H.events.dispatch("hpbLoaded", {"msg": lang});
             }
         }
     );
@@ -279,35 +278,35 @@ function prepareLanguagesObj(
     rightmin
 ) {
     alphabet = alphabet.replace(/-/g, "");
-    if (!Hyphenopoly.languages) {
-        Hyphenopoly.languages = {};
+    if (!H.languages) {
+        H.languages = {};
     }
-    if (!Hyphenopoly.languages.lang) {
-        Hyphenopoly.languages[lang] = empty();
+    if (!H.languages.lang) {
+        H.languages[lang] = empty();
     }
-    const lo = Hyphenopoly.languages[lang];
+    const lo = H.languages[lang];
     if (!lo.engineReady) {
         lo.cache = empty();
-        if (Hyphenopoly.c.exceptions.global) {
-            if (Hyphenopoly.c.exceptions[lang]) {
-                Hyphenopoly.c.exceptions[lang] += `, ${Hyphenopoly.c.exceptions.global}`;
+        if (H.c.exceptions.global) {
+            if (H.c.exceptions[lang]) {
+                H.c.exceptions[lang] += `, ${H.c.exceptions.global}`;
             } else {
-                Hyphenopoly.c.exceptions[lang] = Hyphenopoly.c.exceptions.global;
+                H.c.exceptions[lang] = H.c.exceptions.global;
             }
         }
-        if (Hyphenopoly.c.exceptions[lang]) {
-            lo.exceptions = convertExceptions(Hyphenopoly.c.exceptions[lang]);
-            delete Hyphenopoly.c.exceptions[lang];
+        if (H.c.exceptions[lang]) {
+            lo.exceptions = convertExceptions(H.c.exceptions[lang]);
+            delete H.c.exceptions[lang];
         } else {
             lo.exceptions = empty();
         }
-        lo.genRegExp = new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${Hyphenopoly.c.minWordLength},}`, "gi");
+        lo.genRegExp = new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${H.c.minWordLength},}`, "gi");
         lo.leftmin = leftmin;
         lo.rightmin = rightmin;
         lo.hyphenateFunction = hyphenateFunction;
         lo.engineReady = true;
     }
-    Hyphenopoly.events.dispatch("engineReady", {"msg": lang});
+    H.events.dispatch("engineReady", {"msg": lang});
 }
 
 /**
@@ -366,19 +365,19 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
  * @returns {undefined}
  */
 function instantiateWasmEngine(lang) {
-    const baseData = calculateBaseData(Hyphenopoly.binaries[lang]);
+    const baseData = calculateBaseData(H.binaries[lang]);
     const wasmMemory = new WebAssembly.Memory({
         "initial": baseData.heapSize / 65536,
         "maximum": 256
     });
     const ui32wasmMemory = new Uint32Array(wasmMemory.buffer);
     ui32wasmMemory.set(
-        new Uint32Array(Hyphenopoly.binaries[lang]),
+        new Uint32Array(H.binaries[lang]),
         // eslint-disable-next-line no-bitwise
         baseData.hpbOffset >> 2
     );
     baseData.wasmMemory = wasmMemory;
-    WebAssembly.instantiate(Hyphenopoly.binaries.hyphenEngine, {
+    WebAssembly.instantiate(H.binaries.hyphenEngine, {
         "env": {
             "memory": baseData.wasmMemory,
             "memoryBase": 0
@@ -458,12 +457,12 @@ function createWordHyphenator(lo, lang) {
         let i = 0;
         let wordHyphenator = null;
         let hw = word;
-        switch (Hyphenopoly.c.compound) {
+        switch (H.c.compound) {
         case "auto":
             parts = word.split("-");
             wordHyphenator = createWordHyphenator(lo, lang);
             while (i < parts.length) {
-                if (parts[i].length >= Hyphenopoly.c.minWordLength) {
+                if (parts[i].length >= H.c.minWordLength) {
                     parts[i] = wordHyphenator(parts[i]);
                 }
                 i += 1;
@@ -474,7 +473,7 @@ function createWordHyphenator(lo, lang) {
             parts = word.split("-");
             wordHyphenator = createWordHyphenator(lo, lang);
             while (i < parts.length) {
-                if (parts[i].length >= Hyphenopoly.c.minWordLength) {
+                if (parts[i].length >= H.c.minWordLength) {
                     parts[i] = wordHyphenator(parts[i]);
                 }
                 i += 1;
@@ -493,22 +492,19 @@ function createWordHyphenator(lo, lang) {
      * @returns {string} The hyphenated word
      */
     function hyphenator(word) {
-        if (Hyphenopoly.c.normalize) {
-            word = word.normalize("NFC");
-        }
         let hw = lo.cache[word];
         if (!hw) {
             if (lo.exceptions[word]) {
                 hw = lo.exceptions[word].replace(
                     /-/g,
-                    Hyphenopoly.c.hyphen
+                    H.c.hyphen
                 );
             } else if (word.indexOf("-") === -1) {
                 hw = lo.hyphenateFunction(
                     word,
-                    Hyphenopoly.c.hyphen,
-                    Hyphenopoly.c.leftmin,
-                    Hyphenopoly.c.rightmin
+                    H.c.hyphen,
+                    H.c.leftmin,
+                    H.c.rightmin
                 );
             } else {
                 hw = hyphenateCompound(word);
@@ -536,11 +532,11 @@ const orphanController = (function createOrphanController() {
         lastWord,
         trailingWhiteSpace
     ) {
-        let h = Hyphenopoly.c.hyphen;
-        if (".\\+*?[^]$(){}=!<>|:-".indexOf(Hyphenopoly.c.hyphen) !== -1) {
-            h = `\\${Hyphenopoly.c.hyphen}`;
+        let h = H.c.hyphen;
+        if (".\\+*?[^]$(){}=!<>|:-".indexOf(H.c.hyphen) !== -1) {
+            h = `\\${H.c.hyphen}`;
         }
-        if (Hyphenopoly.c.orphanControl === 3 && leadingWhiteSpace === " ") {
+        if (H.c.orphanControl === 3 && leadingWhiteSpace === " ") {
             leadingWhiteSpace = String.fromCharCode(160);
         }
         return leadingWhiteSpace + lastWord.replace(new RegExp(h, "g"), "") + trailingWhiteSpace;
@@ -554,8 +550,8 @@ const orphanController = (function createOrphanController() {
  * @return {function} The hyphenateText-function
  */
 function createTextHyphenator(lang) {
-    lang = lang || Hyphenopoly.require[0];
-    const lo = Hyphenopoly.languages[lang];
+    lang = lang || H.require[0];
+    const lo = H.languages[lang];
     const wordHyphenator = (wordHyphenatorPool[lang])
         ? wordHyphenatorPool[lang]
         : createWordHyphenator(lo, lang);
@@ -567,8 +563,11 @@ function createTextHyphenator(lang) {
      * @returns {string} Hyphenated text
      */
     return function hyphenateText(text) {
+        if (H.c.normalize) {
+            text = text.normalize("NFC");
+        }
         let tn = text.replace(lo.genRegExp, wordHyphenator);
-        if (Hyphenopoly.c.orphanControl !== 1) {
+        if (H.c.orphanControl !== 1) {
             tn = tn.replace(
                 /(\u0020*)(\S+)(\s*)$/,
                 orphanController
@@ -578,7 +577,7 @@ function createTextHyphenator(lang) {
     };
 }
 
-Hyphenopoly.config = function config(userConfig) {
+H.config = function config(userConfig) {
     const defaults = Object.create(null, {
         "compound": setProp("hyphen", 2),
         "exceptions": setProp(empty(), 2),
@@ -602,18 +601,18 @@ Hyphenopoly.config = function config(userConfig) {
             setProp(userConfig[key], 3)
         );
     });
-    Hyphenopoly.c = settings;
+    H.c = settings;
     loadWasm();
     const result = new Map();
-    Hyphenopoly.c.require.forEach(function each(lang) {
+    H.c.require.forEach(function each(lang) {
         loadHpb(lang);
         const prom = new Promise(function pro(resolve, reject) {
-            Hyphenopoly.events.addListener("engineReady", function handler(e) {
+            H.events.addListener("engineReady", function handler(e) {
                 if (e.msg === lang) {
                     resolve(createTextHyphenator(lang));
                 }
             });
-            Hyphenopoly.events.addListener("error", function handler(e) {
+            H.events.addListener("error", function handler(e) {
                 e.preventDefault();
                 if (e.lang === lang) {
                     reject(e.msg);
@@ -623,7 +622,7 @@ Hyphenopoly.config = function config(userConfig) {
         result.set(lang, prom);
     });
     return (result.size === 1)
-        ? result.get(Hyphenopoly.c.require[0])
+        ? result.get(H.c.require[0])
         : result;
 };
 
@@ -710,24 +709,24 @@ Hyphenopoly.config = function config(userConfig) {
         if (definedEvents[name]) {
             definedEvents[name].register.push(handler);
         } else {
-            Hyphenopoly.events.dispatch(
+            H.events.dispatch(
                 "error",
                 {"msg": `unknown Event "${name}" discarded`}
             );
         }
     }
 
-    if (Hyphenopoly.handleEvent) {
-        Object.keys(Hyphenopoly.handleEvent).forEach(function add(name) {
-            addListener(name, Hyphenopoly.handleEvent[name], true);
+    if (H.handleEvent) {
+        Object.keys(H.handleEvent).forEach(function add(name) {
+            addListener(name, H.handleEvent[name], true);
         });
     }
 
-    Hyphenopoly.events = empty();
-    Hyphenopoly.events.dispatch = dispatch;
-    Hyphenopoly.events.define = define;
-    Hyphenopoly.events.addListener = addListener;
+    H.events = empty();
+    H.events.dispatch = dispatch;
+    H.events.define = define;
+    H.events.addListener = addListener;
 }());
 
 
-module.exports = Hyphenopoly;
+module.exports = H;
