@@ -115,6 +115,28 @@ describe("hyphenopoly.module", function () {
         it("uses language agnostic (global) exceptions", function (done) {
             H9Y.config({
                 "exceptions": {
+                    "global": "Silben-trennung"
+                },
+                "hyphen": "•",
+                "require": ["de"]
+            }).then(
+                function (hyphenateText) {
+                    if (hyphenateText("Silbentrennung") === "Silben•trennung") {
+                        done();
+                    } else {
+                        done(new Error(hyphenateText("Silbentrennung")));
+                    }
+                }
+            ).catch(
+                function (e) {
+                    done(new Error(e));
+                }
+            );
+        });
+
+        it("uses language both kind of exceptions", function (done) {
+            H9Y.config({
+                "exceptions": {
                     "global": "Silben-trennung",
                     "de": "Algo-rithmus"
                 },
@@ -347,6 +369,22 @@ describe("hyphenopoly.module", function () {
                     done(new Error(e));
                 }
             );
+        });
+
+        it("throws for unknown event", function (done) {
+            H9Y.config({
+                "require": ["de"],
+                "handleEvent": {
+                    "error": function (e) {
+                        if (e.msg === "unknown Event \"fantasyEvent\" discarded") {
+                            done();
+                        }
+                    },
+                    "fantasyEvent": function (e) {
+                        console.log(42);
+                    }
+                }
+            });
         });
     });
 });
