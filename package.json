@@ -1,10 +1,6 @@
 {
   "name": "hyphenopoly",
-<<<<<<< HEAD
-  "version": "2.0.0",
-=======
-  "version": "2.1.0-devel",
->>>>>>> master
+  "version": "2.1.0",
   "description": "Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -29,7 +25,9 @@
     "Hyphenopoly_Loader.js",
     "Hyphenopoly.js",
     "patterns/",
-    "min/"
+    "min/",
+    "example.js",
+    "example.html"
   ],
   "browser": "Hyphenopoly_Loader.js",
   "main": "hyphenopoly.module.js",
