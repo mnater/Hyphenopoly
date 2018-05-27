@@ -1,4 +1,6 @@
 # Hyphenopoly.js
+<img src="https://travis-ci.org/mnater/Hyphenopoly.svg?branch=master">
+
 Hyphenopoly.js is a JavaScript-polyfill for hyphenation in HTML: it hyphenates text if the user agent does not support CSS-hyphenation at all or not for the required languages.
 
 The package consists of the following parts:
