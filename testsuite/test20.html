@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 019</title>
+        <title>Test 020</title>
         <script>
             var Hyphenopoly = {
                 require: {
-                    "la": "FORCEHYPHENOPOLY"
+                    "de": "FORCEHYPHENOPOLY",
+                    "en-us": "FORCEHYPHENOPOLY"
                 },
                 paths: {
                     maindir: "../",
@@ -26,7 +27,7 @@
                 }
             };
             function assert() {
-                var tests = 1;
+                var tests = 4;
                 var i = 1;
                 var test = "";
                 var ref = "";
@@ -35,10 +36,14 @@
                     test = document.getElementById("test" + i).innerHTML;
                     ref = document.getElementById("ref" + i).innerHTML;
                     if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                            return (i < 10) ? "0" + i : i; 
+                        }(i)) + "</span> ";
                         result = result || true;
                     } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
+                            return (i < 10) ? "0" + i : i; 
+                        }(i)) + "</span> ";
                         result = result || false;
                     }
                     i += 1;
@@ -46,7 +51,7 @@
                 if (parent != window) {
                     parent.postMessage(JSON.stringify({
                         desc: document.getElementById("desc").innerHTML,
-                        index: 19,
+                        index: 20,
                         result: (result ? "passed" : "failed")
                     }), window.location.href);
                 }
@@ -76,15 +81,20 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test18.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test20.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test19.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test21.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 019</h1>
-        <p id="desc">Check latin (letter "v" is not in classic alphabet)</p>
+        <h1>Test 020</h1>
+        <p id="desc">Inherit language</p>
         <div id="result"></div>
         <hr>
-        <p id="test1" class="test hyphenate" lang="la">Qua de causa Helvetii quoque reliquos Gallos virtute praecedunt, quod fere cotidianis proeliis cum Germanis contendunt, cum aut suis finibus eos prohibent aut ipsi in eorum finibus bellum gerunt.</p>
-        <p id="ref1" class="ref" lang="la">Qua de causa Helvetii quo•que re•li•quos Gal•los virtute prae•ce•dunt, quod fere co•ti•dia•nis proe•li•is cum Ger•ma•nis con•ten•dunt, cum aut suis fi•ni•bus eos pro•hi•bent aut ipsi in eorum fi•ni•bus bel•lum ge•runt.</p>
-
+        <p id="test1" class="test hyphenate">exception</p>
+        <p id="ref1" class="ref">ex•cep•tion</p>
+        <p id="test2" class="test hyphenate" lang="de"><span>beinhalten</span></p>
+        <p id="ref2" class="ref" lang="de"><span>be•inhal•ten</span></p>
+        <p id="test3" class="test hyphenate" lang="de"><span lang="en-us">exception</span></p>
+        <p id="ref3" class="ref" lang="de"><span lang="en-us">ex•cep•tion</span></p>
+        <p id="test4" class="test hyphenate"><span>exception</span></p>
+        <p id="ref4" class="ref"><span>ex•cep•tion</span></p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 

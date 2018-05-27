@@ -1,12 +1,16 @@
 {
   "name": "hyphenopoly",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
     "html",
     "polyfill",
-    "hyphens"
+    "hyphens",
+    "hyphen",
+    "soft",
+    "hyphenate",
+    "JavaScript"
   ],
   "homepage": "https://github.com/mnater/Hyphenopoly",
   "bugs": "https://github.com/mnater/Hyphenopoly/issues",
@@ -20,16 +24,117 @@
     "hyphenEngine.wasm",
     "Hyphenopoly_Loader.js",
     "Hyphenopoly.js",
-    "patterns/"
+    "patterns/",
+    "min/"
   ],
   "browser": "Hyphenopoly_Loader.js",
+  "main": "hyphenopoly.module.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/mnater/Hyphenopoly"
   },
   "dependencies": {},
   "devDependencies": {
-    "binaryen": "^47.0.0",
-    "wabt": "^1.0.0"
+    "eslint": "^4.19.1",
+    "mocha": "^5.2.0",
+    "uglify-es": "^3.3.9"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es6": true
+    },
+    "globals": {
+      "Hyphenopoly": true
+    },
+    "extends": "eslint:all",
+    "rules": {
+      "no-template-curly-in-string": 2,
+      "wrap-iife": 1,
+      "max-lines": 0,
+      "max-len": [
+        1,
+        {
+          "ignoreStrings": true,
+          "ignoreTemplateLiterals": true
+        }
+      ],
+      "max-statements": 0,
+      "space-before-function-paren": [
+        1,
+        {
+          "anonymous": "always",
+          "named": "never",
+          "asyncArrow": "never"
+        }
+      ],
+      "padded-blocks": [
+        1,
+        "never"
+      ],
+      "id-length": [
+        1,
+        {
+          "min": 1
+        }
+      ],
+      "one-var": 0,
+      "func-names": [
+        1,
+        "as-needed"
+      ],
+      "func-style": [
+        1,
+        "declaration"
+      ],
+      "object-shorthand": 0,
+      "prefer-arrow-callback": 0,
+      "no-param-reassign": 0,
+      "no-extra-parens": 0,
+      "array-element-newline": [
+        1,
+        {
+          "multiline": true
+        }
+      ],
+      "no-magic-numbers": 0,
+      "function-paren-newline": [
+        1,
+        "consistent"
+      ],
+      "no-ternary": 0,
+      "no-nested-ternary": 0,
+      "prefer-destructuring": 0,
+      "max-params": [
+        1,
+        5
+      ],
+      "lines-around-comment": [
+        1,
+        {
+          "allowBlockStart": true
+        }
+      ],
+      "sort-keys": [
+        1,
+        "asc",
+        {
+          "caseSensitive": false
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "preinstall3rdparty": "rm -fR third-party",
+    "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen && git clone --recursive https://github.com/WebAssembly/wabt.git third-party/wabt",
+    "postinstall3rdparty": "npm run compile-binaryen && npm run compile-wabt",
+    "compile-binaryen": "cd ./third-party/binaryen/ && cmake . && make",
+    "compile-wabt": "cd ./third-party/wabt/ && make",
+    "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
+    "test": "npm run lint && mocha && npm run testsuite",
+    "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
+    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js",
+    "prepare": "npm run minify",
+    "minify": "sh ./tools/minify.sh"
   }
 }

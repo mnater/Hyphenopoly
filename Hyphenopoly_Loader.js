@@ -1,56 +1,79 @@
-/** @license Hyphenopoly_Loader 1.0.1 - client side hyphenation for webbrowsers
+/*
+ * @license Hyphenopoly_Loader 2.0.0 - client side hyphenation
  *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  *  https://github.com/mnater/Hyphenopoly
  *
  *  Released under the MIT license
  *  http://mnater.github.io/Hyphenopoly/LICENSE
  */
-/*jslint browser*/
-/*global window, Hyphenopoly, fetch, WebAssembly*/
 
 (function H9YL() {
     "use strict";
     const d = document;
     const H = Hyphenopoly;
 
-    //polyfill Math.log2
-    Math.log2 = Math.log2 || function (x) {
-        return Math.log(x) * Math.LOG2E;
-    };
-
+    /**
+     * Create Object without standard Object-prototype
+     * @returns {Object} empty object
+     */
     function empty() {
         return Object.create(null);
     }
 
+    if (H.cacheFeatureTests && sessionStorage.getItem("Hyphenopoly_Loader")) {
+        H.clientFeat = JSON.parse(sessionStorage.getItem("Hyphenopoly_Loader"));
+    } else {
+        H.clientFeat = {
+            "langs": empty(),
+            "polyfill": false,
+            "wasm": null
+        };
+    }
+
+    const t = H.clientFeat;
+
     (function setupEvents() {
-        //events known to the system
+        // Events known to the system
         const definedEvents = empty();
-        //default events, execution deferred to Hyphenopoly.js
+        // Default events, execution deferred to Hyphenopoly.js
         const deferred = [];
-        //register for custom event handlers, where event is not yet defined
-        //these events will be correctly registered in Hyphenopoly.js
+
+        /*
+         * Eegister for custom event handlers, where event is not yet defined
+         * these events will be correctly registered in Hyphenopoly.js
+         */
         const tempRegister = [];
 
+        /**
+         * Create Event Object
+         * @param {string} name The Name of the event
+         * @param {function} defFunc The default method of the event
+         * @param {boolean} cancellable Is the default cancellable
+         * @returns {undefined}
+         */
         function define(name, defFunc, cancellable) {
             definedEvents[name] = {
-                default: defFunc,
-                cancellable: cancellable,
-                register: []
+                "cancellable": cancellable,
+                "default": defFunc,
+                "register": []
             };
         }
 
         define(
             "timeout",
-            function (e) {
+            function def(e) {
                 d.documentElement.style.visibility = "visible";
-                window.console.info("Hyphenopolys 'flash of unhyphenated content'-prevention timed out after %dms", e.delay);
+                window.console.info(
+                    "Hyphenopolys 'FOUHC'-prevention timed out after %dms",
+                    e.delay
+                );
             },
             false
         );
 
         define(
             "error",
-            function (e) {
+            function def(e) {
                 window.console.error(e.msg);
             },
             true
@@ -58,10 +81,10 @@
 
         define(
             "contentLoaded",
-            function (e) {
+            function def(e) {
                 deferred.push({
-                    name: "contentLoaded",
-                    data: e
+                    "data": e,
+                    "name": "contentLoaded"
                 });
             },
             false
@@ -69,10 +92,10 @@
 
         define(
             "engineLoaded",
-            function (e) {
+            function def(e) {
                 deferred.push({
-                    name: "engineLoaded",
-                    data: e
+                    "data": e,
+                    "name": "engineLoaded"
                 });
             },
             false
@@ -80,49 +103,72 @@
 
         define(
             "hpbLoaded",
-            function (e) {
+            function def(e) {
                 deferred.push({
-                    name: "hpbLoaded",
-                    data: e
+                    "data": e,
+                    "name": "hpbLoaded"
                 });
             },
             false
         );
 
+        /**
+         * Dispatch error <name> with arguments <data>
+         * @param {string} name The name of the event
+         * @param {Object|undefined} data Data of the event
+         * @returns {undefined}
+         */
         function dispatch(name, data) {
             if (!data) {
                 data = empty();
             }
-            data.defaultPrevented = false;
-            data.preventDefault = function () {
-                if (definedEvents[name].cancellable) {
-                    data.defaultPrevented = true;
-                }
-            };
-            definedEvents[name].register.forEach(function (currentHandler) {
+            let defaultHasRun = false;
+            definedEvents[name].register.forEach(function call(currentHandler) {
+                let defaultPrevented = false;
+                data.preventDefault = function preventDefault() {
+                    if (definedEvents[name].cancellable) {
+                        defaultPrevented = true;
+                    }
+                };
                 currentHandler(data);
+                if (!defaultPrevented &&
+                    !defaultHasRun &&
+                    definedEvents[name].default) {
+                    definedEvents[name].default(data);
+                    defaultHasRun = true;
+                }
             });
-            if (!data.defaultPrevented && definedEvents[name].default) {
+            if (!defaultHasRun && definedEvents[name].default) {
                 definedEvents[name].default(data);
             }
         }
 
-        function addListener(name, handler, final) {
+        /**
+         * Add EventListender <handler> to event <name>
+         * @param {string} name The name of the event
+         * @param {function} handler Function to register
+         * @param {boolean} defer If the registration is deferred
+         * @returns {undefined}
+         */
+        function addListener(name, handler, defer) {
             if (definedEvents[name]) {
                 definedEvents[name].register.push(handler);
-            } else if (!final) {
+            } else if (defer) {
                 tempRegister.push({
-                    name: name,
-                    handler: handler
+                    "handler": handler,
+                    "name": name
                 });
             } else {
-                H.events.dispatch("error", {msg: "unknown Event \"" + name + "\" discarded"});
+                H.events.dispatch(
+                    "error",
+                    {"msg": `unknown Event "${name}" discarded`}
+                );
             }
         }
 
         if (H.handleEvent) {
-            Object.keys(H.handleEvent).forEach(function (name) {
-                addListener(name, H.handleEvent[name], false);
+            Object.keys(H.handleEvent).forEach(function add(name) {
+                addListener(name, H.handleEvent[name], true);
             });
         }
 
@@ -132,44 +178,59 @@
         H.events.dispatch = dispatch;
         H.events.define = define;
         H.events.addListener = addListener;
-
     }());
 
-    //normal wasm feature-test
-    /*const isWASMsupported = (function featureTestWASM() {
-        if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
-            const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0]));
-            if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
-                return WebAssembly.Instance.prototype.isPrototypeOf(new WebAssembly.Instance(module));
-            }
-        }
-        return false;
-    }());*/
+    (function featureTestWasm() {
+        /* eslint-disable max-len, no-magic-numbers, no-prototype-builtins */
+        /**
+         * Feature test for wasm
+         * @returns {boolean} support
+         */
+        function runWasmTest() {
+            /*
+             * This is the original test, without webkit workaround
+             * if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
+             *     const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0]));
+             *     if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
+             *         return WebAssembly.Instance.prototype.isPrototypeOf(new WebAssembly.Instance(module));
+             *     }
+             * }
+             * return false;
+             */
 
-
-    //wasm feature test with iOS bug detection (https://bugs.webkit.org/show_bug.cgi?id=181781)
-    const isWASMsupported = (function featureTestWASM() {
-        if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
-            const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127, 3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115, 116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2, 0, 11]));
-            if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
-                const inst = new WebAssembly.Instance(module);
-                return WebAssembly.Instance.prototype.isPrototypeOf(inst) && (inst.exports.test(4) !== 0);
+            // Wasm feature test with iOS bug detection (https://bugs.webkit.org/show_bug.cgi?id=181781)
+            if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
+                const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127, 3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115, 116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2, 0, 11]));
+                if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
+                    const inst = new WebAssembly.Instance(module);
+                    return WebAssembly.Instance.prototype.isPrototypeOf(inst) && (inst.exports.test(4) !== 0);
+                }
             }
+            return false;
         }
-        return false;
+        /* eslint-enable max-len, no-magic-numbers, no-prototype-builtins */
+        if (t.wasm === null) {
+            t.wasm = runWasmTest();
+        }
     }());
 
-
-    const scriptLoader = (function () {
+    const scriptLoader = (function scriptLoader() {
         const loadedScripts = empty();
+
+        /**
+         * Load script by adding <script>-tag
+         * @param {string} path Where the script is stored
+         * @param {string} filename Filename of the script
+         * @returns {undefined}
+         */
         function loadScript(path, filename) {
             if (!loadedScripts[filename]) {
-                let script = d.createElement("script");
+                const script = d.createElement("script");
                 loadedScripts[filename] = true;
                 script.src = path + filename;
                 if (filename === "hyphenEngine.asm.js") {
-                    script.addEventListener("load", function () {
-                        H.events.dispatch("engineLoaded", {msg: "asm"});
+                    script.addEventListener("load", function listener() {
+                        H.events.dispatch("engineLoaded", {"msg": "asm"});
                     });
                 }
                 d.head.appendChild(script);
@@ -178,52 +239,73 @@
         return loadScript;
     }());
 
-    const binLoader = (function () {
+    const binLoader = (function binLoader() {
         const loadedBins = empty();
 
-        function fetchBinary(path, filename, name, msg) {
-            if (!loadedBins[filename]) {
-                loadedBins[filename] = true;
-                fetch(path + filename).then(
-                    function (response) {
+        /**
+         * Get bin file using fetch
+         * @param {string} path Where the script is stored
+         * @param {string} fne Filename of the script with extension
+         * @param {Object} msg Message
+         * @returns {undefined}
+         */
+        function fetchBinary(path, fne, msg) {
+            if (!loadedBins[fne]) {
+                loadedBins[fne] = true;
+                fetch(path + fne).then(
+                    function resolve(response) {
                         if (response.ok) {
+                            const name = fne.slice(0, fne.lastIndexOf("."));
                             if (name === "hyphenEngine") {
                                 H.binaries[name] = response.arrayBuffer().then(
-                                    function (buf) {
+                                    function getModule(buf) {
                                         return new WebAssembly.Module(buf);
                                     }
                                 );
                             } else {
                                 H.binaries[name] = response.arrayBuffer();
                             }
-                            H.events.dispatch(msg[0], {msg: msg[1]});
+                            H.events.dispatch(msg[0], {"msg": msg[1]});
                         }
                     }
                 );
             }
         }
 
-        function requestBinary(path, filename, name, msg) {
-            if (!loadedBins[filename]) {
-                loadedBins[filename] = true;
+        /**
+         * Get bin file using XHR
+         * @param {string} path Where the script is stored
+         * @param {string} fne Filename of the script with extension
+         * @param {Object} msg Message
+         * @returns {undefined}
+         */
+        function requestBinary(path, fne, msg) {
+            if (!loadedBins[fne]) {
+                loadedBins[fne] = true;
                 const xhr = new XMLHttpRequest();
-                xhr.open("GET", path + filename);
-                xhr.onload = function () {
+                xhr.open("GET", path + fne);
+                xhr.onload = function onload() {
+                    const name = fne.slice(0, fne.lastIndexOf("."));
                     H.binaries[name] = xhr.response;
-                    H.events.dispatch(msg[0], {msg: msg[1]});
+                    H.events.dispatch(msg[0], {"msg": msg[1]});
                 };
                 xhr.responseType = "arraybuffer";
                 xhr.send();
             }
         }
 
-        return (isWASMsupported)
+        return (t.wasm)
             ? fetchBinary
             : requestBinary;
     }());
 
+    /**
+     * Allocate memory for (w)asm
+     * @param {string} lang Language
+     * @returns {undefined}
+     */
     function allocateMemory(lang) {
-        let wasmPages;
+        let wasmPages = 0;
         switch (lang) {
         case "nl":
             wasmPages = 41;
@@ -240,149 +322,193 @@
         default:
             wasmPages = 32;
         }
-        if (!H.hasOwnProperty("specMems")) {
+        if (!H.specMems) {
             H.specMems = empty();
         }
-        if (isWASMsupported) {
+        if (t.wasm) {
             H.specMems[lang] = new WebAssembly.Memory({
-                initial: wasmPages,
-                maximum: 256
+                "initial": wasmPages,
+                "maximum": 256
             });
         } else {
-            H.specMems[lang] = new ArrayBuffer((2 << (Math.ceil(Math.log2(wasmPages)) - 1)) * 64 * 1024);
+            /* eslint-disable no-bitwise */
+            /**
+             * Polyfill Math.log2
+             * @param {number} x argument
+             * @return {number} Log2(x)
+             */
+            Math.log2 = Math.log2 || function polyfillLog2(x) {
+                return Math.log(x) * Math.LOG2E;
+            };
+
+            const asmPages = (2 << Math.floor(Math.log2(wasmPages))) * 65536;
+            /* eslint-enable no-bitwise */
+            H.specMems[lang] = new ArrayBuffer(asmPages);
         }
     }
 
-    function makeTests() {
-        const results = {
-            needsPolyfill: false,
-            languages: empty()
-        };
+    /**
+     * Load all ressources for a required <lang>
+     * @param {string} lang The language
+     * @returns {undefined}
+     */
+    function loadRessources(lang) {
+        if (!H.binaries) {
+            H.binaries = empty();
+        }
+        scriptLoader(H.paths.maindir, "Hyphenopoly.js");
+        if (t.wasm) {
+            binLoader(
+                H.paths.maindir,
+                "hyphenEngine.wasm",
+                ["engineLoaded", "wasm"]
+            );
+        } else {
+            scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
+        }
+        binLoader(H.paths.patterndir, `${lang}.hpb`, ["hpbLoaded", lang]);
+        allocateMemory(lang);
+    }
 
-        const tester = (function () {
-            let fakeBody;
+    (function featureTestCSSHHyphenation() {
+        const tester = (function tester() {
+            let fakeBody = null;
+
+            /**
+             * Create and append div with CSS-hyphenated word
+             * @param {string} lang Language
+             * @returns {undefined}
+             */
             function createTest(lang) {
+                if (t.langs[lang]) {
+                    return;
+                }
                 if (!fakeBody) {
                     fakeBody = d.createElement("body");
                 }
                 const testDiv = d.createElement("div");
                 testDiv.lang = lang;
                 testDiv.id = lang;
-                testDiv.style.cssText = "visibility:hidden;-moz-hyphens:auto;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;width:48px;font-size:12px;line-height:12px;boder:none;padding:0;word-wrap:normal";
+                testDiv.style.cssText = "visibility:hidden;-moz-hyphens:auto;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal";
                 testDiv.appendChild(d.createTextNode(H.require[lang]));
                 fakeBody.appendChild(testDiv);
             }
+
+            /**
+             * Append fakeBody with tests to target (document)
+             * @param {Object} target Where to append fakeBody
+             * @returns {Object|null} The body element or null, if no tests
+             */
             function appendTests(target) {
                 if (fakeBody) {
                     target.appendChild(fakeBody);
+                    return fakeBody;
                 }
+                return null;
             }
+
+            /**
+             * Remove fakeBody
+             * @returns {undefined}
+             */
             function clearTests() {
                 if (fakeBody) {
                     fakeBody.parentNode.removeChild(fakeBody);
                 }
             }
             return {
-                createTest: createTest,
-                appendTests: appendTests,
-                clearTests: clearTests
+                "appendTests": appendTests,
+                "clearTests": clearTests,
+                "createTest": createTest
             };
         }());
 
-        function loadRessources(lang) {
-            scriptLoader(H.paths.maindir, "Hyphenopoly.js");
-            if (isWASMsupported) {
-                binLoader(H.paths.maindir, "hyphenEngine.wasm", "hyphenEngine", ["engineLoaded", "wasm"]);
-            } else {
-                scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
-            }
-            binLoader(H.paths.patterndir, lang + ".hpb", lang, ["hpbLoaded", lang]);
-            allocateMemory(lang);
-        }
-
-        Object.keys(H.require).forEach(function (lang) {
+        Object.keys(H.require).forEach(function doReqLangs(lang) {
             if (H.require[lang] === "FORCEHYPHENOPOLY") {
-                results.needsPolyfill = true;
-                results.languages[lang] = "H9Y";
+                t.polyfill = true;
+                t.langs[lang] = "H9Y";
+                loadRessources(lang);
+            } else if (
+                t.langs[lang] &&
+                t.langs[lang] === "H9Y"
+            ) {
                 loadRessources(lang);
             } else {
                 tester.createTest(lang);
             }
         });
-        tester.appendTests(d.documentElement);
-        Object.keys(H.require).forEach(function (lang) {
-            if (H.require[lang] !== "FORCEHYPHENOPOLY") {
-                const el = d.getElementById(lang);
-                if (window.getComputedStyle(el).hyphens === "auto" && el.offsetHeight > 12) {
-                    results.needsPolyfill = results.needsPolyfill || false;
-                    results.languages[lang] = "CSS";
-                } else {
-                    results.needsPolyfill = true;
-                    results.languages[lang] = "H9Y";
-                    loadRessources(lang);
+        const testContainer = tester.appendTests(d.documentElement);
+        if (testContainer !== null) {
+            Object.keys(H.require).forEach(function checkReqLangs(lang) {
+                if (H.require[lang] !== "FORCEHYPHENOPOLY") {
+                    const el = d.getElementById(lang);
+                    if (window.getComputedStyle(el).hyphens === "auto" &&
+                        el.offsetHeight > 12) {
+                        t.polyfill = t.polyfill || false;
+                        t.langs[lang] = "CSS";
+                    } else {
+                        t.polyfill = true;
+                        t.langs[lang] = "H9Y";
+                        loadRessources(lang);
+                    }
                 }
-            }
-        });
-        tester.clearTests();
-        return results;
-    }
+            });
+            tester.clearTests();
+        }
+    }());
 
     (function run() {
-        //set defaults for paths and setup
-        if (!H.hasOwnProperty("paths")) {
+        // Set defaults for paths and setup
+        if (H.paths) {
+            if (!H.paths.patterndir) {
+                H.paths.patterndir = "../Hyphenopoly/patterns/";
+            }
+            if (!H.paths.maindir) {
+                H.paths.maindir = "../Hyphenopoly/";
+            }
+        } else {
             H.paths = {
-                patterndir: "../patterns/",
-                maindir: "../"
+                "maindir": "../Hyphenopoly/",
+                "patterndir": "../Hyphenopoly/patterns/"
             };
-        } else {
-            if (!H.paths.hasOwnProperty("patterndir")) {
-                H.paths.patterndir = "../patterns/";
-            }
-            if (!H.paths.hasOwnProperty("maindir")) {
-                H.paths.patterndir = "../";
-            }
         }
-        if (!H.hasOwnProperty("setup")) {
-            H.setup = {
-                classnames: {
-                    hyphenate: {}
-                },
-                timeout: 1000
-            };
-        } else {
-            if (!H.setup.hasOwnProperty("classnames")) {
-                H.setup.classnames = {
-                    hyphenate: {}
-                };
+        if (H.setup) {
+            if (!H.setup.classnames) {
+                H.setup.classnames = {"hyphenate": {}};
             }
-            if (!H.setup.hasOwnProperty("timeout")) {
+            if (!H.setup.timeout) {
                 H.setup.timeout = 1000;
             }
+        } else {
+            H.setup = {
+                "classnames": {"hyphenate": {}},
+                "timeout": 1000
+            };
         }
-        H.isWASMsupported = isWASMsupported;
-        H.binaries = empty();
-        H.testResults = makeTests();
-        if (H.testResults.needsPolyfill) {
+
+        if (t.polyfill) {
             d.documentElement.style.visibility = "hidden";
 
-            H.setup.timeOutHandler = window.setTimeout(function () {
+            H.setup.timeOutHandler = window.setTimeout(function timedOut() {
                 d.documentElement.style.visibility = "visible";
-                H.events.dispatch("timeout", {delay: H.setup.timeout});
+                H.events.dispatch("timeout", {"delay": H.setup.timeout});
             }, H.setup.timeout);
             d.addEventListener(
                 "DOMContentLoaded",
                 function DCL() {
-                    H.events.dispatch("contentLoaded", {msg: ["contentLoaded"]});
+                    H.events.dispatch("contentLoaded", {"msg": ["contentLoaded"]});
                 },
                 {
-                    passive: true,
-                    once: true
+                    "once": true,
+                    "passive": true
                 }
             );
-
         } else {
             window.Hyphenopoly = null;
         }
     }());
 
+    if (H.cacheFeatureTests) {
+        sessionStorage.setItem("Hyphenopoly_Loader", JSON.stringify(t));
+    }
 }());

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 021</title>
+        <script>
+        var msgs = "";
+        var Hyphenopoly = {
+            require: {
+                "de": "FORCEHYPHENOPOLY",
+                "en-us": "FORCEHYPHENOPOLY"
+            },
+            paths: {
+                maindir: "../",
+                patterndir: "../patterns/"
+            },
+            setup: {
+                classnames: {
+                    "hyphenate": {
+                        hyphen: "•"
+                    }
+                }
+            },
+            handleEvent: {
+                hyphenopolyEnd: function (e) {
+                    assert(msgs);
+                },
+                fantasyEvent: function (e) {
+                    console.log(e);
+                }
+            }
+        };
+        function assert(e) {
+                var ref = "Listener 1:unknown Event \"fantasyEvent\" discardedListener 1:unknown Event \"fantasyEvent\" discardedListener 1:unknown Event \"fantasyEvent\" discarded";
+                var test = e;
+                var result = false;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
+                    result = result || true;
+                } else {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">failed</span> ";
+                    result = result || false;
+                }
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 21,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
+            }
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
+            Hyphenopoly.events.addListener("error", function (e) {
+                msgs += "Listener 1:" + e.msg;
+                console.log("Listener 1:" + e.msg)
+            });
+            Hyphenopoly.events.addListener("error", function (e) {
+                e.preventDefault();
+                msgs += "Listener 1:" + e.msg;
+                console.log("Listener 2:" + e.msg)
+            });
+            Hyphenopoly.events.addListener("error", function (e) {
+                msgs += "Listener 1:" + e.msg;
+                console.log("Listener 3:" + e.msg)
+            });
+        </script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test20.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test22.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 021</h1>
+        <p id="desc">Register multiple error handlers (also watch console)</p>
+        <div id="result"></div>
+        <hr>
+        <h2>1: en-us</h2>
+        <p id="test1" class="test hyphenate" lang="en-us">hyphenation algorithm</p>
+        <p id="ref1" class="ref" lang="en-us">hy•phen•ation al•go•rithm</p>
+
+        <h2>2: de</h2>
+        <p id="test2" class="test hyphenate" lang="de">Silbentrennungsalgorithmus</p>
+        <p id="ref2" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
+    </body>
+</html>

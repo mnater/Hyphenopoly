@@ -2,11 +2,11 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 019</title>
+        <title>Test 022</title>
         <script>
             var Hyphenopoly = {
                 require: {
-                    "la": "FORCEHYPHENOPOLY"
+                    "de": "FORCEHYPHENOPOLY"
                 },
                 paths: {
                     maindir: "../",
@@ -17,7 +17,8 @@
                         "hyphenate": {
                             hyphen: "•"
                         }
-                    }
+                    },
+                    normalize: true
                 },
                 handleEvent: {
                     hyphenopolyEnd: function (e) {
@@ -46,7 +47,7 @@
                 if (parent != window) {
                     parent.postMessage(JSON.stringify({
                         desc: document.getElementById("desc").innerHTML,
-                        index: 19,
+                        index: 22,
                         result: (result ? "passed" : "failed")
                     }), window.location.href);
                 }
@@ -76,14 +77,14 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test18.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test20.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test21.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test23.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 019</h1>
-        <p id="desc">Check latin (letter "v" is not in classic alphabet)</p>
+        <h1>Test 022</h1>
+        <p id="desc">Normalize combined characters (not supported in all clients)</p>
         <div id="result"></div>
         <hr>
-        <p id="test1" class="test hyphenate" lang="la">Qua de causa Helvetii quoque reliquos Gallos virtute praecedunt, quod fere cotidianis proeliis cum Germanis contendunt, cum aut suis finibus eos prohibent aut ipsi in eorum finibus bellum gerunt.</p>
-        <p id="ref1" class="ref" lang="la">Qua de causa Helvetii quo•que re•li•quos Gal•los virtute prae•ce•dunt, quod fere co•ti•dia•nis proe•li•is cum Ger•ma•nis con•ten•dunt, cum aut suis fi•ni•bus eos pro•hi•bent aut ipsi in eorum fi•ni•bus bel•lum ge•runt.</p>
+        <p id="test1" class="test hyphenate" lang="de">Bärentöter Ba&#x0308;rento&#x0308;ter</p>
+        <p id="ref1" class="ref" lang="de">Bä•ren•tö•ter Bä•ren•tö•ter</p>
 
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
