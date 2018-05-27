@@ -33,17 +33,22 @@ describe("hyphenopoly.module", function () {
             assert.equal(hyphenopoly.get("en-us").toString(), "[object Promise]");
         });
 
-        it("throws when hyphenEngine.wasm can't be found.", function (done) {
-            H9Y.config({
-                "require": ["en-us"],
+        it("throws when hyphenEngine.wasm can't be found.", async function () {
+            const hyphenopoly = H9Y.config({
+                "require": ["en-us", "de"],
                 "paths": {
                     "maindir": "fail/",
                     "patterndir": `./patterns/`
                 }
-            }).catch(
+            });
+            const deHyphenator = await hyphenopoly.get("de").catch(
                 function (e) {
-                    assert.equal(e.slice(-28), "hyphenEngine.wasm not found.");
-                    done();
+                    assert.equal(e, "fail/hyphenEngine.wasm not found.");
+                }
+            );
+            const enHyphenator = await hyphenopoly.get("en-us").catch(
+                function (e) {
+                    assert.equal(e, "fail/hyphenEngine.wasm not found.");
                 }
             );
         });
@@ -147,7 +152,7 @@ describe("hyphenopoly.module", function () {
                     if (hyphenateText("Silbentrennung Algorithmus") === "Silben•trennung Algo•rithmus") {
                         done();
                     } else {
-                        done(new Error(hyphenateText("Silbentrennung")));
+                        done(new Error(hyphenateText("Silbentrennung Algorithmus")));
                     }
                 }
             ).catch(
@@ -244,10 +249,10 @@ describe("hyphenopoly.module", function () {
                 "require": ["de"]
             }).then(
                 function (hyphenateText) {
-                    if (hyphenateText("Silbentrennungs-Algorithmus") === "Sil•ben•tren•nungs-" + String.fromCharCode(8203) +"Al•go•rith•mus") {
+                    if (hyphenateText("Silbentrennungs-Algorithmus Alpha-Version") === "Sil•ben•tren•nungs-" + String.fromCharCode(8203) + "Al•go•rith•mus Alpha-" + String.fromCharCode(8203) + "Ver•si•on") {
                         done();
                     } else {
-                        done(new Error(hyphenateText("Silbentrennungs-Algorithmus")));
+                        done(new Error(hyphenateText("Silbentrennungs-Algorithmus Alpha-Version")));
                     }
                 }
             ).catch(
@@ -385,6 +390,47 @@ describe("hyphenopoly.module", function () {
                     }
                 }
             });
+        });
+
+        it("fail to overwrite uncancellable event", function (done) {
+            H9Y.config({
+                "require": ["de"],
+                "handleEvent": {
+                    "engineReady": function (e) {
+                        e.preventDefault();
+                        done();
+                    }
+                }
+            });
+        });
+
+        it("hits the cache", function (done) {
+            H9Y.config({
+                "hyphen": "•",
+                "require": ["de"]
+            }).then(
+                function (hyphenateText) {
+                    if (hyphenateText("Silbentrennung Silbentrennung") === "Sil•ben•tren•nung Sil•ben•tren•nung") {
+                        done();
+                    } else {
+                        done(new Error(hyphenateText("Silbentrennung")));
+                    }
+                }
+            ).catch(
+                function (e) {
+                    done(new Error(e));
+                }
+            );
+        });
+
+        it("use async await and reuse wordHyphenator", async function () {
+            const H = H9Y.config({
+                "hyphen": "•",
+                "require": ["de", "de"]
+            });
+
+            const hyphenateText = await H;
+            assert.equal(hyphenateText("Silbentrennung Silbentrennung"), "Sil•ben•tren•nung Sil•ben•tren•nung");
         });
     });
 });

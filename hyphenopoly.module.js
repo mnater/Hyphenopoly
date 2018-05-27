@@ -506,7 +506,6 @@ const orphanController = (function createOrphanController() {
  * @return {function} The hyphenateText-function
  */
 function createTextHyphenator(lang) {
-    lang = lang || H.require[0];
     const lo = H.languages[lang];
     const wordHyphenator = (wordHyphenatorPool[lang])
         ? wordHyphenatorPool[lang]
