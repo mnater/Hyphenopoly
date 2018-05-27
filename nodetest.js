@@ -5,12 +5,8 @@ const time = process.hrtime();
 const Hyphenopoly = require("./hyphenopoly.module");
 
 const textHyphenators = Hyphenopoly.config({
-    "require": ["en"],
+    "require": ["de"],
     //"require": ["de", "en-us"],
-    "paths": {
-        "maindir": "./",
-        "patterndir": "./patterns/"
-    },
     "hyphen": "•"
 });
 

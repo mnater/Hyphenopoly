@@ -36,7 +36,7 @@ describe("hyphenopoly.module", function () {
         it("rejects when a language is not known", function (done) {
             H9Y.config({"require": ["en"]}).catch(
                 function (e) {
-                    assert.equal(e, "./patterns/en.hpb not found.");
+                    assert.equal(e.slice(-27), "/patterns/en.hpb not found.");
                     done();
                 }
             );
