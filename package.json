@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "1.0.1-devel",
+  "version": "2.1.0-devel",
   "description": "Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",

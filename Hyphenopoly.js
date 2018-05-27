@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly 2.0.0-devel - client side hyphenation for webbrowsers
+ * @license Hyphenopoly 2.1.0-devel - client side hyphenation for webbrowsers
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
