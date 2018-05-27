@@ -1,15 +1,12 @@
-/* eslint-env node */
-"use strict";
-
 const hyphenopoly = require("hyphenopoly");
 
 const hyphenator = hyphenopoly.config({
-        "require": ["de", "en-us"],
-        "hyphen": "•",
-        "exceptions": {
-            "en-us": "en-han-ces"
-        }
-    });
+    "require": ["de", "en-us"],
+    "hyphen": "•",
+    "exceptions": {
+        "en-us": "en-han-ces"
+    }
+});
 
 async function hyphenate_en(text) {
     const hyphenateText = await hyphenator.get("en-us");

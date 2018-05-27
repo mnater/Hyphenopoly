@@ -140,5 +140,6 @@
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js",
     "prepare": "npm run minify",
     "minify": "sh ./tools/minify.sh"
-  }
+  },
+  "runkitExampleFilename": "example.js"
 }

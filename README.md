@@ -9,8 +9,9 @@ The package consists of the following parts:
 - _hyphenEngine.wasm_ (~1KB uncompressed): wasm code for creating pattern trie and finding hyphenation points.
 - _hyphenEngine.asm.js_ (~7KB uncompressed, ~1KB minified and compressed): fallback for clients that don't support wasm.
 - _pattern.hpb_ (sizes differ! e.g. en-us.hpb: ~29KB): space saving binary format of the hyphenation patterns (including their license).
+- _hyphenopoly.module.js_: the node module
 
-# Usage
+# Usage (Browser)
 Place all code for Hyphenopoly at the top of the header (immediatly after the `<title>` tag) to ensure ressources are loaded as early as possible.
 You'll have to insert two script blocks. In the first block provide the initial configurations for Hyphenopoly_Loader as inline script. In the second block load Hyphenopoly_Loader.js as external script.
 Also, don't forget to enable CSS hyphenation.
@@ -86,6 +87,40 @@ If the browser supports all required languages the script deletes the `Hyphenopo
 
 ## enable CSS-hyphenation
 Hyphenopoly by default hyphenates elements (and their children) with the classname `.hyphenate`. Don't forget to enable CSS-hyphenation for the classes eventually handled by Hyphenopoly.
+
+# Usage (node)
+
+Install:
+````
+npm i hyphenopoly
+````
+
+````javascript
+"use strict";
+
+const hyphenopoly = require("hyphenopoly");
+
+const hyphenator = hyphenopoly.config({
+    "require": ["de", "en-us"],
+    "hyphen": "•",
+    "exceptions": {
+        "en-us": "en-han-ces"
+    }
+});
+
+async function hyphenate_en(text) {
+    const hyphenateText = await hyphenator.get("en-us");
+    console.log(hyphenateText(text));
+}
+
+async function hyphenate_de(text) {
+    const hyphenateText = await hyphenator.get("de");
+    console.log(hyphenateText(text));
+}
+
+hyphenate_en("hyphenation enhances justification.");
+hyphenate_de("Silbentrennung verbessert den Blocksatz.");
+````
 
 # Automatic hyphenation
 The algorithm used for hyphenation was developped by Franklin M. Liang for TeX. It works more or less like this:
