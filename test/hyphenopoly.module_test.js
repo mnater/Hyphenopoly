@@ -33,7 +33,27 @@ describe("hyphenopoly.module", function () {
             assert.equal(hyphenopoly.get("en-us").toString(), "[object Promise]");
         });
 
-        it("rejects when a language is not known", function (done) {
+        it("throws when hyphenEngine.wasm can't be found.", async function () {
+            const hyphenopoly = H9Y.config({
+                "require": ["en-us", "de"],
+                "paths": {
+                    "maindir": "fail/",
+                    "patterndir": `./patterns/`
+                }
+            });
+            const deHyphenator = await hyphenopoly.get("de").catch(
+                function (e) {
+                    assert.equal(e, "fail/hyphenEngine.wasm not found.");
+                }
+            );
+            const enHyphenator = await hyphenopoly.get("en-us").catch(
+                function (e) {
+                    assert.equal(e, "fail/hyphenEngine.wasm not found.");
+                }
+            );
+        });
+
+        it("throws when a language is not known", function (done) {
             H9Y.config({"require": ["en"]}).catch(
                 function (e) {
                     assert.equal(e.slice(-27), "/patterns/en.hpb not found.");
@@ -79,7 +99,7 @@ describe("hyphenopoly.module", function () {
 
         it("uses language specific exceptions", function (done) {
             H9Y.config({
-                "exceptions": {"de": "Silben-trennung"},
+                "exceptions": {"de": "Silben-trennung, Sil-ben-trennung"},
                 "hyphen": "•",
                 "require": ["de"]
             }).then(
@@ -99,7 +119,9 @@ describe("hyphenopoly.module", function () {
 
         it("uses language agnostic (global) exceptions", function (done) {
             H9Y.config({
-                "exceptions": {"global": "Silben-trennung"},
+                "exceptions": {
+                    "global": "Silben-trennung"
+                },
                 "hyphen": "•",
                 "require": ["de"]
             }).then(
@@ -108,6 +130,29 @@ describe("hyphenopoly.module", function () {
                         done();
                     } else {
                         done(new Error(hyphenateText("Silbentrennung")));
+                    }
+                }
+            ).catch(
+                function (e) {
+                    done(new Error(e));
+                }
+            );
+        });
+
+        it("uses language both kind of exceptions", function (done) {
+            H9Y.config({
+                "exceptions": {
+                    "global": "Silben-trennung",
+                    "de": "Algo-rithmus"
+                },
+                "hyphen": "•",
+                "require": ["de"]
+            }).then(
+                function (hyphenateText) {
+                    if (hyphenateText("Silbentrennung Algorithmus") === "Silben•trennung Algo•rithmus") {
+                        done();
+                    } else {
+                        done(new Error(hyphenateText("Silbentrennung Algorithmus")));
                     }
                 }
             ).catch(
@@ -164,10 +209,10 @@ describe("hyphenopoly.module", function () {
                 "require": ["de"]
             }).then(
                 function (hyphenateText) {
-                    if (hyphenateText("Silbentrennungs-Algorithmus") === "Silbentrennungs-" + String.fromCharCode(8203) +"Algorithmus") {
+                    if (hyphenateText("Silbentrennungs-Algorithmus Alpha-Version") === "Silbentrennungs-" + String.fromCharCode(8203) +"Algorithmus Alpha-" + String.fromCharCode(8203) + "Version") {
                         done();
                     } else {
-                        done(new Error(hyphenateText("Silbentrennungs-Algorithmus")));
+                        done(new Error(hyphenateText("Silbentrennungs-Algorithmus Alpha-Version")));
                     }
                 }
             ).catch(
@@ -184,10 +229,10 @@ describe("hyphenopoly.module", function () {
                 "require": ["de"]
             }).then(
                 function (hyphenateText) {
-                    if (hyphenateText("Silbentrennungs-Algorithmus") === "Sil•ben•tren•nungs-Al•go•rith•mus") {
+                    if (hyphenateText("Silbentrennungs-Algorithmus Alpha-Version") === "Sil•ben•tren•nungs-Al•go•rith•mus Alpha-Ver•si•on") {
                         done();
                     } else {
-                        done(new Error(hyphenateText("Silbentrennungs-Algorithmus")));
+                        done(new Error(hyphenateText("Silbentrennungs-Algorithmus Alpha-Version")));
                     }
                 }
             ).catch(
@@ -204,10 +249,10 @@ describe("hyphenopoly.module", function () {
                 "require": ["de"]
             }).then(
                 function (hyphenateText) {
-                    if (hyphenateText("Silbentrennungs-Algorithmus") === "Sil•ben•tren•nungs-" + String.fromCharCode(8203) +"Al•go•rith•mus") {
+                    if (hyphenateText("Silbentrennungs-Algorithmus Alpha-Version") === "Sil•ben•tren•nungs-" + String.fromCharCode(8203) + "Al•go•rith•mus Alpha-" + String.fromCharCode(8203) + "Ver•si•on") {
                         done();
                     } else {
-                        done(new Error(hyphenateText("Silbentrennungs-Algorithmus")));
+                        done(new Error(hyphenateText("Silbentrennungs-Algorithmus Alpha-Version")));
                     }
                 }
             ).catch(
@@ -294,6 +339,98 @@ describe("hyphenopoly.module", function () {
                     done(new Error(e));
                 }
             );
+        });
+
+        it("handles orphanControl: 3 with hyphen set to *", function (done) {
+            H9Y.config({
+                "hyphen": "*",
+                "orphanControl": 3,
+                "require": ["de"]
+            }).then(
+                function (hyphenateText) {
+                    if (hyphenateText("Die Asse essen lieber gesunde Esswaren") === "Die Asse essen lie*ber ge*sun*de" + String.fromCharCode(160) + "Esswaren") {
+                        done();
+                    } else {
+                        done(new Error(hyphenateText("Die Asse essen lieber gesunde Esswaren")));
+                    }
+                }
+            ).catch(
+                function (e) {
+                    done(new Error(e));
+                }
+            );
+        });
+
+        it("sets custom listener", function (done) {
+            H9Y.config({
+                "require": ["de"],
+                "handleEvent": {
+                    "engineReady": function (e) {
+                        done();
+                    }
+                }
+            }).catch(
+                function (e) {
+                    done(new Error(e));
+                }
+            );
+        });
+
+        it("throws for unknown event", function (done) {
+            H9Y.config({
+                "require": ["de"],
+                "handleEvent": {
+                    "error": function (e) {
+                        if (e.msg === "unknown Event \"fantasyEvent\" discarded") {
+                            done();
+                        }
+                    },
+                    "fantasyEvent": function (e) {
+                        console.log(42);
+                    }
+                }
+            });
+        });
+
+        it("fail to overwrite uncancellable event", function (done) {
+            H9Y.config({
+                "require": ["de"],
+                "handleEvent": {
+                    "engineReady": function (e) {
+                        e.preventDefault();
+                        done();
+                    }
+                }
+            });
+        });
+
+        it("hits the cache", function (done) {
+            H9Y.config({
+                "hyphen": "•",
+                "require": ["de"]
+            }).then(
+                function (hyphenateText) {
+                    if (hyphenateText("Silbentrennung Silbentrennung") === "Sil•ben•tren•nung Sil•ben•tren•nung") {
+                        done();
+                    } else {
+                        done(new Error(hyphenateText("Silbentrennung")));
+                    }
+                }
+            ).catch(
+                function (e) {
+                    done(new Error(e));
+                }
+            );
+        });
+
+        it("use async await and reuse wordHyphenator", async function () {
+            const H = H9Y.config({
+                "hyphen": "•",
+                "require": ["de", "de"]
+            });
+
+            const hyphenateText = await H;
+            assert.equal(hyphenateText("Silbentrennung Silbentrennung"), "Sil•ben•tren•nung Sil•ben•tren•nung");
         });
     });
 });

@@ -1,5 +1,5 @@
 /*
- * @license Hyphenopoly.module.js 2.0.0-devel - hyphenation for node
+ * @license Hyphenopoly.module.js 2.1.0 - hyphenation for node
  *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  *  https://github.com/mnater/Hyphenopoly
  *
@@ -66,8 +66,10 @@ function loadWasm() {
         `${H.c.paths.maindir}hyphenEngine.wasm`,
         function cb(err, data) {
             if (err) {
-                console.log(err);
-                H.events.dispatch("error", {"msg": `${H.c.paths.maindir}hyphenEngine.wasm not found.`});
+                H.events.dispatch("error", {
+                    "key": "hyphenEngine",
+                    "msg": `${H.c.paths.maindir}hyphenEngine.wasm not found.`
+                });
             } else {
                 H.binaries.hyphenEngine = new Uint8Array(data).buffer;
                 H.events.dispatch("engineLoaded");
@@ -87,7 +89,7 @@ function loadHpb(lang) {
         function cb(err, data) {
             if (err) {
                 H.events.dispatch("error", {
-                    "lang": lang,
+                    "key": lang,
                     "msg": `${H.c.paths.patterndir}${lang}.hpb not found.`
                 });
             } else {
@@ -504,7 +506,6 @@ const orphanController = (function createOrphanController() {
  * @return {function} The hyphenateText-function
  */
 function createTextHyphenator(lang) {
-    lang = lang || H.require[0];
     const lo = H.languages[lang];
     const wordHyphenator = (wordHyphenatorPool[lang])
         ? wordHyphenatorPool[lang]
@@ -556,6 +557,11 @@ H.config = function config(userConfig) {
         );
     });
     H.c = settings;
+    if (H.c.handleEvent) {
+        Object.keys(H.c.handleEvent).forEach(function add(name) {
+            H.events.addListener(name, H.c.handleEvent[name], true);
+        });
+    }
     loadWasm();
     const result = new Map();
     H.c.require.forEach(function each(lang) {
@@ -568,7 +574,7 @@ H.config = function config(userConfig) {
             });
             H.events.addListener("error", function handler(e) {
                 e.preventDefault();
-                if (e.lang === lang) {
+                if (e.key === lang || e.key === "hyphenEngine") {
                     reject(e.msg);
                 }
             });
@@ -668,12 +674,6 @@ H.config = function config(userConfig) {
                 {"msg": `unknown Event "${name}" discarded`}
             );
         }
-    }
-
-    if (H.handleEvent) {
-        Object.keys(H.handleEvent).forEach(function add(name) {
-            addListener(name, H.handleEvent[name], true);
-        });
     }
 
     H.events = empty();
