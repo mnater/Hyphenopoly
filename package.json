@@ -37,6 +37,7 @@
   "devDependencies": {
     "eslint": "^4.19.1",
     "mocha": "^5.2.0",
+    "nyc": "^11.8.0",
     "uglify-es": "^3.3.9"
   },
   "eslintConfig": {
@@ -131,7 +132,7 @@
     "compile-binaryen": "cd ./third-party/binaryen/ && cmake . && make",
     "compile-wabt": "cd ./third-party/wabt/ && make",
     "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
-    "test": "npm run lint && mocha",
+    "test": "npm run lint && nyc mocha",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js",
     "prepare": "npm run minify",
