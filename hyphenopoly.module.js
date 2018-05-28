@@ -235,9 +235,9 @@ function prepareLanguagesObj(
 ) {
     alphabet = alphabet.replace(/-/g, "");
     if (!H.languages) {
-        H.languages = {};
+        H.languages = empty();
     }
-    if (!H.languages.lang) {
+    if (!H.languages[lang]) {
         H.languages[lang] = empty();
     }
     const lo = H.languages[lang];
@@ -381,9 +381,11 @@ const hpb = [];
 function prepare(lang) {
     if (lang === "*") {
         engineInstantiator = instantiateWasmEngine;
+        /*
         hpb.forEach(function eachHbp(hpbLang) {
             engineInstantiator(hpbLang);
         });
+        */
     } else if (engineInstantiator) {
         engineInstantiator(lang);
     } else {
