@@ -35,18 +35,18 @@ describe("hyphenopoly.module", function () {
 
         it("throws when hyphenEngine.wasm can't be found.", async function () {
             const hyphenopoly = H9Y.config({
-                "require": ["en-us", "de"],
                 "paths": {
                     "maindir": "fail/",
-                    "patterndir": `./patterns/`
-                }
+                    "patterndir": "./patterns/"
+                },
+                "require": ["en-us", "de"]
             });
-            const deHyphenator = await hyphenopoly.get("de").catch(
+            await hyphenopoly.get("de").catch(
                 function (e) {
                     assert.equal(e, "fail/hyphenEngine.wasm not found.");
                 }
             );
-            const enHyphenator = await hyphenopoly.get("en-us").catch(
+            await hyphenopoly.get("en-us").catch(
                 function (e) {
                     assert.equal(e, "fail/hyphenEngine.wasm not found.");
                 }
@@ -58,6 +58,26 @@ describe("hyphenopoly.module", function () {
                 function (e) {
                     assert.equal(e.slice(-27), "/patterns/en.hpb not found.");
                     done();
+                }
+            );
+        });
+
+        it("throws when hyphenEngine.wasm can't be found AND language not known", async function () {
+            const hyphenopoly = H9Y.config({
+                "paths": {
+                    "maindir": "fail/",
+                    "patterndir": "./patterns/"
+                },
+                "require": ["en", "de"]
+            });
+            await hyphenopoly.get("de").catch(
+                function (e) {
+                    assert.equal(e, "fail/hyphenEngine.wasm not found.");
+                }
+            );
+            await hyphenopoly.get("en").catch(
+                function (e) {
+                    assert.equal(e, "fail/hyphenEngine.wasm not found.");
                 }
             );
         });
@@ -119,9 +139,7 @@ describe("hyphenopoly.module", function () {
 
         it("uses language agnostic (global) exceptions", function (done) {
             H9Y.config({
-                "exceptions": {
-                    "global": "Silben-trennung"
-                },
+                "exceptions": {"global": "Silben-trennung"},
                 "hyphen": "•",
                 "require": ["de"]
             }).then(
@@ -142,8 +160,8 @@ describe("hyphenopoly.module", function () {
         it("uses language both kind of exceptions", function (done) {
             H9Y.config({
                 "exceptions": {
-                    "global": "Silben-trennung",
-                    "de": "Algo-rithmus"
+                    "de": "Algo-rithmus",
+                    "global": "Silben-trennung"
                 },
                 "hyphen": "•",
                 "require": ["de"]
@@ -166,8 +184,8 @@ describe("hyphenopoly.module", function () {
             H9Y.config({
                 "hyphen": "•",
                 "leftmin": 4,
-                "rightmin": 5,
-                "require": ["de"]
+                "require": ["de"],
+                "rightmin": 5
             }).then(
                 function (hyphenateText) {
                     if (hyphenateText("Silbentrennung") === "Silben•trennung") {
@@ -209,7 +227,7 @@ describe("hyphenopoly.module", function () {
                 "require": ["de"]
             }).then(
                 function (hyphenateText) {
-                    if (hyphenateText("Silbentrennungs-Algorithmus Alpha-Version") === "Silbentrennungs-" + String.fromCharCode(8203) +"Algorithmus Alpha-" + String.fromCharCode(8203) + "Version") {
+                    if (hyphenateText("Silbentrennungs-Algorithmus Alpha-Version") === `Silbentrennungs-${String.fromCharCode(8203)}Algorithmus Alpha-${String.fromCharCode(8203)}Version`) {
                         done();
                     } else {
                         done(new Error(hyphenateText("Silbentrennungs-Algorithmus Alpha-Version")));
@@ -249,7 +267,7 @@ describe("hyphenopoly.module", function () {
                 "require": ["de"]
             }).then(
                 function (hyphenateText) {
-                    if (hyphenateText("Silbentrennungs-Algorithmus Alpha-Version") === "Sil•ben•tren•nungs-" + String.fromCharCode(8203) + "Al•go•rith•mus Alpha-" + String.fromCharCode(8203) + "Ver•si•on") {
+                    if (hyphenateText("Silbentrennungs-Algorithmus Alpha-Version") === `Sil•ben•tren•nungs-${String.fromCharCode(8203)}Al•go•rith•mus Alpha-${String.fromCharCode(8203)}Ver•si•on`) {
                         done();
                     } else {
                         done(new Error(hyphenateText("Silbentrennungs-Algorithmus Alpha-Version")));
@@ -264,8 +282,8 @@ describe("hyphenopoly.module", function () {
 
         it("normalizes characters", function (done) {
             H9Y.config({
-                "normalize": true,
                 "hyphen": "•",
+                "normalize": true,
                 "require": ["de"]
             }).then(
                 function (hyphenateText) {
@@ -328,7 +346,7 @@ describe("hyphenopoly.module", function () {
                 "require": ["de"]
             }).then(
                 function (hyphenateText) {
-                    if (hyphenateText("Die Asse essen lieber gesunde Esswaren") === "Die Asse essen lie•ber ge•sun•de" + String.fromCharCode(160) + "Esswaren") {
+                    if (hyphenateText("Die Asse essen lieber gesunde Esswaren") === `Die Asse essen lie•ber ge•sun•de${String.fromCharCode(160)}Esswaren`) {
                         done();
                     } else {
                         done(new Error(hyphenateText("Die Asse essen lieber gesunde Esswaren")));
@@ -348,7 +366,7 @@ describe("hyphenopoly.module", function () {
                 "require": ["de"]
             }).then(
                 function (hyphenateText) {
-                    if (hyphenateText("Die Asse essen lieber gesunde Esswaren") === "Die Asse essen lie*ber ge*sun*de" + String.fromCharCode(160) + "Esswaren") {
+                    if (hyphenateText("Die Asse essen lieber gesunde Esswaren") === `Die Asse essen lie*ber ge*sun*de${String.fromCharCode(160)}Esswaren`) {
                         done();
                     } else {
                         done(new Error(hyphenateText("Die Asse essen lieber gesunde Esswaren")));
@@ -363,12 +381,12 @@ describe("hyphenopoly.module", function () {
 
         it("sets custom listener", function (done) {
             H9Y.config({
-                "require": ["de"],
                 "handleEvent": {
-                    "engineReady": function (e) {
+                    "engineReady": function () {
                         done();
                     }
-                }
+                },
+                "require": ["de"]
             }).catch(
                 function (e) {
                     done(new Error(e));
@@ -378,29 +396,29 @@ describe("hyphenopoly.module", function () {
 
         it("throws for unknown event", function (done) {
             H9Y.config({
-                "require": ["de"],
                 "handleEvent": {
                     "error": function (e) {
                         if (e.msg === "unknown Event \"fantasyEvent\" discarded") {
                             done();
                         }
                     },
-                    "fantasyEvent": function (e) {
-                        console.log(42);
+                    "fantasyEvent": function () {
+                        return 42;
                     }
-                }
+                },
+                "require": ["de"]
             });
         });
 
         it("fail to overwrite uncancellable event", function (done) {
             H9Y.config({
-                "require": ["de"],
                 "handleEvent": {
                     "engineReady": function (e) {
                         e.preventDefault();
                         done();
                     }
-                }
+                },
+                "require": ["de"]
             });
         });
 
@@ -431,6 +449,25 @@ describe("hyphenopoly.module", function () {
 
             const hyphenateText = await H;
             assert.equal(hyphenateText("Silbentrennung Silbentrennung"), "Sil•ben•tren•nung Sil•ben•tren•nung");
+        });
+
+        it("uses hyphen-character", function (done) {
+            H9Y.config({
+                "hyphen": "•",
+                "require": ["la"]
+            }).then(
+                function (hyphenateText) {
+                    if (hyphenateText("Helvetii") === "Helvetii") {
+                        done();
+                    } else {
+                        done(new Error(hyphenateText("Helvetii")));
+                    }
+                }
+            ).catch(
+                function (e) {
+                    done(new Error(e));
+                }
+            );
         });
     });
 });
