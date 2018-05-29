@@ -43,6 +43,24 @@ t.test("set options: compound", function(t) {
         t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Silbentrennungs-\u200BAlgorithmus");
         t.end();
     });
+    t.test("compound: auto, one part too small", async function(t) {
+        const hyphenator = await H9Y.config({
+            "compound": "auto",
+            "hyphen": "•",
+            "require": ["de"]
+        });
+        t.equal(hyphenator("Test-Algorithmus"), "Test-Al•go•rith•mus");
+        t.end();
+    });
+    t.test("compound: all, one part too small", async function(t) {
+        const hyphenator = await H9Y.config({
+            "compound": "all",
+            "hyphen": "•",
+            "require": ["de"]
+        });
+        t.equal(hyphenator("Test-Algorithmus"), "Test-\u200BAl•go•rith•mus");
+        t.end();
+    });
     t.end();
 });
 

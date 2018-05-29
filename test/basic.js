@@ -71,7 +71,7 @@ t.test("run config with two languages", async function(t) {
 });
 
 t.test("run config with two same language", async function(t) {
-    const deHyphenator = await H9Y.config({"require": ["de"]});
+    const deHyphenator = await H9Y.config({"require": ["de", "de"]});
     t.test("return a function", function(t) {
         t.equal(typeof deHyphenator, "function", typeof deHyphenator);
         t.end();

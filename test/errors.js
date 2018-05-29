@@ -44,7 +44,19 @@ t.test("path to patternfile not resolvable", async function(t) {
     );
 });
 
-t.test("run config with one language", async function(t) {
+t.test("run config with two languages", async function(t) {
+    const hyphenators = await H9Y.config({"require": ["de", "en"]});
+   t.test("get the hyphenator function for a language", async function(t) {
+        const deHyphenator = await hyphenators.get("en").catch(
+            function(e) {
+                t.equal(e.slice(-27), "/patterns/en.hpb not found.");
+            }
+        );
+        t.end();
+    });
+});
+
+t.test("make hyphenEngine fail", async function(t) {
     const laHyphenator = await H9Y.config({"require": ["la"]});
     t.test("hyphenate one word", function(t) {
         t.equal(laHyphenator("Helvetii"), "Helvetii");
