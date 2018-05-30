@@ -1,6 +1,8 @@
-// test/hello-world.js
-var t = require("tap");
-// const H9Y = require("../hyphenopoly.module");
+/* eslint-env node */
+/* eslint global-require: 0, func-names: 0, no-shadow: 0 */
+"use strict";
+const t = require("tap");
+
 let H9Y = null;
 const H9YKey = require.resolve("../hyphenopoly.module");
 t.beforeEach(function setup(done) {
@@ -14,8 +16,8 @@ t.afterEach(function tearDown(done) {
     done();
 });
 
-t.test("set Event", async function(t) {
-    const deHyphenator = await H9Y.config({
+t.test("set Event", async function (t) {
+    await H9Y.config({
         "handleEvent": {
             "error": function (e) {
                 e.preventDefault();
@@ -26,8 +28,8 @@ t.test("set Event", async function(t) {
     t.end();
 });
 
-t.test("set unknown event", async function(t) {
-    const deHyphenator = await H9Y.config({
+t.test("set unknown event", async function (t) {
+    await H9Y.config({
         "handleEvent": {
             "fantasy": function (e) {
                 e.preventDefault();
@@ -38,8 +40,8 @@ t.test("set unknown event", async function(t) {
     t.end();
 });
 
-t.test("try to overwrite noncancellable event", async function(t) {
-    const deHyphenator = await H9Y.config({
+t.test("try to overwrite noncancellable event", async function (t) {
+    await H9Y.config({
         "handleEvent": {
             "hpbLoaded": function (e) {
                 e.preventDefault();

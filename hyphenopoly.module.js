@@ -381,11 +381,13 @@ const hpb = [];
 function prepare(lang) {
     if (lang === "*") {
         engineInstantiator = instantiateWasmEngine;
+
         /*
-        hpb.forEach(function eachHbp(hpbLang) {
-            engineInstantiator(hpbLang);
-        });
-        */
+         * Deleted:
+         * hpb.forEach(function eachHbp(hpbLang) {
+         *    engineInstantiator(hpbLang);
+         *});
+         */
     } else if (engineInstantiator) {
         engineInstantiator(lang);
     } else {

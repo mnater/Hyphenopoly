@@ -135,7 +135,7 @@
     "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
     "test": "tap test/*.js",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
-    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js",
+    "lint": "eslint --parser-options=ecmaVersion:8 Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js",
     "prepare": "npm run minify",
     "minify": "sh ./tools/minify.sh"
   },
