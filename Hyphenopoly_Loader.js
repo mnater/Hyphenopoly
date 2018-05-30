@@ -423,6 +423,20 @@
             };
         }());
 
+        /**
+         * Checks if hyphens (ev.prefixed) is set to auto for the element.
+         * @param {Object} el - the element
+         * @returns {Boolean} result of the check
+         */
+        function checkCSSHyphensSupport(el) {
+            const computedStyle = window.getComputedStyle(el);
+            const supp = computedStyle.hyphens === "auto" ||
+                computedStyle["-webkit-hyphens"] === "auto" ||
+                computedStyle["-ms-hyphens"] === "auto" ||
+                computedStyle["-moz-hyphens"] === "auto";
+            return supp;
+        }
+
         Object.keys(H.require).forEach(function doReqLangs(lang) {
             if (H.require[lang] === "FORCEHYPHENOPOLY") {
                 t.polyfill = true;
@@ -442,8 +456,7 @@
             Object.keys(H.require).forEach(function checkReqLangs(lang) {
                 if (H.require[lang] !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
-                    if (window.getComputedStyle(el).hyphens === "auto" &&
-                        el.offsetHeight > 12) {
+                    if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
                         t.polyfill = t.polyfill || false;
                         t.langs[lang] = "CSS";
                     } else {
