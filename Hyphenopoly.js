@@ -542,9 +542,9 @@
         ) {
             alphabet = alphabet.replace(/-/g, "");
             if (!H.languages) {
-                H.languages = {};
+                H.languages = empty();
             }
-            if (!H.languages.lang) {
+            if (!H.languages[lang]) {
                 H.languages[lang] = empty();
             }
             const lo = H.languages[lang];
@@ -937,7 +937,7 @@
 
         H.events.define(
             "contentLoaded",
-            function def() {
+            function onContentLoaded() {
                 autoSetMainLanguage();
                 collectElements();
                 H.events.dispatch("elementsReady");
@@ -947,7 +947,7 @@
 
         H.events.define(
             "elementsReady",
-            function def() {
+            function onElementsReady() {
                 elements.each(function eachElem(lang, values) {
                     if (H.languages &&
                         H.languages[lang] &&
@@ -962,7 +962,7 @@
 
         H.events.define(
             "engineLoaded",
-            function def(e) {
+            function onEngineLoaded(e) {
                 prepare("*", e.msg);
             },
             false
@@ -970,7 +970,7 @@
 
         H.events.define(
             "hpbLoaded",
-            function def(e) {
+            function onHpbLoaded(e) {
                 prepare(e.msg, "*");
             },
             false
@@ -978,7 +978,7 @@
 
         H.events.define(
             "engineReady",
-            function def(e) {
+            function onEngineReady(e) {
                 if (H.elementsReady) {
                     hyphenateLangElements(e.msg, elements.list[e.msg]);
                 }
