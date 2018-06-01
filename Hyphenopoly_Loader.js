@@ -429,11 +429,10 @@
          * @returns {Boolean} result of the check
          */
         function checkCSSHyphensSupport(el) {
-            const computedStyle = window.getComputedStyle(el);
-            const supp = computedStyle.hyphens === "auto" ||
-                computedStyle["-webkit-hyphens"] === "auto" ||
-                computedStyle["-ms-hyphens"] === "auto" ||
-                computedStyle["-moz-hyphens"] === "auto";
+            const supp = el.style.hyphens === "auto" ||
+                el.style.webkitHyphens === "auto" ||
+                el.style.msHyphens === "auto" ||
+                el.style["-moz-hyphens"] === "auto";
             return supp;
         }
 
