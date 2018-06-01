@@ -30,6 +30,36 @@
         };
     }
 
+    (function config() {
+        // Set defaults for paths and setup
+        if (H.paths) {
+            if (!H.paths.patterndir) {
+                H.paths.patterndir = "../Hyphenopoly/patterns/";
+            }
+            if (!H.paths.maindir) {
+                H.paths.maindir = "../Hyphenopoly/";
+            }
+        } else {
+            H.paths = {
+                "maindir": "../Hyphenopoly/",
+                "patterndir": "../Hyphenopoly/patterns/"
+            };
+        }
+        if (H.setup) {
+            if (!H.setup.classnames) {
+                H.setup.classnames = {"hyphenate": {}};
+            }
+            if (!H.setup.timeout) {
+                H.setup.timeout = 1000;
+            }
+        } else {
+            H.setup = {
+                "classnames": {"hyphenate": {}},
+                "timeout": 1000
+            };
+        }
+    }());
+
     const t = H.clientFeat;
 
     (function setupEvents() {
@@ -470,34 +500,6 @@
     }());
 
     (function run() {
-        // Set defaults for paths and setup
-        if (H.paths) {
-            if (!H.paths.patterndir) {
-                H.paths.patterndir = "../Hyphenopoly/patterns/";
-            }
-            if (!H.paths.maindir) {
-                H.paths.maindir = "../Hyphenopoly/";
-            }
-        } else {
-            H.paths = {
-                "maindir": "../Hyphenopoly/",
-                "patterndir": "../Hyphenopoly/patterns/"
-            };
-        }
-        if (H.setup) {
-            if (!H.setup.classnames) {
-                H.setup.classnames = {"hyphenate": {}};
-            }
-            if (!H.setup.timeout) {
-                H.setup.timeout = 1000;
-            }
-        } else {
-            H.setup = {
-                "classnames": {"hyphenate": {}},
-                "timeout": 1000
-            };
-        }
-
         if (t.polyfill) {
             d.documentElement.style.visibility = "hidden";
 
