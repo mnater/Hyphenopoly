@@ -61,8 +61,6 @@
         }
     }());
 
-    const t = H.clientFeat;
-
     (function setupEvents() {
         // Events known to the system
         const definedEvents = empty();
@@ -240,8 +238,8 @@
             return false;
         }
         /* eslint-enable max-len, no-magic-numbers, no-prototype-builtins */
-        if (t.wasm === null) {
-            t.wasm = runWasmTest();
+        if (H.clientFeat.wasm === null) {
+            H.clientFeat.wasm = runWasmTest();
         }
     }());
 
@@ -325,7 +323,7 @@
             }
         }
 
-        return (t.wasm)
+        return (H.clientFeat.wasm)
             ? fetchBinary
             : requestBinary;
     }());
@@ -356,7 +354,7 @@
         if (!H.specMems) {
             H.specMems = empty();
         }
-        if (t.wasm) {
+        if (H.clientFeat.wasm) {
             H.specMems[lang] = new WebAssembly.Memory({
                 "initial": wasmPages,
                 "maximum": 256
@@ -388,7 +386,7 @@
             H.binaries = empty();
         }
         scriptLoader(H.paths.maindir, "Hyphenopoly.js");
-        if (t.wasm) {
+        if (H.clientFeat.wasm) {
             binLoader(
                 H.paths.maindir,
                 "hyphenEngine.wasm",
@@ -411,7 +409,7 @@
              * @returns {undefined}
              */
             function createTest(lang) {
-                if (t.langs[lang]) {
+                if (H.clientFeat.langs[lang]) {
                     return;
                 }
                 if (!fakeBody) {
@@ -459,22 +457,21 @@
          * @param {Object} el - the element
          * @returns {Boolean} result of the check
          */
-        function checkCSSHyphensSupport(el) {
-            const supp = el.style.hyphens === "auto" ||
-                el.style.webkitHyphens === "auto" ||
-                el.style.msHyphens === "auto" ||
-                el.style["-moz-hyphens"] === "auto";
-            return supp;
+        function checkCSSHyphensSupport(elm) {
+            return (elm.style.hyphens === "auto" ||
+                elm.style.webkitHyphens === "auto" ||
+                elmm.style.msHyphens === "auto" ||
+                elm.style["-moz-hyphens"] === "auto");
         }
 
         Object.keys(H.require).forEach(function doReqLangs(lang) {
             if (H.require[lang] === "FORCEHYPHENOPOLY") {
-                t.polyfill = true;
-                t.langs[lang] = "H9Y";
+                H.clientFeat.polyfill = true;
+                H.clientFeat.langs[lang] = "H9Y";
                 loadRessources(lang);
             } else if (
-                t.langs[lang] &&
-                t.langs[lang] === "H9Y"
+                H.clientFeat.langs[lang] &&
+                H.clientFeat.langs[lang] === "H9Y"
             ) {
                 loadRessources(lang);
             } else {
@@ -487,11 +484,11 @@
                 if (H.require[lang] !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
                     if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
-                        t.polyfill = t.polyfill || false;
-                        t.langs[lang] = "CSS";
+                        H.clientFeat.polyfill = H.clientFeat.polyfill || false;
+                        H.clientFeat.langs[lang] = "CSS";
                     } else {
-                        t.polyfill = true;
-                        t.langs[lang] = "H9Y";
+                        H.clientFeat.polyfill = true;
+                        H.clientFeat.langs[lang] = "H9Y";
                         loadRessources(lang);
                     }
                 }
@@ -501,7 +498,7 @@
     }());
 
     (function run() {
-        if (t.polyfill) {
+        if (H.clientFeat.polyfill) {
             d.documentElement.style.visibility = "hidden";
 
             H.setup.timeOutHandler = window.setTimeout(function timedOut() {
