@@ -1,5 +1,9 @@
 # Version History
 
+## Version 2.1.0 (Mai 27, 2018)
+* Configure Travis-CI
+* bugfixes
+
 ## Version 2.0.0 (Mai 27, 2018)
 * Provide node module (https://github.com/mnater/Hyphenopoly/wiki/Node-Module)
 * default file locations better reflect usual installations [#19](https://github.com/mnater/Hyphenopoly/issues/19)
