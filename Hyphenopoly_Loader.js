@@ -1,5 +1,6 @@
 /*
- * @license Hyphenopoly_Loader 2.1.0 - client side hyphenation
+ * @license Hyphenopoly_Loader 2.2.0 - client side hyphenation
+ * @license Hyphenopoly_Loader 2.2.0-devel - client side hyphenation
  *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  *  https://github.com/mnater/Hyphenopoly
  *
@@ -29,6 +30,36 @@
             "wasm": null
         };
     }
+
+    (function config() {
+        // Set defaults for paths and setup
+        if (H.paths) {
+            if (!H.paths.patterndir) {
+                H.paths.patterndir = "../Hyphenopoly/patterns/";
+            }
+            if (!H.paths.maindir) {
+                H.paths.maindir = "../Hyphenopoly/";
+            }
+        } else {
+            H.paths = {
+                "maindir": "../Hyphenopoly/",
+                "patterndir": "../Hyphenopoly/patterns/"
+            };
+        }
+        if (H.setup) {
+            if (!H.setup.classnames) {
+                H.setup.classnames = {"hyphenate": {}};
+            }
+            if (!H.setup.timeout) {
+                H.setup.timeout = 1000;
+            }
+        } else {
+            H.setup = {
+                "classnames": {"hyphenate": {}},
+                "timeout": 1000
+            };
+        }
+    }());
 
     const t = H.clientFeat;
 
@@ -423,6 +454,19 @@
             };
         }());
 
+        /**
+         * Checks if hyphens (ev.prefixed) is set to auto for the element.
+         * @param {Object} el - the element
+         * @returns {Boolean} result of the check
+         */
+        function checkCSSHyphensSupport(el) {
+            const supp = el.style.hyphens === "auto" ||
+                el.style.webkitHyphens === "auto" ||
+                el.style.msHyphens === "auto" ||
+                el.style["-moz-hyphens"] === "auto";
+            return supp;
+        }
+
         Object.keys(H.require).forEach(function doReqLangs(lang) {
             if (H.require[lang] === "FORCEHYPHENOPOLY") {
                 t.polyfill = true;
@@ -442,8 +486,7 @@
             Object.keys(H.require).forEach(function checkReqLangs(lang) {
                 if (H.require[lang] !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
-                    if (window.getComputedStyle(el).hyphens === "auto" &&
-                        el.offsetHeight > 12) {
+                    if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
                         t.polyfill = t.polyfill || false;
                         t.langs[lang] = "CSS";
                     } else {
@@ -458,34 +501,6 @@
     }());
 
     (function run() {
-        // Set defaults for paths and setup
-        if (H.paths) {
-            if (!H.paths.patterndir) {
-                H.paths.patterndir = "../Hyphenopoly/patterns/";
-            }
-            if (!H.paths.maindir) {
-                H.paths.maindir = "../Hyphenopoly/";
-            }
-        } else {
-            H.paths = {
-                "maindir": "../Hyphenopoly/",
-                "patterndir": "../Hyphenopoly/patterns/"
-            };
-        }
-        if (H.setup) {
-            if (!H.setup.classnames) {
-                H.setup.classnames = {"hyphenate": {}};
-            }
-            if (!H.setup.timeout) {
-                H.setup.timeout = 1000;
-            }
-        } else {
-            H.setup = {
-                "classnames": {"hyphenate": {}},
-                "timeout": 1000
-            };
-        }
-
         if (t.polyfill) {
             d.documentElement.style.visibility = "hidden";
 

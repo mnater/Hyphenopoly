@@ -1,5 +1,15 @@
 # Version History
 
+## Version 2.2.0 (June 26, 2018)
+* provide example.js for RunKit
+* use tap instead of mocha
+* [6f9e539](https://github.com/mnater/Hyphenopoly/commit/6f9e539a5dab2d1eff5bdeb0c7857c6fda9eb41e)
+* bugfix: [#24](https://github.com/mnater/Hyphenopoly/issues/24): [aeefe6e](https://github.com/mnater/Hyphenopoly/commit/aeefe6e3a59e8356abc99ca490acabf6c3374d7b)
+
+## Version 2.1.0 (Mai 27, 2018)
+* Configure Travis-CI
+* bugfixes
+
 ## Version 2.0.0 (Mai 27, 2018)
 * Provide node module (https://github.com/mnater/Hyphenopoly/wiki/Node-Module)
 * default file locations better reflect usual installations [#19](https://github.com/mnater/Hyphenopoly/issues/19)

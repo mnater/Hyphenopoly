@@ -1,10 +1,10 @@
-/*
- * @license Hyphenopoly.module.js 2.1.0 - hyphenation for node
- *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
- *  https://github.com/mnater/Hyphenopoly
+/**
+ * @license Hyphenopoly.module.js 2.2.0 - hyphenation for node
+ * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ * https://github.com/mnater/Hyphenopoly
  *
- *  Released under the MIT license
- *  http://mnater.github.io/Hyphenopoly/LICENSE
+ * Released under the MIT license
+ * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
 /* eslint-env node */
@@ -235,9 +235,9 @@ function prepareLanguagesObj(
 ) {
     alphabet = alphabet.replace(/-/g, "");
     if (!H.languages) {
-        H.languages = {};
+        H.languages = empty();
     }
-    if (!H.languages.lang) {
+    if (!H.languages[lang]) {
         H.languages[lang] = empty();
     }
     const lo = H.languages[lang];
@@ -381,9 +381,13 @@ const hpb = [];
 function prepare(lang) {
     if (lang === "*") {
         engineInstantiator = instantiateWasmEngine;
-        hpb.forEach(function eachHbp(hpbLang) {
-            engineInstantiator(hpbLang);
-        });
+
+        /*
+         * Deleted:
+         * hpb.forEach(function eachHbp(hpbLang) {
+         *    engineInstantiator(hpbLang);
+         *});
+         */
     } else if (engineInstantiator) {
         engineInstantiator(lang);
     } else {
