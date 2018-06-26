@@ -454,13 +454,13 @@
 
         /**
          * Checks if hyphens (ev.prefixed) is set to auto for the element.
-         * @param {Object} el - the element
+         * @param {Object} elm - the element
          * @returns {Boolean} result of the check
          */
         function checkCSSHyphensSupport(elm) {
             return (elm.style.hyphens === "auto" ||
                 elm.style.webkitHyphens === "auto" ||
-                elmm.style.msHyphens === "auto" ||
+                elm.style.msHyphens === "auto" ||
                 elm.style["-moz-hyphens"] === "auto");
         }
 
@@ -521,6 +521,6 @@
     }());
 
     if (H.cacheFeatureTests) {
-        sessionStorage.setItem("Hyphenopoly_Loader", JSON.stringify(t));
+        sessionStorage.setItem("Hyphenopoly_Loader", JSON.stringify(H.clientFeat));
     }
 }());
