@@ -1,7 +1,7 @@
 {
   "name": "hyphenopoly",
   "version": "2.2.0-devel",
-  "description": "Polyfill for client-side hyphenation.",
+  "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
     "html",
