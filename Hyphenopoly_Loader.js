@@ -509,11 +509,6 @@
                 H.clientFeat.polyfill = true;
                 H.clientFeat.langs[lang] = "H9Y";
                 loadRessources(lang);
-            } else if (
-                H.clientFeat.langs[lang] &&
-                H.clientFeat.langs[lang] === "H9Y"
-            ) {
-                loadRessources(lang);
             } else {
                 tester.createTest(lang);
             }
