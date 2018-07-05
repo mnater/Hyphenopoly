@@ -20,17 +20,17 @@
         return Object.create(null);
     }
 
-    if (H.cacheFeatureTests && sessionStorage.getItem("Hyphenopoly_Loader")) {
-        H.clientFeat = JSON.parse(sessionStorage.getItem("Hyphenopoly_Loader"));
-    } else {
-        H.clientFeat = {
-            "langs": empty(),
-            "polyfill": false,
-            "wasm": null
-        };
-    }
-
     (function config() {
+        // Set H.clientFeat (either from sessionStorage or empty)
+        if (H.cacheFeatureTests && sessionStorage.getItem("Hyphenopoly_Loader")) {
+            H.clientFeat = JSON.parse(sessionStorage.getItem("Hyphenopoly_Loader"));
+        } else {
+            H.clientFeat = {
+                "langs": empty(),
+                "polyfill": false,
+                "wasm": null
+            };
+        }
         // Set defaults for paths and setup
         if (H.paths) {
             if (!H.paths.patterndir) {
@@ -159,9 +159,11 @@
                     }
                 };
                 currentHandler(data);
-                if (!defaultPrevented &&
+                if (
+                    !defaultPrevented &&
                     !defaultHasRun &&
-                    definedEvents[name].default) {
+                    definedEvents[name].default
+                ) {
                     definedEvents[name].default(data);
                     defaultHasRun = true;
                 }
@@ -217,21 +219,40 @@
         function runWasmTest() {
             /*
              * This is the original test, without webkit workaround
-             * if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
-             *     const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0]));
+             * if (typeof WebAssembly === "object" &&
+             *     typeof WebAssembly.instantiate === "function") {
+             *     const module = new WebAssembly.Module(Uint8Array.from(
+             *         [0, 97, 115, 109, 1, 0, 0, 0]
+             *     ));
              *     if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
-             *         return WebAssembly.Instance.prototype.isPrototypeOf(new WebAssembly.Instance(module));
+             *         return WebAssembly.Instance.prototype.isPrototypeOf(
+             *             new WebAssembly.Instance(module)
+             *         );
              *     }
              * }
              * return false;
              */
 
-            // Wasm feature test with iOS bug detection (https://bugs.webkit.org/show_bug.cgi?id=181781)
-            if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
-                const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127, 3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115, 116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2, 0, 11]));
+            /*
+             * Wasm feature test with iOS bug detection
+             * (https://bugs.webkit.org/show_bug.cgi?id=181781)
+             */
+            if (
+                typeof WebAssembly === "object" &&
+                typeof WebAssembly.instantiate === "function"
+            ) {
+                /* eslint-disable array-element-newline */
+                const module = new WebAssembly.Module(Uint8Array.from([
+                    0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127,
+                    3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115,
+                    116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32,
+                    0, 40, 2, 0, 11
+                ]));
+                /* eslint-enable array-element-newline */
                 if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
                     const inst = new WebAssembly.Instance(module);
-                    return WebAssembly.Instance.prototype.isPrototypeOf(inst) && (inst.exports.test(4) !== 0);
+                    return WebAssembly.Instance.prototype.isPrototypeOf(inst) &&
+                            (inst.exports.test(4) !== 0);
                 }
             }
             return false;
@@ -280,7 +301,7 @@
         function fetchBinary(path, fne, msg) {
             if (!loadedBins[fne]) {
                 loadedBins[fne] = true;
-                fetch(path + fne).then(
+                window.fetch(path + fne).then(
                     function resolve(response) {
                         if (response.ok) {
                             const name = fne.slice(0, fne.lastIndexOf("."));
@@ -359,7 +380,6 @@
                 "maximum": 256
             });
         } else {
-            /* eslint-disable no-bitwise */
             /**
              * Polyfill Math.log2
              * @param {number} x argument
@@ -368,7 +388,7 @@
             Math.log2 = Math.log2 || function polyfillLog2(x) {
                 return Math.log(x) * Math.LOG2E;
             };
-
+            /* eslint-disable no-bitwise */
             const asmPages = (2 << Math.floor(Math.log2(wasmPages))) * 65536;
             /* eslint-enable no-bitwise */
             H.specMems[lang] = new ArrayBuffer(asmPages);
@@ -402,6 +422,25 @@
         const tester = (function tester() {
             let fakeBody = null;
 
+            const css = (function createCss() {
+                /* eslint-disable array-element-newline */
+                const props = [
+                    "visibility:hidden;",
+                    "-moz-hyphens:auto;",
+                    "-webkit-hyphens:auto;",
+                    "-ms-hyphens:auto;",
+                    "hyphens:auto;",
+                    "width:48px;",
+                    "font-size:12px;",
+                    "line-height:12px;",
+                    "border:none;",
+                    "padding:0;",
+                    "word-wrap:normal"
+                ];
+                /* eslint-enable array-element-newline */
+                return props.join("");
+            }());
+
             /**
              * Create and append div with CSS-hyphenated word
              * @param {string} lang Language
@@ -417,7 +456,7 @@
                 const testDiv = d.createElement("div");
                 testDiv.lang = lang;
                 testDiv.id = lang;
-                testDiv.style.cssText = "visibility:hidden;-moz-hyphens:auto;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal";
+                testDiv.style.cssText = css;
                 testDiv.appendChild(d.createTextNode(H.require[lang]));
                 fakeBody.appendChild(testDiv);
             }
@@ -457,10 +496,12 @@
          * @returns {Boolean} result of the check
          */
         function checkCSSHyphensSupport(elm) {
-            return (elm.style.hyphens === "auto" ||
+            return (
+                elm.style.hyphens === "auto" ||
                 elm.style.webkitHyphens === "auto" ||
                 elm.style.msHyphens === "auto" ||
-                elm.style["-moz-hyphens"] === "auto");
+                elm.style["-moz-hyphens"] === "auto"
+            );
         }
 
         Object.keys(H.require).forEach(function doReqLangs(lang) {
@@ -507,7 +548,10 @@
             d.addEventListener(
                 "DOMContentLoaded",
                 function DCL() {
-                    H.events.dispatch("contentLoaded", {"msg": ["contentLoaded"]});
+                    H.events.dispatch(
+                        "contentLoaded",
+                        {"msg": ["contentLoaded"]}
+                    );
                 },
                 {
                     "once": true,
@@ -520,6 +564,9 @@
     }());
 
     if (H.cacheFeatureTests) {
-        sessionStorage.setItem("Hyphenopoly_Loader", JSON.stringify(H.clientFeat));
+        sessionStorage.setItem(
+            "Hyphenopoly_Loader",
+            JSON.stringify(H.clientFeat)
+        );
     }
 }());
