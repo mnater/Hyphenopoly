@@ -55,6 +55,7 @@
     "extends": "eslint:all",
     "rules": {
       "no-template-curly-in-string": 2,
+      "prefer-template": 0,
       "wrap-iife": 1,
       "max-lines": 0,
       "max-lines-per-function": 0,
