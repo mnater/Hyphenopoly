@@ -191,7 +191,7 @@
             } else {
                 H.events.dispatch(
                     "error",
-                    {"msg": `unknown Event "${name}" discarded`}
+                    {"msg": "unknown Event \"" + name + "\" discarded"}
                 );
             }
         }
@@ -414,11 +414,11 @@
         } else {
             scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
         }
-        binLoader(H.paths.patterndir, `${lang}.hpb`, ["hpbLoaded", lang]);
+        binLoader(H.paths.patterndir, lang + ".hpb", ["hpbLoaded", lang]);
         allocateMemory(lang);
     }
 
-    (function featureTestCSSHHyphenation() {
+    (function featureTestCSSHyphenation() {
         const tester = (function tester() {
             let fakeBody = null;
 
@@ -524,7 +524,6 @@
                 if (H.require[lang] !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
                     if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
-                        H.clientFeat.polyfill = H.clientFeat.polyfill || false;
                         H.clientFeat.langs[lang] = "CSS";
                     } else {
                         H.clientFeat.polyfill = true;
