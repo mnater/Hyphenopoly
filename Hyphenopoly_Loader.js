@@ -210,7 +210,11 @@
         H.events.addListener = addListener;
     }());
 
-    (function featureTestWasm() {
+    /**
+     * Test if wasm is supported
+     * @returns {undefined}
+     */
+    function featureTestWasm() {
         /* eslint-disable max-len, no-magic-numbers, no-prototype-builtins */
         /**
          * Feature test for wasm
@@ -261,7 +265,7 @@
         if (H.clientFeat.wasm === null) {
             H.clientFeat.wasm = runWasmTest();
         }
-    }());
+    }
 
     const scriptLoader = (function scriptLoader() {
         const loadedScripts = empty();
@@ -288,23 +292,31 @@
         return loadScript;
     }());
 
-    const binLoader = (function binLoader() {
+    /**
+     * Load binary files either with fetch (on new browsers that support wasm)
+     * or with xmlHttpRequest
+     * @param {string} path Where the script is stored
+     * @param {string} fne Filename of the script with extension
+     * @param {Object} msg Message
+     * @returns {undefined}
+     */
+    function binLoader(path, fne, msg) {
         const loadedBins = empty();
 
         /**
          * Get bin file using fetch
-         * @param {string} path Where the script is stored
-         * @param {string} fne Filename of the script with extension
-         * @param {Object} msg Message
+         * @param {string} p Where the script is stored
+         * @param {string} f Filename of the script with extension
+         * @param {Object} m Message
          * @returns {undefined}
          */
-        function fetchBinary(path, fne, msg) {
-            if (!loadedBins[fne]) {
-                loadedBins[fne] = true;
-                window.fetch(path + fne).then(
+        function fetchBinary(p, f, m) {
+            if (!loadedBins[f]) {
+                loadedBins[f] = true;
+                window.fetch(p + f).then(
                     function resolve(response) {
                         if (response.ok) {
-                            const name = fne.slice(0, fne.lastIndexOf("."));
+                            const name = f.slice(0, f.lastIndexOf("."));
                             if (name === "hyphenEngine") {
                                 H.binaries[name] = response.arrayBuffer().then(
                                     function getModule(buf) {
@@ -314,7 +326,7 @@
                             } else {
                                 H.binaries[name] = response.arrayBuffer();
                             }
-                            H.events.dispatch(msg[0], {"msg": msg[1]});
+                            H.events.dispatch(m[0], {"msg": m[1]});
                         }
                     }
                 );
@@ -323,30 +335,32 @@
 
         /**
          * Get bin file using XHR
-         * @param {string} path Where the script is stored
-         * @param {string} fne Filename of the script with extension
-         * @param {Object} msg Message
+         * @param {string} p Where the script is stored
+         * @param {string} f Filename of the script with extension
+         * @param {Object} m Message
          * @returns {undefined}
          */
-        function requestBinary(path, fne, msg) {
-            if (!loadedBins[fne]) {
-                loadedBins[fne] = true;
+        function requestBinary(p, f, m) {
+            if (!loadedBins[f]) {
+                loadedBins[f] = true;
                 const xhr = new XMLHttpRequest();
-                xhr.open("GET", path + fne);
+                xhr.open("GET", p + f);
                 xhr.onload = function onload() {
-                    const name = fne.slice(0, fne.lastIndexOf("."));
+                    const name = f.slice(0, f.lastIndexOf("."));
                     H.binaries[name] = xhr.response;
-                    H.events.dispatch(msg[0], {"msg": msg[1]});
+                    H.events.dispatch(m[0], {"msg": m[1]});
                 };
                 xhr.responseType = "arraybuffer";
                 xhr.send();
             }
         }
 
-        return (H.clientFeat.wasm)
-            ? fetchBinary
-            : requestBinary;
-    }());
+        if (H.clientFeat.wasm) {
+            fetchBinary(path, fne, msg);
+        } else {
+            requestBinary(path, fne, msg);
+        }
+    }
 
     /**
      * Allocate memory for (w)asm
@@ -396,7 +410,7 @@
     }
 
     /**
-     * Load all ressources for a required <lang>
+     * Load all ressources for a required <lang> and check if wasm is supported
      * @param {string} lang The language
      * @returns {undefined}
      */
@@ -404,6 +418,7 @@
         if (!H.binaries) {
             H.binaries = empty();
         }
+        featureTestWasm();
         scriptLoader(H.paths.maindir, "Hyphenopoly.js");
         if (H.clientFeat.wasm) {
             binLoader(
