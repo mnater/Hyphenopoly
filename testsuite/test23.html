@@ -8,7 +8,7 @@
         var Hyphenopoly = {
             cacheFeatureTests: true,
             require: {
-                "la": "honorificabilitudinitas"
+                "fur": "probabilmentri"
             },
             paths: {
                 maindir: "../",
@@ -73,6 +73,7 @@
 
             .test {
                 background-color: #D8E2F9;
+                hyphens: auto;
             }
             .ref {
                 background-color: #FEEFC0;
@@ -84,12 +85,12 @@
         <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test22.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test24.html">Next&nbsp;&rarr;</a></div>
 
         <h1>Test 023</h1>
-        <p id="desc">Hyphenate latin (not native in current UAs) and use sessionStorage for clientFeatures.</p>
+        <p id="desc">Hyphenate Furlan (not native in current UAs) and use sessionStorage for clientFeatures.</p>
         <div id="result"></div>
         <hr>
-        <h2>la</h2>
-        <p id="test1" lang="la" class="test hyphenate">Qua de causa Helvetii quoque reliquos Gallos virtute praecedunt, quod fere cotidianis proeliis cum Germanis contendunt, cum aut suis finibus eos prohibent aut ipsi in eorum finibus bellum gerunt.</p>
-        <p id="ref1" lang="la" class="ref">Qua de cau|sa Helvetii quo|que re|li|quos Gal|los virtute prae|ce|dunt, quod fe|re co|ti|dia|nis proe|li|is cum Ger|ma|nis con|ten|dunt, cum aut suis fi|ni|bus eos pro|hi|bent aut ip|si in eo|rum fi|ni|bus bel|lum ge|runt.</p>
+        <h2>fur</h2>
+        <p id="test1" lang="fur" class="test hyphenate">Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont. Cualchi volte al ven clamât Ladin orientâl, parcè che al à diviers ponts in comun cul ladin, ma si è svilupât in un altri mût cul passâ dal timp, sot de influence des lenghis ator dal Friûl</p>
+        <p id="ref1" lang="fur" class="ref">Il fur|lan e je une len|ghe ro|man|ze de fa|mee des len|ghis re|ti|chis, che e je fe|ve|la|de so|re|dut in|tal Friûl, ma an|cje vie pal mont. Cual|chi vol|te al ven clamât La|din orientâl, parcè che al à di|viers ponts in co|mun cul la|din, ma si è svi|lupât in un al|tri mût cul pa|ssâ dal timp, sot de in|fluen|ce des len|ghis ator dal Friûl</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
     </body>
