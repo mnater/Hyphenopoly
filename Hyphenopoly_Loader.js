@@ -292,6 +292,8 @@
         return loadScript;
     }());
 
+    const loadedBins = empty();
+
     /**
      * Load binary files either with fetch (on new browsers that support wasm)
      * or with xmlHttpRequest
@@ -301,8 +303,6 @@
      * @returns {undefined}
      */
     function binLoader(path, fne, msg) {
-        const loadedBins = empty();
-
         /**
          * Get bin file using fetch
          * @param {string} p Where the script is stored
