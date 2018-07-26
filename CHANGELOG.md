@@ -1,5 +1,14 @@
 # Version History
 
+## Version 2.3.0 (Juli 26, 2018)
+### Hyphenopoly_Loader.js and Hyphenopoly.js:
+* Don't use template strings [#28](https://github.com/mnater/Hyphenopoly/issues/28)
+* run feature test for wasm support only if necessary
+
+### hyphenopoly.module.js:
+* define node >=8.3.0 as requirement (for util.TextDecoder)
+* small refactorings
+
 ## Version 2.2.0 (June 26, 2018)
 * provide example.js for RunKit
 * use tap instead of mocha
