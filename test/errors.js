@@ -59,6 +59,15 @@ t.test("run config with two languages", async function (t) {
     });
 });
 
+t.test("incomplete setup (forget require)", async function (t) {
+    const laHyphenator = await H9Y.config({});
+    t.test("get empty map", function (t) {
+        t.equal(laHyphenator.size, 0);
+        t.end();
+    });
+    t.end();
+});
+
 t.test("make hyphenEngine fail", async function (t) {
     const laHyphenator = await H9Y.config({"require": ["la"]});
     t.test("hyphenate one word", function (t) {

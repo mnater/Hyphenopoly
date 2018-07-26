@@ -287,6 +287,17 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
         (hyphenatedWordOffset >> 1) + 64
     );
     /* eslint-enable no-bitwise */
+
+    /**
+     * The hyphenateFunction that encloses the env above
+     * Copies the word to wasm-Memory, calls wasm.hyphenateFunc and reads
+     * the hyphenated word from wasm-Memory (eventually replacing hyphenchar)
+     * @param {String} word - the word that has to be hyphenated
+     * @param {String} hyphenchar – the hyphenate character
+     * @param {Number} leftmin – min number of chars to remain on line
+     * @param {Number} rightmin – min number of chars to go to new line
+     * @returns {String} the hyphenated word
+     */
     return function hyphenate(word, hyphenchar, leftmin, rightmin) {
         let i = 0;
         const wordLength = word.length;
@@ -307,8 +318,8 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
                 word += String.fromCharCode(hyphenatedWordStore[i]);
                 i += 1;
             }
-            if (hyphenchar !== "\u00AD") {
-                word = word.replace(/\u00AD/g, hyphenchar);
+            if (hyphenchar !== SOFTHYPHEN) {
+                word = word.replace(new RegExp(SOFTHYPHEN, "g"), hyphenchar);
             }
         }
         return word;
@@ -665,6 +676,12 @@ H.config = function config(userConfig) {
     }
     loadWasm();
     const result = new Map();
+    if (H.c.require.length === 0) {
+        H.events.dispatch(
+            "error",
+            {"msg": "No language has been required. Setup config according to documenation."}
+        );
+    }
     H.c.require.forEach(function each(lang) {
         loadHpb(lang);
         const prom = new Promise(function pro(resolve, reject) {
