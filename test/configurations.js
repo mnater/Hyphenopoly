@@ -142,7 +142,7 @@ t.test("set options: hyphen", function (t) {
     t.end();
 });
 
-t.test("set options: left-/rightmin", function (t) {
+t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
     t.beforeEach(function setup(done) {
         H9Y = require("../hyphenopoly.module");
         done();
@@ -162,6 +162,40 @@ t.test("set options: left-/rightmin", function (t) {
             "rightmin": 5
         });
         t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
+        t.end();
+    });
+    t.end();
+});
+
+t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
+    t.beforeEach(function setup(done) {
+        H9Y = require("../hyphenopoly.module");
+        done();
+    });
+
+    t.afterEach(function tearDown(done) {
+        H9Y = null;
+        delete require.cache[H9YKey];
+        done();
+    });
+
+    t.test("left-/rightmin: 2, 2", async function (t) {
+        const hyphenator = await H9Y.config({
+            "hyphen": "•",
+            "leftmin": 2,
+            "require": ["pt"],
+            "rightmin": 2
+        });
+        t.equal(hyphenator("relativo"), "re•la•ti•vo");
+        t.end();
+    });
+
+    t.test("left-/rightmin: def, def", async function (t) {
+        const hyphenator = await H9Y.config({
+            "hyphen": "•",
+            "require": ["pt"]
+        });
+        t.equal(hyphenator("relativo"), "re•la•tivo");
         t.end();
     });
     t.end();

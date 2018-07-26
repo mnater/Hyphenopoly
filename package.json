@@ -1,7 +1,7 @@
 {
   "name": "hyphenopoly",
-  "version": "2.2.0",
-  "description": "Polyfill for client-side hyphenation.",
+  "version": "2.3.0",
+  "description": "Hyphenation for node and polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
     "html",
@@ -31,17 +31,23 @@
   ],
   "browser": "Hyphenopoly_Loader.js",
   "main": "hyphenopoly.module.js",
+  "engines": {
+    "node": ">=8.3.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/mnater/Hyphenopoly"
   },
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^5.0.0",
+    "eslint": "^5.1.0",
     "tap": "^12.0.1",
     "uglify-es": "^3.3.9"
   },
   "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 8
+    },
     "env": {
       "browser": true,
       "es6": true
@@ -51,7 +57,17 @@
     },
     "extends": "eslint:all",
     "rules": {
+      "require-jsdoc": ["error", {
+          "require": {
+              "FunctionDeclaration": true,
+              "MethodDefinition": true,
+              "ClassDeclaration": true,
+              "ArrowFunctionExpression": true,
+              "FunctionExpression": true
+          }
+      }],
       "no-template-curly-in-string": 2,
+      "prefer-template": 0,
       "wrap-iife": 1,
       "max-lines": 0,
       "max-lines-per-function": 0,
@@ -136,7 +152,7 @@
     "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
     "test": "tap test/*.js",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
-    "lint": "eslint --parser-options=ecmaVersion:8 Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js",
+    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js",
     "prepare": "npm run minify",
     "minify": "sh ./tools/minify.sh"
   },

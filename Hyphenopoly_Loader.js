@@ -1,11 +1,10 @@
-/*
- * @license Hyphenopoly_Loader 2.2.0 - client side hyphenation
- * @license Hyphenopoly_Loader 2.2.0-devel - client side hyphenation
- *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
- *  https://github.com/mnater/Hyphenopoly
+/**
+ * @license Hyphenopoly_Loader 2.3.0 - client side hyphenation
+ * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ * https://github.com/mnater/Hyphenopoly
  *
- *  Released under the MIT license
- *  http://mnater.github.io/Hyphenopoly/LICENSE
+ * Released under the MIT license
+ * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
 (function H9YL() {
@@ -21,17 +20,17 @@
         return Object.create(null);
     }
 
-    if (H.cacheFeatureTests && sessionStorage.getItem("Hyphenopoly_Loader")) {
-        H.clientFeat = JSON.parse(sessionStorage.getItem("Hyphenopoly_Loader"));
-    } else {
-        H.clientFeat = {
-            "langs": empty(),
-            "polyfill": false,
-            "wasm": null
-        };
-    }
-
     (function config() {
+        // Set H.clientFeat (either from sessionStorage or empty)
+        if (H.cacheFeatureTests && sessionStorage.getItem("Hyphenopoly_Loader")) {
+            H.clientFeat = JSON.parse(sessionStorage.getItem("Hyphenopoly_Loader"));
+        } else {
+            H.clientFeat = {
+                "langs": empty(),
+                "polyfill": false,
+                "wasm": null
+            };
+        }
         // Set defaults for paths and setup
         if (H.paths) {
             if (!H.paths.patterndir) {
@@ -160,9 +159,11 @@
                     }
                 };
                 currentHandler(data);
-                if (!defaultPrevented &&
+                if (
+                    !defaultPrevented &&
                     !defaultHasRun &&
-                    definedEvents[name].default) {
+                    definedEvents[name].default
+                ) {
                     definedEvents[name].default(data);
                     defaultHasRun = true;
                 }
@@ -190,7 +191,7 @@
             } else {
                 H.events.dispatch(
                     "error",
-                    {"msg": `unknown Event "${name}" discarded`}
+                    {"msg": "unknown Event \"" + name + "\" discarded"}
                 );
             }
         }
@@ -209,7 +210,11 @@
         H.events.addListener = addListener;
     }());
 
-    (function featureTestWasm() {
+    /**
+     * Test if wasm is supported
+     * @returns {undefined}
+     */
+    function featureTestWasm() {
         /* eslint-disable max-len, no-magic-numbers, no-prototype-builtins */
         /**
          * Feature test for wasm
@@ -218,21 +223,40 @@
         function runWasmTest() {
             /*
              * This is the original test, without webkit workaround
-             * if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
-             *     const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0]));
+             * if (typeof WebAssembly === "object" &&
+             *     typeof WebAssembly.instantiate === "function") {
+             *     const module = new WebAssembly.Module(Uint8Array.from(
+             *         [0, 97, 115, 109, 1, 0, 0, 0]
+             *     ));
              *     if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
-             *         return WebAssembly.Instance.prototype.isPrototypeOf(new WebAssembly.Instance(module));
+             *         return WebAssembly.Instance.prototype.isPrototypeOf(
+             *             new WebAssembly.Instance(module)
+             *         );
              *     }
              * }
              * return false;
              */
 
-            // Wasm feature test with iOS bug detection (https://bugs.webkit.org/show_bug.cgi?id=181781)
-            if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
-                const module = new WebAssembly.Module(Uint8Array.from([0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127, 3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115, 116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2, 0, 11]));
+            /*
+             * Wasm feature test with iOS bug detection
+             * (https://bugs.webkit.org/show_bug.cgi?id=181781)
+             */
+            if (
+                typeof WebAssembly === "object" &&
+                typeof WebAssembly.instantiate === "function"
+            ) {
+                /* eslint-disable array-element-newline */
+                const module = new WebAssembly.Module(Uint8Array.from([
+                    0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127,
+                    3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115,
+                    116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32,
+                    0, 40, 2, 0, 11
+                ]));
+                /* eslint-enable array-element-newline */
                 if (WebAssembly.Module.prototype.isPrototypeOf(module)) {
                     const inst = new WebAssembly.Instance(module);
-                    return WebAssembly.Instance.prototype.isPrototypeOf(inst) && (inst.exports.test(4) !== 0);
+                    return WebAssembly.Instance.prototype.isPrototypeOf(inst) &&
+                            (inst.exports.test(4) !== 0);
                 }
             }
             return false;
@@ -241,7 +265,7 @@
         if (H.clientFeat.wasm === null) {
             H.clientFeat.wasm = runWasmTest();
         }
-    }());
+    }
 
     const scriptLoader = (function scriptLoader() {
         const loadedScripts = empty();
@@ -268,23 +292,31 @@
         return loadScript;
     }());
 
-    const binLoader = (function binLoader() {
-        const loadedBins = empty();
+    const loadedBins = empty();
 
+    /**
+     * Load binary files either with fetch (on new browsers that support wasm)
+     * or with xmlHttpRequest
+     * @param {string} path Where the script is stored
+     * @param {string} fne Filename of the script with extension
+     * @param {Object} msg Message
+     * @returns {undefined}
+     */
+    function binLoader(path, fne, msg) {
         /**
          * Get bin file using fetch
-         * @param {string} path Where the script is stored
-         * @param {string} fne Filename of the script with extension
-         * @param {Object} msg Message
+         * @param {string} p Where the script is stored
+         * @param {string} f Filename of the script with extension
+         * @param {Object} m Message
          * @returns {undefined}
          */
-        function fetchBinary(path, fne, msg) {
-            if (!loadedBins[fne]) {
-                loadedBins[fne] = true;
-                fetch(path + fne).then(
+        function fetchBinary(p, f, m) {
+            if (!loadedBins[f]) {
+                loadedBins[f] = true;
+                window.fetch(p + f).then(
                     function resolve(response) {
                         if (response.ok) {
-                            const name = fne.slice(0, fne.lastIndexOf("."));
+                            const name = f.slice(0, f.lastIndexOf("."));
                             if (name === "hyphenEngine") {
                                 H.binaries[name] = response.arrayBuffer().then(
                                     function getModule(buf) {
@@ -294,7 +326,7 @@
                             } else {
                                 H.binaries[name] = response.arrayBuffer();
                             }
-                            H.events.dispatch(msg[0], {"msg": msg[1]});
+                            H.events.dispatch(m[0], {"msg": m[1]});
                         }
                     }
                 );
@@ -303,30 +335,32 @@
 
         /**
          * Get bin file using XHR
-         * @param {string} path Where the script is stored
-         * @param {string} fne Filename of the script with extension
-         * @param {Object} msg Message
+         * @param {string} p Where the script is stored
+         * @param {string} f Filename of the script with extension
+         * @param {Object} m Message
          * @returns {undefined}
          */
-        function requestBinary(path, fne, msg) {
-            if (!loadedBins[fne]) {
-                loadedBins[fne] = true;
+        function requestBinary(p, f, m) {
+            if (!loadedBins[f]) {
+                loadedBins[f] = true;
                 const xhr = new XMLHttpRequest();
-                xhr.open("GET", path + fne);
+                xhr.open("GET", p + f);
                 xhr.onload = function onload() {
-                    const name = fne.slice(0, fne.lastIndexOf("."));
+                    const name = f.slice(0, f.lastIndexOf("."));
                     H.binaries[name] = xhr.response;
-                    H.events.dispatch(msg[0], {"msg": msg[1]});
+                    H.events.dispatch(m[0], {"msg": m[1]});
                 };
                 xhr.responseType = "arraybuffer";
                 xhr.send();
             }
         }
 
-        return (H.clientFeat.wasm)
-            ? fetchBinary
-            : requestBinary;
-    }());
+        if (H.clientFeat.wasm) {
+            fetchBinary(path, fne, msg);
+        } else {
+            requestBinary(path, fne, msg);
+        }
+    }
 
     /**
      * Allocate memory for (w)asm
@@ -360,7 +394,6 @@
                 "maximum": 256
             });
         } else {
-            /* eslint-disable no-bitwise */
             /**
              * Polyfill Math.log2
              * @param {number} x argument
@@ -369,7 +402,7 @@
             Math.log2 = Math.log2 || function polyfillLog2(x) {
                 return Math.log(x) * Math.LOG2E;
             };
-
+            /* eslint-disable no-bitwise */
             const asmPages = (2 << Math.floor(Math.log2(wasmPages))) * 65536;
             /* eslint-enable no-bitwise */
             H.specMems[lang] = new ArrayBuffer(asmPages);
@@ -377,7 +410,7 @@
     }
 
     /**
-     * Load all ressources for a required <lang>
+     * Load all ressources for a required <lang> and check if wasm is supported
      * @param {string} lang The language
      * @returns {undefined}
      */
@@ -385,6 +418,7 @@
         if (!H.binaries) {
             H.binaries = empty();
         }
+        featureTestWasm();
         scriptLoader(H.paths.maindir, "Hyphenopoly.js");
         if (H.clientFeat.wasm) {
             binLoader(
@@ -395,13 +429,32 @@
         } else {
             scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
         }
-        binLoader(H.paths.patterndir, `${lang}.hpb`, ["hpbLoaded", lang]);
+        binLoader(H.paths.patterndir, lang + ".hpb", ["hpbLoaded", lang]);
         allocateMemory(lang);
     }
 
-    (function featureTestCSSHHyphenation() {
+    (function featureTestCSSHyphenation() {
         const tester = (function tester() {
             let fakeBody = null;
+
+            const css = (function createCss() {
+                /* eslint-disable array-element-newline */
+                const props = [
+                    "visibility:hidden;",
+                    "-moz-hyphens:auto;",
+                    "-webkit-hyphens:auto;",
+                    "-ms-hyphens:auto;",
+                    "hyphens:auto;",
+                    "width:48px;",
+                    "font-size:12px;",
+                    "line-height:12px;",
+                    "border:none;",
+                    "padding:0;",
+                    "word-wrap:normal"
+                ];
+                /* eslint-enable array-element-newline */
+                return props.join("");
+            }());
 
             /**
              * Create and append div with CSS-hyphenated word
@@ -418,7 +471,7 @@
                 const testDiv = d.createElement("div");
                 testDiv.lang = lang;
                 testDiv.id = lang;
-                testDiv.style.cssText = "visibility:hidden;-moz-hyphens:auto;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto;width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal";
+                testDiv.style.cssText = css;
                 testDiv.appendChild(d.createTextNode(H.require[lang]));
                 fakeBody.appendChild(testDiv);
             }
@@ -458,10 +511,12 @@
          * @returns {Boolean} result of the check
          */
         function checkCSSHyphensSupport(elm) {
-            return (elm.style.hyphens === "auto" ||
+            return (
+                elm.style.hyphens === "auto" ||
                 elm.style.webkitHyphens === "auto" ||
                 elm.style.msHyphens === "auto" ||
-                elm.style["-moz-hyphens"] === "auto");
+                elm.style["-moz-hyphens"] === "auto"
+            );
         }
 
         Object.keys(H.require).forEach(function doReqLangs(lang) {
@@ -484,7 +539,6 @@
                 if (H.require[lang] !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
                     if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
-                        H.clientFeat.polyfill = H.clientFeat.polyfill || false;
                         H.clientFeat.langs[lang] = "CSS";
                     } else {
                         H.clientFeat.polyfill = true;
@@ -508,7 +562,10 @@
             d.addEventListener(
                 "DOMContentLoaded",
                 function DCL() {
-                    H.events.dispatch("contentLoaded", {"msg": ["contentLoaded"]});
+                    H.events.dispatch(
+                        "contentLoaded",
+                        {"msg": ["contentLoaded"]}
+                    );
                 },
                 {
                     "once": true,
@@ -521,6 +578,9 @@
     }());
 
     if (H.cacheFeatureTests) {
-        sessionStorage.setItem("Hyphenopoly_Loader", JSON.stringify(H.clientFeat));
+        sessionStorage.setItem(
+            "Hyphenopoly_Loader",
+            JSON.stringify(H.clientFeat)
+        );
     }
 }());

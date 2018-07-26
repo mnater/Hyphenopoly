@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 023</title>
+        <script>
+        var reloaded = !!sessionStorage.getItem("Hyphenopoly_Loader");
+        var Hyphenopoly = {
+            cacheFeatureTests: true,
+            require: {
+                "fur": "probabilmentri"
+            },
+            paths: {
+                maindir: "../",
+                patterndir: "../patterns/"
+            },
+            setup: {
+                classnames: {
+                    "hyphenate": {
+                        hyphen: "|",
+                        minWordLength: 4
+                    }
+                }
+            },
+            handleEvent: {
+                hyphenopolyEnd: function (e) {
+                    if (!reloaded) {
+                        reloaded = true;
+                        window.location.reload();
+                    } else {
+                        assert();
+                        sessionStorage.clear();
+                    }
+                }
+            }
+        };
+        function assert() {
+            var tests = 1;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = false;
+            while (i <= tests) {
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
+                    result = result || true;
+                } else {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + i + "</span> ";
+                    result = result || false;
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 23,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+                hyphens: auto;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test22.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test24.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 023</h1>
+        <p id="desc">Hyphenate Furlan (not native in current UAs) and use sessionStorage for clientFeatures.</p>
+        <div id="result"></div>
+        <hr>
+        <h2>fur</h2>
+        <p id="test1" lang="fur" class="test hyphenate">Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont. Cualchi volte al ven clamât Ladin orientâl, parcè che al à diviers ponts in comun cul ladin, ma si è svilupât in un altri mût cul passâ dal timp, sot de influence des lenghis ator dal Friûl</p>
+        <p id="ref1" lang="fur" class="ref">Il fur|lan e je une len|ghe ro|man|ze de fa|mee des len|ghis re|ti|chis, che e je fe|ve|la|de so|re|dut in|tal Friûl, ma an|cje vie pal mont. Cual|chi vol|te al ven clamât La|din orientâl, parcè che al à di|viers ponts in co|mun cul la|din, ma si è svi|lupât in un al|tri mût cul pa|ssâ dal timp, sot de in|fluen|ce des len|ghis ator dal Friûl</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+    </body>
+</html>

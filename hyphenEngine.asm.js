@@ -1,9 +1,10 @@
-/** @license hyphenEngine.asm.js 2.2.0 - client side hyphenation for webbrowsers
- *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
- *  https://github.com/mnater/Hyphenopoly
+/**
+ * @license hyphenEngine.asm.js 2.3.0 - hyphenation for node and webbrowsers
+ * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ * https://github.com/mnater/Hyphenopoly
  *
- *  Released under the MIT license
- *  http://mnater.github.io/Hyphenopoly/LICENSE
+ * Released under the MIT license
+ * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 function asmHyphenEngine(std, ext, heap) {
     "use asm";

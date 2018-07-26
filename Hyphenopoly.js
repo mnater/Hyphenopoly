@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly 2.2.0 - client side hyphenation for webbrowsers
+ * @license Hyphenopoly 2.3.0 - client side hyphenation for webbrowsers
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -280,7 +280,7 @@
                         registerOnCopy(el);
                     }
                 } else if (!H.clientFeat.langs[eLang]) {
-                    H.events.dispatch("error", {"msg": `Element with '${eLang}' found, but '${eLang}.hpb' not loaded. Check language tags!`});
+                    H.events.dispatch("error", {"msg": "Element with '" + eLang + "' found, but '" + eLang + ".hpb' not loaded. Check language tags!"});
                 }
 
                 n = el.childNodes[j];
@@ -297,7 +297,7 @@
                 }
             }
             C.classNames.forEach(function eachClassName(cn) {
-                const nl = w.document.querySelectorAll(`.${cn}`);
+                const nl = w.document.querySelectorAll("." + cn);
                 Array.prototype.forEach.call(nl, function eachNode(n) {
                     processElements(n, getLang(n, true), cn, false);
                 });
@@ -352,10 +352,10 @@
                         }
                         i += 1;
                     }
-                    hw = parts.join(`-${zeroWidthSpace}`);
+                    hw = parts.join("-" + zeroWidthSpace);
                     break;
                 default:
-                    hw = word.replace("-", `-${zeroWidthSpace}`);
+                    hw = word.replace("-", "-" + zeroWidthSpace);
                 }
                 return hw;
             }
@@ -387,7 +387,7 @@
                 }
                 return hw;
             }
-            wordHyphenatorPool[`${lang}-${cn}`] = hyphenator;
+            wordHyphenatorPool[lang + "-" + cn] = hyphenator;
             return hyphenator;
         }
 
@@ -416,7 +416,7 @@
                 const classSettings = C[cn];
                 let h = classSettings.hyphen;
                 if (".\\+*?[^]$(){}=!<>|:-".indexOf(classSettings.hyphen) !== -1) {
-                    h = `\\${classSettings.hyphen}`;
+                    h = "\\" + classSettings.hyphen;
                 }
                 if (classSettings.orphanControl === 3 && leadingWhiteSpace === " ") {
                     leadingWhiteSpace = String.fromCharCode(160);
@@ -445,7 +445,7 @@
                 "el": el,
                 "lang": lang
             });
-            const poolKey = `${lang}-${cn}`;
+            const poolKey = lang + "-" + cn;
             const wordHyphenator = (wordHyphenatorPool[poolKey])
                 ? wordHyphenatorPool[poolKey]
                 : createWordHyphenator(lo, lang, cn);
@@ -496,7 +496,7 @@
                     hyphenateElement(lang, elo);
                 });
             } else {
-                H.events.dispatch("error", {"msg": `engine for language '${lang}' loaded, but no elements found.`});
+                H.events.dispatch("error", {"msg": "engine for language '" + lang + "' loaded, but no elements found."});
             }
             if (elements.counter[0] === 0) {
                 H.events.dispatch("hyphenopolyEnd");
@@ -552,7 +552,7 @@
                 lo.cache = empty();
                 if (H.c.exceptions.global) {
                     if (H.c.exceptions[lang]) {
-                        H.c.exceptions[lang] += `, ${H.c.exceptions.global}`;
+                        H.c.exceptions[lang] += ", " + H.c.exceptions.global;
                     } else {
                         H.c.exceptions[lang] = H.c.exceptions.global;
                     }
@@ -607,7 +607,7 @@
                             classSettings.rightmin
                         );
                     }
-                    lo.genRegExps[cn] = new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${classSettings.minWordLength},}`, "gi");
+                    lo.genRegExps[cn] = new RegExp("[\\w" + alphabet + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}", "gi");
                 });
                 lo.engineReady = true;
             }
