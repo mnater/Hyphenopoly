@@ -57,6 +57,15 @@
     },
     "extends": "eslint:all",
     "rules": {
+      "require-jsdoc": ["error", {
+          "require": {
+              "FunctionDeclaration": true,
+              "MethodDefinition": true,
+              "ClassDeclaration": true,
+              "ArrowFunctionExpression": true,
+              "FunctionExpression": true
+          }
+      }],
       "no-template-curly-in-string": 2,
       "prefer-template": 0,
       "wrap-iife": 1,

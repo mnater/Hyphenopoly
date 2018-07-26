@@ -19,6 +19,12 @@ t.afterEach(function tearDown(done) {
 t.test("set Event", async function (t) {
     await H9Y.config({
         "handleEvent": {
+
+            /**
+             * Prevents default event
+             * @param {Object} e Event
+             * @returns {undefined}
+             */
             "error": function (e) {
                 e.preventDefault();
             }
@@ -31,6 +37,12 @@ t.test("set Event", async function (t) {
 t.test("set unknown event", async function (t) {
     await H9Y.config({
         "handleEvent": {
+
+            /**
+             * Prevents default event
+             * @param {Object} e Event
+             * @returns {undefined}
+             */
             "fantasy": function (e) {
                 e.preventDefault();
             }
@@ -43,6 +55,12 @@ t.test("set unknown event", async function (t) {
 t.test("try to overwrite noncancellable event", async function (t) {
     await H9Y.config({
         "handleEvent": {
+
+            /**
+             * Prevents default event
+             * @param {Object} e Event
+             * @returns {undefined}
+             */
             "hpbLoaded": function (e) {
                 e.preventDefault();
             }
