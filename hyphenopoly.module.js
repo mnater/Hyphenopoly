@@ -58,7 +58,7 @@ const H = empty();
 H.binaries = empty();
 
 /**
- * Read a wasm file
+ * Read a wasm file, dispatch "engineLoaded" on success
  * @returns {undefined}
  */
 function loadWasm() {
@@ -79,7 +79,7 @@ function loadWasm() {
 }
 
 /**
- * Read a hpb file
+ * Read a hpb file, dispatch "hpbLoaded" on success
  * @param {string} lang - The language
  * @returns {undefined}
  */
@@ -218,7 +218,7 @@ function convertExceptions(exc) {
 }
 
 /**
- * Setup lo
+ * Setup a language object (lo) and dispatch "engineReady"
  * @param {string} lang The language
  * @param {function} hyphenateFunction The hyphenateFunction
  * @param {string} alphabet List of used characters
@@ -316,7 +316,8 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
 }
 
 /**
- * Instantiate Wasm Engine
+ * Instantiate Wasm Engine, then compute the pattern trie and
+ * call prepareLanguagesObj.
  * @param {string} lang The language
  * @returns {undefined}
  */
@@ -536,60 +537,6 @@ function createTextHyphenator(lang) {
     };
 }
 
-H.config = function config(userConfig) {
-    const defaults = Object.create(null, {
-        "compound": setProp("hyphen", 2),
-        "exceptions": setProp(empty(), 2),
-        "hyphen": setProp(SOFTHYPHEN, 2),
-        "leftmin": setProp(0, 2),
-        "minWordLength": setProp(6, 2),
-        "normalize": setProp(false, 2),
-        "orphanControl": setProp(1, 2),
-        "paths": setProp(Object.create(null, {
-            "maindir": setProp(`${__dirname}/`, 2),
-            "patterndir": setProp(`${__dirname}/patterns/`, 2)
-        }), 2),
-        "require": setProp([], 2),
-        "rightmin": setProp(0, 2)
-    });
-    const settings = Object.create(defaults);
-    Object.keys(userConfig).forEach(function each(key) {
-        Object.defineProperty(
-            settings,
-            key,
-            setProp(userConfig[key], 3)
-        );
-    });
-    H.c = settings;
-    if (H.c.handleEvent) {
-        Object.keys(H.c.handleEvent).forEach(function add(name) {
-            H.events.addListener(name, H.c.handleEvent[name], true);
-        });
-    }
-    loadWasm();
-    const result = new Map();
-    H.c.require.forEach(function each(lang) {
-        loadHpb(lang);
-        const prom = new Promise(function pro(resolve, reject) {
-            H.events.addListener("engineReady", function handler(e) {
-                if (e.msg === lang) {
-                    resolve(createTextHyphenator(lang));
-                }
-            });
-            H.events.addListener("error", function handler(e) {
-                e.preventDefault();
-                if (e.key === lang || e.key === "hyphenEngine") {
-                    reject(e.msg);
-                }
-            });
-        });
-        result.set(lang, prom);
-    });
-    return (result.size === 1)
-        ? result.get(H.c.require[0])
-        : result;
-};
-
 (function setupEvents() {
     // Events known to the system
     const definedEvents = empty();
@@ -686,5 +633,58 @@ H.config = function config(userConfig) {
     H.events.addListener = addListener;
 }());
 
+H.config = function config(userConfig) {
+    const defaults = Object.create(null, {
+        "compound": setProp("hyphen", 2),
+        "exceptions": setProp(empty(), 2),
+        "hyphen": setProp(SOFTHYPHEN, 2),
+        "leftmin": setProp(0, 2),
+        "minWordLength": setProp(6, 2),
+        "normalize": setProp(false, 2),
+        "orphanControl": setProp(1, 2),
+        "paths": setProp(Object.create(null, {
+            "maindir": setProp(`${__dirname}/`, 2),
+            "patterndir": setProp(`${__dirname}/patterns/`, 2)
+        }), 2),
+        "require": setProp([], 2),
+        "rightmin": setProp(0, 2)
+    });
+    const settings = Object.create(defaults);
+    Object.keys(userConfig).forEach(function each(key) {
+        Object.defineProperty(
+            settings,
+            key,
+            setProp(userConfig[key], 3)
+        );
+    });
+    H.c = settings;
+    if (H.c.handleEvent) {
+        Object.keys(H.c.handleEvent).forEach(function add(name) {
+            H.events.addListener(name, H.c.handleEvent[name]);
+        });
+    }
+    loadWasm();
+    const result = new Map();
+    H.c.require.forEach(function each(lang) {
+        loadHpb(lang);
+        const prom = new Promise(function pro(resolve, reject) {
+            H.events.addListener("engineReady", function handler(e) {
+                if (e.msg === lang) {
+                    resolve(createTextHyphenator(lang));
+                }
+            });
+            H.events.addListener("error", function handler(e) {
+                e.preventDefault();
+                if (e.key === lang || e.key === "hyphenEngine") {
+                    reject(e.msg);
+                }
+            });
+        });
+        result.set(lang, prom);
+    });
+    return (result.size === 1)
+        ? result.get(H.c.require[0])
+        : result;
+};
 
 module.exports = H;
