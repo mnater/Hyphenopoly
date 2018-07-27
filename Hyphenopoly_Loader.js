@@ -1,10 +1,10 @@
-/*
- * @license Hyphenopoly_Loader 2.3.0-devel - client side hyphenation
- *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
- *  https://github.com/mnater/Hyphenopoly
+/**
+ * @license Hyphenopoly_Loader 2.4.0-devel - client side hyphenation
+ * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ * https://github.com/mnater/Hyphenopoly
  *
- *  Released under the MIT license
- *  http://mnater.github.io/Hyphenopoly/LICENSE
+ * Released under the MIT license
+ * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
 (function H9YL() {

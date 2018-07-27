@@ -1,10 +1,10 @@
-/*
- * @license Hyphenopoly.module.js 2.3.0-devel - hyphenation for node
- *  ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
- *  https://github.com/mnater/Hyphenopoly
+/**
+ * @license Hyphenopoly.module.js 2.4.0-devel - hyphenation for node
+ * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ * https://github.com/mnater/Hyphenopoly
  *
- *  Released under the MIT license
- *  http://mnater.github.io/Hyphenopoly/LICENSE
+ * Released under the MIT license
+ * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
 /* eslint-env node */
