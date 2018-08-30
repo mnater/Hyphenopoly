@@ -434,7 +434,6 @@
         } else {
             scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
         }
-        console.log(filename);
         binLoader(H.paths.patterndir, filename, lang, ["hpbLoaded", lang]);
         allocateMemory(lang);
     }
