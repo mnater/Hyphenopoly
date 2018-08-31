@@ -299,6 +299,7 @@
      * or with xmlHttpRequest
      * @param {string} path Where the script is stored
      * @param {string} fne Filename of the script with extension
+     * @param {string} name Name of the ressource
      * @param {Object} msg Message
      * @returns {undefined}
      */
@@ -415,7 +416,7 @@
      * @returns {undefined}
      */
     function loadRessources(lang) {
-        var filename = lang + ".hpb";
+        let filename = lang + ".hpb";
         if (H.fallbacks && H.fallbacks[lang]) {
             filename = H.fallbacks[lang] + ".hpb";
         }
