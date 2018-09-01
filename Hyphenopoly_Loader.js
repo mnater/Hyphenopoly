@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly_Loader 2.3.0 - client side hyphenation
+ * @license Hyphenopoly_Loader 2.4.0 - client side hyphenation
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -299,32 +299,33 @@
      * or with xmlHttpRequest
      * @param {string} path Where the script is stored
      * @param {string} fne Filename of the script with extension
+     * @param {string} name Name of the ressource
      * @param {Object} msg Message
      * @returns {undefined}
      */
-    function binLoader(path, fne, msg) {
+    function binLoader(path, fne, name, msg) {
         /**
          * Get bin file using fetch
          * @param {string} p Where the script is stored
          * @param {string} f Filename of the script with extension
+         * @param {string} n Name of the ressource
          * @param {Object} m Message
          * @returns {undefined}
          */
-        function fetchBinary(p, f, m) {
+        function fetchBinary(p, f, n, m) {
             if (!loadedBins[f]) {
                 loadedBins[f] = true;
                 window.fetch(p + f).then(
                     function resolve(response) {
                         if (response.ok) {
-                            const name = f.slice(0, f.lastIndexOf("."));
-                            if (name === "hyphenEngine") {
-                                H.binaries[name] = response.arrayBuffer().then(
+                            if (n === "hyphenEngine") {
+                                H.binaries[n] = response.arrayBuffer().then(
                                     function getModule(buf) {
                                         return new WebAssembly.Module(buf);
                                     }
                                 );
                             } else {
-                                H.binaries[name] = response.arrayBuffer();
+                                H.binaries[n] = response.arrayBuffer();
                             }
                             H.events.dispatch(m[0], {"msg": m[1]});
                         }
@@ -337,17 +338,17 @@
          * Get bin file using XHR
          * @param {string} p Where the script is stored
          * @param {string} f Filename of the script with extension
+         * @param {string} n Name of the ressource
          * @param {Object} m Message
          * @returns {undefined}
          */
-        function requestBinary(p, f, m) {
+        function requestBinary(p, f, n, m) {
             if (!loadedBins[f]) {
                 loadedBins[f] = true;
                 const xhr = new XMLHttpRequest();
                 xhr.open("GET", p + f);
                 xhr.onload = function onload() {
-                    const name = f.slice(0, f.lastIndexOf("."));
-                    H.binaries[name] = xhr.response;
+                    H.binaries[n] = xhr.response;
                     H.events.dispatch(m[0], {"msg": m[1]});
                 };
                 xhr.responseType = "arraybuffer";
@@ -356,9 +357,9 @@
         }
 
         if (H.clientFeat.wasm) {
-            fetchBinary(path, fne, msg);
+            fetchBinary(path, fne, name, msg);
         } else {
-            requestBinary(path, fne, msg);
+            requestBinary(path, fne, name, msg);
         }
     }
 
@@ -415,6 +416,10 @@
      * @returns {undefined}
      */
     function loadRessources(lang) {
+        let filename = lang + ".hpb";
+        if (H.fallbacks && H.fallbacks[lang]) {
+            filename = H.fallbacks[lang] + ".hpb";
+        }
         if (!H.binaries) {
             H.binaries = empty();
         }
@@ -424,12 +429,13 @@
             binLoader(
                 H.paths.maindir,
                 "hyphenEngine.wasm",
+                "hyphenEngine",
                 ["engineLoaded", "wasm"]
             );
         } else {
             scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
         }
-        binLoader(H.paths.patterndir, lang + ".hpb", ["hpbLoaded", lang]);
+        binLoader(H.paths.patterndir, filename, lang, ["hpbLoaded", lang]);
         allocateMemory(lang);
     }
 

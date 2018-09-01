@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 024</title>
+        <script>
+        var Hyphenopoly = {
+            require: {
+                "en-au": "FORCEHYPHENOPOLY",
+                "en": "FORCEHYPHENOPOLY"
+            },
+            fallbacks: {
+                "en-au": "en-gb",
+                "en": "en-us"
+            },
+            paths: {
+                maindir: "../",
+                patterndir: "../patterns/"
+            },
+            setup: {
+                safeCopy: false
+            },
+            handleEvent: {
+                hyphenopolyEnd: function (e) {
+                    assert();
+                }
+            }
+        };
+        function assert() {
+            var tests = 2;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = true;
+            var lang = "";
+            while (i <= tests) {
+                lang = document.getElementById("test" + i).lang;
+                if (Hyphenopoly.clientFeat.langs[lang] === "CSS") {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
+                    result = result && true;
+                } else {
+                    test = document.getElementById("test" + i).innerHTML;
+                    ref = document.getElementById("ref" + i).innerHTML;
+                    if (test === ref) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        result = result && true;
+                    } else {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        result = false;
+                    }
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 24,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test23.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test25.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 024</h1>
+        <p id="desc">Hyphenate a text marked with lang 'en-au'. Hyphenopoly should use 'en-gb'-patterns.</p>
+        <div id="result"></div>
+        <hr>
+        <h2>1: en-au</h2>
+        <p id="test1" class="test hyphenate" lang="en-au">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref1" class="ref" lang="en-au">A hy&shy;phen&shy;a&shy;tion al&shy;gorithm is a set of rules that de&shy;cides at which points a word can be broken over two lines with a hy&shy;phen.</p>
+        <h2>2: en</h2>
+        <p id="test2" class="test hyphenate" lang="en">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref2" class="ref" lang="en">A hy&shy;phen&shy;ation al&shy;go&shy;rithm is a set of rules that de&shy;cides at which points a word can be bro&shy;ken over two lines with a hy&shy;phen.</p>
+
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
+    </body>
+</html>
