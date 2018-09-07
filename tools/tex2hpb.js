@@ -6,7 +6,7 @@
  * (https://github.com/mnater/Hyphenopoly)
  *
  * Usage:
- * # node tex2hpb.js license.txt characters.txt patterns.txt [exceptions.txt]
+ * # node tex2hpb.js license.txt characters.txt patterns.txt [exceptions.txt | null] outname
  *
  * This creates a new file called input.hpb in pwd
  *
@@ -54,6 +54,12 @@
  * _10t10a11b10l10e10_
  * _10p10r10o10j10e10c10t10_
  * So "tables" will not by hyphenated by this pattern.
+ *
+ * If there's no exceptions file, use "null" as a placeholder.
+ *
+ * outname
+ * outname (typically the language code) is the filename where patterns will
+ * be stored. The .hpb ending is added automatically.
  */
 
 /* Binary format: .hpb (hyphenopoly patterns binary)
