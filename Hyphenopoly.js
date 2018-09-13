@@ -787,7 +787,7 @@
             const defRightmin = baseData.rightmin;
             const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(
                 hyphenatedWordOffset >> 1,
-                (hyphenatedWordOffset >> 1) + 64
+                (hyphenatedWordOffset >> 1) + 128
             );
             /* eslint-enable no-bitwise */
             return function hyphenate(word, hyphenchar, leftmin, rightmin) {
