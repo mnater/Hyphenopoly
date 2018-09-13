@@ -284,7 +284,7 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
     const defRightmin = baseData.rightmin;
     const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(
         hyphenatedWordOffset >> 1,
-        (hyphenatedWordOffset >> 1) + 64
+        (hyphenatedWordOffset >> 1) + 128
     );
     /* eslint-enable no-bitwise */
 
@@ -301,6 +301,13 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
     return function hyphenate(word, hyphenchar, leftmin, rightmin) {
         let i = 0;
         const wordLength = word.length;
+        if (wordLength > 61) {
+            H.events.dispatch(
+                "error",
+                {"msg": "found word longer than 61 characters"}
+            );
+            return word;
+        }
         leftmin = leftmin || defLeftmin;
         rightmin = rightmin || defRightmin;
         wordStore[0] = wordLength + 2;

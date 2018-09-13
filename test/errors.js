@@ -76,3 +76,12 @@ t.test("make hyphenEngine fail", async function (t) {
     });
     t.end();
 });
+
+t.test("fail when word is to long", async function (t) {
+    const nlHyphenator = await H9Y.config({"require": ["nl"]});
+    t.test("hyphenate one word", function (t) {
+        t.equal(nlHyphenator("Kindercarnavalsoptochtvoorbereidingswerkzaamhedenplankindercarnavals"), "Kindercarnavalsoptochtvoorbereidingswerkzaamhedenplankindercarnavals");
+        t.end();
+    });
+    t.end();
+});

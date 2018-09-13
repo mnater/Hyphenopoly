@@ -607,6 +607,15 @@
                             classSettings.rightmin
                         );
                     }
+
+                    /*
+                     * Find words with characters from `alphabet` and
+                     * `Zero Width Non-Joiner` and `-` with a min length.
+                     *
+                     * This regexp is not perfect. It also finds parts of words
+                     * that follow a character that is not in the `alphabet`.
+                     * Word delimiters are not taken in account.
+                     */
                     lo.genRegExps[cn] = new RegExp("[\\w" + alphabet + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}", "gi");
                 });
                 lo.engineReady = true;
@@ -793,6 +802,10 @@
             return function hyphenate(word, hyphenchar, leftmin, rightmin) {
                 let i = 0;
                 const wordLength = word.length;
+                if (wordLength > 61) {
+                    H.events.dispatch("error", {"msg": "found word longer than 61 characters"});
+                    return word;
+                }
                 leftmin = leftmin || defLeftmin;
                 rightmin = rightmin || defRightmin;
                 wordStore[0] = wordLength + 2;
