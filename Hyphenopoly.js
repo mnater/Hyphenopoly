@@ -428,23 +428,18 @@
         }
 
         /**
-         * Hyphenate text in element
-         * @param {string} lang The language of the element
-         * @param {Object} elo The element-object
-         * @returns {undefined}
+         * Hyphenate an entitiy (text string or Element-Object)
+         * @param {string} lang - the language of the string
+         * @param {string} cn - the class of settings
+         * @param {string} entity - the entity to be hyphenated
+         * @returns {string | null} hyphenated string according to setting of cn
          */
-        function hyphenateElement(lang, elo) {
-            const el = elo.element;
+        function hyphenate(lang, cn, entity) {
             const lo = H.languages[lang];
-            const cn = elo.class;
             const classSettings = C[cn];
             const minWordLength = classSettings.minWordLength;
             const normalize = C.normalize &&
                 Boolean(String.prototype.normalize);
-            H.events.dispatch("beforeElementHyphenation", {
-                "el": el,
-                "lang": lang
-            });
             const poolKey = lang + "-" + cn;
             const wordHyphenator = (wordHyphenatorPool[poolKey])
                 ? wordHyphenatorPool[poolKey]
@@ -453,36 +448,71 @@
                 ? orphanControllerPool[cn]
                 : createOrphanController(cn);
             const re = lo.genRegExps[cn];
-            let i = 0;
-            let n = el.childNodes[i];
-            while (n) {
-                if (
-                    n.nodeType === 3 &&
-                    n.data.length >= minWordLength
-                ) {
-                    let tn = null;
-                    if (normalize) {
-                        tn = n.data.normalize("NFC").replace(re, wordHyphenator);
-                    } else {
-                        tn = n.data.replace(re, wordHyphenator);
-                    }
-                    if (classSettings.orphanControl !== 1) {
-                        tn = tn.replace(
-                            /(\u0020*)(\S+)(\s*)$/,
-                            orphanController
-                        );
-                    }
-                    n.data = tn;
+
+            /**
+             * Hyphenate text according to setting in cn
+             * @param {string} text - the strint to be hyphenated
+             * @returns {string} hyphenated string according to setting of cn
+             */
+            function hyphenateText(text) {
+                let tn = null;
+                if (normalize) {
+                    tn = text.normalize("NFC").replace(re, wordHyphenator);
+                } else {
+                    tn = text.replace(re, wordHyphenator);
                 }
-                i += 1;
-                n = el.childNodes[i];
+                if (classSettings.orphanControl !== 1) {
+                    tn = tn.replace(
+                        /(\u0020*)(\S+)(\s*)$/,
+                        orphanController
+                    );
+                }
+                return tn;
             }
-            elements.counter[0] -= 1;
-            H.events.dispatch("afterElementHyphenation", {
-                "el": el,
-                "lang": lang
-            });
+
+            /**
+             * Hyphenate element according to setting in cn
+             * @param {object} el - the HTMLElement to be hyphenated
+             * @returns {undefined}
+             */
+            function hyphenateElement(el) {
+                H.events.dispatch("beforeElementHyphenation", {
+                    "el": el,
+                    "lang": lang
+                });
+                let i = 0;
+                let n = el.childNodes[i];
+                while (n) {
+                    if (
+                        n.nodeType === 3 &&
+                        n.data.length >= minWordLength
+                    ) {
+                        n.data = hyphenateText(n.data);
+                    }
+                    i += 1;
+                    n = el.childNodes[i];
+                }
+                elements.counter[0] -= 1;
+                H.events.dispatch("afterElementHyphenation", {
+                    "el": el,
+                    "lang": lang
+                });
+            }
+            let r = null;
+            if (typeof entity === "string") {
+                r = hyphenateText(entity);
+            } else if (entity instanceof HTMLElement) {
+                hyphenateElement(entity);
+            }
+            return r;
         }
+
+        H.createHyphenator = function createHyphenator(lang) {
+            return function hyphenator(entity, cn) {
+                cn = cn || "hyphenate";
+                return hyphenate(lang, cn, entity);
+            };
+        };
 
         /**
          * Hyphenate all elements with a given language
@@ -493,7 +523,7 @@
         function hyphenateLangElements(lang, elArr) {
             if (elArr) {
                 elArr.forEach(function eachElem(elo) {
-                    hyphenateElement(lang, elo);
+                    hyphenate(lang, elo.class, elo.element);
                 });
             } else {
                 H.events.dispatch("error", {"msg": "engine for language '" + lang + "' loaded, but no elements found."});
@@ -799,7 +829,7 @@
                 (hyphenatedWordOffset >> 1) + 128
             );
             /* eslint-enable no-bitwise */
-            return function hyphenate(word, hyphenchar, leftmin, rightmin) {
+            return function enclHyphenate(word, hyphenchar, leftmin, rightmin) {
                 let i = 0;
                 const wordLength = word.length;
                 if (wordLength > 61) {
