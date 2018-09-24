@@ -1,4 +1,4 @@
-const hyphenopoly = require("hyphenopoly");
+const hyphenopoly = require("./hyphenopoly.module.js");
 
 const hyphenator = hyphenopoly.config({
     "require": ["de", "en-us"],
