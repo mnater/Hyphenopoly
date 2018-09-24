@@ -1,4 +1,8 @@
-const hyphenopoly = require("./hyphenopoly.module.js");
+// For RunKit:
+const hyphenopoly = require("hyphenopoly");
+
+// For local node:
+// const hyphenopoly = require("./hyphenopoly.module.js");
 
 const hyphenator = hyphenopoly.config({
     "require": ["de", "en-us"],
