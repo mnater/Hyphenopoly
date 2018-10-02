@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly_Loader 2.4.0 - client side hyphenation
+ * @license Hyphenopoly_Loader 2.5.0 - client side hyphenation
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -525,16 +525,67 @@
             );
         }
 
+        /**
+         * Expose the hyphenate-function of a specific language to
+         * Hyphenopoly.hyphenators.<language>
+         *
+         * Hyphenopoly.hyphenators.<language> is a Promise that fullfills
+         * to hyphenate(lang, cn, entity) as soon as the ressources are loaded
+         * and the engine is ready.
+         * If Promises aren't supported (e.g. IE11) a error message is produced.
+         *
+         * @param {string} lang - the language
+         * @returns {undefined}
+         */
+        function exposeHyphenateFunction(lang) {
+            if (!H.hyphenators) {
+                H.hyphenators = {};
+            }
+            if (!H.hyphenators[lang]) {
+                if (window.Promise) {
+                    H.hyphenators[lang] = new Promise(function pro(rs, rj) {
+                        H.events.addListener("engineReady", function handler(e) {
+                            if (e.msg === lang) {
+                                rs(H.createHyphenator(e.msg));
+                            }
+                        }, true);
+                        H.events.addListener("error", function handler(e) {
+                            e.preventDefault();
+                            if (e.key === lang || e.key === "hyphenEngine") {
+                                rj(e.msg);
+                            }
+                        }, true);
+                    });
+                } else {
+                    H.hyphenators[lang] = {
+
+                        /**
+                         * Fires an error message, if then is called
+                         * @returns {undefined}
+                         */
+                        "then": function () {
+                            H.events.dispatch(
+                                "error",
+                                {"msg": "Promises not supported in this engine. Use a polyfill (e.g. https://github.com/taylorhakes/promise-polyfill)!"}
+                            );
+                        }
+                    };
+                }
+            }
+        }
+
         Object.keys(H.require).forEach(function doReqLangs(lang) {
             if (H.require[lang] === "FORCEHYPHENOPOLY") {
                 H.clientFeat.polyfill = true;
                 H.clientFeat.langs[lang] = "H9Y";
                 loadRessources(lang);
+                exposeHyphenateFunction(lang);
             } else if (
                 H.clientFeat.langs[lang] &&
                 H.clientFeat.langs[lang] === "H9Y"
             ) {
                 loadRessources(lang);
+                exposeHyphenateFunction(lang);
             } else {
                 tester.createTest(lang);
             }
@@ -550,6 +601,7 @@
                         H.clientFeat.polyfill = true;
                         H.clientFeat.langs[lang] = "H9Y";
                         loadRessources(lang);
+                        exposeHyphenateFunction(lang);
                     }
                 }
             });

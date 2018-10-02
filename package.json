@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -29,7 +29,6 @@
     "example.js",
     "example.html"
   ],
-  "browser": "Hyphenopoly_Loader.js",
   "main": "hyphenopoly.module.js",
   "engines": {
     "node": ">=8.3.0"
@@ -154,7 +153,7 @@
     "compile-binaryen": "cd ./third-party/binaryen/ && cmake . && make",
     "compile-wabt": "cd ./third-party/wabt/ && make",
     "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
-    "test": "tap test/*.js",
+    "test": "tap test/*.js --coverage",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js",
     "prepare": "npm run minify",

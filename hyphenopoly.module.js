@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 2.4.0 - hyphenation for node
+ * @license Hyphenopoly.module.js 2.5.0 - hyphenation for node
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -12,12 +12,12 @@
 "use strict";
 
 const fs = require("fs");
-const ut = require("util");
 
+const {StringDecoder} = require("string_decoder");
 const decode = (function makeDecoder() {
-    const utf16ledecoder = new (ut.TextDecoder)("utf-16le");
+    const utf16ledecoder = new StringDecoder("utf-16le");
     return function dec(ui16) {
-        return utf16ledecoder.decode(ui16);
+        return utf16ledecoder.write(ui16);
     };
 }());
 
@@ -58,11 +58,47 @@ const H = empty();
 H.binaries = empty();
 
 /**
+ * Read a file and call callback
+ * Use "fs" (node) or "http" (browser)
+ * @param {string} file - the filename
+ * @param {function} cb - callback function
+ * @returns {undefined}
+ */
+function readFile(file, cb) {
+    fs.readFile(file, cb);
+}
+
+/**
+ * Before using browserify comment-out or delete the readFile-function above
+ * and un-comment the following function.
+ * Also change `const fs = require("fs");` to `const http = require("http");`
+ * at the top of the file
+ */
+
+/**
+ * Browserify-compatible readFile:
+ * function readFile(file, cb) {
+ *     const rawData = [];
+ *     http.get(file, function c(res) {
+ *         res.on("data", function onData(chunk) {
+ *             rawData.push(chunk);
+ *         });
+ *         res.on("end", function onEnd() {
+ *             cb(null, Buffer.concat(rawData));
+ *         });
+ *         res.on("error", function onErr(err) {
+ *             cb(err, rawData);
+ *         });
+ *     });
+ * }
+ */
+
+/**
  * Read a wasm file, dispatch "engineLoaded" on success
  * @returns {undefined}
  */
 function loadWasm() {
-    fs.readFile(
+    readFile(
         `${H.c.paths.maindir}hyphenEngine.wasm`,
         function cb(err, data) {
             if (err) {
@@ -84,7 +120,7 @@ function loadWasm() {
  * @returns {undefined}
  */
 function loadHpb(lang) {
-    fs.readFile(
+    readFile(
         `${H.c.paths.patterndir}${lang}.hpb`,
         function cb(err, data) {
             if (err) {
@@ -284,7 +320,7 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
     const defRightmin = baseData.rightmin;
     const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(
         hyphenatedWordOffset >> 1,
-        (hyphenatedWordOffset >> 1) + 64
+        (hyphenatedWordOffset >> 1) + 128
     );
     /* eslint-enable no-bitwise */
 
@@ -301,6 +337,13 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
     return function hyphenate(word, hyphenchar, leftmin, rightmin) {
         let i = 0;
         const wordLength = word.length;
+        if (wordLength > 61) {
+            H.events.dispatch(
+                "error",
+                {"msg": "found word longer than 61 characters"}
+            );
+            return word;
+        }
         leftmin = leftmin || defLeftmin;
         rightmin = rightmin || defRightmin;
         wordStore[0] = wordLength + 2;
