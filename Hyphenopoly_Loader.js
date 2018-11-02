@@ -168,7 +168,11 @@
                     defaultHasRun = true;
                 }
             });
-            if (!defaultHasRun && definedEvents[name].default) {
+            if (
+                definedEvents[name].register.length === 0 &&
+                !defaultHasRun &&
+                definedEvents[name].default
+            ) {
                 definedEvents[name].default(data);
             }
         }
