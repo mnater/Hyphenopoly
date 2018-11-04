@@ -146,39 +146,6 @@
          * @param {Object|undefined} data Data of the event
          * @returns {undefined}
          */
-
-         /*function dispatch(name, data) {
-            if (!data) {
-                data = empty();
-            }
-            let defaultHasRun = false;
-            definedEvents[name].register.forEach(function call(currentHandler) {
-                let defaultPrevented = false;
-                data.preventDefault = function preventDefault() {
-                    if (definedEvents[name].cancellable) {
-                        defaultPrevented = true;
-                    }
-                };
-                currentHandler(data);
-                if (
-                    !defaultPrevented &&
-                    !defaultHasRun &&
-                    definedEvents[name].default
-                ) {
-                    definedEvents[name].default(data);
-                    defaultHasRun = true;
-                }
-            });
-            if (
-                definedEvents[name].register.length === 0 &&
-                !defaultHasRun &&
-                definedEvents[name].default
-            ) {
-                definedEvents[name].default(data);
-            }
-        }*/
-
-
         function dispatch(name, data) {
             if (!data) {
                 data = empty();

@@ -1,5 +1,9 @@
 # Version History
 
+## Version 2.5.1 (Nov 04, 2018)
+* remove "Church Slavonic" patterns (see #38)
+* fix issue #39
+
 ## Version 2.5.0 (Oct 02, 2018)
 ### Hyphenopoly_Loader.js and Hyphenopoly.js:
 * fix issues with very long word (#33 and #34)
