@@ -25,7 +25,11 @@
     "Hyphenopoly_Loader.js",
     "Hyphenopoly.js",
     "patterns/",
-    "min/",
+    "min/hyphenEngine.asm.js",
+    "min/hyphenEngine.wasm",
+    "min/Hyphenopoly_Loader.js",
+    "min/Hyphenopoly.js",
+    "min/patterns/",
     "example.js",
     "example.html"
   ],
