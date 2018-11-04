@@ -1,5 +1,26 @@
 # Version History
 
+## Version 2.5.1 (Nov 04, 2018)
+* remove "Church Slavonic" patterns (see #38)
+* fix issue #39
+
+## Version 2.5.0 (Oct 02, 2018)
+### Hyphenopoly_Loader.js and Hyphenopoly.js:
+* fix issues with very long word (#33 and #34)
+* Hyphenopoly exposes [Hyphenators](https://github.com/mnater/Hyphenopoly/wiki/Hyphenators)
+
+### hyphenopoly.module.js:
+* fix issues with very long word (#33 and #34)
+* hyphenopoly.module.js is now [easy to use with browserify](https://github.com/mnater/Hyphenopoly/wiki/browserify)
+
+## Version 2.4.0 (Sept 01, 2018)
+### Hyphenopoly_Loader.js and Hyphenopoly.js:
+* Implement fallback mechanism for language subtags where no patterns are available (e.g. en-au -> en-gb) [#29](https://github.com/mnater/Hyphenopoly/issues/29)
+* updated patterns for Thai (https://github.com/hyphenation/tex-hyphen/pull/25)
+
+### hyphenopoly.module.js:
+* updated patterns for Thai (https://github.com/hyphenation/tex-hyphen/pull/25)
+
 ## Version 2.3.0 (Juli 26, 2018)
 ### Hyphenopoly_Loader.js and Hyphenopoly.js:
 * Don't use template strings [#28](https://github.com/mnater/Hyphenopoly/issues/28)

@@ -53,6 +53,7 @@
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
             Hyphenopoly.events.addListener("error", function (e) {
+                e.preventDefault();
                 msgs += "Listener 1:" + e.msg;
                 console.log("Listener 1:" + e.msg)
             });
@@ -62,6 +63,7 @@
                 console.log("Listener 2:" + e.msg)
             });
             Hyphenopoly.events.addListener("error", function (e) {
+                e.preventDefault();
                 msgs += "Listener 1:" + e.msg;
                 console.log("Listener 3:" + e.msg)
             });

@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly_Loader 2.5.0 - client side hyphenation
+ * @license Hyphenopoly_Loader 2.5.1 - client side hyphenation
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -150,25 +150,19 @@
             if (!data) {
                 data = empty();
             }
-            let defaultHasRun = false;
+            let defaultPrevented = false;
             definedEvents[name].register.forEach(function call(currentHandler) {
-                let defaultPrevented = false;
                 data.preventDefault = function preventDefault() {
                     if (definedEvents[name].cancellable) {
                         defaultPrevented = true;
                     }
                 };
                 currentHandler(data);
-                if (
-                    !defaultPrevented &&
-                    !defaultHasRun &&
-                    definedEvents[name].default
-                ) {
-                    definedEvents[name].default(data);
-                    defaultHasRun = true;
-                }
             });
-            if (!defaultHasRun && definedEvents[name].default) {
+            if (
+                !defaultPrevented &&
+                definedEvents[name].default
+            ) {
                 definedEvents[name].default(data);
             }
         }
