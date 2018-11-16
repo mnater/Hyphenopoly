@@ -1039,7 +1039,9 @@
             "hyphenopolyEnd",
             function def() {
                 w.clearTimeout(C.timeOutHandler);
-                w.document.documentElement.style.visibility = "visible";
+                if (H.setup.hide !== "none") {
+                    H.toggle("on");
+                }
             },
             false
         );

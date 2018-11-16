@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 028</title>
+        <script>
+        let elCount = 0;
+        let testresult = true;
+        const hide_mode = window.sessionStorage.getItem("H9Y_hideMode") || "all";
+        var Hyphenopoly = {
+            require: {
+                "en-us": "FORCEHYPHENOPOLY"
+            },
+            paths: {
+                maindir: "../",
+                patterndir: "../patterns/"
+            },
+            setup: {
+                hide: hide_mode,
+                classnames: {
+                    "hyphenate1": {
+                        hyphen: "•"
+                    },
+                    "hyphenate2": {
+                        hyphen: "|"
+                    }
+                }
+            },
+            handleEvent: {
+                beforeElementHyphenation: function (e) {
+                    assert(e.el);
+                }
+            }
+        };
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
+        function assert(el) {
+            elCount += 1;
+            console.log(document.getElementById("H9Y_Styles"));
+            switch (hide_mode) {
+            case "all":
+                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === "html {visibility: hidden !important}");
+                break;
+            case "element":
+                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === ".hyphenate1 {visibility: hidden !important}\n.hyphenate2 {visibility: hidden !important}\n");
+                break;
+            case "text":
+                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === ".hyphenate1 {color: transparent !important}\n.hyphenate2 {color: transparent !important}\n");
+                break;
+            default:
+                testresult = testresult && (document.getElementById("H9Y_Styles") === null);
+                break;
+            }
+            if (elCount === 2) {
+                if (testresult) {
+                    document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">passed</p>";
+                } else {
+                    document.getElementById("result").innerHTML = "<p style=\"background-color: #ffd6d6\">failed</p>";
+                }
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 28,
+                        result: (testresult ? "passed" : "failed")
+                    }), window.location.href);
+                }
+            }
+        }
+
+        if (!Hyphenopoly) {
+            document.addEventListener("DOMContentLoaded", function() {
+                assert();
+            });
+        }
+        function changeHandler() {
+            window.sessionStorage.setItem("H9Y_hideMode", document.getElementById("selHideMode").value);
+        }
+        </script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+                text-align: justify;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test27.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test29.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 028</h1>
+        <p id="desc">See what hiding does (change mode and reload to see flicker)</p>
+        <select id="selHideMode" onchange="changeHandler();">
+            <option id="all" value="all">all</option>
+            <option id="element" value="element">element</option>
+            <option id="text" value="text">text</option>
+            <option id="none" value="none">none</option>
+        </select>
+        <div id="result"><p style="background-color: #d6ffd6">…</p></div>
+        <hr>
+        <p id="test1" class="test hyphenate1" lang="en-us">Hyphenation</p>
+        <p id="test2" class="test hyphenate2" lang="en-us">Hyphenation</p>
+
+<hr>
+<script>
+    document.getElementById(hide_mode).selected = "selected";
+</script>
+</body>
+</html>

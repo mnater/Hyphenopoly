@@ -52,13 +52,47 @@
             if (!H.setup.timeout) {
                 H.setup.timeout = 1000;
             }
+            if (!H.setup.hide) {
+                H.setup.hide = "all";
+            }
         } else {
             H.setup = {
                 "classnames": {"hyphenate": {}},
+                "hide": "all",
                 "timeout": 1000
             };
         }
     }());
+
+    H.toggle = function toggle(state) {
+        if (state === "on") {
+            d.getElementsByTagName("head")[0].removeChild(d.getElementById("H9Y_Styles"));
+        } else {
+            const sc = d.createElement("style");
+            sc.id = "H9Y_Styles";
+            switch (H.setup.hide) {
+            case "all":
+                sc.innerHTML = "html {visibility: hidden !important}";
+                break;
+            case "element":
+                Object.keys(H.setup.classnames).
+                    forEach(function eachClass(cn) {
+                        sc.innerHTML += "." + cn + " {visibility: hidden !important}\n";
+                    });
+
+                break;
+            case "text":
+                Object.keys(H.setup.classnames).
+                    forEach(function eachClass(cn) {
+                        sc.innerHTML += "." + cn + " {color: transparent !important}\n";
+                    });
+                break;
+            default:
+                sc.innerHTML = "";
+            }
+            d.getElementsByTagName("head")[0].appendChild(sc);
+        }
+    };
 
     (function setupEvents() {
         // Events known to the system
@@ -605,15 +639,21 @@
 
     (function run() {
         if (H.clientFeat.polyfill) {
-            d.documentElement.style.visibility = "hidden";
-
-            H.setup.timeOutHandler = window.setTimeout(function timedOut() {
-                d.documentElement.style.visibility = "visible";
-                H.events.dispatch("timeout", {"delay": H.setup.timeout});
-            }, H.setup.timeout);
+            if (H.setup.hide === "all") {
+                H.toggle("off");
+            }
+            if (H.setup.hide !== "none") {
+                H.setup.timeOutHandler = window.setTimeout(function timedOut() {
+                    H.toggle("on");
+                    H.events.dispatch("timeout", {"delay": H.setup.timeout});
+                }, H.setup.timeout);
+            }
             d.addEventListener(
                 "DOMContentLoaded",
                 function DCL() {
+                    if (H.setup.hide !== "none" && H.setup.hide !== "all") {
+                        H.toggle("off");
+                    }
                     H.events.dispatch(
                         "contentLoaded",
                         {"msg": ["contentLoaded"]}
