@@ -124,7 +124,7 @@
         define(
             "timeout",
             function def(e) {
-                d.documentElement.style.visibility = "visible";
+                H.toggle("on");
                 window.console.info(
                     "Hyphenopolys 'FOUHC'-prevention timed out after %dms",
                     e.delay
