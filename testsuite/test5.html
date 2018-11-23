@@ -28,9 +28,13 @@
                 "ca": "FORCEHYPHENOPOLY",
                 "sk": "FORCEHYPHENOPOLY",
                 "eo": "FORCEHYPHENOPOLY",
+                "sr-latn": "FORCEHYPHENOPOLY",
                 "ro": "FORCEHYPHENOPOLY",
                 "et": "FORCEHYPHENOPOLY",
                 "ga": "FORCEHYPHENOPOLY"
+            },
+            fallbacks: {
+                "sr-latn": "sh-latn"
             },
             paths: {
                 maindir: "../",
@@ -58,20 +62,18 @@
             var ref = "";
             var result = true;
             while (i <= tests) {
-                if (i !== 23) {
-                    test = document.getElementById("test" + i).innerHTML;
-                    ref = document.getElementById("ref" + i).innerHTML;
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
-                            return (i < 10) ? "0" + i : i; 
-                        }(i)) + "</span> ";
-                        result = result && true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
-                            return (i < 10) ? "0" + i : i; 
-                        }(i)) + "</span> ";
-                        result = false;
-                    }
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
+                    result = result && true;
+                } else {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
+                    result = false;
                 }
                 i += 1;
             }
@@ -181,9 +183,9 @@
         <h2>22: eo</h2>
         <p id="test22" class="test hyphenate" lang="eo">Tipografio unuavice estas la kreo de komunikaĵo per reproduktebla skribo, sed duavice ankaŭ la dezajno de tia skriba komunikaĵo per linioj, areoj kaj la specifa aranĝo de literoj.</p>
         <p id="ref22" class="ref" lang="eo">Ti|po|gra|fio unu|a|vi|ce estas la kreo de ko|mu|ni|k|aĵo per re|pro|duk|t|ebla skri|bo, sed du|a|vi|ce ankaŭ la de|zaj|no de tia skri|ba ko|mu|ni|k|aĵo per li|ni|oj, areoj kaj la spe|ci|fa aran|ĝo de li|te|roj.</p>
-        <!--<h2>23: sr-latn</h2>
+        <h2>23: sr-latn</h2>
         <p id="test23" class="test hyphenate" lang="sr-latn">Tipografija se bavi izborom i organizacijom oblika slova i drugih grafičkih karakteristika štampane strane.</p>
-        <p id="ref23" class="ref" lang="sr-Latn">Ti|po|gra|fi|ja se bavi iz|bo|rom i or|ga|ni|za|ci|jom obli|ka slova i dru|gih gra|fič|kih ka|rak|te|ri|sti|ka štam|pa|ne stra|ne.</p>-->
+        <p id="ref23" class="ref" lang="sr-Latn">Ti|po|gra|fi|ja se bavi iz|bo|rom i or|ga|ni|za|ci|jom obli|ka slova i dru|gih gra|fič|kih ka|rak|te|ri|sti|ka štam|pa|ne stra|ne.</p>
         <h2>24: ro</h2>
         <p id="test24" class="test hyphenate" lang="ro">Tipografia reprezintă arta și tehnica tipăritului, a formei și aranjării literelor pe un document scris.</p>
         <p id="ref24" class="ref" lang="ro">Ti|po|gra|fia re|pre|zin|tă arta și teh|ni|ca ti|pă|ri|tu|lui, a for|mei și aran|jă|rii li|te|re|lor pe un do|cu|ment scris.</p>

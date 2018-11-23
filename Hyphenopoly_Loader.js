@@ -62,11 +62,24 @@
                 "timeout": 1000
             };
         }
+        H.lcRequire = empty();
+        Object.keys(H.require).forEach(function copyRequire(k) {
+            H.lcRequire[k.toLowerCase()] = H.require[k];
+        });
+        if (H.fallbacks) {
+            H.lcFallbacks = empty();
+            Object.keys(H.fallbacks).forEach(function copyFallbacks(k) {
+                H.lcFallbacks[k.toLowerCase()] = H.fallbacks[k].toLowerCase();
+            });
+        }
     }());
 
     H.toggle = function toggle(state) {
         if (state === "on") {
-            d.getElementsByTagName("head")[0].removeChild(d.getElementById("H9Y_Styles"));
+            const stylesNode = d.getElementById("H9Y_Styles");
+            if (stylesNode) {
+                stylesNode.parentNode.removeChild(stylesNode);
+            }
         } else {
             const sc = d.createElement("style");
             sc.id = "H9Y_Styles";
@@ -341,8 +354,8 @@
          * @returns {undefined}
          */
         function fetchBinary(p, f, n, m) {
-            if (!loadedBins[f]) {
-                loadedBins[f] = true;
+            if (!loadedBins[n]) {
+                loadedBins[n] = true;
                 window.fetch(p + f).then(
                     function resolve(response) {
                         if (response.ok) {
@@ -383,7 +396,6 @@
                 xhr.send();
             }
         }
-
         if (H.clientFeat.wasm) {
             fetchBinary(path, fne, name, msg);
         } else {
@@ -445,8 +457,8 @@
      */
     function loadRessources(lang) {
         let filename = lang + ".hpb";
-        if (H.fallbacks && H.fallbacks[lang]) {
-            filename = H.fallbacks[lang] + ".hpb";
+        if (H.lcFallbacks && H.lcFallbacks[lang]) {
+            filename = H.lcFallbacks[lang] + ".hpb";
         }
         if (!H.binaries) {
             H.binaries = empty();
@@ -506,7 +518,7 @@
                 testDiv.lang = lang;
                 testDiv.id = lang;
                 testDiv.style.cssText = css;
-                testDiv.appendChild(d.createTextNode(H.require[lang]));
+                testDiv.appendChild(d.createTextNode(H.lcRequire[lang]));
                 fakeBody.appendChild(testDiv);
             }
 
@@ -578,7 +590,6 @@
                             }
                         }, true);
                         H.events.addListener("error", function handler(e) {
-                            e.preventDefault();
                             if (e.key === lang || e.key === "hyphenEngine") {
                                 rj(e.msg);
                             }
@@ -602,8 +613,8 @@
             }
         }
 
-        Object.keys(H.require).forEach(function doReqLangs(lang) {
-            if (H.require[lang] === "FORCEHYPHENOPOLY") {
+        Object.keys(H.lcRequire).forEach(function doReqLangs(lang) {
+            if (H.lcRequire[lang] === "FORCEHYPHENOPOLY") {
                 H.clientFeat.polyfill = true;
                 H.clientFeat.langs[lang] = "H9Y";
                 loadRessources(lang);
@@ -620,8 +631,8 @@
         });
         const testContainer = tester.appendTests(d.documentElement);
         if (testContainer !== null) {
-            Object.keys(H.require).forEach(function checkReqLangs(lang) {
-                if (H.require[lang] !== "FORCEHYPHENOPOLY") {
+            Object.keys(H.lcRequire).forEach(function checkReqLangs(lang) {
+                if (H.lcRequire[lang] !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
                     if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
                         H.clientFeat.langs[lang] = "CSS";
