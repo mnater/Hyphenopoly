@@ -34,29 +34,14 @@
                         hyphenate_de("Silbentrennung verbessert den Blocksatz.");
                     },
                     error: function (e) {
-                        if (e.msg.indexOf("Promises not supported in this engine.") !== -1) {
-                            assertError();
-                        }
+                        assertError(e);
                     }
                 }
             };
-            function assertError() {
-                var tests = 1;
-                var i = 1;
-                var test = "";
-                var ref = "";
+            function assertError(e) {
                 var result = false;
-                while (i <= tests) {
-                    test = document.getElementById("test" + i).innerHTML;
-                    ref = document.getElementById("ref" + i).innerHTML;
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                        result = result || true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                        result = result || false;
-                    }
-                    i += 1;
+                if (e.msg.indexOf("Promises not supported in this engine") !== -1) {
+                    result = true;
                 }
                 if (parent != window) {
                     parent.postMessage(JSON.stringify({

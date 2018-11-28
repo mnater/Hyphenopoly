@@ -45,9 +45,19 @@
                 "patterndir": "../Hyphenopoly/patterns/"
             };
         }
+
         if (H.setup) {
-            if (!H.setup.classnames) {
-                H.setup.classnames = {"hyphenate": {}};
+            if (!H.setup.selectors) {
+                H.setup.selectors = empty();
+            }
+            if (H.setup.classnames) {
+                Object.keys(H.setup.classnames).forEach(function cn2sel(cn) {
+                    H.setup.selectors["." + cn] = H.setup.classnames[cn];
+                });
+                H.setup.classnames = null;
+                delete H.setup.classnames;
+            } else {
+                H.setup.selectors[".hyphenate"] = empty();
             }
             if (!H.setup.timeout) {
                 H.setup.timeout = 1000;
@@ -57,8 +67,8 @@
             }
         } else {
             H.setup = {
-                "classnames": {"hyphenate": {}},
                 "hide": "all",
+                "selectors": {".hyphenate": {}},
                 "timeout": 1000
             };
         }
@@ -88,16 +98,16 @@
                 sc.innerHTML = "html {visibility: hidden !important}";
                 break;
             case "element":
-                Object.keys(H.setup.classnames).
-                    forEach(function eachClass(cn) {
-                        sc.innerHTML += "." + cn + " {visibility: hidden !important}\n";
+                Object.keys(H.setup.selectors).
+                    forEach(function eachSelector(sel) {
+                        sc.innerHTML += sel + " {visibility: hidden !important}\n";
                     });
 
                 break;
             case "text":
-                Object.keys(H.setup.classnames).
-                    forEach(function eachClass(cn) {
-                        sc.innerHTML += "." + cn + " {color: transparent !important}\n";
+                Object.keys(H.setup.selectors).
+                    forEach(function eachSelector(sel) {
+                        sc.innerHTML += sel + " {color: transparent !important}\n";
                     });
                 break;
             default:
@@ -384,8 +394,8 @@
          * @returns {undefined}
          */
         function requestBinary(p, f, n, m) {
-            if (!loadedBins[f]) {
-                loadedBins[f] = true;
+            if (!loadedBins[n]) {
+                loadedBins[n] = true;
                 const xhr = new XMLHttpRequest();
                 xhr.open("GET", p + f);
                 xhr.onload = function onload() {

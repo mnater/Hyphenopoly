@@ -35,39 +35,24 @@
                     hyphenate_fur("Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont. Cualchi volte al ven clamât Ladin orientâl, parcè che al à diviers ponts in comun cul ladin, ma si è svilupât in un altri mût cul passâ dal timp, sot de influence des lenghis ator dal Friûl");
                 },
                 error: function (e) {
-                    if (e.msg.indexOf("Promises not supported in this engine.") !== -1) {
-                        assertError();
-                    }
+                    assertError(e);
                 }
             }
         };
 
-        function assertError() {
-            var tests = 1;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = false;
-            while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result || true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = result || false;
+            function assertError(e) {
+                var result = false;
+                if (e.msg.indexOf("Promises not supported in this engine") !== -1) {
+                    result = true;
                 }
-                i += 1;
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 27,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
             }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 26,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
         function assertAll() {
             var tests = 1;
             var i = 1;
