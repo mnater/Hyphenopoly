@@ -49,6 +49,7 @@
         if (H.setup) {
             if (!H.setup.selectors) {
                 H.setup.selectors = empty();
+                H.setup.selectors[".hyphenate"] = empty();
             }
             if (H.setup.classnames) {
                 Object.keys(H.setup.classnames).forEach(function cn2sel(cn) {
@@ -56,8 +57,6 @@
                 });
                 H.setup.classnames = null;
                 delete H.setup.classnames;
-            } else {
-                H.setup.selectors[".hyphenate"] = empty();
             }
             if (!H.setup.timeout) {
                 H.setup.timeout = 1000;
@@ -580,7 +579,7 @@
          * Hyphenopoly.hyphenators.<language>
          *
          * Hyphenopoly.hyphenators.<language> is a Promise that fullfills
-         * to hyphenate(lang, cn, entity) as soon as the ressources are loaded
+         * to hyphenate(entity, sel) as soon as the ressources are loaded
          * and the engine is ready.
          * If Promises aren't supported (e.g. IE11) a error message is produced.
          *
