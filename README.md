@@ -31,8 +31,8 @@ Also, don't forget to enable CSS hyphenation.
                 "en-us": "Supercalifragilisticexpialidocious"
             },
             setup: {
-                classnames: {
-                    "container": {}
+                selectors: {
+                    ".container": {}
                 }
             }
         };
@@ -76,7 +76,7 @@ Hyphenopoly_Loader.js needs some information to run. This information is provide
 ### require
 The `Hyphenopoly` object must have exactly one property called `require` which itself is an object containing at least one nameValuePair where the name is a language code string (Some patterns are region-specific. See the patterns directory for supported languages. E.g. just using `en` won't work, use either `en-us`or `en-gb`) and the value is a long word string in that language (preferably more than 12 characters long).
 
-Hyphenator_Loader.js will feature test the client (aka browser, aka user agent) for CSS-hyphens support for the given languages with the given words respectively. In the example above it will test if the client supports CSS-hyphenation for latin. If your page contains more than just one language just add more lines.
+Hyphenator_Loader.js will feature test the client (aka browser, aka user agent) for CSS-hyphens support for the given languages with the given words respectively. In the example above it will test if the client supports CSS-hyphenation for latin, german and us-english.
 
 If you want to force the usage of Hyphenopoly.js for a language (e.g. for testing purposes) write `"FORCEHYPHENOPOLY"` instead of the long word.
 
