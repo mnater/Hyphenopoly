@@ -100,15 +100,11 @@
         Object.keys(H.setup).forEach(function copySettings(key) {
             if (key === "selectors") {
                 const selectors = Object.keys(H.setup.selectors);
-                if (settings.selectors) {
-                    settings.selectors = settings.selectors.concat(selectors);
-                } else {
-                    Object.defineProperty(
-                        settings,
-                        "selectors",
-                        setProp(selectors, 3)
-                    );
-                }
+                Object.defineProperty(
+                    settings,
+                    "selectors",
+                    setProp(selectors, 2)
+                );
                 selectors.forEach(function copySelectors(sel) {
                     const tmp = empty();
                     Object.keys(H.setup.selectors[sel]).forEach(
@@ -280,6 +276,7 @@
                 }
                 return s;
             }());
+            const matchingSelectors = C.selectors.join(", ") + ", " + dontHyphenateSelector;
 
             /**
              * Recursively walk all elements in el, lending lang and selName
@@ -292,8 +289,6 @@
              */
             function processElements(el, pLang, sel, isChild) {
                 let eLang = null;
-                let n = null;
-                let j = 0;
                 isChild = isChild || false;
                 if (el.lang && typeof el.lang === "string") {
                     eLang = el.lang.toLowerCase();
@@ -311,15 +306,13 @@
                     H.events.dispatch("error", {"msg": "Element with '" + eLang + "' found, but '" + eLang + ".hpb' not loaded. Check language tags!"});
                 }
 
-                n = el.childNodes[j];
-                while (n) {
+                const cn = el.childNodes;
+                Array.prototype.forEach.call(cn, function eachChildNode(n) {
                     if (n.nodeType === 1 &&
-                        !nodeMatchedBy(n, C.selectors.join(", ") + ", " + dontHyphenateSelector)) {
+                        !nodeMatchedBy(n, matchingSelectors)) {
                         processElements(n, eLang, sel, true);
                     }
-                    j += 1;
-                    n = el.childNodes[j];
-                }
+                });
             }
             C.selectors.forEach(function eachSelector(sel) {
                 const nl = w.document.querySelectorAll(sel);
@@ -505,18 +498,15 @@
                     "el": el,
                     "lang": lang
                 });
-                let i = 0;
-                let n = el.childNodes[i];
-                while (n) {
+                const cn = el.childNodes;
+                Array.prototype.forEach.call(cn, function eachChildNode(n) {
                     if (
                         n.nodeType === 3 &&
                         n.data.length >= minWordLength
                     ) {
                         n.data = hyphenateText(n.data);
                     }
-                    i += 1;
-                    n = el.childNodes[i];
-                }
+                });
                 elements.counter[0] -= 1;
                 H.events.dispatch("afterElementHyphenation", {
                     "el": el,
@@ -564,18 +554,11 @@
          * @returns {Object} Map of exceptions
          */
         function convertExceptions(exc) {
-            const words = exc.split(", ");
             const r = empty();
-            const l = words.length;
-            let i = 0;
-            let key = null;
-            while (i < l) {
-                key = words[i].replace(/-/g, "");
-                if (!r[key]) {
-                    r[key] = words[i];
-                }
-                i += 1;
-            }
+            exc.split(", ").forEach(function eachExc(e) {
+                const key = e.replace(/-/g, "");
+                r[key] = e;
+            });
             return r;
         }
 
@@ -1083,11 +1066,9 @@
             true
         );
 
-        let eo = H.events.tempRegister.shift();
-        while (eo) {
+        H.events.tempRegister.forEach(function eachEo(eo) {
             H.events.addListener(eo.name, eo.handler, false);
-            eo = H.events.tempRegister.shift();
-        }
+        });
         delete H.events.tempRegister;
 
         H.events.dispatch("hyphenopolyStart", {"msg": "Hyphenopoly started"});
