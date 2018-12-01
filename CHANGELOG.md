@@ -1,5 +1,11 @@
 # Version History
 
+## Version 2.6.0 (Dec 01, 2018)
+* improve hiding of elements while hyphenating (issue #40)
+* fix several issues with lang-fallbacks (issue #41 and #44)
+* new feature: use selectors instead of classnames (issue #42)
+* updated german patterns (issue #45)
+
 ## Version 2.5.1 (Nov 04, 2018)
 * remove "Church Slavonic" patterns (see #38)
 * fix issue #39
