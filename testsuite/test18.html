@@ -38,10 +38,10 @@
                     test = document.getElementById("test" + i).innerHTML;
                     ref = document.getElementById("ref" + i).innerHTML;
                     if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + i + "</span> ";
                         result = result || true;
                     } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + i + "</span> ";
                         result = result || false;
                     }
                     i += 1;
@@ -79,13 +79,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

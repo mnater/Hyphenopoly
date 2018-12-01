@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly 2.5.1 - client side hyphenation for webbrowsers
+ * @license Hyphenopoly 2.6.0 - client side hyphenation for webbrowsers
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -98,26 +98,40 @@
         });
 
         Object.keys(H.setup).forEach(function copySettings(key) {
-            if (key === "classnames") {
-                const classNames = Object.keys(H.setup.classnames);
+            if (key === "selectors") {
+                const selectors = Object.keys(H.setup.selectors);
                 Object.defineProperty(
                     settings,
-                    "classNames",
-                    setProp(classNames, 2)
+                    "selectors",
+                    setProp(selectors, 2)
                 );
-                classNames.forEach(function copyClassnames(cn) {
-                    const tmp = {};
-                    Object.keys(H.setup.classnames[cn]).forEach(
-                        function copyClassSettings(k) {
-                            tmp[k] = setProp(H.setup.classnames[cn][k], 2);
+                selectors.forEach(function copySelectors(sel) {
+                    const tmp = empty();
+                    Object.keys(H.setup.selectors[sel]).forEach(
+                        function copySelectorSettings(k) {
+                            tmp[k] = setProp(H.setup.selectors[sel][k], 2);
                         }
                     );
                     Object.defineProperty(
                         settings,
-                        cn,
+                        sel,
                         setProp(Object.create(perClassDefaults, tmp), 2)
                     );
                 });
+            } else if (key === "dontHyphenate") {
+                const tmp = empty();
+                Object.keys(H.setup.dontHyphenate).forEach(
+                    function copyTagNames(k) {
+                        tmp[k] = setProp(H.setup.dontHyphenate[k], 2);
+                    }
+                );
+                Object.defineProperty(
+                    settings,
+                    key,
+                    setProp(
+                        Object.create(generalDefaults.dontHyphenate, tmp), 3
+                    )
+                );
             } else {
                 Object.defineProperty(
                     settings,
@@ -151,13 +165,13 @@
              * Add element to elements
              * @param {object} el The element
              * @param {string} lang The language of the element
-             * @param {string} cn The classname of the element
+             * @param {string} sel The selector of the element
              * @returns {Object} An element-object
              */
-            function add(el, lang, cn) {
+            function add(el, lang, sel) {
                 const elo = {
-                    "class": cn,
-                    "element": el
+                    "element": el,
+                    "selector": sel
                 };
                 if (!list[lang]) {
                     list[lang] = [];
@@ -232,40 +246,49 @@
         }
 
         /**
-         * Sort out subclasses
-         * @param {Array} x Array of classnames
-         * @param {Array} y Array of classnames to sort out of x
-         * @returns {Array} Array of classes
+         * Check if node is matched by a given selector
+         * @param {Node} n The Node to check
+         * @param {String} sel Selector(s)
+         * @returns {Boolean} true if matched, false if not matched
          */
-        function sortOutSubclasses(x, y) {
-            return (x[0] === "")
-                ? []
-                : x.filter(function filter(i) {
-                    return y.indexOf(i) !== -1;
-                });
+        function nodeMatchedBy(n, sel) {
+            if (!n.matches) {
+                n.matches = n.msMatchesSelector || n.webkitMatchesSelector;
+            }
+            return n.matches(sel);
         }
 
         /**
-         * Collect elements that have a classname defined in C.classnames
+         * Collect elements that have a selector defined in C.selectors
          * and add them to elements.
          * @returns {undefined}
          */
         function collectElements() {
             elements = makeElementCollection();
 
+            const dontHyphenateSelector = (function createSel() {
+                let s = ".donthyphenate";
+                let k = null;
+                for (k in C.dontHyphenate) {
+                    if (C.dontHyphenate[k]) {
+                        s += ", " + k;
+                    }
+                }
+                return s;
+            }());
+            const matchingSelectors = C.selectors.join(", ") + ", " + dontHyphenateSelector;
+
             /**
-             * Recursively walk all elements in el, lending lang and className
+             * Recursively walk all elements in el, lending lang and selName
              * add them to elements if necessary.
              * @param {Object} el The element to scan
              * @param {string} pLang The language of the oarent element
-             * @param {string} cn The className of the parent element
+             * @param {string} sel The selector of the parent element
              * @param {boolean} isChild If el is a child element
              * @returns {undefined}
              */
-            function processElements(el, pLang, cn, isChild) {
+            function processElements(el, pLang, sel, isChild) {
                 let eLang = null;
-                let n = null;
-                let j = 0;
                 isChild = isChild || false;
                 if (el.lang && typeof el.lang === "string") {
                     eLang = el.lang.toLowerCase();
@@ -275,7 +298,7 @@
                     eLang = getLang(el, true);
                 }
                 if (H.clientFeat.langs[eLang] === "H9Y") {
-                    elements.add(el, eLang, cn);
+                    elements.add(el, eLang, sel);
                     if (!isChild && C.safeCopy) {
                         registerOnCopy(el);
                     }
@@ -283,23 +306,18 @@
                     H.events.dispatch("error", {"msg": "Element with '" + eLang + "' found, but '" + eLang + ".hpb' not loaded. Check language tags!"});
                 }
 
-                n = el.childNodes[j];
-                while (n) {
+                const cn = el.childNodes;
+                Array.prototype.forEach.call(cn, function eachChildNode(n) {
                     if (n.nodeType === 1 &&
-                        !C.dontHyphenate[n.nodeName.toLowerCase()] &&
-                        n.className.indexOf(C.dontHyphenateClass) === -1) {
-                        if (sortOutSubclasses(n.className.split(" "), C.classNames).length === 0) {
-                            processElements(n, eLang, cn, true);
-                        }
+                        !nodeMatchedBy(n, matchingSelectors)) {
+                        processElements(n, eLang, sel, true);
                     }
-                    j += 1;
-                    n = el.childNodes[j];
-                }
+                });
             }
-            C.classNames.forEach(function eachClassName(cn) {
-                const nl = w.document.querySelectorAll("." + cn);
+            C.selectors.forEach(function eachSelector(sel) {
+                const nl = w.document.querySelectorAll(sel);
                 Array.prototype.forEach.call(nl, function eachNode(n) {
-                    processElements(n, getLang(n, true), cn, false);
+                    processElements(n, getLang(n, true), sel, false);
                 });
             });
             H.elementsReady = true;
@@ -311,14 +329,14 @@
          * Factory for hyphenatorFunctions for a specific language and class
          * @param {Object} lo Language-Object
          * @param {string} lang The language
-         * @param {string} cn The className
+         * @param {string} sel The selector
          * @returns {function} The hyphenate function
          */
-        function createWordHyphenator(lo, lang, cn) {
-            const classSettings = C[cn];
+        function createWordHyphenator(lo, lang, sel) {
+            const classSettings = C[sel];
             const hyphen = classSettings.hyphen;
 
-            lo.cache[cn] = empty();
+            lo.cache[sel] = empty();
 
             /**
              * HyphenateFunction for compound words
@@ -334,7 +352,7 @@
                 switch (classSettings.compound) {
                 case "auto":
                     parts = word.split("-");
-                    wordHyphenator = createWordHyphenator(lo, lang, cn);
+                    wordHyphenator = createWordHyphenator(lo, lang, sel);
                     while (i < parts.length) {
                         if (parts[i].length >= classSettings.minWordLength) {
                             parts[i] = wordHyphenator(parts[i]);
@@ -345,7 +363,7 @@
                     break;
                 case "all":
                     parts = word.split("-");
-                    wordHyphenator = createWordHyphenator(lo, lang, cn);
+                    wordHyphenator = createWordHyphenator(lo, lang, sel);
                     while (i < parts.length) {
                         if (parts[i].length >= classSettings.minWordLength) {
                             parts[i] = wordHyphenator(parts[i]);
@@ -366,7 +384,7 @@
              * @returns {string} The hyphenated word
              */
             function hyphenator(word) {
-                let hw = lo.cache[cn][word];
+                let hw = lo.cache[sel][word];
                 if (!hw) {
                     if (lo.exceptions[word]) {
                         hw = lo.exceptions[word].replace(
@@ -383,11 +401,11 @@
                     } else {
                         hw = hyphenateCompound(word);
                     }
-                    lo.cache[cn][word] = hw;
+                    lo.cache[sel][word] = hw;
                 }
                 return hw;
             }
-            wordHyphenatorPool[lang + "-" + cn] = hyphenator;
+            wordHyphenatorPool[lang + "-" + sel] = hyphenator;
             return hyphenator;
         }
 
@@ -395,10 +413,10 @@
 
         /**
          * Factory for function that handles orphans
-         * @param {string} cn The className
+         * @param {string} sel The selector
          * @returns {function} The function created
          */
-        function createOrphanController(cn) {
+        function createOrphanController(sel) {
             /**
              * Function template
              * @param {string} ignore unused result of replace
@@ -413,7 +431,7 @@
                 lastWord,
                 trailingWhiteSpace
             ) {
-                const classSettings = C[cn];
+                const classSettings = C[sel];
                 let h = classSettings.hyphen;
                 if (".\\+*?[^]$(){}=!<>|:-".indexOf(classSettings.hyphen) !== -1) {
                     h = "\\" + classSettings.hyphen;
@@ -423,36 +441,36 @@
                 }
                 return leadingWhiteSpace + lastWord.replace(new RegExp(h, "g"), "") + trailingWhiteSpace;
             }
-            orphanControllerPool[cn] = controlOrphans;
+            orphanControllerPool[sel] = controlOrphans;
             return controlOrphans;
         }
 
         /**
          * Hyphenate an entitiy (text string or Element-Object)
          * @param {string} lang - the language of the string
-         * @param {string} cn - the class of settings
+         * @param {string} sel - the selectorName of settings
          * @param {string} entity - the entity to be hyphenated
-         * @returns {string | null} hyphenated string according to setting of cn
+         * @returns {string | null} hyphenated str according to setting of sel
          */
-        function hyphenate(lang, cn, entity) {
+        function hyphenate(lang, sel, entity) {
             const lo = H.languages[lang];
-            const classSettings = C[cn];
+            const classSettings = C[sel];
             const minWordLength = classSettings.minWordLength;
             const normalize = C.normalize &&
                 Boolean(String.prototype.normalize);
-            const poolKey = lang + "-" + cn;
+            const poolKey = lang + "-" + sel;
             const wordHyphenator = (wordHyphenatorPool[poolKey])
                 ? wordHyphenatorPool[poolKey]
-                : createWordHyphenator(lo, lang, cn);
-            const orphanController = (orphanControllerPool[cn])
-                ? orphanControllerPool[cn]
-                : createOrphanController(cn);
-            const re = lo.genRegExps[cn];
+                : createWordHyphenator(lo, lang, sel);
+            const orphanController = (orphanControllerPool[sel])
+                ? orphanControllerPool[sel]
+                : createOrphanController(sel);
+            const re = lo.genRegExps[sel];
 
             /**
-             * Hyphenate text according to setting in cn
+             * Hyphenate text according to setting in sel
              * @param {string} text - the strint to be hyphenated
-             * @returns {string} hyphenated string according to setting of cn
+             * @returns {string} hyphenated string according to setting of sel
              */
             function hyphenateText(text) {
                 let tn = null;
@@ -471,7 +489,7 @@
             }
 
             /**
-             * Hyphenate element according to setting in cn
+             * Hyphenate element according to setting in sel
              * @param {object} el - the HTMLElement to be hyphenated
              * @returns {undefined}
              */
@@ -480,18 +498,15 @@
                     "el": el,
                     "lang": lang
                 });
-                let i = 0;
-                let n = el.childNodes[i];
-                while (n) {
+                const cn = el.childNodes;
+                Array.prototype.forEach.call(cn, function eachChildNode(n) {
                     if (
                         n.nodeType === 3 &&
                         n.data.length >= minWordLength
                     ) {
                         n.data = hyphenateText(n.data);
                     }
-                    i += 1;
-                    n = el.childNodes[i];
-                }
+                });
                 elements.counter[0] -= 1;
                 H.events.dispatch("afterElementHyphenation", {
                     "el": el,
@@ -508,9 +523,9 @@
         }
 
         H.createHyphenator = function createHyphenator(lang) {
-            return function hyphenator(entity, cn) {
-                cn = cn || "hyphenate";
-                return hyphenate(lang, cn, entity);
+            return function hyphenator(entity, sel) {
+                sel = sel || ".hyphenate";
+                return hyphenate(lang, sel, entity);
             };
         };
 
@@ -523,7 +538,7 @@
         function hyphenateLangElements(lang, elArr) {
             if (elArr) {
                 elArr.forEach(function eachElem(elo) {
-                    hyphenate(lang, elo.class, elo.element);
+                    hyphenate(lang, elo.selector, elo.element);
                 });
             } else {
                 H.events.dispatch("error", {"msg": "engine for language '" + lang + "' loaded, but no elements found."});
@@ -539,18 +554,11 @@
          * @returns {Object} Map of exceptions
          */
         function convertExceptions(exc) {
-            const words = exc.split(", ");
             const r = empty();
-            const l = words.length;
-            let i = 0;
-            let key = null;
-            while (i < l) {
-                key = words[i].replace(/-/g, "");
-                if (!r[key]) {
-                    r[key] = words[i];
-                }
-                i += 1;
-            }
+            exc.split(", ").forEach(function eachExc(e) {
+                const key = e.replace(/-/g, "");
+                r[key] = e;
+            });
             return r;
         }
 
@@ -597,8 +605,8 @@
                 lo.leftmin = leftmin;
                 lo.rightmin = rightmin;
                 lo.hyphenateFunction = hyphenateFunction;
-                C.classNames.forEach(function eachClassName(cn) {
-                    const classSettings = C[cn];
+                C.selectors.forEach(function eachSelector(sel) {
+                    const classSettings = C[sel];
                     if (classSettings.leftminPerLang === 0) {
                         Object.defineProperty(
                             classSettings,
@@ -646,7 +654,7 @@
                      * that follow a character that is not in the `alphabet`.
                      * Word delimiters are not taken in account.
                      */
-                    lo.genRegExps[cn] = new RegExp("[\\w" + alphabet + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}", "gi");
+                    lo.genRegExps[sel] = new RegExp("[\\w" + alphabet + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}", "gi");
                 });
                 lo.engineReady = true;
             }
@@ -1039,7 +1047,9 @@
             "hyphenopolyEnd",
             function def() {
                 w.clearTimeout(C.timeOutHandler);
-                w.document.documentElement.style.visibility = "visible";
+                if (H.c.hide !== "none") {
+                    H.toggle("on");
+                }
             },
             false
         );
@@ -1056,16 +1066,14 @@
             true
         );
 
-        let eo = H.events.tempRegister.shift();
-        while (eo) {
+        H.events.tempRegister.forEach(function eachEo(eo) {
             H.events.addListener(eo.name, eo.handler, false);
-            eo = H.events.tempRegister.shift();
-        }
+        });
         delete H.events.tempRegister;
 
         H.events.dispatch("hyphenopolyStart", {"msg": "Hyphenopoly started"});
 
-        w.clearTimeout(H.setup.timeOutHandler);
+        w.clearTimeout(H.c.timeOutHandler);
 
         Object.defineProperty(C, "timeOutHandler", setProp(
             w.setTimeout(function ontimeout() {

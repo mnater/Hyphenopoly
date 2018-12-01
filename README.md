@@ -4,11 +4,11 @@
 Hyphenopoly.js is a __JavaScript-polyfill for hyphenation in HTML__: it hyphenates text if the user agent does not support CSS-hyphenation at all or not for the required languages and it is a __Node.js-module__.
 
 The package consists of the following parts:
-- _Hyphenopoly_Loader.js_ (~13KB unpacked, ~2.5KB minified and compressed): feature-checks the client and loads other resources if necessary.
-- _Hyphenopoly.js_ (~30KB unpacked, ~4KB minified and compressed): does the whole DOM-foo and wraps (w)asm.
+- _Hyphenopoly_Loader.js_ (~24KB unpacked, ~3KB minified and compressed): feature-checks the client and loads other resources if necessary.
+- _Hyphenopoly.js_ (~41KB unpacked, ~4KB minified and compressed): does the whole DOM-foo and wraps (w)asm.
 - _hyphenEngine.wasm_ (~1KB uncompressed): wasm code for creating pattern trie and finding hyphenation points.
-- _hyphenEngine.asm.js_ (~7KB uncompressed, ~1KB minified and compressed): fallback for clients that don't support wasm.
-- _pattern.hpb_ (sizes differ! e.g. en-us.hpb: ~29KB): space saving binary format of the hyphenation patterns (including their license).
+- _hyphenEngine.asm.js_ (~10KB uncompressed, ~1KB minified and compressed): fallback for clients that don't support wasm.
+- _pattern.hpb_ (sizes differ! e.g. en-us.hpb: ~27KB uncompressed, ~16KB compressed): space saving binary format of the hyphenation patterns (including their license).
 - _hyphenopoly.module.js_: the node module
 
 # Usage (Browser)
@@ -31,8 +31,8 @@ Also, don't forget to enable CSS hyphenation.
                 "en-us": "Supercalifragilisticexpialidocious"
             },
             setup: {
-                classnames: {
-                    "container": {}
+                selectors: {
+                    ".container": {}
                 }
             }
         };
@@ -59,9 +59,10 @@ Also, don't forget to enable CSS hyphenation.
     <body>
         <h1>Example 1</h1>
         <div class="container">
-        <p lang="la">Qua de causa Helvetii quoque reliquos Gallos virtute praecedunt, quod fere cotidianis proeliis cum Germanis contendunt, cum aut suis finibus eos prohibent aut ipsi in eorum finibus bellum gerunt.</p>
-        <p lang="en-us">For which reason the Helvetii also surpass the rest of the Gauls in valor, as they contend with the Germans in almost daily battles, when they either repel them from their own territories, or themselves wage war on their frontiers.</p>
-        <p lang="de">Aus diesem Grund übertreffen auch die Helvetier die übrigen Gallier an Tapferkeit, weil sie sich in fast täglichen Gefechten mit den Germanen messen, wobei sie diese entweder von ihrem Gebiet fernhalten oder selbst in deren Gebiet kämpfen.</p>
+            <p lang="la">Qua de causa Helvetii quoque reliquos Gallos virtute praecedunt, quod fere cotidianis proeliis cum Germanis contendunt, cum aut suis finibus eos prohibent aut ipsi in eorum finibus bellum gerunt.</p>
+            <p lang="en-us">For which reason the Helvetii also surpass the rest of the Gauls in valor, as they contend with the Germans in almost daily battles, when they either repel them from their own territories, or themselves wage war on their frontiers.</p>
+            <p lang="de">Aus diesem Grund übertreffen auch die Helvetier die übrigen Gallier an Tapferkeit, weil sie sich in fast täglichen Gefechten mit den Germanen messen, wobei sie diese entweder von ihrem Gebiet fernhalten oder selbst in deren Gebiet kämpfen.</p>
+        </div>
     </body>
 </html>
 ```
@@ -76,7 +77,7 @@ Hyphenopoly_Loader.js needs some information to run. This information is provide
 ### require
 The `Hyphenopoly` object must have exactly one property called `require` which itself is an object containing at least one nameValuePair where the name is a language code string (Some patterns are region-specific. See the patterns directory for supported languages. E.g. just using `en` won't work, use either `en-us`or `en-gb`) and the value is a long word string in that language (preferably more than 12 characters long).
 
-Hyphenator_Loader.js will feature test the client (aka browser, aka user agent) for CSS-hyphens support for the given languages with the given words respectively. In the example above it will test if the client supports CSS-hyphenation for latin. If your page contains more than just one language just add more lines.
+Hyphenator_Loader.js will feature test the client (aka browser, aka user agent) for CSS-hyphens support for the given languages with the given words respectively. In the example above it will test if the client supports CSS-hyphenation for latin, german and us-english.
 
 If you want to force the usage of Hyphenopoly.js for a language (e.g. for testing purposes) write `"FORCEHYPHENOPOLY"` instead of the long word.
 

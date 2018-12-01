@@ -13,6 +13,7 @@
                 patterndir: "../patterns/"
             },
             setup: {
+                hide: "element",
                 classnames: {
                     "class1": {
                         hyphen: "·"
@@ -35,8 +36,8 @@
             var ref = "";
             var result = true;
             while (i <= tests) {
-                test = document.getElementById("test" + i).innerText;
-                ref = document.getElementById("ref" + i).innerText;
+                test = document.getElementById("test" + i).textContent;
+                ref = document.getElementById("ref" + i).textContent;
                 if (test === ref) {
                     document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
                     result = result && true;
@@ -98,7 +99,7 @@
         <hr>
         <h2>1: class1</h2>
         <p id="test1" class="test class1" lang="de">Silbentrennung: <span class="class2 italic">Die Worttrennung, auch Silbentrennung genannt, bezeichnet in der Orthographie die Art und Weise, wie die Wörter insbesondere am Zeilenende getrennt werden können.</span></p>
-        <p id="ref1" class="ref" lang="en-us">Sil·ben·tren·nung: <span class="italic">Die Wort&shy;tren&shy;nung, auch Sil&shy;ben&shy;tren&shy;nung ge&shy;nannt, be&shy;zeich&shy;net in der Or&shy;tho&shy;gra&shy;phie die Art und Weise, wie die Wör&shy;ter ins&shy;be&shy;son&shy;de&shy;re am Zei&shy;len&shy;en&shy;de ge&shy;trennt wer&shy;den kön&shy;nen.</span></p>
+        <p id="ref1" class="ref" lang="de">Sil·ben·tren·nung: <span class="italic">Die Wort&shy;tren&shy;nung, auch Sil&shy;ben&shy;tren&shy;nung ge&shy;nannt, be&shy;zeich&shy;net in der Or&shy;tho&shy;gra&shy;phie die Art und Weise, wie die Wör&shy;ter ins&shy;be&shy;son&shy;de&shy;re am Zei&shy;len&shy;en&shy;de ge&shy;trennt wer&shy;den kön&shy;nen.</span></p>
         <hr>
         <textarea id="pastebin" placeholder="paste here" cols="40"></textarea>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>

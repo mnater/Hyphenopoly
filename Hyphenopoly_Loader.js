@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly_Loader 2.5.1 - client side hyphenation
+ * @license Hyphenopoly_Loader 2.6.0 - client side hyphenation
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -45,20 +45,76 @@
                 "patterndir": "../Hyphenopoly/patterns/"
             };
         }
+
         if (H.setup) {
-            if (!H.setup.classnames) {
-                H.setup.classnames = {"hyphenate": {}};
+            if (!H.setup.selectors) {
+                H.setup.selectors = empty();
+                H.setup.selectors[".hyphenate"] = empty();
+            }
+            if (H.setup.classnames) {
+                Object.keys(H.setup.classnames).forEach(function cn2sel(cn) {
+                    H.setup.selectors["." + cn] = H.setup.classnames[cn];
+                });
+                H.setup.classnames = null;
+                delete H.setup.classnames;
             }
             if (!H.setup.timeout) {
                 H.setup.timeout = 1000;
             }
+            if (!H.setup.hide) {
+                H.setup.hide = "all";
+            }
         } else {
             H.setup = {
-                "classnames": {"hyphenate": {}},
+                "hide": "all",
+                "selectors": {".hyphenate": {}},
                 "timeout": 1000
             };
         }
+        H.lcRequire = empty();
+        Object.keys(H.require).forEach(function copyRequire(k) {
+            H.lcRequire[k.toLowerCase()] = H.require[k];
+        });
+        if (H.fallbacks) {
+            H.lcFallbacks = empty();
+            Object.keys(H.fallbacks).forEach(function copyFallbacks(k) {
+                H.lcFallbacks[k.toLowerCase()] = H.fallbacks[k].toLowerCase();
+            });
+        }
     }());
+
+    H.toggle = function toggle(state) {
+        if (state === "on") {
+            const stylesNode = d.getElementById("H9Y_Styles");
+            if (stylesNode) {
+                stylesNode.parentNode.removeChild(stylesNode);
+            }
+        } else {
+            const sc = d.createElement("style");
+            sc.id = "H9Y_Styles";
+            switch (H.setup.hide) {
+            case "all":
+                sc.innerHTML = "html {visibility: hidden !important}";
+                break;
+            case "element":
+                Object.keys(H.setup.selectors).
+                    forEach(function eachSelector(sel) {
+                        sc.innerHTML += sel + " {visibility: hidden !important}\n";
+                    });
+
+                break;
+            case "text":
+                Object.keys(H.setup.selectors).
+                    forEach(function eachSelector(sel) {
+                        sc.innerHTML += sel + " {color: transparent !important}\n";
+                    });
+                break;
+            default:
+                sc.innerHTML = "";
+            }
+            d.getElementsByTagName("head")[0].appendChild(sc);
+        }
+    };
 
     (function setupEvents() {
         // Events known to the system
@@ -90,7 +146,7 @@
         define(
             "timeout",
             function def(e) {
-                d.documentElement.style.visibility = "visible";
+                H.toggle("on");
                 window.console.info(
                     "Hyphenopolys 'FOUHC'-prevention timed out after %dms",
                     e.delay
@@ -307,8 +363,8 @@
          * @returns {undefined}
          */
         function fetchBinary(p, f, n, m) {
-            if (!loadedBins[f]) {
-                loadedBins[f] = true;
+            if (!loadedBins[n]) {
+                loadedBins[n] = true;
                 window.fetch(p + f).then(
                     function resolve(response) {
                         if (response.ok) {
@@ -337,8 +393,8 @@
          * @returns {undefined}
          */
         function requestBinary(p, f, n, m) {
-            if (!loadedBins[f]) {
-                loadedBins[f] = true;
+            if (!loadedBins[n]) {
+                loadedBins[n] = true;
                 const xhr = new XMLHttpRequest();
                 xhr.open("GET", p + f);
                 xhr.onload = function onload() {
@@ -349,7 +405,6 @@
                 xhr.send();
             }
         }
-
         if (H.clientFeat.wasm) {
             fetchBinary(path, fne, name, msg);
         } else {
@@ -411,8 +466,8 @@
      */
     function loadRessources(lang) {
         let filename = lang + ".hpb";
-        if (H.fallbacks && H.fallbacks[lang]) {
-            filename = H.fallbacks[lang] + ".hpb";
+        if (H.lcFallbacks && H.lcFallbacks[lang]) {
+            filename = H.lcFallbacks[lang] + ".hpb";
         }
         if (!H.binaries) {
             H.binaries = empty();
@@ -472,7 +527,7 @@
                 testDiv.lang = lang;
                 testDiv.id = lang;
                 testDiv.style.cssText = css;
-                testDiv.appendChild(d.createTextNode(H.require[lang]));
+                testDiv.appendChild(d.createTextNode(H.lcRequire[lang]));
                 fakeBody.appendChild(testDiv);
             }
 
@@ -524,7 +579,7 @@
          * Hyphenopoly.hyphenators.<language>
          *
          * Hyphenopoly.hyphenators.<language> is a Promise that fullfills
-         * to hyphenate(lang, cn, entity) as soon as the ressources are loaded
+         * to hyphenate(entity, sel) as soon as the ressources are loaded
          * and the engine is ready.
          * If Promises aren't supported (e.g. IE11) a error message is produced.
          *
@@ -544,7 +599,6 @@
                             }
                         }, true);
                         H.events.addListener("error", function handler(e) {
-                            e.preventDefault();
                             if (e.key === lang || e.key === "hyphenEngine") {
                                 rj(e.msg);
                             }
@@ -568,8 +622,8 @@
             }
         }
 
-        Object.keys(H.require).forEach(function doReqLangs(lang) {
-            if (H.require[lang] === "FORCEHYPHENOPOLY") {
+        Object.keys(H.lcRequire).forEach(function doReqLangs(lang) {
+            if (H.lcRequire[lang] === "FORCEHYPHENOPOLY") {
                 H.clientFeat.polyfill = true;
                 H.clientFeat.langs[lang] = "H9Y";
                 loadRessources(lang);
@@ -586,8 +640,8 @@
         });
         const testContainer = tester.appendTests(d.documentElement);
         if (testContainer !== null) {
-            Object.keys(H.require).forEach(function checkReqLangs(lang) {
-                if (H.require[lang] !== "FORCEHYPHENOPOLY") {
+            Object.keys(H.lcRequire).forEach(function checkReqLangs(lang) {
+                if (H.lcRequire[lang] !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
                     if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
                         H.clientFeat.langs[lang] = "CSS";
@@ -605,15 +659,21 @@
 
     (function run() {
         if (H.clientFeat.polyfill) {
-            d.documentElement.style.visibility = "hidden";
-
-            H.setup.timeOutHandler = window.setTimeout(function timedOut() {
-                d.documentElement.style.visibility = "visible";
-                H.events.dispatch("timeout", {"delay": H.setup.timeout});
-            }, H.setup.timeout);
+            if (H.setup.hide === "all") {
+                H.toggle("off");
+            }
+            if (H.setup.hide !== "none") {
+                H.setup.timeOutHandler = window.setTimeout(function timedOut() {
+                    H.toggle("on");
+                    H.events.dispatch("timeout", {"delay": H.setup.timeout});
+                }, H.setup.timeout);
+            }
             d.addEventListener(
                 "DOMContentLoaded",
                 function DCL() {
+                    if (H.setup.hide !== "none" && H.setup.hide !== "all") {
+                        H.toggle("off");
+                    }
                     H.events.dispatch(
                         "contentLoaded",
                         {"msg": ["contentLoaded"]}
