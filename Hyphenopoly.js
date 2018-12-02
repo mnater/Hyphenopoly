@@ -696,13 +696,7 @@
                 };
             } else {
                 decoder = function (ui16) {
-                    let i = 0;
-                    let str = "";
-                    while (i < ui16.length) {
-                        str += String.fromCharCode(ui16[i]);
-                        i += 1;
-                    }
-                    return str;
+                    return String.fromCharCode.apply(null, ui16);
                 };
             }
             return decoder;
@@ -832,7 +826,7 @@
             );
             const defLeftmin = baseData.leftmin;
             const defRightmin = baseData.rightmin;
-            const hydWordStore = (new Uint16Array(heapBuffer)).subarray(
+            const hydWrdStore = (new Uint16Array(heapBuffer)).subarray(
                 hyphenatedWordOffset >> 1,
                 (hyphenatedWordOffset >> 1) + 128
             );
@@ -855,10 +849,7 @@
                 wordStore[i + 2] = 95;
 
                 if (hyphenateFunc(leftmin, rightmin) === 1) {
-                    word = String.fromCharCode.apply(
-                        null,
-                        hydWordStore.subarray(1, hydWordStore[0] + 1)
-                    );
+                    word = decode(hydWrdStore.subarray(1, hydWrdStore[0] + 1));
                     if (hyphenchar !== "\u00AD") {
                         word = word.replace(/\u00AD/g, hyphenchar);
                     }
