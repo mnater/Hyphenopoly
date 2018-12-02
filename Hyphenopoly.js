@@ -71,7 +71,7 @@
             "defaultLanguage": setProp("en-us", 2),
             "dontHyphenate": setProp((function createList() {
                 const r = empty();
-                const list = "video,audio,script,code,pre,img,br,samp,kbd,var,abbr,acronym,sub,sup,button,option,label,textarea,input,math,svg,style";
+                const list = "abbr,acronym,audio,br,button,code,img,input,kbd,label,math,option,pre,samp,script,style,sub,sup,svg,textarea,var,video";
                 list.split(",").forEach(function add(value) {
                     r[value] = true;
                 });
@@ -832,7 +832,7 @@
             );
             const defLeftmin = baseData.leftmin;
             const defRightmin = baseData.rightmin;
-            const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(
+            const hydWordStore = (new Uint16Array(heapBuffer)).subarray(
                 hyphenatedWordOffset >> 1,
                 (hyphenatedWordOffset >> 1) + 128
             );
@@ -855,12 +855,10 @@
                 wordStore[i + 2] = 95;
 
                 if (hyphenateFunc(leftmin, rightmin) === 1) {
-                    i = 1;
-                    word = "";
-                    while (i < hyphenatedWordStore[0] + 1) {
-                        word += String.fromCharCode(hyphenatedWordStore[i]);
-                        i += 1;
-                    }
+                    word = String.fromCharCode.apply(
+                        null,
+                        hydWordStore.subarray(1, hydWordStore[0] + 1)
+                    );
                     if (hyphenchar !== "\u00AD") {
                         word = word.replace(/\u00AD/g, hyphenchar);
                     }
