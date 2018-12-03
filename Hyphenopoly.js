@@ -781,25 +781,6 @@
         }
 
         /**
-         * Create basic import Object
-         * @param {Object} baseData baseData
-         * @returns {Object} import object
-         */
-        function createImportObject(baseData) {
-            return {
-                "hpbPatternsOffset": baseData.hpbPatternsOffset,
-                "hpbTranslateOffset": baseData.hpbTranslateOffset,
-                "hyphenatedWordOffset": baseData.hyphenatedWordOffset,
-                "hyphenPointsOffset": baseData.hyphenPointsOffset,
-                "patternsLength": baseData.patternsLength,
-                "patternTrieOffset": baseData.patternTrieOffset,
-                "translatedWordOffset": baseData.translatedWordOffset,
-                "valueStoreOffset": baseData.valueStoreOffset,
-                "wordOffset": baseData.wordOffset
-            };
-        }
-
-        /**
          * Setup env for hyphenateFunction
          * @param {Object} baseData baseData
          * @param {function} hyphenateFunc hyphenateFunction
@@ -881,7 +862,7 @@
                             "memory": baseData.wasmMemory,
                             "memoryBase": 0
                         },
-                        "ext": createImportObject(baseData)
+                        "ext": baseData
                     }).then(
                         function runWasm(result) {
                             result.exports.convert();
@@ -928,7 +909,7 @@
                     "Uint16Array": window.Uint16Array,
                     "Uint8Array": window.Uint8Array
                 },
-                createImportObject(baseData),
+                baseData,
                 baseData.heapBuffer
             );
             theHyphenEngine.convert();
