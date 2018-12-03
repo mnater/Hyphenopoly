@@ -349,8 +349,8 @@
                 let i = 0;
                 let wordHyphenator = null;
                 let hw = word;
-                switch (classSettings.compound) {
-                case "auto":
+                if (classSettings.compound === "auto" ||
+                    classSettings.compound === "all") {
                     parts = word.split("-");
                     wordHyphenator = createWordHyphenator(lo, lang, sel);
                     while (i < parts.length) {
@@ -359,20 +359,12 @@
                         }
                         i += 1;
                     }
-                    hw = parts.join("-");
-                    break;
-                case "all":
-                    parts = word.split("-");
-                    wordHyphenator = createWordHyphenator(lo, lang, sel);
-                    while (i < parts.length) {
-                        if (parts[i].length >= classSettings.minWordLength) {
-                            parts[i] = wordHyphenator(parts[i]);
-                        }
-                        i += 1;
+                    if (classSettings.compound === "auto") {
+                        hw = parts.join("-");
+                    } else {
+                        hw = parts.join("-" + zeroWidthSpace);
                     }
-                    hw = parts.join("-" + zeroWidthSpace);
-                    break;
-                default:
+                } else {
                     hw = word.replace("-", "-" + zeroWidthSpace);
                 }
                 return hw;
