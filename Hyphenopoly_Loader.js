@@ -410,7 +410,10 @@
     }
 
     /**
-     * Allocate memory for (w)asm
+     * Pre-Allocate memory for (w)asm
+     * Default is 32 wasm Pages (). For languages with larger .hpb
+     * files a higher value is needed.
+     * Get the value from baseData.heapSize in Hyphenopoly.js
      * @param {string} lang Language
      * @returns {undefined}
      */
@@ -421,7 +424,7 @@
             wasmPages = 41;
             break;
         case "de":
-            wasmPages = 75;
+            wasmPages = 55;
             break;
         case "nb-no":
             wasmPages = 92;
