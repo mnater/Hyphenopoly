@@ -32,18 +32,15 @@
             };
         }
         // Set defaults for paths and setup
-        if (H.paths) {
-            if (!H.paths.patterndir) {
-                H.paths.patterndir = "../Hyphenopoly/patterns/";
-            }
-            if (!H.paths.maindir) {
-                H.paths.maindir = "../Hyphenopoly/";
-            }
-        } else {
-            H.paths = {
-                "maindir": "../Hyphenopoly/",
-                "patterndir": "../Hyphenopoly/patterns/"
-            };
+        H.dfltPaths = Object.create({
+            "maindir": "../",
+            "patterndir": "../patterns/"
+        });
+        if (H.paths && H.paths.patterndir) {
+            H.dfltPaths.patterndir = H.paths.patterndir;
+        }
+        if (H.paths && H.paths.maindir) {
+            H.dfltPaths.maindir = H.paths.maindir;
         }
 
         if (H.setup) {
@@ -473,18 +470,18 @@
             H.binaries = empty();
         }
         featureTestWasm();
-        scriptLoader(H.paths.maindir, "Hyphenopoly.js");
+        scriptLoader(H.dfltPaths.maindir, "Hyphenopoly.js");
         if (H.clientFeat.wasm) {
             binLoader(
-                H.paths.maindir,
+                H.dfltPaths.maindir,
                 "hyphenEngine.wasm",
                 "hyphenEngine",
                 ["engineLoaded", "wasm"]
             );
         } else {
-            scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
+            scriptLoader(H.dfltPaths.maindir, "hyphenEngine.asm.js");
         }
-        binLoader(H.paths.patterndir, filename, lang, ["hpbLoaded", lang]);
+        binLoader(H.dfltPaths.patterndir, filename, lang, ["hpbLoaded", lang]);
         allocateMemory(lang);
     }
 
