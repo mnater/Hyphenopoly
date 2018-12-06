@@ -33,8 +33,8 @@
         }
         // Set defaults for paths and setup
         H.dfltPaths = Object.create({
-            "maindir": "../",
-            "patterndir": "../patterns/"
+            "maindir": "../Hyphenopoly/",
+            "patterndir": "../Hyphenopoly/patterns/"
         });
         if (H.paths && H.paths.patterndir) {
             H.dfltPaths.patterndir = H.paths.patterndir;
