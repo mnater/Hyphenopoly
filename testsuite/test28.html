@@ -17,11 +17,11 @@
             },
             setup: {
                 hide: hide_mode,
-                classnames: {
-                    "hyphenate1": {
+                selectors: {
+                    ".hyphenate1": {
                         hyphen: "•"
                     },
-                    "hyphenate2": {
+                    ".hyphenate2": {
                         hyphen: "|"
                     }
                 }
@@ -39,7 +39,7 @@
             elCount += 1;
             switch (hide_mode) {
             case "all":
-                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === "html {visibility: hidden !important}");
+                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === "html {visibility: hidden !important}\n");
                 break;
             case "element":
                 testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === ".hyphenate1 {visibility: hidden !important}\n.hyphenate2 {visibility: hidden !important}\n");

@@ -80,18 +80,18 @@
                 stylesNode.parentNode.removeChild(stylesNode);
             }
         } else {
+            const vis = " {visibility: hidden !important}\n";
             const sc = d.createElement("style");
             sc.id = "H9Y_Styles";
             switch (H.setup.hide) {
             case "all":
-                sc.innerHTML = "html {visibility: hidden !important}";
+                sc.innerHTML = "html" + vis;
                 break;
             case "element":
                 Object.keys(H.setup.selectors).
                     forEach(function eachSelector(sel) {
-                        sc.innerHTML += sel + " {visibility: hidden !important}\n";
+                        sc.innerHTML += sel + vis;
                     });
-
                 break;
             case "text":
                 Object.keys(H.setup.selectors).
@@ -255,7 +255,7 @@
      * @returns {undefined}
      */
     function featureTestWasm() {
-        /* eslint-disable max-len, no-magic-numbers, no-prototype-builtins */
+        /* eslint-disable no-prototype-builtins */
         /**
          * Feature test for wasm
          * @returns {boolean} support
@@ -301,7 +301,7 @@
             }
             return false;
         }
-        /* eslint-enable max-len, no-magic-numbers, no-prototype-builtins */
+        /* eslint-enable no-prototype-builtins */
         if (H.clientFeat.wasm === null) {
             H.clientFeat.wasm = runWasmTest();
         }
@@ -316,7 +316,7 @@
          * @param {string} filename Filename of the script
          * @returns {undefined}
          */
-        function loadScript(path, filename) {
+        return function loadScript(path, filename) {
             if (!loadedScripts[filename]) {
                 const script = d.createElement("script");
                 loadedScripts[filename] = true;
@@ -328,8 +328,7 @@
                 }
                 d.head.appendChild(script);
             }
-        }
-        return loadScript;
+        };
     }());
 
     const loadedBins = empty();
@@ -386,12 +385,12 @@
             if (!loadedBins[n]) {
                 loadedBins[n] = true;
                 const xhr = new XMLHttpRequest();
-                xhr.open("GET", p + f);
                 xhr.onload = function onload() {
                     H.binaries[n] = xhr.response;
                     H.events.dispatch(m[0], {"msg": m[1]});
                 };
                 xhr.responseType = "arraybuffer";
+                xhr.open("GET", p + f);
                 xhr.send();
             }
         }
@@ -428,9 +427,7 @@
         default:
             wasmPages = 32;
         }
-        if (!H.specMems) {
-            H.specMems = empty();
-        }
+        H.specMems = H.specMems || empty();
         if (H.clientFeat.wasm) {
             H.specMems[lang] = new WebAssembly.Memory({
                 "initial": wasmPages,
@@ -580,9 +577,7 @@
          * @returns {undefined}
          */
         function exposeHyphenateFunction(lang) {
-            if (!H.hyphenators) {
-                H.hyphenators = {};
-            }
+            H.hyphenators = H.hyphenators || empty();
             if (!H.hyphenators[lang]) {
                 if (window.Promise) {
                     H.hyphenators[lang] = new Promise(function pro(rs, rj) {
@@ -664,7 +659,7 @@
             d.addEventListener(
                 "DOMContentLoaded",
                 function DCL() {
-                    if (H.setup.hide !== "none" && H.setup.hide !== "all") {
+                    if (H.setup.hide.match(/^(element|text)$/)) {
                         H.toggle("off");
                     }
                     H.events.dispatch(
