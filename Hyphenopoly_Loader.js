@@ -44,10 +44,7 @@
         }
 
         if (H.setup) {
-            if (!H.setup.selectors) {
-                H.setup.selectors = empty();
-                H.setup.selectors[".hyphenate"] = empty();
-            }
+            H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
             if (H.setup.classnames) {
                 Object.keys(H.setup.classnames).forEach(function cn2sel(cn) {
                     H.setup.selectors["." + cn] = H.setup.classnames[cn];
@@ -55,12 +52,8 @@
                 H.setup.classnames = null;
                 delete H.setup.classnames;
             }
-            if (!H.setup.timeout) {
-                H.setup.timeout = 1000;
-            }
-            if (!H.setup.hide) {
-                H.setup.hide = "all";
-            }
+            H.setup.timeout = H.setup.timeout || 1000;
+            H.setup.hide = H.setup.hide || "all";
         } else {
             H.setup = {
                 "hide": "all",
