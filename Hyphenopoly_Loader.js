@@ -20,6 +20,17 @@
         return Object.create(null);
     }
 
+
+    /**
+     * Shorthand for Object.keys(obj).forEach(function () {})
+     * @param {Object} obj the object to iterate
+     * @param {function} fn the function to execute
+     * @returns {undefined}
+     */
+    function eachKey(obj, fn) {
+        Object.keys(obj).forEach(fn);
+    }
+
     (function config() {
         // Set H.clientFeat (either from sessionStorage or empty)
         if (H.cacheFeatureTests && sessionStorage.getItem("Hyphenopoly_Loader")) {
@@ -46,7 +57,7 @@
         if (H.setup) {
             H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
             if (H.setup.classnames) {
-                Object.keys(H.setup.classnames).forEach(function cn2sel(cn) {
+                eachKey(H.setup.classnames, function cn2sel(cn) {
                     H.setup.selectors["." + cn] = H.setup.classnames[cn];
                 });
                 H.setup.classnames = null;
@@ -62,12 +73,12 @@
             };
         }
         H.lcRequire = empty();
-        Object.keys(H.require).forEach(function copyRequire(k) {
+        eachKey(H.require, function copyRequire(k) {
             H.lcRequire[k.toLowerCase()] = H.require[k];
         });
         if (H.fallbacks) {
             H.lcFallbacks = empty();
-            Object.keys(H.fallbacks).forEach(function copyFallbacks(k) {
+            eachKey(H.fallbacks, function copyFallbacks(k) {
                 H.lcFallbacks[k.toLowerCase()] = H.fallbacks[k].toLowerCase();
             });
         }
@@ -88,16 +99,14 @@
                 sc.innerHTML = "html" + vis;
                 break;
             case "element":
-                Object.keys(H.setup.selectors).
-                    forEach(function eachSelector(sel) {
-                        sc.innerHTML += sel + vis;
-                    });
+                eachKey(H.setup.selectors, function eachSelector(sel) {
+                    sc.innerHTML += sel + vis;
+                });
                 break;
             case "text":
-                Object.keys(H.setup.selectors).
-                    forEach(function eachSelector(sel) {
-                        sc.innerHTML += sel + " {color: transparent !important}\n";
-                    });
+                eachKey(H.setup.selectors, function eachSelector(sel) {
+                    sc.innerHTML += sel + " {color: transparent !important}\n";
+                });
                 break;
             default:
                 sc.innerHTML = "";
@@ -237,7 +246,7 @@
         }
 
         if (H.handleEvent) {
-            Object.keys(H.handleEvent).forEach(function add(name) {
+            eachKey(H.handleEvent, function add(name) {
                 addListener(name, H.handleEvent[name], true);
             });
         }
@@ -610,7 +619,7 @@
             }
         }
 
-        Object.keys(H.lcRequire).forEach(function doReqLangs(lang) {
+        eachKey(H.lcRequire, function doReqLangs(lang) {
             if (H.lcRequire[lang] === "FORCEHYPHENOPOLY") {
                 H.clientFeat.polyfill = true;
                 H.clientFeat.langs[lang] = "H9Y";
@@ -628,7 +637,7 @@
         });
         const testContainer = tester.appendTests(d.documentElement);
         if (testContainer !== null) {
-            Object.keys(H.lcRequire).forEach(function checkReqLangs(lang) {
+            eachKey(H.lcRequire, function checkReqLangs(lang) {
                 if (H.lcRequire[lang] !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
                     if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
