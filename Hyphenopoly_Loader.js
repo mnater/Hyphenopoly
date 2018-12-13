@@ -53,7 +53,6 @@
         if (H.paths && H.paths.maindir) {
             H.dfltPaths.maindir = H.paths.maindir;
         }
-        console.log(H.dfltPaths);
 
         if (H.setup) {
             H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
@@ -419,10 +418,10 @@
      */
     function allocateMemory(lang) {
         const specVal = {
-            "nl": 41,
             "de": 55,
+            "hu": 207,
             "nb-no": 92,
-            "hu": 207
+            "nl": 41
         };
         const wasmPages = specVal[lang] || 32;
         H.specMems = H.specMems || empty();
