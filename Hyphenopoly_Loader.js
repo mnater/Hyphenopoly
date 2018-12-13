@@ -53,6 +53,7 @@
         if (H.paths && H.paths.maindir) {
             H.dfltPaths.maindir = H.paths.maindir;
         }
+        console.log(H.dfltPaths);
 
         if (H.setup) {
             H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
@@ -202,9 +203,7 @@
          * @returns {undefined}
          */
         function dispatch(name, data) {
-            if (!data) {
-                data = empty();
-            }
+            data = data || empty();
             let defaultPrevented = false;
             definedEvents[name].register.forEach(function call(currentHandler) {
                 data.preventDefault = function preventDefault() {
@@ -419,23 +418,13 @@
      * @returns {undefined}
      */
     function allocateMemory(lang) {
-        let wasmPages = 0;
-        switch (lang) {
-        case "nl":
-            wasmPages = 41;
-            break;
-        case "de":
-            wasmPages = 55;
-            break;
-        case "nb-no":
-            wasmPages = 92;
-            break;
-        case "hu":
-            wasmPages = 207;
-            break;
-        default:
-            wasmPages = 32;
-        }
+        const specVal = {
+            "nl": 41,
+            "de": 55,
+            "nb-no": 92,
+            "hu": 207
+        };
+        const wasmPages = specVal[lang] || 32;
         H.specMems = H.specMems || empty();
         if (H.clientFeat.wasm) {
             H.specMems[lang] = new WebAssembly.Memory({
@@ -456,35 +445,6 @@
             /* eslint-enable no-bitwise */
             H.specMems[lang] = new ArrayBuffer(asmPages);
         }
-    }
-
-    /**
-     * Load all ressources for a required <lang> and check if wasm is supported
-     * @param {string} lang The language
-     * @returns {undefined}
-     */
-    function loadRessources(lang) {
-        let filename = lang + ".hpb";
-        if (H.lcFallbacks && H.lcFallbacks[lang]) {
-            filename = H.lcFallbacks[lang] + ".hpb";
-        }
-        if (!H.binaries) {
-            H.binaries = empty();
-        }
-        featureTestWasm();
-        scriptLoader(H.dfltPaths.maindir, "Hyphenopoly.js");
-        if (H.clientFeat.wasm) {
-            binLoader(
-                H.dfltPaths.maindir,
-                "hyphenEngine.wasm",
-                "hyphenEngine",
-                ["engineLoaded", "wasm"]
-            );
-        } else {
-            scriptLoader(H.dfltPaths.maindir, "hyphenEngine.asm.js");
-        }
-        binLoader(H.dfltPaths.patterndir, filename, lang, ["hpbLoaded", lang]);
-        allocateMemory(lang);
     }
 
     (function featureTestCSSHyphenation() {
@@ -515,13 +475,11 @@
              * @param {string} lang Language
              * @returns {undefined}
              */
-            function createTest(lang) {
+            function create(lang) {
                 if (H.clientFeat.langs[lang]) {
                     return;
                 }
-                if (!fakeBody) {
-                    fakeBody = d.createElement("body");
-                }
+                fakeBody = fakeBody || d.createElement("body");
                 const testDiv = d.createElement("div");
                 testDiv.lang = lang;
                 testDiv.id = lang;
@@ -535,7 +493,7 @@
              * @param {Object} target Where to append fakeBody
              * @returns {Object|null} The body element or null, if no tests
              */
-            function appendTests(target) {
+            function append(target) {
                 if (fakeBody) {
                     target.appendChild(fakeBody);
                     return fakeBody;
@@ -547,15 +505,15 @@
              * Remove fakeBody
              * @returns {undefined}
              */
-            function clearTests() {
+            function clear() {
                 if (fakeBody) {
                     fakeBody.parentNode.removeChild(fakeBody);
                 }
             }
             return {
-                "appendTests": appendTests,
-                "clearTests": clearTests,
-                "createTest": createTest
+                "append": append,
+                "clear": clear,
+                "create": create
             };
         }());
 
@@ -619,23 +577,50 @@
             }
         }
 
+        /**
+         * Load all ressources for a required <lang>, check if wasm is supported
+         * and expose the hyphenate function.
+         * @param {string} lang The language
+         * @returns {undefined}
+         */
+        function loadRessources(lang) {
+            let filename = lang + ".hpb";
+            if (H.lcFallbacks && H.lcFallbacks[lang]) {
+                filename = H.lcFallbacks[lang] + ".hpb";
+            }
+            H.binaries = H.binaries || empty();
+            featureTestWasm();
+            scriptLoader(H.dfltPaths.maindir, "Hyphenopoly.js");
+            if (H.clientFeat.wasm) {
+                binLoader(
+                    H.dfltPaths.maindir,
+                    "hyphenEngine.wasm",
+                    "hyphenEngine",
+                    ["engineLoaded", "wasm"]
+                );
+            } else {
+                scriptLoader(H.dfltPaths.maindir, "hyphenEngine.asm.js");
+            }
+            binLoader(H.dfltPaths.patterndir, filename, lang, ["hpbLoaded", lang]);
+            allocateMemory(lang);
+            exposeHyphenateFunction(lang);
+        }
+
         eachKey(H.lcRequire, function doReqLangs(lang) {
             if (H.lcRequire[lang] === "FORCEHYPHENOPOLY") {
                 H.clientFeat.polyfill = true;
                 H.clientFeat.langs[lang] = "H9Y";
                 loadRessources(lang);
-                exposeHyphenateFunction(lang);
             } else if (
                 H.clientFeat.langs[lang] &&
                 H.clientFeat.langs[lang] === "H9Y"
             ) {
                 loadRessources(lang);
-                exposeHyphenateFunction(lang);
             } else {
-                tester.createTest(lang);
+                tester.create(lang);
             }
         });
-        const testContainer = tester.appendTests(d.documentElement);
+        const testContainer = tester.append(d.documentElement);
         if (testContainer !== null) {
             eachKey(H.lcRequire, function checkReqLangs(lang) {
                 if (H.lcRequire[lang] !== "FORCEHYPHENOPOLY") {
@@ -646,45 +631,42 @@
                         H.clientFeat.polyfill = true;
                         H.clientFeat.langs[lang] = "H9Y";
                         loadRessources(lang);
-                        exposeHyphenateFunction(lang);
                     }
                 }
             });
-            tester.clearTests();
+            tester.clear();
         }
     }());
 
-    (function run() {
-        if (H.clientFeat.polyfill) {
-            if (H.setup.hide === "all") {
-                H.toggle("off");
-            }
-            if (H.setup.hide !== "none") {
-                H.setup.timeOutHandler = window.setTimeout(function timedOut() {
-                    H.toggle("on");
-                    H.events.dispatch("timeout", {"delay": H.setup.timeout});
-                }, H.setup.timeout);
-            }
-            d.addEventListener(
-                "DOMContentLoaded",
-                function DCL() {
-                    if (H.setup.hide.match(/^(element|text)$/)) {
-                        H.toggle("off");
-                    }
-                    H.events.dispatch(
-                        "contentLoaded",
-                        {"msg": ["contentLoaded"]}
-                    );
-                },
-                {
-                    "once": true,
-                    "passive": true
-                }
-            );
-        } else {
-            window.Hyphenopoly = null;
+    if (H.clientFeat.polyfill) {
+        if (H.setup.hide === "all") {
+            H.toggle("off");
         }
-    }());
+        if (H.setup.hide !== "none") {
+            H.setup.timeOutHandler = window.setTimeout(function timedOut() {
+                H.toggle("on");
+                H.events.dispatch("timeout", {"delay": H.setup.timeout});
+            }, H.setup.timeout);
+        }
+        d.addEventListener(
+            "DOMContentLoaded",
+            function DCL() {
+                if (H.setup.hide.match(/^(element|text)$/)) {
+                    H.toggle("off");
+                }
+                H.events.dispatch(
+                    "contentLoaded",
+                    {"msg": ["contentLoaded"]}
+                );
+            },
+            {
+                "once": true,
+                "passive": true
+            }
+        );
+    } else {
+        window.Hyphenopoly = null;
+    }
 
     if (H.cacheFeatureTests) {
         sessionStorage.setItem(
