@@ -916,7 +916,10 @@
             prepareLanguagesObj(
                 lang,
                 encloseHyphenateFunction(baseData, theHyphenEngine.hyphenate),
-                decode((new Uint16Array(heapBuffer)).subarray(384, 384 + alphalen)),
+                decode(
+                    (new Uint16Array(heapBuffer)).
+                        subarray(384, 384 + alphalen)
+                ),
                 baseData.leftmin,
                 baseData.rightmin
             );
