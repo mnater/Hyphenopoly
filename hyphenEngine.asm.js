@@ -97,6 +97,7 @@ function asmHyphenEngine(std, ext, heap) {
             alphabetCount = (alphabetCount + 1) | 0;
             i = (i + 4) | 0;
         }
+        return alphabetCount | 0;
     }
 
     function translateCharCode(cc) {
@@ -124,11 +125,12 @@ function asmHyphenEngine(std, ext, heap) {
         var valueStoreStartIndex = 0;
         var valueStoreCurrentIdx = 0;
         var valueStorePrevIdx = 0;
+         var alphabetlength = 0;
         valueStoreStartIndex = (valueStoreOffset + 1) | 0;
         valueStoreCurrentIdx = (valueStoreOffset + 1) | 0;
         valueStorePrevIdx = (valueStoreOffset + 1) | 0;
 
-        createTranslateMap();
+        alphabetlength = createTranslateMap() | 0;
 
         i = hpbPatternsOffset | 0;
         last_i = hpbPatternsOffset + patternsLength | 0;
@@ -182,6 +184,7 @@ function asmHyphenEngine(std, ext, heap) {
             }
             i = (i + 1) | 0;
         }
+        return alphabetlength | 0;
     }
 
     function hyphenate(lm, rm) {

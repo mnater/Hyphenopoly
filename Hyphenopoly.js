@@ -865,7 +865,7 @@
                         "ext": baseData
                     }).then(
                         function runWasm(result) {
-                            result.exports.convert();
+                            const alphalen = result.exports.convert();
                             prepareLanguagesObj(
                                 lang,
                                 encloseHyphenateFunction(
@@ -874,7 +874,7 @@
                                 ),
                                 decode(
                                     (new Uint16Array(wasmMemory.buffer)).
-                                        subarray(384, 640)
+                                        subarray(384, 384 + alphalen)
                                 ),
                                 baseData.leftmin,
                                 baseData.rightmin
@@ -912,11 +912,11 @@
                 baseData,
                 baseData.heapBuffer
             );
-            theHyphenEngine.convert();
+            const alphalen = theHyphenEngine.convert();
             prepareLanguagesObj(
                 lang,
                 encloseHyphenateFunction(baseData, theHyphenEngine.hyphenate),
-                decode((new Uint16Array(heapBuffer)).subarray(384, 640)),
+                decode((new Uint16Array(heapBuffer)).subarray(384, 384 + alphalen)),
                 baseData.leftmin,
                 baseData.rightmin
             );
