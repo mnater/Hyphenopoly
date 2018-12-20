@@ -874,7 +874,7 @@
                                 ),
                                 decode(
                                     (new Uint16Array(wasmMemory.buffer)).
-                                        subarray(384, 384 + alphalen)
+                                        subarray(385, 384 + alphalen)
                                 ),
                                 baseData.leftmin,
                                 baseData.rightmin
@@ -918,7 +918,7 @@
                 encloseHyphenateFunction(baseData, theHyphenEngine.hyphenate),
                 decode(
                     (new Uint16Array(heapBuffer)).
-                        subarray(384, 384 + alphalen)
+                        subarray(385, 384 + alphalen)
                 ),
                 baseData.leftmin,
                 baseData.rightmin
