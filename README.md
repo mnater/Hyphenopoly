@@ -92,7 +92,7 @@ Hyphenopoly by default hyphenates elements (and their children) with the classna
 [![Try hyphenopoly on RunKit](https://badge.runkitcdn.com/hyphenopoly.svg)](https://npm.runkit.com/hyphenopoly)
 
 Install:
-````
+````shell
 npm i hyphenopoly
 ````
 
