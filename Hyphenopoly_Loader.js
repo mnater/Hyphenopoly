@@ -615,7 +615,7 @@
             allocateMemory(lang);
             exposeHyphenateFunction(lang);
         }
-        H.lcRequire.forEach(function (value, lang) {
+        H.lcRequire.forEach(function eachReq(value, lang) {
             if (value === "FORCEHYPHENOPOLY") {
                 H.clientFeat.polyfill = true;
                 H.clientFeat.langs[lang] = "H9Y";
@@ -631,7 +631,7 @@
         });
         const testContainer = tester.append(d.documentElement);
         if (testContainer !== null) {
-            H.lcRequire.forEach(function (value, lang) {
+            H.lcRequire.forEach(function eachReq(value, lang) {
                 if (value !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
                     if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
