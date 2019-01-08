@@ -44,6 +44,7 @@
   "dependencies": {},
   "devDependencies": {
     "eslint": "^5.10.0",
+    "eslint-plugin-security": "^1.4.0",
     "tap": "^12.1.1",
     "terser": "^3.11.0"
   },
@@ -58,7 +59,13 @@
     "globals": {
       "Hyphenopoly": true
     },
-    "extends": "eslint:all",
+    "plugins": [
+      "security"
+    ],
+    "extends": [
+      "eslint:all",
+      "plugin:security/recommended"
+    ],
     "rules": {
       "require-unicode-regexp": 0,
       "require-jsdoc": [

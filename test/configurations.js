@@ -4,7 +4,6 @@
 const t = require("tap");
 
 let H9Y = null;
-const H9YKey = require.resolve("../hyphenopoly.module");
 
 t.test("set options: compound", function (t) {
     t.beforeEach(function setup(done) {
@@ -14,7 +13,7 @@ t.test("set options: compound", function (t) {
 
     t.afterEach(function tearDown(done) {
         H9Y = null;
-        delete require.cache[H9YKey];
+        delete require.cache[require.resolve("../hyphenopoly.module")];
         done();
     });
 
@@ -74,7 +73,7 @@ t.test("set options: exceptions", function (t) {
 
     t.afterEach(function tearDown(done) {
         H9Y = null;
-        delete require.cache[H9YKey];
+        delete require.cache[require.resolve("../hyphenopoly.module")];
         done();
     });
 
@@ -119,7 +118,7 @@ t.test("set options: hyphen", function (t) {
 
     t.afterEach(function tearDown(done) {
         H9Y = null;
-        delete require.cache[H9YKey];
+        delete require.cache[require.resolve("../hyphenopoly.module")];
         done();
     });
 
@@ -150,7 +149,7 @@ t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
 
     t.afterEach(function tearDown(done) {
         H9Y = null;
-        delete require.cache[H9YKey];
+        delete require.cache[require.resolve("../hyphenopoly.module")];
         done();
     });
 
@@ -175,7 +174,7 @@ t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
 
     t.afterEach(function tearDown(done) {
         H9Y = null;
-        delete require.cache[H9YKey];
+        delete require.cache[require.resolve("../hyphenopoly.module")];
         done();
     });
 
@@ -209,7 +208,7 @@ t.test("set options: minWordLength", function (t) {
 
     t.afterEach(function tearDown(done) {
         H9Y = null;
-        delete require.cache[H9YKey];
+        delete require.cache[require.resolve("../hyphenopoly.module")];
         done();
     });
 
@@ -233,7 +232,7 @@ t.test("set options: normalize", function (t) {
 
     t.afterEach(function tearDown(done) {
         H9Y = null;
-        delete require.cache[H9YKey];
+        delete require.cache[require.resolve("../hyphenopoly.module")];
         done();
     });
 
@@ -257,7 +256,7 @@ t.test("set options: orphanControl", function (t) {
 
     t.afterEach(function tearDown(done) {
         H9Y = null;
-        delete require.cache[H9YKey];
+        delete require.cache[require.resolve("../hyphenopoly.module")];
         done();
     });
 

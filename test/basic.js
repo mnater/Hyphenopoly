@@ -4,7 +4,6 @@
 const t = require("tap");
 
 let H9Y = null;
-const H9YKey = require.resolve("../hyphenopoly.module");
 t.beforeEach(function setup(done) {
     H9Y = require("../hyphenopoly.module");
     done();
@@ -12,7 +11,7 @@ t.beforeEach(function setup(done) {
 
 t.afterEach(function tearDown(done) {
     H9Y = null;
-    delete require.cache[H9YKey];
+    delete require.cache[require.resolve("../hyphenopoly.module")];
     done();
 });
 
