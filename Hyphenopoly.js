@@ -805,7 +805,6 @@
             );
             /* eslint-enable no-bitwise */
             return function enclHyphenate(word, hyphenchar, leftmin, rightmin) {
-                console.log(word);
                 let i = 0;
                 const wordLength = word.length;
                 if (wordLength > 61) {
@@ -838,15 +837,15 @@
          * @returns {undefined}
          */
         function instantiateWasmEngine(lang) {
-            Promise.all([H.binaries[lang], H.binaries.hyphenEngine]).then(
+            Promise.all([H.binaries.get(lang), H.binaries.get("hyphenEngine")]).then(
                 function onAll(binaries) {
                     const hpbBuf = binaries[0];
                     const baseData = calculateBaseData(hpbBuf);
                     const wasmModule = binaries[1];
                     const wasmMemory = (
-                        H.specMems[lang].buffer.byteLength >= baseData.heapSize
+                        H.specMems.get(lang).buffer.byteLength >= baseData.heapSize
                     )
-                        ? H.specMems[lang]
+                        ? H.specMems.get(lang)
                         : new WebAssembly.Memory({
                             "initial": baseData.heapSize / 65536,
                             "maximum": 256
@@ -892,12 +891,12 @@
          * @returns {undefined}
          */
         function instantiateAsmEngine(lang) {
-            const hpbBuf = H.binaries[lang];
+            const hpbBuf = H.binaries.get(lang);
             const baseData = calculateBaseData(hpbBuf);
             const heapBuffer = (
-                H.specMems[lang].byteLength >= baseData.heapSize
+                H.specMems.get(lang).byteLength >= baseData.heapSize
             )
-                ? H.specMems[lang]
+                ? H.specMems.get(lang)
                 : new ArrayBuffer(baseData.heapSize);
             const ui8Heap = new Uint8Array(heapBuffer);
             const ui8Patterns = new Uint8Array(hpbBuf);
