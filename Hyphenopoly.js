@@ -805,7 +805,6 @@
             );
             /* eslint-enable no-bitwise */
             return function enclHyphenate(word, hyphenchar, leftmin, rightmin) {
-                console.log(word);
                 let i = 0;
                 const wordLength = word.length;
                 if (wordLength > 61) {
