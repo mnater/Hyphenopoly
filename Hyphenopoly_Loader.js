@@ -410,8 +410,8 @@
                     H.binaries.set(n, xhr.response);
                     H.events.dispatch(m[0], {"msg": m[1]});
                 };
-                xhr.responseType = "arraybuffer";
                 xhr.open("GET", p + f);
+                xhr.responseType = "arraybuffer";
                 xhr.send();
             }
         }
@@ -486,9 +486,11 @@
              * @returns {undefined}
              */
             function create(lang) {
+                /* eslint-disable security/detect-object-injection */
                 if (H.clientFeat.langs[lang]) {
                     return;
                 }
+                /* eslint-enable security/detect-object-injection */
                 fakeBody = fakeBody || d.createElement("body");
                 const testDiv = d.createElement("div");
                 testDiv.lang = lang;
@@ -554,6 +556,7 @@
          * @returns {undefined}
          */
         function exposeHyphenateFunction(lang) {
+            /* eslint-disable security/detect-object-injection */
             H.hyphenators = H.hyphenators || empty();
             if (!H.hyphenators[lang]) {
                 if (window.Promise) {
@@ -585,6 +588,7 @@
                     };
                 }
             }
+            /* eslint-enable security/detect-object-injection */
         }
 
         /**
@@ -616,6 +620,7 @@
             exposeHyphenateFunction(lang);
         }
         H.lcRequire.forEach(function eachReq(value, lang) {
+            /* eslint-disable security/detect-object-injection */
             if (value === "FORCEHYPHENOPOLY") {
                 H.clientFeat.polyfill = true;
                 H.clientFeat.langs[lang] = "H9Y";
@@ -628,12 +633,14 @@
             } else {
                 tester.create(lang);
             }
+            /* eslint-enable security/detect-object-injection */
         });
         const testContainer = tester.append(d.documentElement);
         if (testContainer !== null) {
             H.lcRequire.forEach(function eachReq(value, lang) {
                 if (value !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
+                    /* eslint-disable security/detect-object-injection */
                     if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
                         H.clientFeat.langs[lang] = "CSS";
                     } else {
@@ -641,6 +648,7 @@
                         H.clientFeat.langs[lang] = "H9Y";
                         loadRessources(lang);
                     }
+                    /* eslint-enable security/detect-object-injection */
                 }
             });
             tester.clear();
