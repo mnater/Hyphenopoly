@@ -1,5 +1,11 @@
 # Version History
 
+## Version 2.6.1 (Jan 09, 2018)
+* dontHyphenateClass is configurable (issue #48)
+* fixed issue with StringDecoder in older node versions (issue #45)
+* small refactorings for smaller codesize
+* fixed a StateError in IE 11
+
 ## Version 2.6.0 (Dec 01, 2018)
 *   improve hiding of elements while hyphenating (issue #40)
 *   fix several issues with lang-fallbacks (issue #41 and #44)
