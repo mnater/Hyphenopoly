@@ -396,8 +396,8 @@
                     H.binaries[n] = xhr.response;
                     H.events.dispatch(m[0], {"msg": m[1]});
                 };
-                xhr.responseType = "arraybuffer";
                 xhr.open("GET", p + f);
+                xhr.responseType = "arraybuffer";
                 xhr.send();
             }
         }
