@@ -6,7 +6,7 @@
 SRCFILE="$1.asm.js"
 WASTNAME="$1.wast"
 WASMNAME="$1.wasm"
-DISNAME="$1.wat"
+#DISNAME="$1.wat"
 
 echo 'running asm2wasm...'
 ./third-party/binaryen/bin/asm2wasm $SRCFILE -O4 -m 2097152 -mm 16777216 > $WASTNAME

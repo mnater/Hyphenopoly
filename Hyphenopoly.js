@@ -71,7 +71,7 @@
             "defaultLanguage": setProp("en-us", 2),
             "dontHyphenate": setProp((function createList() {
                 const r = empty();
-                const list = "video,audio,script,code,pre,img,br,samp,kbd,var,abbr,acronym,sub,sup,button,option,label,textarea,input,math,svg,style";
+                const list = "abbr,acronym,audio,br,button,code,img,input,kbd,label,math,option,pre,samp,script,style,sub,sup,svg,textarea,var,video";
                 list.split(",").forEach(function add(value) {
                     r[value] = true;
                 });
@@ -267,7 +267,7 @@
             elements = makeElementCollection();
 
             const dontHyphenateSelector = (function createSel() {
-                let s = ".donthyphenate";
+                let s = "." + H.c.dontHyphenateClass;
                 let k = null;
                 for (k in C.dontHyphenate) {
                     if (C.dontHyphenate[k]) {
@@ -349,8 +349,8 @@
                 let i = 0;
                 let wordHyphenator = null;
                 let hw = word;
-                switch (classSettings.compound) {
-                case "auto":
+                if (classSettings.compound === "auto" ||
+                    classSettings.compound === "all") {
                     parts = word.split("-");
                     wordHyphenator = createWordHyphenator(lo, lang, sel);
                     while (i < parts.length) {
@@ -359,20 +359,12 @@
                         }
                         i += 1;
                     }
-                    hw = parts.join("-");
-                    break;
-                case "all":
-                    parts = word.split("-");
-                    wordHyphenator = createWordHyphenator(lo, lang, sel);
-                    while (i < parts.length) {
-                        if (parts[i].length >= classSettings.minWordLength) {
-                            parts[i] = wordHyphenator(parts[i]);
-                        }
-                        i += 1;
+                    if (classSettings.compound === "auto") {
+                        hw = parts.join("-");
+                    } else {
+                        hw = parts.join("-" + zeroWidthSpace);
                     }
-                    hw = parts.join("-" + zeroWidthSpace);
-                    break;
-                default:
+                } else {
                     hw = word.replace("-", "-" + zeroWidthSpace);
                 }
                 return hw;
@@ -696,13 +688,7 @@
                 };
             } else {
                 decoder = function (ui16) {
-                    let i = 0;
-                    let str = "";
-                    while (i < ui16.length) {
-                        str += String.fromCharCode(ui16[i]);
-                        i += 1;
-                    }
-                    return str;
+                    return String.fromCharCode.apply(null, ui16);
                 };
             }
             return decoder;
@@ -795,25 +781,6 @@
         }
 
         /**
-         * Create basic import Object
-         * @param {Object} baseData baseData
-         * @returns {Object} import object
-         */
-        function createImportObject(baseData) {
-            return {
-                "hpbPatternsOffset": baseData.hpbPatternsOffset,
-                "hpbTranslateOffset": baseData.hpbTranslateOffset,
-                "hyphenatedWordOffset": baseData.hyphenatedWordOffset,
-                "hyphenPointsOffset": baseData.hyphenPointsOffset,
-                "patternsLength": baseData.patternsLength,
-                "patternTrieOffset": baseData.patternTrieOffset,
-                "translatedWordOffset": baseData.translatedWordOffset,
-                "valueStoreOffset": baseData.valueStoreOffset,
-                "wordOffset": baseData.wordOffset
-            };
-        }
-
-        /**
          * Setup env for hyphenateFunction
          * @param {Object} baseData baseData
          * @param {function} hyphenateFunc hyphenateFunction
@@ -832,7 +799,7 @@
             );
             const defLeftmin = baseData.leftmin;
             const defRightmin = baseData.rightmin;
-            const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(
+            const hydWrdStore = (new Uint16Array(heapBuffer)).subarray(
                 hyphenatedWordOffset >> 1,
                 (hyphenatedWordOffset >> 1) + 128
             );
@@ -855,12 +822,7 @@
                 wordStore[i + 2] = 95;
 
                 if (hyphenateFunc(leftmin, rightmin) === 1) {
-                    i = 1;
-                    word = "";
-                    while (i < hyphenatedWordStore[0] + 1) {
-                        word += String.fromCharCode(hyphenatedWordStore[i]);
-                        i += 1;
-                    }
+                    word = decode(hydWrdStore.subarray(1, hydWrdStore[0] + 1));
                     if (hyphenchar !== "\u00AD") {
                         word = word.replace(/\u00AD/g, hyphenchar);
                     }
@@ -900,10 +862,10 @@
                             "memory": baseData.wasmMemory,
                             "memoryBase": 0
                         },
-                        "ext": createImportObject(baseData)
+                        "ext": baseData
                     }).then(
                         function runWasm(result) {
-                            result.exports.convert();
+                            const alphalen = result.exports.convert();
                             prepareLanguagesObj(
                                 lang,
                                 encloseHyphenateFunction(
@@ -912,7 +874,7 @@
                                 ),
                                 decode(
                                     (new Uint16Array(wasmMemory.buffer)).
-                                        subarray(384, 640)
+                                        subarray(385, 384 + alphalen)
                                 ),
                                 baseData.leftmin,
                                 baseData.rightmin
@@ -947,14 +909,17 @@
                     "Uint16Array": window.Uint16Array,
                     "Uint8Array": window.Uint8Array
                 },
-                createImportObject(baseData),
+                baseData,
                 baseData.heapBuffer
             );
-            theHyphenEngine.convert();
+            const alphalen = theHyphenEngine.convert();
             prepareLanguagesObj(
                 lang,
                 encloseHyphenateFunction(baseData, theHyphenEngine.hyphenate),
-                decode((new Uint16Array(heapBuffer)).subarray(384, 640)),
+                decode(
+                    (new Uint16Array(heapBuffer)).
+                        subarray(385, 384 + alphalen)
+                ),
                 baseData.leftmin,
                 baseData.rightmin
             );

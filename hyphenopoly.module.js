@@ -14,10 +14,11 @@
 const fs = require("fs");
 
 const {StringDecoder} = require("string_decoder");
+
 const decode = (function makeDecoder() {
     const utf16ledecoder = new StringDecoder("utf-16le");
     return function dec(ui16) {
-        return utf16ledecoder.write(ui16);
+        return utf16ledecoder.write(Buffer.from(ui16));
     };
 }());
 
@@ -414,8 +415,8 @@ function instantiateWasmEngine(lang) {
                     result.instance.exports.hyphenate
                 ),
                 decode(
-                    (new Uint16Array(wasmMemory.buffer)).
-                        subarray(384, 640)
+                    (new Uint8Array(wasmMemory.buffer)).
+                        subarray(768, 1280)
                 ),
                 baseData.leftmin,
                 baseData.rightmin

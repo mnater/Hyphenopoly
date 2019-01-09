@@ -43,9 +43,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^5.9.0",
-    "tap": "^12.1.0",
-    "terser": "^3.10.13"
+    "eslint": "^5.10.0",
+    "tap": "^12.1.1",
+    "terser": "^3.11.0"
   },
   "eslintConfig": {
     "parserOptions": {

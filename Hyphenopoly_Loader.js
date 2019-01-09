@@ -20,6 +20,17 @@
         return Object.create(null);
     }
 
+
+    /**
+     * Shorthand for Object.keys(obj).forEach(function () {})
+     * @param {Object} obj the object to iterate
+     * @param {function} fn the function to execute
+     * @returns {undefined}
+     */
+    function eachKey(obj, fn) {
+        Object.keys(obj).forEach(fn);
+    }
+
     (function config() {
         // Set H.clientFeat (either from sessionStorage or empty)
         if (H.cacheFeatureTests && sessionStorage.getItem("Hyphenopoly_Loader")) {
@@ -32,38 +43,28 @@
             };
         }
         // Set defaults for paths and setup
-        if (H.paths) {
-            if (!H.paths.patterndir) {
-                H.paths.patterndir = "../Hyphenopoly/patterns/";
-            }
-            if (!H.paths.maindir) {
-                H.paths.maindir = "../Hyphenopoly/";
-            }
-        } else {
-            H.paths = {
-                "maindir": "../Hyphenopoly/",
-                "patterndir": "../Hyphenopoly/patterns/"
-            };
+        H.dfltPaths = Object.create({
+            "maindir": "../Hyphenopoly/",
+            "patterndir": "../Hyphenopoly/patterns/"
+        });
+        if (H.paths && H.paths.patterndir) {
+            H.dfltPaths.patterndir = H.paths.patterndir;
+        }
+        if (H.paths && H.paths.maindir) {
+            H.dfltPaths.maindir = H.paths.maindir;
         }
 
         if (H.setup) {
-            if (!H.setup.selectors) {
-                H.setup.selectors = empty();
-                H.setup.selectors[".hyphenate"] = empty();
-            }
+            H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
             if (H.setup.classnames) {
-                Object.keys(H.setup.classnames).forEach(function cn2sel(cn) {
+                eachKey(H.setup.classnames, function cn2sel(cn) {
                     H.setup.selectors["." + cn] = H.setup.classnames[cn];
                 });
                 H.setup.classnames = null;
                 delete H.setup.classnames;
             }
-            if (!H.setup.timeout) {
-                H.setup.timeout = 1000;
-            }
-            if (!H.setup.hide) {
-                H.setup.hide = "all";
-            }
+            H.setup.timeout = H.setup.timeout || 1000;
+            H.setup.hide = H.setup.hide || "all";
         } else {
             H.setup = {
                 "hide": "all",
@@ -72,12 +73,12 @@
             };
         }
         H.lcRequire = empty();
-        Object.keys(H.require).forEach(function copyRequire(k) {
+        eachKey(H.require, function copyRequire(k) {
             H.lcRequire[k.toLowerCase()] = H.require[k];
         });
         if (H.fallbacks) {
             H.lcFallbacks = empty();
-            Object.keys(H.fallbacks).forEach(function copyFallbacks(k) {
+            eachKey(H.fallbacks, function copyFallbacks(k) {
                 H.lcFallbacks[k.toLowerCase()] = H.fallbacks[k].toLowerCase();
             });
         }
@@ -90,24 +91,22 @@
                 stylesNode.parentNode.removeChild(stylesNode);
             }
         } else {
+            const vis = " {visibility: hidden !important}\n";
             const sc = d.createElement("style");
             sc.id = "H9Y_Styles";
             switch (H.setup.hide) {
             case "all":
-                sc.innerHTML = "html {visibility: hidden !important}";
+                sc.innerHTML = "html" + vis;
                 break;
             case "element":
-                Object.keys(H.setup.selectors).
-                    forEach(function eachSelector(sel) {
-                        sc.innerHTML += sel + " {visibility: hidden !important}\n";
-                    });
-
+                eachKey(H.setup.selectors, function eachSelector(sel) {
+                    sc.innerHTML += sel + vis;
+                });
                 break;
             case "text":
-                Object.keys(H.setup.selectors).
-                    forEach(function eachSelector(sel) {
-                        sc.innerHTML += sel + " {color: transparent !important}\n";
-                    });
+                eachKey(H.setup.selectors, function eachSelector(sel) {
+                    sc.innerHTML += sel + " {color: transparent !important}\n";
+                });
                 break;
             default:
                 sc.innerHTML = "";
@@ -203,9 +202,7 @@
          * @returns {undefined}
          */
         function dispatch(name, data) {
-            if (!data) {
-                data = empty();
-            }
+            data = data || empty();
             let defaultPrevented = false;
             definedEvents[name].register.forEach(function call(currentHandler) {
                 data.preventDefault = function preventDefault() {
@@ -247,7 +244,7 @@
         }
 
         if (H.handleEvent) {
-            Object.keys(H.handleEvent).forEach(function add(name) {
+            eachKey(H.handleEvent, function add(name) {
                 addListener(name, H.handleEvent[name], true);
             });
         }
@@ -265,7 +262,7 @@
      * @returns {undefined}
      */
     function featureTestWasm() {
-        /* eslint-disable max-len, no-magic-numbers, no-prototype-builtins */
+        /* eslint-disable no-prototype-builtins */
         /**
          * Feature test for wasm
          * @returns {boolean} support
@@ -311,7 +308,7 @@
             }
             return false;
         }
-        /* eslint-enable max-len, no-magic-numbers, no-prototype-builtins */
+        /* eslint-enable no-prototype-builtins */
         if (H.clientFeat.wasm === null) {
             H.clientFeat.wasm = runWasmTest();
         }
@@ -326,7 +323,7 @@
          * @param {string} filename Filename of the script
          * @returns {undefined}
          */
-        function loadScript(path, filename) {
+        return function loadScript(path, filename) {
             if (!loadedScripts[filename]) {
                 const script = d.createElement("script");
                 loadedScripts[filename] = true;
@@ -338,8 +335,7 @@
                 }
                 d.head.appendChild(script);
             }
-        }
-        return loadScript;
+        };
     }());
 
     const loadedBins = empty();
@@ -396,11 +392,11 @@
             if (!loadedBins[n]) {
                 loadedBins[n] = true;
                 const xhr = new XMLHttpRequest();
-                xhr.open("GET", p + f);
                 xhr.onload = function onload() {
                     H.binaries[n] = xhr.response;
                     H.events.dispatch(m[0], {"msg": m[1]});
                 };
+                xhr.open("GET", p + f);
                 xhr.responseType = "arraybuffer";
                 xhr.send();
             }
@@ -413,31 +409,22 @@
     }
 
     /**
-     * Allocate memory for (w)asm
+     * Pre-Allocate memory for (w)asm
+     * Default is 32 wasm Pages (). For languages with larger .hpb
+     * files a higher value is needed.
+     * Get the value from baseData.heapSize in Hyphenopoly.js
      * @param {string} lang Language
      * @returns {undefined}
      */
     function allocateMemory(lang) {
-        let wasmPages = 0;
-        switch (lang) {
-        case "nl":
-            wasmPages = 41;
-            break;
-        case "de":
-            wasmPages = 75;
-            break;
-        case "nb-no":
-            wasmPages = 92;
-            break;
-        case "hu":
-            wasmPages = 207;
-            break;
-        default:
-            wasmPages = 32;
-        }
-        if (!H.specMems) {
-            H.specMems = empty();
-        }
+        const specVal = {
+            "de": 55,
+            "hu": 207,
+            "nb-no": 92,
+            "nl": 41
+        };
+        const wasmPages = specVal[lang] || 32;
+        H.specMems = H.specMems || empty();
         if (H.clientFeat.wasm) {
             H.specMems[lang] = new WebAssembly.Memory({
                 "initial": wasmPages,
@@ -457,35 +444,6 @@
             /* eslint-enable no-bitwise */
             H.specMems[lang] = new ArrayBuffer(asmPages);
         }
-    }
-
-    /**
-     * Load all ressources for a required <lang> and check if wasm is supported
-     * @param {string} lang The language
-     * @returns {undefined}
-     */
-    function loadRessources(lang) {
-        let filename = lang + ".hpb";
-        if (H.lcFallbacks && H.lcFallbacks[lang]) {
-            filename = H.lcFallbacks[lang] + ".hpb";
-        }
-        if (!H.binaries) {
-            H.binaries = empty();
-        }
-        featureTestWasm();
-        scriptLoader(H.paths.maindir, "Hyphenopoly.js");
-        if (H.clientFeat.wasm) {
-            binLoader(
-                H.paths.maindir,
-                "hyphenEngine.wasm",
-                "hyphenEngine",
-                ["engineLoaded", "wasm"]
-            );
-        } else {
-            scriptLoader(H.paths.maindir, "hyphenEngine.asm.js");
-        }
-        binLoader(H.paths.patterndir, filename, lang, ["hpbLoaded", lang]);
-        allocateMemory(lang);
     }
 
     (function featureTestCSSHyphenation() {
@@ -516,13 +474,11 @@
              * @param {string} lang Language
              * @returns {undefined}
              */
-            function createTest(lang) {
+            function create(lang) {
                 if (H.clientFeat.langs[lang]) {
                     return;
                 }
-                if (!fakeBody) {
-                    fakeBody = d.createElement("body");
-                }
+                fakeBody = fakeBody || d.createElement("body");
                 const testDiv = d.createElement("div");
                 testDiv.lang = lang;
                 testDiv.id = lang;
@@ -536,7 +492,7 @@
              * @param {Object} target Where to append fakeBody
              * @returns {Object|null} The body element or null, if no tests
              */
-            function appendTests(target) {
+            function append(target) {
                 if (fakeBody) {
                     target.appendChild(fakeBody);
                     return fakeBody;
@@ -548,15 +504,15 @@
              * Remove fakeBody
              * @returns {undefined}
              */
-            function clearTests() {
+            function clear() {
                 if (fakeBody) {
                     fakeBody.parentNode.removeChild(fakeBody);
                 }
             }
             return {
-                "appendTests": appendTests,
-                "clearTests": clearTests,
-                "createTest": createTest
+                "append": append,
+                "clear": clear,
+                "create": create
             };
         }());
 
@@ -587,9 +543,7 @@
          * @returns {undefined}
          */
         function exposeHyphenateFunction(lang) {
-            if (!H.hyphenators) {
-                H.hyphenators = {};
-            }
+            H.hyphenators = H.hyphenators || empty();
             if (!H.hyphenators[lang]) {
                 if (window.Promise) {
                     H.hyphenators[lang] = new Promise(function pro(rs, rj) {
@@ -622,25 +576,52 @@
             }
         }
 
-        Object.keys(H.lcRequire).forEach(function doReqLangs(lang) {
+        /**
+         * Load all ressources for a required <lang>, check if wasm is supported
+         * and expose the hyphenate function.
+         * @param {string} lang The language
+         * @returns {undefined}
+         */
+        function loadRessources(lang) {
+            let filename = lang + ".hpb";
+            if (H.lcFallbacks && H.lcFallbacks[lang]) {
+                filename = H.lcFallbacks[lang] + ".hpb";
+            }
+            H.binaries = H.binaries || empty();
+            featureTestWasm();
+            scriptLoader(H.dfltPaths.maindir, "Hyphenopoly.js");
+            if (H.clientFeat.wasm) {
+                binLoader(
+                    H.dfltPaths.maindir,
+                    "hyphenEngine.wasm",
+                    "hyphenEngine",
+                    ["engineLoaded", "wasm"]
+                );
+            } else {
+                scriptLoader(H.dfltPaths.maindir, "hyphenEngine.asm.js");
+            }
+            binLoader(H.dfltPaths.patterndir, filename, lang, ["hpbLoaded", lang]);
+            allocateMemory(lang);
+            exposeHyphenateFunction(lang);
+        }
+
+        eachKey(H.lcRequire, function doReqLangs(lang) {
             if (H.lcRequire[lang] === "FORCEHYPHENOPOLY") {
                 H.clientFeat.polyfill = true;
                 H.clientFeat.langs[lang] = "H9Y";
                 loadRessources(lang);
-                exposeHyphenateFunction(lang);
             } else if (
                 H.clientFeat.langs[lang] &&
                 H.clientFeat.langs[lang] === "H9Y"
             ) {
                 loadRessources(lang);
-                exposeHyphenateFunction(lang);
             } else {
-                tester.createTest(lang);
+                tester.create(lang);
             }
         });
-        const testContainer = tester.appendTests(d.documentElement);
+        const testContainer = tester.append(d.documentElement);
         if (testContainer !== null) {
-            Object.keys(H.lcRequire).forEach(function checkReqLangs(lang) {
+            eachKey(H.lcRequire, function checkReqLangs(lang) {
                 if (H.lcRequire[lang] !== "FORCEHYPHENOPOLY") {
                     const el = d.getElementById(lang);
                     if (checkCSSHyphensSupport(el) && el.offsetHeight > 12) {
@@ -649,45 +630,42 @@
                         H.clientFeat.polyfill = true;
                         H.clientFeat.langs[lang] = "H9Y";
                         loadRessources(lang);
-                        exposeHyphenateFunction(lang);
                     }
                 }
             });
-            tester.clearTests();
+            tester.clear();
         }
     }());
 
-    (function run() {
-        if (H.clientFeat.polyfill) {
-            if (H.setup.hide === "all") {
-                H.toggle("off");
-            }
-            if (H.setup.hide !== "none") {
-                H.setup.timeOutHandler = window.setTimeout(function timedOut() {
-                    H.toggle("on");
-                    H.events.dispatch("timeout", {"delay": H.setup.timeout});
-                }, H.setup.timeout);
-            }
-            d.addEventListener(
-                "DOMContentLoaded",
-                function DCL() {
-                    if (H.setup.hide !== "none" && H.setup.hide !== "all") {
-                        H.toggle("off");
-                    }
-                    H.events.dispatch(
-                        "contentLoaded",
-                        {"msg": ["contentLoaded"]}
-                    );
-                },
-                {
-                    "once": true,
-                    "passive": true
-                }
-            );
-        } else {
-            window.Hyphenopoly = null;
+    if (H.clientFeat.polyfill) {
+        if (H.setup.hide === "all") {
+            H.toggle("off");
         }
-    }());
+        if (H.setup.hide !== "none") {
+            H.setup.timeOutHandler = window.setTimeout(function timedOut() {
+                H.toggle("on");
+                H.events.dispatch("timeout", {"delay": H.setup.timeout});
+            }, H.setup.timeout);
+        }
+        d.addEventListener(
+            "DOMContentLoaded",
+            function DCL() {
+                if (H.setup.hide.match(/^(element|text)$/)) {
+                    H.toggle("off");
+                }
+                H.events.dispatch(
+                    "contentLoaded",
+                    {"msg": ["contentLoaded"]}
+                );
+            },
+            {
+                "once": true,
+                "passive": true
+            }
+        );
+    } else {
+        window.Hyphenopoly = null;
+    }
 
     if (H.cacheFeatureTests) {
         sessionStorage.setItem(
