@@ -67,6 +67,7 @@
       "plugin:security/recommended"
     ],
     "rules": {
+      "complexity": ["error", 6],
       "require-unicode-regexp": 0,
       "require-jsdoc": [
         "error",
@@ -167,7 +168,7 @@
     "test": "tap test/*.js --coverage",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js",
-    "lintloader": "eslint Hyphenopoly_Loader.js",
+    "linthn": "eslint Hyphenopoly.js",
     "prepare": "npm run minify",
     "minify": "sh ./tools/minify.sh"
   },

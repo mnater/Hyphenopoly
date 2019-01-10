@@ -31,7 +31,7 @@
         Object.keys(obj).forEach(fn);
     }
 
-    (function config() {
+    (function configFeat() {
         // Set H.clientFeat (either from sessionStorage or empty)
         if (H.cacheFeatureTests && sessionStorage.getItem("Hyphenopoly_Loader")) {
             H.clientFeat = JSON.parse(sessionStorage.getItem("Hyphenopoly_Loader"));
@@ -42,18 +42,23 @@
                 "wasm": null
             };
         }
+    }());
+    (function configPaths() {
         // Set defaults for paths and setup
         H.dfltPaths = Object.create({
             "maindir": "../Hyphenopoly/",
             "patterndir": "../Hyphenopoly/patterns/"
         });
-        if (H.paths && H.paths.patterndir) {
-            H.dfltPaths.patterndir = H.paths.patterndir;
+        if (H.paths) {
+            if (H.paths.patterndir) {
+                H.dfltPaths.patterndir = H.paths.patterndir;
+            }
+            if (H.paths.maindir) {
+                H.dfltPaths.maindir = H.paths.maindir;
+            }
         }
-        if (H.paths && H.paths.maindir) {
-            H.dfltPaths.maindir = H.paths.maindir;
-        }
-
+    }());
+    (function configSetup() {
         if (H.setup) {
             H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
             if (H.setup.classnames) {
@@ -75,6 +80,8 @@
                 "timeout": 1000
             };
         }
+    }());
+    (function configRequire() {
         H.lcRequire = new Map();
         eachKey(H.require, function copyRequire(k) {
             /* eslint-disable security/detect-object-injection */
