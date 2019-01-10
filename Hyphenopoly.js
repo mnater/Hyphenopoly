@@ -73,7 +73,9 @@
                 const r = empty();
                 const list = "abbr,acronym,audio,br,button,code,img,input,kbd,label,math,option,pre,samp,script,style,sub,sup,svg,textarea,var,video";
                 list.split(",").forEach(function add(value) {
+                /* eslint-disable security/detect-object-injection */
                     r[value] = true;
+                /* eslint-enable security/detect-object-injection */
                 });
                 return r;
             }()), 2),
@@ -107,11 +109,13 @@
                 );
                 selectors.forEach(function copySelectors(sel) {
                     const tmp = empty();
+                    /* eslint-disable security/detect-object-injection */
                     Object.keys(H.setup.selectors[sel]).forEach(
                         function copySelectorSettings(k) {
                             tmp[k] = setProp(H.setup.selectors[sel][k], 2);
                         }
                     );
+                    /* eslint-enable security/detect-object-injection */
                     Object.defineProperty(
                         settings,
                         sel,
@@ -122,7 +126,9 @@
                 const tmp = empty();
                 Object.keys(H.setup.dontHyphenate).forEach(
                     function copyTagNames(k) {
+                        /* eslint-disable security/detect-object-injection */
                         tmp[k] = setProp(H.setup.dontHyphenate[k], 2);
+                        /* eslint-enable security/detect-object-injection */
                     }
                 );
                 Object.defineProperty(
@@ -133,13 +139,16 @@
                     )
                 );
             } else {
+                /* eslint-disable security/detect-object-injection */
                 Object.defineProperty(
                     settings,
                     key,
                     setProp(H.setup[key], 3)
                 );
+                /* eslint-enable security/detect-object-injection */
             }
         });
+        console.log(settings)
         H.c = settings;
     }());
 
@@ -153,7 +162,7 @@
          * @returns {Object} elements-object
          */
         function makeElementCollection() {
-            const list = empty();
+            const list = new Map();
 
             /*
              * Counter counts the elements to be hyphenated.
@@ -173,10 +182,10 @@
                     "element": el,
                     "selector": sel
                 };
-                if (!list[lang]) {
-                    list[lang] = [];
+                if (!list.has(lang)) {
+                    list.set(lang, []);
                 }
-                list[lang].push(elo);
+                list.get(lang).push(elo);
                 counter[0] += 1;
                 return elo;
             }
@@ -187,8 +196,8 @@
              * @returns {undefined}
              */
             function each(fn) {
-                Object.keys(list).forEach(function forEachElem(k) {
-                    fn(k, list[k]);
+                list.forEach(function eachElement(val, key) {
+                    fn(key, val);
                 });
             }
 
@@ -209,7 +218,9 @@
             el.addEventListener("copy", function oncopy(e) {
                 e.preventDefault();
                 const selectedText = window.getSelection().toString();
+                /* eslint-disable security/detect-non-literal-regexp */
                 e.clipboardData.setData("text/plain", selectedText.replace(new RegExp(SOFTHYPHEN, "g"), ""));
+                /* eslint-enable security/detect-non-literal-regexp */
             }, true);
         }
 
@@ -270,13 +281,30 @@
                 let s = "." + H.c.dontHyphenateClass;
                 let k = null;
                 for (k in C.dontHyphenate) {
+                    /* eslint-disable security/detect-object-injection */
                     if (C.dontHyphenate[k]) {
                         s += ", " + k;
                     }
+                    /* eslint-enable security/detect-object-injection */
                 }
                 return s;
             }());
             const matchingSelectors = C.selectors.join(", ") + ", " + dontHyphenateSelector;
+
+            /**
+             * Get Language of Element or of one of its ancestors.
+             * @param {Object} el The element to scan
+             * @param {string} pLang The language of the parent element
+             * @returns {string} the language
+             */
+            function getElementLanguage(el, pLang) {
+                if (el.lang && typeof el.lang === "string") {
+                    return el.lang.toLowerCase();
+                } else if (pLang && pLang !== "") {
+                    return pLang.toLowerCase();
+                }
+                return getLang(el, true);
+            }
 
             /**
              * Recursively walk all elements in el, lending lang and selName
@@ -288,15 +316,9 @@
              * @returns {undefined}
              */
             function processElements(el, pLang, sel, isChild) {
-                let eLang = null;
                 isChild = isChild || false;
-                if (el.lang && typeof el.lang === "string") {
-                    eLang = el.lang.toLowerCase();
-                } else if (pLang && pLang !== "") {
-                    eLang = pLang.toLowerCase();
-                } else {
-                    eLang = getLang(el, true);
-                }
+                const eLang = getElementLanguage(el, pLang);
+                /* eslint-disable security/detect-object-injection */
                 if (H.clientFeat.langs[eLang] === "H9Y") {
                     elements.add(el, eLang, sel);
                     if (!isChild && C.safeCopy) {
@@ -305,7 +327,7 @@
                 } else if (!H.clientFeat.langs[eLang]) {
                     H.events.dispatch("error", {"msg": "Element with '" + eLang + "' found, but '" + eLang + ".hpb' not loaded. Check language tags!"});
                 }
-
+                /* eslint-enable security/detect-object-injection */
                 const cn = el.childNodes;
                 Array.prototype.forEach.call(cn, function eachChildNode(n) {
                     if (n.nodeType === 1 &&
@@ -333,10 +355,11 @@
          * @returns {function} The hyphenate function
          */
         function createWordHyphenator(lo, lang, sel) {
+            /* eslint-disable-next-line security/detect-object-injection */
             const classSettings = C[sel];
             const hyphen = classSettings.hyphen;
 
-            lo.cache[sel] = empty();
+            lo.cache.set(sel, new Map());
 
             /**
              * HyphenateFunction for compound words
@@ -346,19 +369,17 @@
             function hyphenateCompound(word) {
                 const zeroWidthSpace = String.fromCharCode(8203);
                 let parts = null;
-                let i = 0;
                 let wordHyphenator = null;
                 let hw = word;
                 if (classSettings.compound === "auto" ||
                     classSettings.compound === "all") {
-                    parts = word.split("-");
                     wordHyphenator = createWordHyphenator(lo, lang, sel);
-                    while (i < parts.length) {
-                        if (parts[i].length >= classSettings.minWordLength) {
-                            parts[i] = wordHyphenator(parts[i]);
+                    parts = word.split("-").map(function h7eParts(p) {
+                        if (p.length >= classSettings.minWordLength) {
+                            return wordHyphenator(p);
                         }
-                        i += 1;
-                    }
+                        return p;
+                    });
                     if (classSettings.compound === "auto") {
                         hw = parts.join("-");
                     } else {
@@ -376,10 +397,10 @@
              * @returns {string} The hyphenated word
              */
             function hyphenator(word) {
-                let hw = lo.cache[sel][word];
+                let hw = lo.cache.get(sel).get(word);
                 if (!hw) {
-                    if (lo.exceptions[word]) {
-                        hw = lo.exceptions[word].replace(
+                    if (lo.exceptions.has(word)) {
+                        hw = lo.exceptions.get(word).replace(
                             /-/g,
                             classSettings.hyphen
                         );
@@ -393,7 +414,7 @@
                     } else {
                         hw = hyphenateCompound(word);
                     }
-                    lo.cache[sel][word] = hw;
+                    lo.cache.get(sel).set(word, hw);
                 }
                 return hw;
             }
@@ -546,10 +567,10 @@
          * @returns {Object} Map of exceptions
          */
         function convertExceptions(exc) {
-            const r = empty();
+            const r = new Map();
             exc.split(", ").forEach(function eachExc(e) {
                 const key = e.replace(/-/g, "");
-                r[key] = e;
+                r.set(key, e);
             });
             return r;
         }
@@ -579,7 +600,7 @@
             }
             const lo = H.languages[lang];
             if (!lo.engineReady) {
-                lo.cache = empty();
+                lo.cache = new Map();
                 if (H.c.exceptions.global) {
                     if (H.c.exceptions[lang]) {
                         H.c.exceptions[lang] += ", " + H.c.exceptions.global;
@@ -591,7 +612,7 @@
                     lo.exceptions = convertExceptions(H.c.exceptions[lang]);
                     delete H.c.exceptions[lang];
                 } else {
-                    lo.exceptions = empty();
+                    lo.exceptions = new Map();
                 }
                 lo.genRegExps = empty();
                 lo.leftmin = leftmin;
@@ -599,6 +620,7 @@
                 lo.hyphenateFunction = hyphenateFunction;
                 C.selectors.forEach(function eachSelector(sel) {
                     const classSettings = C[sel];
+                    console.log(classSettings);
                     if (classSettings.leftminPerLang === 0) {
                         Object.defineProperty(
                             classSettings,
@@ -996,7 +1018,7 @@
             "engineReady",
             function onEngineReady(e) {
                 if (H.elementsReady) {
-                    hyphenateLangElements(e.msg, elements.list[e.msg]);
+                    hyphenateLangElements(e.msg, elements.list.get(e.msg));
                 }
             },
             false
