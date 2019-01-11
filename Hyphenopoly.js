@@ -148,7 +148,6 @@
                 /* eslint-enable security/detect-object-injection */
             }
         });
-        console.log(settings)
         H.c = settings;
     }());
 
@@ -345,7 +344,7 @@
             H.elementsReady = true;
         }
 
-        const wordHyphenatorPool = empty();
+        const wordHyphenatorPool = new Map();
 
         /**
          * Factory for hyphenatorFunctions for a specific language and class
@@ -358,7 +357,6 @@
             /* eslint-disable-next-line security/detect-object-injection */
             const classSettings = C[sel];
             const hyphen = classSettings.hyphen;
-
             lo.cache.set(sel, new Map());
 
             /**
@@ -405,12 +403,19 @@
                             classSettings.hyphen
                         );
                     } else if (word.indexOf("-") === -1) {
-                        hw = lo.hyphenateFunction(
-                            word,
-                            hyphen,
-                            classSettings.leftminPerLang[lang],
-                            classSettings.rightminPerLang[lang]
-                        );
+                        if (word.length > 61) {
+                            H.events.dispatch("error", {"msg": "found word longer than 61 characters"});
+                            hw = word;
+                        } else {
+                        /* eslint-disable security/detect-object-injection */
+                            hw = lo.hyphenateFunction(
+                                word,
+                                hyphen,
+                                classSettings.leftminPerLang[lang],
+                                classSettings.rightminPerLang[lang]
+                            );
+                        /* eslint-enable security/detect-object-injection */
+                        }
                     } else {
                         hw = hyphenateCompound(word);
                     }
@@ -418,11 +423,11 @@
                 }
                 return hw;
             }
-            wordHyphenatorPool[lang + "-" + sel] = hyphenator;
+            wordHyphenatorPool.set(lang + "-" + sel, hyphenator);
             return hyphenator;
         }
 
-        const orphanControllerPool = empty();
+        const orphanControllerPool = new Map();
 
         /**
          * Factory for function that handles orphans
@@ -444,7 +449,9 @@
                 lastWord,
                 trailingWhiteSpace
             ) {
+                /* eslint-disable security/detect-object-injection */
                 const classSettings = C[sel];
+                /* eslint-enable security/detect-object-injection */
                 let h = classSettings.hyphen;
                 if (".\\+*?[^]$(){}=!<>|:-".indexOf(classSettings.hyphen) !== -1) {
                     h = "\\" + classSettings.hyphen;
@@ -452,9 +459,11 @@
                 if (classSettings.orphanControl === 3 && leadingWhiteSpace === " ") {
                     leadingWhiteSpace = String.fromCharCode(160);
                 }
+                /* eslint-disable security/detect-non-literal-regexp */
                 return leadingWhiteSpace + lastWord.replace(new RegExp(h, "g"), "") + trailingWhiteSpace;
+                /* eslint-enable security/detect-non-literal-regexp */
             }
-            orphanControllerPool[sel] = controlOrphans;
+            orphanControllerPool.set(sel, controlOrphans);
             return controlOrphans;
         }
 
@@ -466,19 +475,21 @@
          * @returns {string | null} hyphenated str according to setting of sel
          */
         function hyphenate(lang, sel, entity) {
-            const lo = H.languages[lang];
+            const lo = H.languages.get(lang);
+            /* eslint-disable security/detect-object-injection */
             const classSettings = C[sel];
+            /* eslint-enable security/detect-object-injection */
             const minWordLength = classSettings.minWordLength;
             const normalize = C.normalize &&
                 Boolean(String.prototype.normalize);
             const poolKey = lang + "-" + sel;
-            const wordHyphenator = (wordHyphenatorPool[poolKey])
-                ? wordHyphenatorPool[poolKey]
+            const wordHyphenator = (wordHyphenatorPool.has(poolKey))
+                ? wordHyphenatorPool.get(poolKey)
                 : createWordHyphenator(lo, lang, sel);
-            const orphanController = (orphanControllerPool[sel])
-                ? orphanControllerPool[sel]
+            const orphanController = (orphanControllerPool.has(sel))
+                ? orphanControllerPool.get(sel)
                 : createOrphanController(sel);
-            const re = lo.genRegExps[sel];
+            const re = lo.genRegExps.get(sel);
 
             /**
              * Hyphenate text according to setting in sel
@@ -576,6 +587,21 @@
         }
 
         /**
+         * Create lang Object
+         * @param {string} lang The language
+         * @returns {Object} The newly
+         */
+        function createLangObj(lang) {
+            if (!H.languages) {
+                H.languages = new Map();
+            }
+            if (!H.languages.has(lang)) {
+                H.languages.set(lang, empty());
+            }
+            return H.languages.get(lang);
+        }
+
+        /**
          * Setup lo
          * @param {string} lang The language
          * @param {function} hyphenateFunction The hyphenateFunction
@@ -592,15 +618,10 @@
             rightmin
         ) {
             alphabet = alphabet.replace(/-/g, "");
-            if (!H.languages) {
-                H.languages = empty();
-            }
-            if (!H.languages[lang]) {
-                H.languages[lang] = empty();
-            }
-            const lo = H.languages[lang];
+            const lo = createLangObj(lang);
             if (!lo.engineReady) {
                 lo.cache = new Map();
+                /* eslint-disable security/detect-object-injection */
                 if (H.c.exceptions.global) {
                     if (H.c.exceptions[lang]) {
                         H.c.exceptions[lang] += ", " + H.c.exceptions.global;
@@ -614,13 +635,15 @@
                 } else {
                     lo.exceptions = new Map();
                 }
-                lo.genRegExps = empty();
+                /* eslint-enable security/detect-object-injection */
+                lo.genRegExps = new Map();
                 lo.leftmin = leftmin;
                 lo.rightmin = rightmin;
                 lo.hyphenateFunction = hyphenateFunction;
                 C.selectors.forEach(function eachSelector(sel) {
+                    /* eslint-disable security/detect-object-injection */
                     const classSettings = C[sel];
-                    console.log(classSettings);
+                    /* eslint-enable security/detect-object-injection */
                     if (classSettings.leftminPerLang === 0) {
                         Object.defineProperty(
                             classSettings,
@@ -635,6 +658,7 @@
                             setProp(empty(), 2)
                         );
                     }
+                    /* eslint-disable security/detect-object-injection */
                     if (classSettings.leftminPerLang[lang]) {
                         classSettings.leftminPerLang[lang] = Math.max(
                             lo.leftmin,
@@ -659,6 +683,7 @@
                             classSettings.rightmin
                         );
                     }
+                    /* eslint-enable security/detect-object-injection */
 
                     /*
                      * Find words with characters from `alphabet` and
@@ -668,7 +693,9 @@
                      * that follow a character that is not in the `alphabet`.
                      * Word delimiters are not taken in account.
                      */
-                    lo.genRegExps[sel] = new RegExp("[\\w" + alphabet + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}", "gi");
+                    /* eslint-disable security/detect-non-literal-regexp */
+                    lo.genRegExps.set(sel, new RegExp("[\\w" + alphabet + String.fromCharCode(8204) + "-]{" + classSettings.minWordLength + ",}", "gi"));
+                    /* eslint-enable security/detect-non-literal-regexp */
                 });
                 lo.engineReady = true;
             }
@@ -829,10 +856,6 @@
             return function enclHyphenate(word, hyphenchar, leftmin, rightmin) {
                 let i = 0;
                 const wordLength = word.length;
-                if (wordLength > 61) {
-                    H.events.dispatch("error", {"msg": "found word longer than 61 characters"});
-                    return word;
-                }
                 leftmin = leftmin || defLeftmin;
                 rightmin = rightmin || defRightmin;
                 wordStore[0] = wordLength + 2;
@@ -864,10 +887,11 @@
                     const hpbBuf = binaries[0];
                     const baseData = calculateBaseData(hpbBuf);
                     const wasmModule = binaries[1];
+                    const specMem = H.specMems.get(lang);
                     const wasmMemory = (
-                        H.specMems.get(lang).buffer.byteLength >= baseData.heapSize
+                        specMem.buffer.byteLength >= baseData.heapSize
                     )
-                        ? H.specMems.get(lang)
+                        ? specMem
                         : new WebAssembly.Memory({
                             "initial": baseData.heapSize / 65536,
                             "maximum": 256
@@ -915,10 +939,9 @@
         function instantiateAsmEngine(lang) {
             const hpbBuf = H.binaries.get(lang);
             const baseData = calculateBaseData(hpbBuf);
-            const heapBuffer = (
-                H.specMems.get(lang).byteLength >= baseData.heapSize
-            )
-                ? H.specMems.get(lang)
+            const specMem = H.specMems.get(lang);
+            const heapBuffer = (specMem.byteLength >= baseData.heapSize)
+                ? specMem
                 : new ArrayBuffer(baseData.heapSize);
             const ui8Heap = new Uint8Array(heapBuffer);
             const ui8Patterns = new Uint8Array(hpbBuf);
@@ -988,8 +1011,8 @@
             function onElementsReady() {
                 elements.each(function eachElem(lang, values) {
                     if (H.languages &&
-                        H.languages[lang] &&
-                        H.languages[lang].engineReady
+                        H.languages.has(lang) &&
+                        H.languages.get(lang).engineReady
                     ) {
                         hyphenateLangElements(lang, values);
                     }
