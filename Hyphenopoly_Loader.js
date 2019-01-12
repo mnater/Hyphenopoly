@@ -7,6 +7,8 @@
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
+/* global Hyphenopoly */
+
 (function H9YL() {
     "use strict";
     const d = document;

@@ -67,6 +67,7 @@
       "plugin:security/recommended"
     ],
     "rules": {
+      "no-undef": "error",
       "complexity": ["error", 6],
       "require-unicode-regexp": 0,
       "require-jsdoc": [
