@@ -7,7 +7,7 @@
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
-/* globals asmHyphenEngine */
+/* globals asmHyphenEngine, Hyphenopoly */
 
 (function mainWrapper(w) {
     "use strict";

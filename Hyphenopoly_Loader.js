@@ -113,6 +113,7 @@
             const vis = " {visibility: hidden !important}\n";
             const sc = d.createElement("style");
             sc.id = "H9Y_Styles";
+            console.dir(sc);
             switch (H.setup.hide) {
             case "all":
                 sc.innerHTML = "html" + vis;
