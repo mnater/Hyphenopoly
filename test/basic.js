@@ -71,18 +71,18 @@ t.test("run config with two languages", async function (t) {
     t.end();
 });
 
-t.test("run config with two same language", async function (t) {
-    const deHyphenator = await H9Y.config({"require": ["de", "de"]});
+t.test("run config with two same languages", async function (t) {
+    const deHyphenator2 = await H9Y.config({"require": ["de", "de"]});
     t.test("return a function", function (t) {
-        t.equal(typeof deHyphenator, "function", typeof deHyphenator);
+        t.equal(typeof deHyphenator2, "function", typeof deHyphenator2);
         t.end();
     });
     t.test("hyphenate one word", function (t) {
-        t.equal(deHyphenator("Silbentrennung"), "Sil\u00ADben\u00ADtren\u00ADnung", deHyphenator("Silbentrennung"));
+        t.equal(deHyphenator2("Silbentrennung"), "Sil\u00ADben\u00ADtren\u00ADnung", deHyphenator2("Silbentrennung"));
         t.end();
     });
     t.test("hyphenate two words", function (t) {
-        t.equal(deHyphenator("Silbentrennung Algorithmus"), "Sil\u00ADben\u00ADtren\u00ADnung Al\u00ADgo\u00ADrith\u00ADmus", deHyphenator("Silbentrennung Algorithmus"));
+        t.equal(deHyphenator2("Silbentrennung Algorithmus"), "Sil\u00ADben\u00ADtren\u00ADnung Al\u00ADgo\u00ADrith\u00ADmus", deHyphenator2("Silbentrennung Algorithmus"));
         t.end();
     });
     t.end();
