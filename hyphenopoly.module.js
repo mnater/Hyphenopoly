@@ -283,7 +283,7 @@ function prepareLanguagesObj(
     alphabet = alphabet.replace(/-/g, "");
     const lo = createLangObj(lang);
     if (!lo.engineReady) {
-        lo.cache = empty();
+        lo.cache = new Map();
         /* eslint-disable security/detect-object-injection */
         if (H.c.exceptions.global) {
             if (H.c.exceptions[lang]) {
@@ -453,7 +453,7 @@ function prepare(lang) {
     }
 }
 
-const wordHyphenatorPool = empty();
+const wordHyphenatorPool = new Map();
 
 /**
  * Factory for hyphenatorFunctions for a specific language and class
@@ -462,8 +462,6 @@ const wordHyphenatorPool = empty();
  * @returns {function} The hyphenate function
  */
 function createWordHyphenator(lo, lang) {
-    lo.cache = empty();
-
     /**
      * HyphenateFunction for compound words
      * @param {string} word The word
@@ -500,7 +498,7 @@ function createWordHyphenator(lo, lang) {
      * @returns {string} The hyphenated word
      */
     function hyphenator(word) {
-        let hw = lo.cache[word];
+        let hw = lo.cache.get(word);
         if (!hw) {
             if (lo.exceptions.has(word)) {
                 hw = lo.exceptions.get(word).replace(
@@ -522,11 +520,11 @@ function createWordHyphenator(lo, lang) {
             } else {
                 hw = hyphenateCompound(word);
             }
-            lo.cache[word] = hw;
+            lo.cache.set(word, hw);
         }
         return hw;
     }
-    wordHyphenatorPool[lang] = hyphenator;
+    wordHyphenatorPool.set(lang, hyphenator);
     return hyphenator;
 }
 
@@ -552,7 +550,9 @@ const orphanController = (function createOrphanController() {
         if (H.c.orphanControl === 3 && leadingWhiteSpace === " ") {
             leadingWhiteSpace = String.fromCharCode(160);
         }
+        /* eslint-disable security/detect-non-literal-regexp */
         return leadingWhiteSpace + lastWord.replace(new RegExp(h, "g"), "") + trailingWhiteSpace;
+        /* eslint-enable security/detect-non-literal-regexp */
     }
     return controlOrphans;
 }());
@@ -564,8 +564,8 @@ const orphanController = (function createOrphanController() {
  */
 function createTextHyphenator(lang) {
     const lo = H.languages.get(lang);
-    const wordHyphenator = (wordHyphenatorPool[lang])
-        ? wordHyphenatorPool[lang]
+    const wordHyphenator = (wordHyphenatorPool.has(lang))
+        ? wordHyphenatorPool.get(lang)
         : createWordHyphenator(lo, lang);
 
     /**
@@ -591,7 +591,7 @@ function createTextHyphenator(lang) {
 
 (function setupEvents() {
     // Events known to the system
-    const definedEvents = empty();
+    const definedEvents = new Map();
 
     /**
      * Create Event Object
@@ -601,11 +601,11 @@ function createTextHyphenator(lang) {
      * @returns {undefined}
      */
     function define(name, defFunc, cancellable) {
-        definedEvents[name] = {
+        definedEvents.set(name, {
             "cancellable": cancellable,
             "default": defFunc,
             "register": []
-        };
+        });
     }
 
     define(
@@ -650,15 +650,15 @@ function createTextHyphenator(lang) {
         }
         data.defaultPrevented = false;
         data.preventDefault = function preventDefault() {
-            if (definedEvents[name].cancellable) {
+            if (definedEvents.get(name).cancellable) {
                 data.defaultPrevented = true;
             }
         };
-        definedEvents[name].register.forEach(function call(currentHandler) {
+        definedEvents.get(name).register.forEach(function call(currentHandler) {
             currentHandler(data);
         });
-        if (!data.defaultPrevented && definedEvents[name].default) {
-            definedEvents[name].default(data);
+        if (!data.defaultPrevented && definedEvents.get(name).default) {
+            definedEvents.get(name).default(data);
         }
     }
 
@@ -669,8 +669,8 @@ function createTextHyphenator(lang) {
      * @returns {undefined}
      */
     function addListener(name, handler) {
-        if (definedEvents[name]) {
-            definedEvents[name].register.push(handler);
+        if (definedEvents.has(name)) {
+            definedEvents.get(name).register.push(handler);
         } else {
             H.events.dispatch(
                 "error",
@@ -706,13 +706,17 @@ H.config = function config(userConfig) {
         Object.defineProperty(
             settings,
             key,
+            /* eslint-disable security/detect-object-injection */
             setProp(userConfig[key], 3)
+            /* eslint-enable security/detect-object-injection */
         );
     });
     H.c = settings;
     if (H.c.handleEvent) {
         Object.keys(H.c.handleEvent).forEach(function add(name) {
+            /* eslint-disable security/detect-object-injection */
             H.events.addListener(name, H.c.handleEvent[name]);
+            /* eslint-enable security/detect-object-injection */
         });
     }
     loadWasm();
