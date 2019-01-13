@@ -22,7 +22,6 @@ const decode = (function makeDecoder() {
     };
 }());
 
-const SOFTHYPHEN = String.fromCharCode(173);
 
 /**
  * Create Object without standard Object-prototype
@@ -236,7 +235,7 @@ function calculateBaseData(hpbBuf) {
 }
 
 /**
- * Convert exceptions to object
+ * Convert exceptions to Map
  * @param {string} exc comma separated list of exceptions
  * @returns {Object} Map of exceptions
  */
@@ -252,7 +251,7 @@ function convertExceptions(exc) {
 /**
  * Create lang Object
  * @param {string} lang The language
- * @returns {Object} The newly
+ * @returns {Object} The newly created lang object
  */
 function createLangObj(lang) {
     if (!H.languages) {
@@ -689,7 +688,7 @@ H.config = function config(userConfig) {
     const defaults = Object.create(null, {
         "compound": setProp("hyphen", 2),
         "exceptions": setProp(empty(), 2),
-        "hyphen": setProp(SOFTHYPHEN, 2),
+        "hyphen": setProp(String.fromCharCode(173), 2),
         "leftmin": setProp(0, 2),
         "minWordLength": setProp(6, 2),
         "normalize": setProp(false, 2),
