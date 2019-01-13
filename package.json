@@ -44,6 +44,7 @@
   "dependencies": {},
   "devDependencies": {
     "eslint": "^5.10.0",
+    "eslint-plugin-security": "^1.4.0",
     "tap": "^12.1.1",
     "terser": "^3.11.0"
   },
@@ -58,8 +59,16 @@
     "globals": {
       "Hyphenopoly": true
     },
-    "extends": "eslint:all",
+    "plugins": [
+      "security"
+    ],
+    "extends": [
+      "eslint:all",
+      "plugin:security/recommended"
+    ],
     "rules": {
+      "no-undef": "error",
+      "complexity": ["error", 6],
       "require-unicode-regexp": 0,
       "require-jsdoc": [
         "error",
@@ -160,6 +169,7 @@
     "test": "tap test/*.js --coverage",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js",
+    "lintmod": "eslint hyphenopoly.module.js",
     "prepare": "npm run minify",
     "minify": "sh ./tools/minify.sh"
   },

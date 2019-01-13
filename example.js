@@ -12,15 +12,15 @@ const hyphenator = hyphenopoly.config({
     }
 });
 
-async function hyphenate_en(text) {
+async function hyphenateEn(text) {
     const hyphenateText = await hyphenator.get("en-us");
     console.log(hyphenateText(text));
 }
 
-async function hyphenate_de(text) {
+async function hyphenateDe(text) {
     const hyphenateText = await hyphenator.get("de");
     console.log(hyphenateText(text));
 }
 
-hyphenate_en("hyphenation enhances justification.");
-hyphenate_de("Silbentrennung verbessert den Blocksatz.");
+hyphenateEn("hyphenation enhances justification.");
+hyphenateDe("Silbentrennung verbessert den Blocksatz.");
