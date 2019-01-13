@@ -56,7 +56,7 @@ function setProp(val, props) {
 }
 
 const H = empty();
-H.binaries = empty();
+H.binaries = new Map();
 
 /**
  * Read a file and call callback
@@ -66,7 +66,9 @@ H.binaries = empty();
  * @returns {undefined}
  */
 function readFile(file, cb) {
+    /* eslint-disable security/detect-non-literal-fs-filename */
     fs.readFile(file, cb);
+    /* eslint-enable security/detect-non-literal-fs-filename */
 }
 
 /**
@@ -108,7 +110,7 @@ function loadWasm() {
                     "msg": `${H.c.paths.maindir}hyphenEngine.wasm not found.`
                 });
             } else {
-                H.binaries.hyphenEngine = new Uint8Array(data).buffer;
+                H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
                 H.events.dispatch("engineLoaded");
             }
         }
@@ -130,7 +132,7 @@ function loadHpb(lang) {
                     "msg": `${H.c.paths.patterndir}${lang}.hpb not found.`
                 });
             } else {
-                H.binaries[lang] = new Uint8Array(data).buffer;
+                H.binaries.set(lang, new Uint8Array(data).buffer);
                 H.events.dispatch("hpbLoaded", {"msg": lang});
             }
         }
@@ -239,19 +241,27 @@ function calculateBaseData(hpbBuf) {
  * @returns {Object} Map of exceptions
  */
 function convertExceptions(exc) {
-    const words = exc.split(", ");
-    const r = empty();
-    const l = words.length;
-    let i = 0;
-    let key = null;
-    while (i < l) {
-        key = words[i].replace(/-/g, "");
-        if (!r[key]) {
-            r[key] = words[i];
-        }
-        i += 1;
-    }
+    const r = new Map();
+    exc.split(", ").forEach(function eachExc(e) {
+        const key = e.replace(/-/g, "");
+        r.set(key, e);
+    });
     return r;
+}
+
+/**
+ * Create lang Object
+ * @param {string} lang The language
+ * @returns {Object} The newly
+ */
+function createLangObj(lang) {
+    if (!H.languages) {
+        H.languages = new Map();
+    }
+    if (!H.languages.has(lang)) {
+        H.languages.set(lang, empty());
+    }
+    return H.languages.get(lang);
 }
 
 /**
@@ -271,15 +281,10 @@ function prepareLanguagesObj(
     rightmin
 ) {
     alphabet = alphabet.replace(/-/g, "");
-    if (!H.languages) {
-        H.languages = empty();
-    }
-    if (!H.languages[lang]) {
-        H.languages[lang] = empty();
-    }
-    const lo = H.languages[lang];
+    const lo = createLangObj(lang);
     if (!lo.engineReady) {
         lo.cache = empty();
+        /* eslint-disable security/detect-object-injection */
         if (H.c.exceptions.global) {
             if (H.c.exceptions[lang]) {
                 H.c.exceptions[lang] += `, ${H.c.exceptions.global}`;
@@ -291,9 +296,12 @@ function prepareLanguagesObj(
             lo.exceptions = convertExceptions(H.c.exceptions[lang]);
             delete H.c.exceptions[lang];
         } else {
-            lo.exceptions = empty();
+            lo.exceptions = new Map();
         }
+        /* eslint-enable security/detect-object-injection */
+        /* eslint-disable security/detect-non-literal-regexp */
         lo.genRegExp = new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${H.c.minWordLength},}`, "gi");
+        /* eslint-enable security/detect-non-literal-regexp */
         lo.leftmin = leftmin;
         lo.rightmin = rightmin;
         lo.hyphenateFunction = hyphenateFunction;
@@ -338,13 +346,6 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
     return function hyphenate(word, hyphenchar, leftmin, rightmin) {
         let i = 0;
         const wordLength = word.length;
-        if (wordLength > 61) {
-            H.events.dispatch(
-                "error",
-                {"msg": "found word longer than 61 characters"}
-            );
-            return word;
-        }
         leftmin = leftmin || defLeftmin;
         rightmin = rightmin || defRightmin;
         wordStore[0] = wordLength + 2;
@@ -377,19 +378,19 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
  * @returns {undefined}
  */
 function instantiateWasmEngine(lang) {
-    const baseData = calculateBaseData(H.binaries[lang]);
+    const baseData = calculateBaseData(H.binaries.get(lang));
     const wasmMemory = new WebAssembly.Memory({
         "initial": baseData.heapSize / 65536,
         "maximum": 256
     });
     const ui32wasmMemory = new Uint32Array(wasmMemory.buffer);
     ui32wasmMemory.set(
-        new Uint32Array(H.binaries[lang]),
+        new Uint32Array(H.binaries.get(lang)),
         // eslint-disable-next-line no-bitwise
         baseData.hpbOffset >> 2
     );
     baseData.wasmMemory = wasmMemory;
-    WebAssembly.instantiate(H.binaries.hyphenEngine, {
+    WebAssembly.instantiate(H.binaries.get("hyphenEngine"), {
         "env": {
             "memory": baseData.wasmMemory,
             "memoryBase": 0
@@ -510,18 +511,23 @@ function createWordHyphenator(lo, lang) {
     function hyphenator(word) {
         let hw = lo.cache[word];
         if (!hw) {
-            if (lo.exceptions[word]) {
-                hw = lo.exceptions[word].replace(
+            if (lo.exceptions.has(word)) {
+                hw = lo.exceptions.get(word).replace(
                     /-/g,
                     H.c.hyphen
                 );
             } else if (word.indexOf("-") === -1) {
-                hw = lo.hyphenateFunction(
-                    word,
-                    H.c.hyphen,
-                    H.c.leftmin,
-                    H.c.rightmin
-                );
+                if (word.length > 61) {
+                    H.events.dispatch("error", {"msg": "found word longer than 61 characters"});
+                    hw = word;
+                } else {
+                    hw = lo.hyphenateFunction(
+                        word,
+                        H.c.hyphen,
+                        H.c.leftmin,
+                        H.c.rightmin
+                    );
+                }
             } else {
                 hw = hyphenateCompound(word);
             }
@@ -566,7 +572,7 @@ const orphanController = (function createOrphanController() {
  * @return {function} The hyphenateText-function
  */
 function createTextHyphenator(lang) {
-    const lo = H.languages[lang];
+    const lo = H.languages.get(lang);
     const wordHyphenator = (wordHyphenatorPool[lang])
         ? wordHyphenatorPool[lang]
         : createWordHyphenator(lo, lang);
