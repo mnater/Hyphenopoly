@@ -357,14 +357,15 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
         wordStore[i + 2] = 95;
 
         if (hyphenateFunc(leftmin, rightmin) === 1) {
-            i = 1;
-            word = "";
-            while (i < hyphenatedWordStore[0] + 1) {
-                word += String.fromCharCode(hyphenatedWordStore[i]);
-                i += 1;
-            }
-            if (hyphenchar !== SOFTHYPHEN) {
-                word = word.replace(new RegExp(SOFTHYPHEN, "g"), hyphenchar);
+            word = String.fromCharCode.apply(
+                null,
+                hyphenatedWordStore.subarray(
+                    1,
+                    hyphenatedWordStore[0] + 1
+                )
+            );
+            if (hyphenchar !== "\u00AD") {
+                word = word.replace(/\u00AD/g, hyphenchar);
             }
         }
         return word;
@@ -471,34 +472,24 @@ function createWordHyphenator(lo, lang) {
     function hyphenateCompound(word) {
         const zeroWidthSpace = String.fromCharCode(8203);
         let parts = null;
-        let i = 0;
         let wordHyphenator = null;
         let hw = word;
-        switch (H.c.compound) {
-        case "auto":
-            parts = word.split("-");
+        if (H.c.compound === "auto" ||
+            H.c.compound === "all") {
             wordHyphenator = createWordHyphenator(lo, lang);
-            while (i < parts.length) {
-                if (parts[i].length >= H.c.minWordLength) {
-                    parts[i] = wordHyphenator(parts[i]);
+            parts = word.split("-").map(function h7eParts(p) {
+                if (p.length >= H.c.minWordLength) {
+                    return wordHyphenator(p);
                 }
-                i += 1;
+                return p;
+            });
+            if (H.c.compound === "auto") {
+                hw = parts.join("-");
+            } else {
+                hw = parts.join("-" + zeroWidthSpace);
             }
-            hw = parts.join("-");
-            break;
-        case "all":
-            parts = word.split("-");
-            wordHyphenator = createWordHyphenator(lo, lang);
-            while (i < parts.length) {
-                if (parts[i].length >= H.c.minWordLength) {
-                    parts[i] = wordHyphenator(parts[i]);
-                }
-                i += 1;
-            }
-            hw = parts.join(`-${zeroWidthSpace}`);
-            break;
-        default:
-            hw = word.replace("-", `-${zeroWidthSpace}`);
+        } else {
+            hw = word.replace("-", "-" + zeroWidthSpace);
         }
         return hw;
     }
