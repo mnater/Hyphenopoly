@@ -23,8 +23,10 @@ t.test("set options: compound", function (t) {
             "hyphen": "•",
             "require": ["de"]
         });
-        t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Sil•ben•tren•nungs-\u200BAl•go•rith•mus");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Sil•ben•tren•nungs-\u200BAl•go•rith•mus");
+            t.end();
+        });
     });
     t.test("compound: auto", async function (t) {
         const hyphenator = await H9Y.config({
@@ -32,8 +34,10 @@ t.test("set options: compound", function (t) {
             "hyphen": "•",
             "require": ["de"]
         });
-        t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Sil•ben•tren•nungs-Al•go•rith•mus");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Sil•ben•tren•nungs-Al•go•rith•mus");
+            t.end();
+        });
     });
     t.test("compound: hyphen", async function (t) {
         const hyphenator = await H9Y.config({
@@ -41,8 +45,10 @@ t.test("set options: compound", function (t) {
             "hyphen": "•",
             "require": ["de"]
         });
-        t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Silbentrennungs-\u200BAlgorithmus");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Silbentrennungs-\u200BAlgorithmus");
+            t.end();
+        });
     });
     t.test("compound: auto, one part too small", async function (t) {
         const hyphenator = await H9Y.config({
@@ -50,8 +56,10 @@ t.test("set options: compound", function (t) {
             "hyphen": "•",
             "require": ["de"]
         });
-        t.equal(hyphenator("Test-Algorithmus"), "Test-Al•go•rith•mus");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Test-Algorithmus"), "Test-Al•go•rith•mus");
+            t.end();
+        });
     });
     t.test("compound: all, one part too small", async function (t) {
         const hyphenator = await H9Y.config({
@@ -59,8 +67,10 @@ t.test("set options: compound", function (t) {
             "hyphen": "•",
             "require": ["de"]
         });
-        t.equal(hyphenator("Test-Algorithmus"), "Test-\u200BAl•go•rith•mus");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Test-Algorithmus"), "Test-\u200BAl•go•rith•mus");
+            t.end();
+        });
     });
     t.end();
 });
@@ -83,8 +93,10 @@ t.test("set options: exceptions", function (t) {
             "hyphen": "•",
             "require": ["de"]
         });
-        t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
+            t.end();
+        });
     });
     t.test("exceptions: global and lang", async function (t) {
         const hyphenator = await H9Y.config({
@@ -95,8 +107,10 @@ t.test("set options: exceptions", function (t) {
             "hyphen": "•",
             "require": ["de"]
         });
-        t.equal(hyphenator("Silbentrennung Algorithmus"), "Silben•trennung Algo•rithmus");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Silbentrennung Algorithmus"), "Silben•trennung Algo•rithmus");
+            t.end();
+        });
     });
     t.test("exceptions: double entry", async function (t) {
         const hyphenator = await H9Y.config({
@@ -104,8 +118,10 @@ t.test("set options: exceptions", function (t) {
             "hyphen": "•",
             "require": ["de"]
         });
-        t.equal(hyphenator("Algorithmus"), "Algo•rithmus");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Algorithmus"), "Algo•rithmus");
+            t.end();
+        });
     });
     t.end();
 });
@@ -127,16 +143,20 @@ t.test("set options: hyphen", function (t) {
             "hyphen": "•",
             "require": ["de"]
         });
-        t.equal(hyphenator("Silbentrennung"), "Sil•ben•tren•nung");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Silbentrennung"), "Sil•ben•tren•nung");
+            t.end();
+        });
     });
     t.test("hyphen: |", async function (t) {
         const hyphenator = await H9Y.config({
             "hyphen": "|",
             "require": ["de"]
         });
-        t.equal(hyphenator("Silbentrennung"), "Sil|ben|tren|nung");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Silbentrennung"), "Sil|ben|tren|nung");
+            t.end();
+        });
     });
     t.end();
 });
@@ -160,8 +180,10 @@ t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
             "require": ["de"],
             "rightmin": 5
         });
-        t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
+            t.end();
+        });
     });
     t.end();
 });
@@ -185,8 +207,10 @@ t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
             "require": ["pt"],
             "rightmin": 2
         });
-        t.equal(hyphenator("relativo"), "re•la•ti•vo");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("relativo"), "re•la•ti•vo");
+            t.end();
+        });
     });
 
     t.test("left-/rightmin: def, def", async function (t) {
@@ -194,8 +218,10 @@ t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
             "hyphen": "•",
             "require": ["pt"]
         });
-        t.equal(hyphenator("relativo"), "re•la•tivo");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("relativo"), "re•la•tivo");
+            t.end();
+        });
     });
     t.end();
 });
@@ -218,8 +244,10 @@ t.test("set options: minWordLength", function (t) {
             "minWordLength": 7,
             "require": ["de"]
         });
-        t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lieber ge•sun•de Ess•wa•ren");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lieber ge•sun•de Ess•wa•ren");
+            t.end();
+        });
     });
     t.end();
 });
@@ -242,8 +270,10 @@ t.test("set options: normalize", function (t) {
             "normalize": true,
             "require": ["de"]
         });
-        t.equal(hyphenator("Ba\u0308rento\u0308ter"), "Bä•ren•tö•ter");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Ba\u0308rento\u0308ter"), "Bä•ren•tö•ter");
+            t.end();
+        });
     });
     t.end();
 });
@@ -265,8 +295,10 @@ t.test("set options: orphanControl", function (t) {
             "hyphen": "•",
             "require": ["de"]
         });
-        t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de Ess•wa•ren");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de Ess•wa•ren");
+            t.end();
+        });
     });
     t.test("orphanControl: 2", async function (t) {
         const hyphenator = await H9Y.config({
@@ -274,8 +306,10 @@ t.test("set options: orphanControl", function (t) {
             "orphanControl": 2,
             "require": ["de"]
         });
-        t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de Esswaren");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de Esswaren");
+            t.end();
+        });
     });
     t.test("orphanControl: 2, hyphen: |", async function (t) {
         const hyphenator = await H9Y.config({
@@ -283,8 +317,10 @@ t.test("set options: orphanControl", function (t) {
             "orphanControl": 2,
             "require": ["de"]
         });
-        t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie|ber ge|sun|de Esswaren");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie|ber ge|sun|de Esswaren");
+            t.end();
+        });
     });
     t.test("orphanControl: 3", async function (t) {
         const hyphenator = await H9Y.config({
@@ -292,8 +328,10 @@ t.test("set options: orphanControl", function (t) {
             "orphanControl": 3,
             "require": ["de"]
         });
-        t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de\u00A0Esswaren");
-        t.end();
+        await t.test("check result", function (t) {
+            t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de\u00A0Esswaren");
+            t.end();
+        });
     });
     t.end();
 });
