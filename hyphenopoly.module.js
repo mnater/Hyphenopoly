@@ -714,7 +714,6 @@ H.config = function config(userConfig) {
             /* eslint-enable security/detect-object-injection */
         });
     }
-    loadWasm();
     const result = new Map();
     if (H.c.require.length === 0) {
         H.events.dispatch(
@@ -739,6 +738,7 @@ H.config = function config(userConfig) {
         });
         result.set(lang, prom);
     });
+    loadWasm();
     return (result.size === 1)
         ? result.get(H.c.require[0])
         : result;
