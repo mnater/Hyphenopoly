@@ -100,20 +100,28 @@ function readFile(file, cb) {
  * @returns {undefined}
  */
 function loadWasm() {
-    readFile(
-        `${H.c.paths.maindir}hyphenEngine.wasm`,
-        function cb(err, data) {
-            if (err) {
-                H.events.dispatch("error", {
-                    "key": "hyphenEngine",
-                    "msg": `${H.c.paths.maindir}hyphenEngine.wasm not found.`
-                });
-            } else {
-                H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
-                H.events.dispatch("engineLoaded");
+    if (H.c.sync) {
+        /* eslint-disable security/detect-non-literal-fs-filename, no-sync */
+        const data = fs.readFileSync(`${H.c.paths.maindir}hyphenEngine.wasm`);
+        /* eslint-enable security/detect-non-literal-fs-filename, no-sync */
+        H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
+        H.events.dispatch("engineLoaded");
+    } else {
+        readFile(
+            `${H.c.paths.maindir}hyphenEngine.wasm`,
+            function cb(err, data) {
+                if (err) {
+                    H.events.dispatch("error", {
+                        "key": "hyphenEngine",
+                        "msg": `${H.c.paths.maindir}hyphenEngine.wasm not found.`
+                    });
+                } else {
+                    H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
+                    H.events.dispatch("engineLoaded");
+                }
             }
-        }
-    );
+        );
+    }
 }
 
 /**
@@ -122,20 +130,28 @@ function loadWasm() {
  * @returns {undefined}
  */
 function loadHpb(lang) {
-    readFile(
-        `${H.c.paths.patterndir}${lang}.hpb`,
-        function cb(err, data) {
-            if (err) {
-                H.events.dispatch("error", {
-                    "key": lang,
-                    "msg": `${H.c.paths.patterndir}${lang}.hpb not found.`
-                });
-            } else {
-                H.binaries.set(lang, new Uint8Array(data).buffer);
-                H.events.dispatch("hpbLoaded", {"msg": lang});
+    if (H.c.sync) {
+        /* eslint-disable security/detect-non-literal-fs-filename, no-sync */
+        const data = fs.readFileSync(`${H.c.paths.patterndir}${lang}.hpb`);
+        /* eslint-enable security/detect-non-literal-fs-filename, no-sync */
+        H.binaries.set(lang, new Uint8Array(data).buffer);
+        H.events.dispatch("hpbLoaded", {"msg": lang});
+    } else {
+        readFile(
+            `${H.c.paths.patterndir}${lang}.hpb`,
+            function cb(err, data) {
+                if (err) {
+                    H.events.dispatch("error", {
+                        "key": lang,
+                        "msg": `${H.c.paths.patterndir}${lang}.hpb not found.`
+                    });
+                } else {
+                    H.binaries.set(lang, new Uint8Array(data).buffer);
+                    H.events.dispatch("hpbLoaded", {"msg": lang});
+                }
             }
-        }
-    );
+        );
+    }
 }
 
 /**
@@ -390,7 +406,7 @@ function instantiateWasmEngine(lang) {
         baseData.hpbOffset >> 2
     );
     baseData.wasmMemory = wasmMemory;
-    WebAssembly.instantiate(H.binaries.get("hyphenEngine"), {
+    const importObj = {
         "env": {
             "memory": baseData.wasmMemory,
             "memoryBase": 0
@@ -406,24 +422,46 @@ function instantiateWasmEngine(lang) {
             "valueStoreOffset": baseData.valueStoreOffset,
             "wordOffset": baseData.wordOffset
         }
-    }).then(
-        function runWasm(result) {
-            result.instance.exports.convert();
-            prepareLanguagesObj(
-                lang,
-                encloseHyphenateFunction(
-                    baseData,
-                    result.instance.exports.hyphenate
-                ),
-                decode(
-                    (new Uint8Array(wasmMemory.buffer)).
-                        subarray(768, 1280)
-                ),
-                baseData.leftmin,
-                baseData.rightmin
-            );
-        }
-    );
+    };
+    if (H.c.sync) {
+        const heInstance = new WebAssembly.Instance(
+            new WebAssembly.Module(H.binaries.get("hyphenEngine")),
+            importObj
+        );
+        heInstance.exports.convert();
+        prepareLanguagesObj(
+            lang,
+            encloseHyphenateFunction(
+                baseData,
+                heInstance.exports.hyphenate
+            ),
+            decode(
+                (new Uint8Array(wasmMemory.buffer)).
+                    subarray(768, 1280)
+            ),
+            baseData.leftmin,
+            baseData.rightmin
+        );
+    } else {
+        WebAssembly.instantiate(H.binaries.get("hyphenEngine"), importObj).then(
+            function runWasm(result) {
+                result.instance.exports.convert();
+                prepareLanguagesObj(
+                    lang,
+                    encloseHyphenateFunction(
+                        baseData,
+                        result.instance.exports.hyphenate
+                    ),
+                    decode(
+                        (new Uint8Array(wasmMemory.buffer)).
+                            subarray(768, 1280)
+                    ),
+                    baseData.leftmin,
+                    baseData.rightmin
+                );
+            }
+        );
+    }
 }
 
 
@@ -694,7 +732,8 @@ H.config = function config(userConfig) {
             "patterndir": setProp(`${__dirname}/patterns/`, 2)
         }), 2),
         "require": setProp([], 2),
-        "rightmin": setProp(0, 2)
+        "rightmin": setProp(0, 2),
+        "sync": setProp(false, 2)
     });
     const settings = Object.create(defaults);
     Object.keys(userConfig).forEach(function each(key) {
@@ -723,20 +762,28 @@ H.config = function config(userConfig) {
     }
     H.c.require.forEach(function each(lang) {
         loadHpb(lang);
-        const prom = new Promise(function pro(resolve, reject) {
+        if (H.c.sync) {
             H.events.addListener("engineReady", function handler(e) {
                 if (e.msg === lang) {
-                    resolve(createTextHyphenator(lang));
+                    result.set(lang, createTextHyphenator(lang));
                 }
             });
-            H.events.addListener("error", function handler(e) {
-                e.preventDefault();
-                if (e.key === lang || e.key === "hyphenEngine") {
-                    reject(e.msg);
-                }
+        } else {
+            const prom = new Promise(function pro(resolve, reject) {
+                H.events.addListener("engineReady", function handler(e) {
+                    if (e.msg === lang) {
+                        resolve(createTextHyphenator(lang));
+                    }
+                });
+                H.events.addListener("error", function handler(e) {
+                    e.preventDefault();
+                    if (e.key === lang || e.key === "hyphenEngine") {
+                        reject(e.msg);
+                    }
+                });
             });
-        });
-        result.set(lang, prom);
+            result.set(lang, prom);
+        }
     });
     loadWasm();
     return (result.size === 1)
