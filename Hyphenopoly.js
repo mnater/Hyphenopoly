@@ -553,6 +553,18 @@
             };
         };
 
+        H.unhyphenate = function unhyphenate() {
+            elements.each(function eachLang(lang, els) {
+                els.forEach(function eachElem(elo) {
+                    const n = elo.element.firstChild;
+                    const h = C[elo.selector].hyphen;
+                    /* eslint-disable security/detect-non-literal-regexp */
+                    n.data = n.data.replace(new RegExp(h, "g"), "");
+                    /* eslint-enable security/detect-non-literal-regexp */
+                });
+            });
+        };
+
         /**
          * Hyphenate all elements with a given language
          * @param {string} lang The language

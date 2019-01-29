@@ -664,6 +664,21 @@
         }
     }());
 
+    /**
+     * Hides the specified elements and starts the process by
+     * dispatching a "contentLoaded"-event in Hyphenopoly
+     * @returns {undefined}
+     */
+    function handleDCL() {
+        if (H.setup.hide.match(/^(element|text)$/)) {
+            H.toggle("off");
+        }
+        H.events.dispatch(
+            "contentLoaded",
+            {"msg": ["contentLoaded"]}
+        );
+    }
+
     if (H.clientFeat.polyfill) {
         if (H.setup.hide === "all") {
             H.toggle("off");
@@ -674,22 +689,18 @@
                 H.events.dispatch("timeout", {"delay": H.setup.timeout});
             }, H.setup.timeout);
         }
-        d.addEventListener(
-            "DOMContentLoaded",
-            function DCL() {
-                if (H.setup.hide.match(/^(element|text)$/)) {
-                    H.toggle("off");
+        if (d.readyState === "loading") {
+            d.addEventListener(
+                "DOMContentLoaded",
+                handleDCL,
+                {
+                    "once": true,
+                    "passive": true
                 }
-                H.events.dispatch(
-                    "contentLoaded",
-                    {"msg": ["contentLoaded"]}
-                );
-            },
-            {
-                "once": true,
-                "passive": true
-            }
-        );
+            );
+        } else {
+            handleDCL();
+        }
     } else {
         window.Hyphenopoly = null;
     }
