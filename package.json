@@ -47,7 +47,7 @@
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^6.0.1",
     "remark-preset-lint-recommended": "^3.0.2",
-    "tap": "^12.1.2",
+    "tap": "^12.5.0",
     "terser": "^3.14.1"
   },
   "eslintConfig": {
