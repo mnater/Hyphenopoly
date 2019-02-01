@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 2.6.1 - hyphenation for node
+ * @license Hyphenopoly.module.js 2.7.0 - hyphenation for node
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
