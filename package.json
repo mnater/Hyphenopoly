@@ -43,9 +43,12 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^5.10.0",
-    "tap": "^12.1.1",
-    "terser": "^3.11.0"
+    "eslint": "^5.12.1",
+    "eslint-plugin-security": "^1.4.0",
+    "remark-cli": "^6.0.1",
+    "remark-preset-lint-recommended": "^3.0.2",
+    "tap": "^12.5.0",
+    "terser": "^3.14.1"
   },
   "eslintConfig": {
     "parserOptions": {
@@ -58,8 +61,19 @@
     "globals": {
       "Hyphenopoly": true
     },
-    "extends": "eslint:all",
+    "plugins": [
+      "security"
+    ],
+    "extends": [
+      "eslint:all",
+      "plugin:security/recommended"
+    ],
     "rules": {
+      "no-undef": "error",
+      "complexity": [
+        "error",
+        6
+      ],
       "require-unicode-regexp": 0,
       "require-jsdoc": [
         "error",
@@ -150,6 +164,11 @@
       ]
     }
   },
+  "remarkConfig": {
+    "plugins": [
+      "remark-preset-lint-recommended"
+    ]
+  },
   "scripts": {
     "preinstall3rdparty": "rm -fR third-party",
     "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen && git clone --recursive https://github.com/WebAssembly/wabt.git third-party/wabt",
@@ -159,7 +178,8 @@
     "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
     "test": "tap test/*.js --coverage",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
-    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js",
+    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js && npm run lint-md",
+    "lint-md": "remark *.md",
     "prepare": "npm run minify",
     "minify": "sh ./tools/minify.sh"
   },

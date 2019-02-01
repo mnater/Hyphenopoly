@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 032</title>
+        <script>
+            var result = false;
+            let assertRuns = 0;
+            function assert() {
+                const mql = window.matchMedia("(max-width: 600px)");
+                var tests = 4;
+                var i = 1;
+                var test = "";
+                var ref = "";
+                while (i <= tests) {
+                    test = document.getElementById("test" + i).innerHTML;
+                    if (mql.matches) {
+                        ref = document.getElementById("ref" + i).innerHTML;
+                    } else {
+                        ref = document.getElementById("ref" + i + "_u").innerHTML;
+                    }
+                    if (test === ref) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        result = result || true;
+                    } else {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        result = result || false;
+                    }
+                    i += 1;
+                }
+                assertRuns += 1;
+                if (assertRuns === 2 && parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 32,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
+            }
+
+            (function selectiveLoad() {
+                let H9YLisLoaded = false;
+                function handleSize(mql) {
+                    if (mql.matches) {
+                        if (H9YLisLoaded) {
+                           window.Hyphenopoly.events.dispatch(
+                                "contentLoaded",
+                                {"msg": ["contentLoaded"]}
+                            );
+                        } else {
+                            window.Hyphenopoly = {
+                                require: {
+                                    "de": "FORCEHYPHENOPOLY",
+                                    "en-us": "FORCEHYPHENOPOLY"
+                                },
+                                paths: {
+                                    maindir: "../",
+                                    patterndir: "../patterns/"
+                                },
+                                setup: {
+                                    classnames: {
+                                        "hyphenate": {
+                                            hyphen: "•"
+                                        }
+                                    }
+                                },
+                                handleEvent: {
+                                    hyphenopolyEnd: function (e) {
+                                        assert();
+                                        if (parent != window) {
+                                            window.parent.document.getElementById("testframe").width = "800px";
+                                        }
+                                    }
+                                }
+                            };
+                            const loaderScript = document.createElement("script");
+                            loaderScript.src = "../Hyphenopoly_Loader.js";
+                            document.head.appendChild(loaderScript);
+                            H9YLisLoaded = true;
+                        }
+                    } else {
+                        if (H9YLisLoaded) {
+                            window.Hyphenopoly.unhyphenate();
+                            assert();
+                        } else {
+                            window.onload = function() {
+                                assert();
+                            }
+                        }
+                    }
+                }
+                const mql = window.matchMedia("(max-width: 600px)");
+                mql.addListener(handleSize);
+                handleSize(mql);
+            }());
+
+        </script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+            @media (max-width: 600px) {
+                .hyphenate {
+                    hyphens: auto;
+                    -ms-hyphens: auto;
+                    -moz-hyphens: auto;
+                    -webkit-hyphens: auto;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test31.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test33.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 032</h1>
+        <p id="desc">Make hyphenation viewport dependent (resize window!)</p>
+        <div id="result"></div>
+        <hr>
+        <p id="test1" class="test hyphenate" lang="de">Silbentrennungsalgorithmus</p>
+        <p id="ref1" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus</p>
+        <p id="ref1_u" class="ref" lang="de">Silbentrennungsalgorithmus</p>
+
+        <p id="test2" class="test hyphenate" lang="de">Silbentrennungsalgorithmus <span>Donaudampfschiff</span></p>
+        <p id="ref2" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus <span>Do•nau•dampf•schiff</span></p>
+        <p id="ref2_u" class="ref" lang="de">Silbentrennungsalgorithmus <span>Donaudampfschiff</span></p>
+
+        <p id="test3" class="test hyphenate" lang="de">Silbentrennungsalgorithmus <span class="donthyphenate">Donaudampfschiff</span></p>
+        <p id="ref3" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus <span class="donthyphenate">Donaudampfschiff</span></p>
+        <p id="ref3_u" class="ref" lang="de">Silbentrennungsalgorithmus <span class="donthyphenate">Donaudampfschiff</span></p>
+
+        <p id="test4" class="test hyphenate" lang="de">Silbentrennungsalgorithmus <span lang="en-us">hyphenation</span></p>
+        <p id="ref4" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus <span lang="en-us">hy•phen•ation</span></p>
+        <p id="ref4_u" class="ref" lang="de">Silbentrennungsalgorithmus <span lang="en-us">hyphenation</span></p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
+    </body>
+</html>
