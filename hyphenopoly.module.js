@@ -71,31 +71,6 @@ function readFile(file, cb) {
 }
 
 /**
- * Before using browserify comment-out or delete the readFile-function above
- * and un-comment the following function.
- * Also change `const fs = require("fs");` to `const http = require("http");`
- * at the top of the file
- */
-
-/**
- * Browserify-compatible readFile:
- * function readFile(file, cb) {
- *     const rawData = [];
- *     http.get(file, function c(res) {
- *         res.on("data", function onData(chunk) {
- *             rawData.push(chunk);
- *         });
- *         res.on("end", function onEnd() {
- *             cb(null, Buffer.concat(rawData));
- *         });
- *         res.on("error", function onErr(err) {
- *             cb(err, rawData);
- *         });
- *     });
- * }
- */
-
-/**
  * Read a wasm file, dispatch "engineLoaded" on success
  * @returns {undefined}
  */
