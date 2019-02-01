@@ -1,5 +1,12 @@
 # Version History
 
+## Version 2.7.0 (Feb 01, 2019)
+*   implement sync mode for node module (issue #43)
+*   implement sync mode for hyphenopoly.module.js (issue #47)
+*   fixed issue with Hyphenopoly.config sometimes not resolving (issue #52)
+*   enable viewport dependent hyphenation (isse #53)
+*   get good grades in codacy.com
+
 ## Version 2.6.1 (Jan 09, 2018)
 *   dontHyphenateClass is configurable (issue #48)
 *   fixed issue with StringDecoder in older node versions (issue #45)
