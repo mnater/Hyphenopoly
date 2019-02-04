@@ -176,7 +176,16 @@
         define(
             "error",
             function def(e) {
-                window.console.error(e.msg);
+                switch (e.lvl) {
+                case "info":
+                    window.console.info(e.msg);
+                    break;
+                case "warn":
+                    window.console.warn(e.msg);
+                    break;
+                default:
+                    window.console.error(e.msg);
+                }
             },
             true
         );
@@ -215,7 +224,7 @@
         );
 
         /**
-         * Dispatch error <name> with arguments <data>
+         * Dispatch event <name> with arguments <data>
          * @param {string} name The name of the event
          * @param {Object|undefined} data Data of the event
          * @returns {undefined}
@@ -259,7 +268,10 @@
             } else {
                 H.events.dispatch(
                     "error",
-                    {"msg": "unknown Event \"" + name + "\" discarded"}
+                    {
+                        "lvl": "warn",
+                        "msg": "unknown Event \"" + name + "\" discarded"
+                    }
                 );
             }
         }
