@@ -134,7 +134,8 @@
       "array-element-newline": [
         1,
         {
-          "multiline": true
+          "multiline": true,
+          "minItems": 12
         }
       ],
       "no-magic-numbers": 0,
