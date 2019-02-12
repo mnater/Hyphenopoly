@@ -349,29 +349,22 @@
         }
     }
 
-    const scriptLoader = (function scriptLoader() {
-        const loadedScripts = new Map();
-
-        /**
-         * Load script by adding <script>-tag
-         * @param {string} path Where the script is stored
-         * @param {string} filename Filename of the script
-         * @returns {undefined}
-         */
-        return function loadScript(path, filename) {
-            if (!loadedScripts.has(filename)) {
-                const script = d.createElement("script");
-                loadedScripts.set(filename, true);
-                script.src = path + filename;
-                if (filename === "hyphenEngine.asm.js") {
-                    script.addEventListener("load", function listener() {
-                        H.events.dispatch("engineLoaded", {"msg": "asm"});
-                    });
-                }
-                d.head.appendChild(script);
-            }
-        };
-    }());
+    /**
+     * Load script by adding <script>-tag
+     * @param {string} path Where the script is stored
+     * @param {string} filename Filename of the script
+     * @returns {undefined}
+     */
+    function scriptLoader(path, filename) {
+        const script = d.createElement("script");
+        script.src = path + filename;
+        if (filename === "hyphenEngine.asm.js") {
+            script.addEventListener("load", function listener() {
+                H.events.dispatch("engineLoaded", {"msg": "asm"});
+            });
+        }
+        d.head.appendChild(script);
+    }
 
     const loadedBins = new Map();
 
@@ -394,8 +387,8 @@
          * @returns {undefined}
          */
         function fetchBinary(p, f, n, m) {
-            if (!loadedBins.has(n)) {
-                loadedBins.set(n, true);
+            if (!loadedBins.has(f)) {
+                loadedBins.set(f, [m]);
                 window.fetch(p + f).then(
                     function resolve(response) {
                         if (response.ok) {
@@ -405,13 +398,25 @@
                                         return new WebAssembly.Module(buf);
                                     }
                                 ));
+                                H.events.dispatch("engineLoaded", {"msg": m});
                             } else {
-                                H.binaries.set(n, response.arrayBuffer());
+                                loadedBins.get(f).
+                                    forEach(function eachHpb(rn) {
+                                        H.binaries.set(
+                                            rn,
+                                            response.clone().arrayBuffer()
+                                        );
+                                        H.events.dispatch(
+                                            "hpbLoaded",
+                                            {"msg": rn}
+                                        );
+                                    });
                             }
-                            H.events.dispatch(m[0], {"msg": m[1]});
                         }
                     }
                 );
+            } else if (n !== "hyphenEngine") {
+                loadedBins.get(f).push(m);
             }
         }
 
@@ -424,16 +429,28 @@
          * @returns {undefined}
          */
         function requestBinary(p, f, n, m) {
-            if (!loadedBins.has(n)) {
-                loadedBins.set(n, true);
+            /* eslint-disable-next-line no-negated-condition */
+            if (!loadedBins.has(f)) {
+                loadedBins.set(f, [m]);
                 const xhr = new XMLHttpRequest();
                 xhr.onload = function onload() {
-                    H.binaries.set(n, xhr.response);
-                    H.events.dispatch(m[0], {"msg": m[1]});
+                    loadedBins.get(f).
+                        forEach(function eachHpb(rn) {
+                            H.binaries.set(
+                                rn,
+                                xhr.response
+                            );
+                            H.events.dispatch(
+                                "hpbLoaded",
+                                {"msg": rn}
+                            );
+                        });
                 };
                 xhr.open("GET", p + f);
                 xhr.responseType = "arraybuffer";
                 xhr.send();
+            } else {
+                loadedBins.get(f).push(m);
             }
         }
         if (H.clientFeat.wasm) {
@@ -618,44 +635,34 @@
          * @param {string} lang The language
          * @returns {undefined}
          */
-        function loadRessources(lang) {
+        function loadPattern(lang) {
             let filename = lang + ".hpb";
+            let langFallback = lang;
             if (H.lcFallbacks && H.lcFallbacks.has(lang)) {
-                filename = H.lcFallbacks.get(lang) + ".hpb";
+                langFallback = H.lcFallbacks.get(lang);
+                filename = langFallback + ".hpb";
             }
             H.binaries = H.binaries || new Map();
-            featureTestWasm();
-            scriptLoader(H.dfltPaths.maindir, "Hyphenopoly.js");
-            if (H.clientFeat.wasm) {
-                binLoader(
-                    H.dfltPaths.maindir,
-                    "hyphenEngine.wasm",
-                    "hyphenEngine",
-                    ["engineLoaded", "wasm"]
-                );
-            } else {
-                scriptLoader(H.dfltPaths.maindir, "hyphenEngine.asm.js");
-            }
-            binLoader(H.dfltPaths.patterndir, filename, lang, ["hpbLoaded", lang]);
-            allocateMemory(lang);
-            exposeHyphenateFunction(lang);
+            binLoader(H.dfltPaths.patterndir, filename, langFallback, lang);
         }
+        featureTestWasm();
         H.lcRequire.forEach(function eachReq(value, lang) {
             /* eslint-disable security/detect-object-injection */
             if (value === "FORCEHYPHENOPOLY") {
                 H.clientFeat.polyfill = true;
                 H.clientFeat.langs[lang] = "H9Y";
-                loadRessources(lang);
+                loadPattern(lang);
             } else if (
                 H.clientFeat.langs[lang] &&
                 H.clientFeat.langs[lang] === "H9Y"
             ) {
-                loadRessources(lang);
+                loadPattern(lang);
             } else {
                 tester.create(lang);
             }
             /* eslint-enable security/detect-object-injection */
         });
+
         const testContainer = tester.append(d.documentElement);
         if (testContainer !== null) {
             H.lcRequire.forEach(function eachReq(value, lang) {
@@ -667,12 +674,33 @@
                     } else {
                         H.clientFeat.polyfill = true;
                         H.clientFeat.langs[lang] = "H9Y";
-                        loadRessources(lang);
+                        loadPattern(lang);
                     }
                     /* eslint-enable security/detect-object-injection */
                 }
             });
             tester.clear();
+        }
+        if (H.clientFeat.polyfill) {
+            scriptLoader(H.dfltPaths.maindir, "Hyphenopoly.js");
+            if (H.clientFeat.wasm) {
+                binLoader(
+                    H.dfltPaths.maindir,
+                    "hyphenEngine.wasm",
+                    "hyphenEngine",
+                    "wasm"
+                );
+            } else {
+                scriptLoader(H.dfltPaths.maindir, "hyphenEngine.asm.js");
+            }
+            Object.keys(H.clientFeat.langs).forEach(function prepareEach(lang) {
+                /* eslint-disable security/detect-object-injection */
+                if (H.clientFeat.langs[lang] === "H9Y") {
+                    allocateMemory(lang);
+                    exposeHyphenateFunction(lang);
+                }
+                /* eslint-enable security/detect-object-injection */
+            });
         }
     }());
 
