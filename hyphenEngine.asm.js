@@ -1,6 +1,6 @@
 /**
  * @license hyphenEngine.asm.js 2.7.1-devel - client side hyphenation for webbrowsers
- * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
