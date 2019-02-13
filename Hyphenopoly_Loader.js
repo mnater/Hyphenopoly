@@ -400,17 +400,19 @@
                                 ));
                                 H.events.dispatch("engineLoaded", {"msg": m});
                             } else {
-                                loadedBins.get(f).
-                                    forEach(function eachHpb(rn) {
-                                        H.binaries.set(
-                                            rn,
-                                            response.clone().arrayBuffer()
-                                        );
-                                        H.events.dispatch(
-                                            "hpbLoaded",
-                                            {"msg": rn}
-                                        );
-                                    });
+                                const files = loadedBins.get(f);
+                                files.forEach(function eachHpb(rn) {
+                                    H.binaries.set(
+                                        rn,
+                                        (files.length > 1)
+                                            ? response.clone().arrayBuffer()
+                                            : response.arrayBuffer()
+                                    );
+                                    H.events.dispatch(
+                                        "hpbLoaded",
+                                        {"msg": rn}
+                                    );
+                                });
                             }
                         }
                     }
