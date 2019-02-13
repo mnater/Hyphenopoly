@@ -695,7 +695,7 @@
             } else {
                 scriptLoader(H.dfltPaths.maindir, "hyphenEngine.asm.js");
             }
-            Object.keys(H.clientFeat.langs).forEach(function prepareEach(lang) {
+            eachKey(H.clientFeat.langs, function prepareEach(lang) {
                 /* eslint-disable security/detect-object-injection */
                 if (H.clientFeat.langs[lang] === "H9Y") {
                     allocateMemory(lang);
