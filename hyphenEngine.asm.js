@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
-
+/* eslint-disable */
 function asmHyphenEngine(std, ext, heap) {
     "use asm";
     var ui8 = new std.Uint8Array(heap);
