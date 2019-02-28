@@ -1,5 +1,10 @@
 # Version History
 
+## Version 2.8.0 (Feb 28, 2019)
+*   the error event now accepts a `lvl` field ("info"/"warn"/"error") and logs accordingly (issue #56)
+*   add list of supported languages in hyphenopoly.module.js (issue #57)
+*   improve loading of ressources (issue #58)
+
 ## Version 2.7.0 (Feb 01, 2019)
 *   implement sync mode for node module (issue #43)
 *   implement sync mode for hyphenopoly.module.js (issue #47)
