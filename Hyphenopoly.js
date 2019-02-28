@@ -1,6 +1,6 @@
 /**
- * @license Hyphenopoly 2.7.0 - client side hyphenation for webbrowsers
- * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ * @license Hyphenopoly 2.8.0 - client side hyphenation for webbrowsers
+ * ©2019 Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
@@ -324,7 +324,10 @@
                         registerOnCopy(el);
                     }
                 } else if (!H.clientFeat.langs[eLang]) {
-                    H.events.dispatch("error", {"msg": "Element with '" + eLang + "' found, but '" + eLang + ".hpb' not loaded. Check language tags!"});
+                    H.events.dispatch("error", {
+                        "lvl": "warn",
+                        "msg": "Element with '" + eLang + "' found, but '" + eLang + ".hpb' not loaded. Check language tags!"
+                    });
                 }
                 /* eslint-enable security/detect-object-injection */
                 const cn = el.childNodes;
@@ -404,7 +407,10 @@
                         );
                     } else if (word.indexOf("-") === -1) {
                         if (word.length > 61) {
-                            H.events.dispatch("error", {"msg": "found word longer than 61 characters"});
+                            H.events.dispatch("error", {
+                                "lvl": "warn",
+                                "msg": "found word longer than 61 characters"
+                            });
                             hw = word;
                         } else {
                         /* eslint-disable security/detect-object-injection */
@@ -577,7 +583,10 @@
                     hyphenate(lang, elo.selector, elo.element);
                 });
             } else {
-                H.events.dispatch("error", {"msg": "engine for language '" + lang + "' loaded, but no elements found."});
+                H.events.dispatch("error", {
+                    "lvl": "warn",
+                    "msg": "engine for language '" + lang + "' loaded, but no elements found."
+                });
             }
             if (elements.counter[0] === 0) {
                 H.events.dispatch("hyphenopolyEnd");

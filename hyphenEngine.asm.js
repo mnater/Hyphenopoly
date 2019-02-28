@@ -1,12 +1,12 @@
 /**
- * @license hyphenEngine.asm.js 2.7.0 - client side hyphenation for webbrowsers
- * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ * @license hyphenEngine.asm.js 2.8.0 - client side hyphenation for webbrowsers
+ * ©2019 Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
-
+/* eslint-disable */
 function asmHyphenEngine(std, ext, heap) {
     "use asm";
     var ui8 = new std.Uint8Array(heap);

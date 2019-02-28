@@ -1,6 +1,6 @@
 /**
- * @license Hyphenopoly.module.js 2.7.0 - hyphenation for node
- * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ * @license Hyphenopoly.module.js 2.8.0 - hyphenation for node
+ * ©2019 Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
@@ -56,6 +56,80 @@ function setProp(val, props) {
 
 const H = empty();
 H.binaries = new Map();
+
+H.supportedLanguages = [
+    "af",
+    "as",
+    "be",
+    "bg",
+    "bn",
+    "ca",
+    "cs",
+    "cy",
+    "da",
+    "de",
+    "el-monoton",
+    "el-polyton",
+    "en-gb",
+    "en-us",
+    "eo",
+    "es",
+    "et",
+    "eu",
+    "fi",
+    "fr",
+    "fur",
+    "ga",
+    "gl",
+    "grc",
+    "gu",
+    "hi",
+    "hr",
+    "hsb",
+    "hu",
+    "hy",
+    "ia",
+    "id",
+    "is",
+    "it",
+    "ka",
+    "kmr",
+    "kn",
+    "la-x-liturgic",
+    "la",
+    "lt",
+    "lv",
+    "ml",
+    "mn-cyrl",
+    "mr",
+    "mul-ethi",
+    "nb-no",
+    "nl",
+    "nn",
+    "oc",
+    "or",
+    "pa",
+    "pl",
+    "pms",
+    "pt",
+    "rm",
+    "ro",
+    "ru",
+    "sa",
+    "sh-cyrl",
+    "sh-latn",
+    "sk",
+    "sl",
+    "sr-cyrl",
+    "sv",
+    "ta",
+    "te",
+    "th",
+    "tk",
+    "tr",
+    "uk",
+    "zh-latn-pinyin"
+];
 
 /**
  * Read a file and call callback
