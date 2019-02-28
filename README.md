@@ -126,6 +126,10 @@ hyphenate_de("Silbentrennung verbessert den Blocksatz.");
 ## Support this project
 [![paypal](https://www.paypal.com/en_US/i/btn/btn_donateCC_LG_global.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SYNZKB8Z2FRQY)
 
+<a href="https://opencollective.com/hyphenopoly/donate" target="_blank">
+  <img src="https://opencollective.com/hyphenopoly/donate/button@2x.png?color=blue" width=300 />
+</a>
+
 ## Automatic hyphenation
 The algorithm used for hyphenation was developed by Franklin M. Liang for TeX. It works more or less like this:
 
