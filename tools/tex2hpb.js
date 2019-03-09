@@ -1,4 +1,9 @@
-/* tex2hpb – Version 1.0
+/* eslint-disable complexity */
+/* eslint-disable security/detect-non-literal-fs-filename */
+/* eslint-disable no-console, no-sync */
+/* eslint-env node */
+/*
+ * Convert TeX-patterns to hpb: tex2hpb – Version 1.0
  *
  * This tool converts hyphenation patterns from TeX
  * (https://ctan.org/tex-archive/language/hyph-utf8)
@@ -6,7 +11,7 @@
  * (https://github.com/mnater/Hyphenopoly)
  *
  * Usage:
- * # node tex2hpb.js license.txt characters.txt patterns.txt [exceptions.txt | null] outname
+ * # node tex2hpb.js lic.txt chars.txt pat.txt [exc.txt | null] outname
  *
  * This creates a new file called input.hpb in pwd
  *
@@ -15,15 +20,12 @@
  * license.txt
  * Some licenses require to be included in every distribution of the work.
  * If not empty the license.txt file must contain the license of the patterns.
- * Each line of the license begins with a percent sign (%) and ends with a
  * newline (0x0a).
  *
  * characters.txt
  * When creating the pattern trie, characters of the languages alphabet are
  * mapped to internal small integers. The program thus need to know which
  * characters are used in the language.
- * Each character used by the language occupies one line.
- * On each line the first character is the "main character" used
  * in the patterns followed by other representations of the same
  * character, if any (e.g. its uppercase form):
  * Example:
@@ -34,7 +36,6 @@
  * Character groups are not supported, yet (e.g. german ßSS is invalid).
  *
  * patterns.txt must be a utf-8 encoded file of two parts:
- * 1: first line contains two 1-digit numbers indicating leftmin and
  *    rightmin. Typically: 22
  *    For many patterns you'll find these numbers in the license text or on
  *    http://www.hyphenation.org/#languages
@@ -43,8 +44,6 @@
  *    newline (0x0a).
  *
  * The optional exceptions.txt contains exceptional hyphenations that are
- * not covered by the patterns. Each exception occupies one line, ending with
- * a new line (0x0a). Exceptions are words containing a minus (-) to indicate
  * hyphenation points.
  * Example:
  * ta-ble
@@ -62,7 +61,8 @@
  * be stored. The .hpb ending is added automatically.
  */
 
-/* Binary format: .hpb (hyphenopoly patterns binary)
+/*
+ * Binary format: .hpb (hyphenopoly patterns binary)
  * The hyphenopoly patterns binary stores hyphenation patterns
  * for one language in a tight format shaped for fast loading
  * and execution by Hyphenopoly.js
@@ -83,7 +83,6 @@
  * [5]: rightmin
  * [6]: Trie Array Size (needed to preallocate memory)
  * [7]: Values Size (needed to preallocate memory)
-
  *
  * LICENSE
  * UTF-8 encoded license text, padded to 4 bytes
@@ -145,8 +144,8 @@
  * values to achieve better compression rates.
  */
 
+"use strict";
 const fs = require("fs");
-const path = require("path");
 
 const VERSION = 1;
 const licenseFileName = process.argv[2];
@@ -158,26 +157,34 @@ const saveFileName = process.argv[6];
 let leftmin = 2;
 let rightmin = 2;
 
-const logger = (function () {
-    "use strict";
+const logger = (function createLogger() {
     let msgNr = 1;
 
+    /**
+     * Logs text to console.
+     * @param {string} text - The text to be logged
+     * @param {boolean} indent - If true, indents log by 4 spaces
+     */
     function log(text, indent) {
-        if (!indent) {
+        if (indent) {
+            console.log(`    \x1b[34m${text}\x1b[0m`);
+        } else {
             console.log(`\x1b[33m(${msgNr.toString(16)})\x1b[0m: \x1b[34m${text}\x1b[0m`);
             msgNr += 1;
-        } else {
-            console.log(`     \x1b[34m${text}\x1b[0m`);
         }
     }
 
     return {
-        log: log
+        "log": log
     };
 }());
 
+/**
+ * Create the magic number (the first 32Bits of the .hpb-file).
+ * The MagicNumber contains the utf8 code for the letters "hpb" and
+ * the version as digit (e.g. hpb1 -> 104,112,98,1 -> 68,70,62,01 in hex)
+ */
 function createMagicNumber() {
-    "use strict";
     const mnstring = "hpb";
     const mnarray = [];
     let i = 0;
@@ -191,18 +198,29 @@ function createMagicNumber() {
     return mnui32[0];
 }
 
-function createHeader(licenseLength, translateLength, trieLength, valueLength, patternLength) {
-    "use strict";
-    /*
-     * [0]: magic number 0x01627068 (\hpb1, 1 is the version)
-     * [1]: TRANSLATE offset (to skip LICENSE)
-     * [2]: PATTERNS offset (skip LICENSE + TRANSLATE)
-     * [3]: patternlength (bytes)
-     * [4]: leftmin
-     * [5]: rightmin
-     * [6]: Trie Array Size (needed to preallocate memory)
-     * [7]: Values Size (needed to preallocate memory)
-    */
+/**
+ * Create the header of the hpb file. The header contains 8 32bit values:
+ * [0]: magic number 0x01627068 (\hpb1, 1 is the version)
+ * [1]: TRANSLATE offset (to skip LICENSE)
+ * [2]: PATTERNS offset (skip LICENSE + TRANSLATE)
+ * [3]: patternlength (bytes)
+ * [4]: leftmin
+ * [5]: rightmin
+ * [6]: Trie Array Size (needed to preallocate memory)
+ * [7]: Values Size (needed to preallocate memory)
+ * @param {number} licenseLength - Length of the licence
+ * @param {number} translateLength - Length of the translate
+ * @param {number} trieLength - Length of the pattern trie
+ * @param {number} valueLength - Length of the value list
+ * @param {number} patternLength - Length of the raw patterns
+ */
+function createHeader(
+    licenseLength,
+    translateLength,
+    trieLength,
+    valueLength,
+    patternLength
+) {
     const headerui32 = new Uint32Array(8);
     const translateByteOffset = headerui32.byteLength + licenseLength;
     const patternByteOffset = translateByteOffset + translateLength;
@@ -217,28 +235,34 @@ function createHeader(licenseLength, translateLength, trieLength, valueLength, p
     return headerui32;
 }
 
+/**
+ * Read .lic.txt File
+ */
 function getLicenseFileBuffer() {
-    "use strict";
     logger.log(`read license file: ${licenseFileName} (${fs.statSync(licenseFileName).size} Bytes)`);
-    let licensefile = fs.readFileSync("./" + licenseFileName);
+    const licensefile = fs.readFileSync("./" + licenseFileName);
     return licensefile;
 }
 
+/**
+ * Read .chr.txt File
+ */
 function getCharactersFile() {
-    "use strict";
     logger.log(`read characters file: ${charactersFileName} (${fs.statSync(charactersFileName).size} Bytes)`);
     let charactersfile = fs.readFileSync("./" + charactersFileName, "utf8");
     charactersfile = charactersfile.trim();
     return charactersfile;
 }
 
+/**
+ * Read .pat.txt File
+ */
 function getPatternsFile() {
-    "use strict";
     logger.log(`read patterns file: ${patternsFileName} (${fs.statSync(patternsFileName).size} Bytes)`);
     let patternsfile = fs.readFileSync("./" + patternsFileName, "utf8");
     patternsfile = patternsfile.trim();
-    patternsfile = patternsfile.replace(/(\d{2})\n/, function (ignore, p1) {
-        let digits = p1.split("");
+    patternsfile = patternsfile.replace(/(\d{2})\n/, function repl(ignore, p1) {
+        const digits = p1.split("");
         leftmin = parseInt(digits[0], 10);
         rightmin = parseInt(digits[1], 10);
         logger.log(`set leftmin: ${leftmin}, rightmin: ${rightmin}`);
@@ -249,21 +273,27 @@ function getPatternsFile() {
     return patternsfile;
 }
 
+/**
+ * Read .hyp.txt File
+ */
 function getExceptionsFile() {
-    "use strict";
     if (exceptionsFileName && exceptionsFileName !== "null") {
         logger.log(`read exceptions file: ${exceptionsFileName} (${fs.statSync(exceptionsFileName).size} Bytes)`);
-        let exceptionsfile = fs.readFileSync("./" + exceptionsFileName, "utf8");
+        const exceptionsfile = fs.readFileSync("./" + exceptionsFileName, "utf8");
         return exceptionsfile;
     }
     logger.log("no exceptions");
     return null;
 }
 
+/**
+ * Create translateTable
+ * @param {string} characters - List of chars
+ */
 function createTranslate(characters) {
-    "use strict";
     const lines = characters.split("\n");
-    const translateTable = [0]; //index 0: alphabet length
+    // At index 0: alphabet length
+    const translateTable = [0];
     const substitutions = [];
     const logalpha = [];
     const logsubst = [];
@@ -273,7 +303,7 @@ function createTranslate(characters) {
     translateTable.push(0);
     translateTable[0] += 1;
 
-    lines.forEach(function (value) {
+    lines.forEach(function eachLine(value) {
         translateTable[0] += 1;
         if (value.length === 2) {
             translateTable.push(value.charCodeAt(0));
@@ -286,7 +316,7 @@ function createTranslate(characters) {
             logalpha.push(value.charAt(0));
             logalpha.push("⎵");
         } else if (value.length > 2) {
-            //substitutions
+            // Substitutions
             translateTable.push(value.charCodeAt(0));
             translateTable.push(value.charCodeAt(1));
             logalpha.push(value.charAt(0));
@@ -308,20 +338,26 @@ function createTranslate(characters) {
     return ui16;
 }
 
+/**
+ * Create a lookup table from the translate table
+ * @param {Uint16Array} translate - Translate table
+ */
 function createTranslateLookUpTable(translate) {
-    "use strict";
+    // eslint-disable-next-line no-bitwise
     const lookuptable = new Uint16Array(2 << 15);
     let i = 1;
     let k = 12;
     while (i < translate.length) {
         if (lookuptable[translate[i + 1]] === 0) {
+            // eslint-disable-next-line security/detect-object-injection
             lookuptable[translate[i]] = k;
             if (translate[i + 1] !== 0) {
                 lookuptable[translate[i + 1]] = k;
             }
             k += 1;
         } else {
-            //substitute
+            // Substitute
+            // eslint-disable-next-line security/detect-object-injection
             lookuptable[translate[i]] = lookuptable[translate[i + 1]];
         }
         i += 2;
@@ -330,25 +366,37 @@ function createTranslateLookUpTable(translate) {
     return lookuptable;
 }
 
+/**
+ * Create special patterns from exceptions
+ * @param {string} exceptions - List of exceptions
+ */
 function createExceptionPatterns(exceptions) {
     const lines = exceptions.split("\n");
     const ret = [];
-    lines.forEach(function (value, index) {
+    lines.forEach(function eachLine(value, index) {
         if (value !== "") {
-            ret[index] = "_" + value.split("").map(function (c) {
+            // eslint-disable-next-line security/detect-object-injection
+            ret[index] = "_" + value.split("").map(function mapper(c) {
                 if (c === "-") {
                     return "11";
-                } else {
-                    return "10" + c;
                 }
-            }).join("").replace(/1110/gi, "11") + "10_";
+                return "10" + c;
+            }).
+                join("").
+                replace(/1110/gi, "11") + "10_";
         }
     });
     return ret.join(" ");
 }
 
+/**
+ * Convert TeX-patterns to hpb-patterns
+ * @param {Uint16Array} translate - The translate table
+ * @param {string} patterns - The TeX-patterns
+ * @param {string} exceptionsfile - The content of the .hyp.txt
+ */
 function createPatterns(translate, patterns, exceptionsfile) {
-    "use strict";
+    /* eslint-disable security/detect-object-injection */
     const lookuptable = createTranslateLookUpTable(translate);
     const allExceptions = createExceptionPatterns(exceptionsfile);
     if (allExceptions !== "") {
@@ -356,7 +404,8 @@ function createPatterns(translate, patterns, exceptionsfile) {
     }
     const allPatterns = patterns.split(" ");
     const exceptions = [];
-    const translatedPatterns = allPatterns.map(function (pat) {
+    // eslint-disable-next-line complexity
+    const translatedPatterns = allPatterns.map(function mapper(pat) {
         let i = 0;
         let cP1 = 0;
         let cP2 = 0;
@@ -370,7 +419,7 @@ function createPatterns(translate, patterns, exceptionsfile) {
                 cP2 = pat.codePointAt(i + 1);
                 if (cP2 && (cP2 < 57 && cP2 > 47)) {
                     isException = true;
-                    ret.push(10 * (cP1 - 48) + (cP2 - 48));
+                    ret.push((10 * (cP1 - 48)) + (cP2 - 48));
                     i += 1;
                 } else {
                     ret.push(cP1 - 48);
@@ -385,13 +434,14 @@ function createPatterns(translate, patterns, exceptionsfile) {
     });
     logger.log(`found ${exceptions.length} pattern exceptions`);
 
-    const groupedPatterns = {};
+    const groupedPatterns = Object.create(null);
     let patternLength = 0;
     let i = 0;
     let longestP = 0;
     let shortestP = Number.MAX_SAFE_INTEGER;
     while (i < translatedPatterns.length) {
         patternLength = translatedPatterns[i].length;
+        // eslint-disable-next-line no-prototype-builtins
         if (groupedPatterns.hasOwnProperty(patternLength)) {
             groupedPatterns[patternLength].push(translatedPatterns[i]);
         } else {
@@ -401,7 +451,7 @@ function createPatterns(translate, patterns, exceptionsfile) {
     }
 
     const outPatterns = [];
-    Object.keys(groupedPatterns).forEach(function (k) {
+    Object.keys(groupedPatterns).forEach(function eachPatternLength(k) {
         groupedPatterns[k].sort();
         outPatterns.push(58);
         outPatterns.push(parseInt(k, 10));
@@ -419,14 +469,20 @@ function createPatterns(translate, patterns, exceptionsfile) {
             l += 1;
         }
     });
-    logger.log(`grouped and sorted patterns: shortest: ${shortestP}, longest: ${longestP}`)
+    logger.log(`grouped and sorted patterns: shortest: ${shortestP}, longest: ${longestP}`);
     return Uint8Array.from(outPatterns);
+    // eslint-enable security/detect-object-injection
 }
 
+/**
+ * Create the patterns trie
+ * @param {Uint8Array} patterns - hpb-patterns
+ * @param {number} trieRowLength - number of characters
+ */
 function TrieCreator(patterns, trieRowLength) {
-    "use strict";
     let i = 0;
-    let mode = 0; //0: initial, 1: get patternslength, 2: collect trie
+    // 0: initial, 1: get patternslength, 2: collect trie
+    let mode = 0;
     let patternlength = 0;
     let count = 0;
     let rowStart = 0;
@@ -440,25 +496,40 @@ function TrieCreator(patterns, trieRowLength) {
     const patternTrie = [];
     const valueStore = [];
 
+    /**
+     * Add 0 to value store
+     */
     function add0ToValueStore() {
         valueStore[valueStoreCurrentIdx] = 0;
         valueStoreCurrentIdx += 1;
     }
 
+    /**
+     * Add a value to value store
+     * @param {number} p - Value to be added
+     */
     function addToValueStore(p) {
         valueStore[valueStoreCurrentIdx] = p;
         valueStorePrevIdx = valueStoreCurrentIdx;
         valueStoreCurrentIdx += 1;
     }
 
+    /**
+     * Get link to value store index
+     */
     function getLinkToValueStore() {
-        let start = valueStoreNextStartIndex;
-        valueStore[valueStorePrevIdx + 1] = 255; //mark end of pattern
+        const start = valueStoreNextStartIndex;
+        // Mark end of pattern:
+        valueStore[valueStorePrevIdx + 1] = 255;
         valueStoreNextStartIndex = valueStorePrevIdx + 2;
         valueStoreCurrentIdx = valueStoreNextStartIndex;
         return start;
     }
 
+    /**
+     * Add a new Row filled with 0
+     * @param {number} startIndex - From this index
+     */
     function makeRow(startIndex) {
         let s = startIndex;
         while (s < (trieRowLength + startIndex)) {
@@ -468,19 +539,23 @@ function TrieCreator(patterns, trieRowLength) {
         return startIndex;
     }
 
+    /**
+     * Add a codePoint to the Trie
+     * @param {number} codePoint - Translated code Point
+     */
     function addToTrie(codePoint) {
         if (codePoint <= 11) {
-            //its a digit
+            // It's a digit
             addToValueStore(codePoint);
             prevWasDigit = true;
         } else {
-            //charCode is alphabetical
+            // The charCode is alphabetical
             if (!prevWasDigit) {
                 add0ToValueStore();
             }
             prevWasDigit = false;
             if (nextRowStart === -1) {
-                //start a new row
+                // Start a new row
                 nextRowStart = trieNextEmptyRow + trieRowLength + 1;
                 trieNextEmptyRow = nextRowStart;
                 patternTrie[rowStart + rowOffset] = makeRow(nextRowStart);
@@ -495,9 +570,13 @@ function TrieCreator(patterns, trieRowLength) {
         }
     }
 
+    /**
+     * Add last codePoint of a pattern to the Trie
+     * @param {number} codePoint - Translated code Point
+     */
     function terminateTrie(codePoint) {
         if (codePoint <= 11) {
-            //its a digit
+            // It's a digit
             patternTrie[rowStart + rowOffset + 1] = getLinkToValueStore();
         } else {
             add0ToValueStore();
@@ -531,23 +610,24 @@ function TrieCreator(patterns, trieRowLength) {
         i += 1;
     }
 
-    logger.log(`created Trie.`);
+    logger.log("created Trie.");
     logger.log(`trieLength: ${patternTrie.length}`, true);
     logger.log(`valueStoreLength: ${valueStore.length}`, true);
     return {
-        trieLength: patternTrie.length,
-        valueStoreLength: valueStore.length
+        "trieLength": patternTrie.length,
+        "valueStoreLength": valueStore.length
     };
 }
 
-
+/**
+ * The one function to rule them all...
+ */
 function main() {
-    "use strict";
     const start = process.hrtime();
-    //# license.txt characters.txt patterns.txt [exceptions.txt]
     console.log(`\x1b[35mRunning tex2hbp.js (v${VERSION}) on node.js (${process.version})\x1b[0m`);
     const licenseBuf = getLicenseFileBuffer();
-    const paddedLicenseBuf = licenseBuf.byteLength + 4 - licenseBuf.byteLength % 4;
+    const paddedLicenseBuf = licenseBuf.byteLength + 4 -
+        (licenseBuf.byteLength % 4);
     const charactersfile = getCharactersFile();
     const patternsfile = getPatternsFile();
     const exceptionsfile = getExceptionsFile();
@@ -563,9 +643,10 @@ function main() {
         patterns.byteLength
     );
 
-    let fileBufferSize = header.byteLength + paddedLicenseBuf + translate.byteLength + patterns.byteLength;
-    const pad = 4 - fileBufferSize % 4;
-    fileBufferSize = fileBufferSize + pad;
+    let fileBufferSize = header.byteLength + paddedLicenseBuf +
+        translate.byteLength + patterns.byteLength;
+    const pad = 4 - (fileBufferSize % 4);
+    fileBufferSize += pad;
     const fileBuffer = new ArrayBuffer(fileBufferSize);
     const fileBufferui32 = new Uint32Array(fileBuffer);
     const fileBufferui16 = new Uint16Array(fileBuffer);
@@ -573,9 +654,13 @@ function main() {
 
     fileBufferui32.set(header, 0);
     fileBufferui8.set(licenseBuf, header.byteLength);
+    // eslint-disable-next-line no-bitwise
     fileBufferui16.set(translate, (header.byteLength + paddedLicenseBuf) >> 1);
-    fileBufferui8.set(patterns, header.byteLength + paddedLicenseBuf + translate.byteLength);
-    fs.writeFile(saveFileName + ".hpb", fileBufferui8, function (err) {
+    fileBufferui8.set(
+        patterns,
+        header.byteLength + paddedLicenseBuf + translate.byteLength
+    );
+    fs.writeFile(saveFileName + ".hpb", fileBufferui8, function cb(err) {
         if (err) {
             console.log(err);
         } else {
