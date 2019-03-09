@@ -434,7 +434,7 @@ function createPatterns(translate, patterns, exceptionsfile) {
     });
     logger.log(`found ${exceptions.length} pattern exceptions`);
 
-    const groupedPatterns = Object.create(null);
+    const groupedPatterns = {};
     let patternLength = 0;
     let i = 0;
     let longestP = 0;
