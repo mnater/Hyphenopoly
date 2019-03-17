@@ -1,5 +1,7 @@
 # Hyphenopoly.js
 [![Build Status](https://travis-ci.org/mnater/Hyphenopoly.svg?branch=master)](https://travis-ci.org/mnater/Hyphenopoly) [![Coverage Status](https://coveralls.io/repos/github/mnater/Hyphenopoly/badge.svg?branch=master)](https://coveralls.io/github/mnater/Hyphenopoly?branch=master) [![dependencies Status](https://david-dm.org/mnater/Hyphenopoly/status.svg)](https://david-dm.org/mnater/Hyphenopoly) [![devDependencies Status](https://david-dm.org/mnater/Hyphenopoly/dev-status.svg)](https://david-dm.org/mnater/Hyphenopoly?type=dev) [![npms score](https://badges.npms.io/hyphenopoly.svg)](https://npms.io/search?q=hyphenopoly) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/de50e1ae70a64a47b0bd9b5449f89353)](https://www.codacy.com/app/mnater/Hyphenopoly?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mnater/Hyphenopoly&amp;utm_campaign=Badge_Grade)
+[![Backers on Open Collective](https://opencollective.com/Hyphenopoly/backers/badge.svg)](#backers) 
+[![Sponsors on Open Collective](https://opencollective.com/Hyphenopoly/sponsors/badge.svg)](#sponsors) 
 
 Hyphenopoly.js is a __JavaScript-polyfill for hyphenation in HTML__: it hyphenates text if the user agent does not support CSS-hyphenation at all or not for the required languages and it is a __Node.js-module__.
 
@@ -177,3 +179,33 @@ If you need one of those features use Hyphenator.js – or give some feedback an
 
 On the other hand Hyphenopoly has a much finer-grained configuration system that allows you to make settings based on CSS-classes.
 And last but not least it is faster than Hyphenator.js
+
+## Contributors
+
+This project exists thanks to all the people who contribute. 
+<a href="https://github.com/mnater/Hyphenopoly/graphs/contributors"><img src="https://opencollective.com/Hyphenopoly/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/Hyphenopoly#backer)]
+
+<a href="https://opencollective.com/Hyphenopoly#backers" target="_blank"><img src="https://opencollective.com/Hyphenopoly/backers.svg?width=890"></a>
+
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/Hyphenopoly#sponsor)]
+
+<a href="https://opencollective.com/Hyphenopoly/sponsor/0/website" target="_blank"><img src="https://opencollective.com/Hyphenopoly/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/Hyphenopoly/sponsor/1/website" target="_blank"><img src="https://opencollective.com/Hyphenopoly/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/Hyphenopoly/sponsor/2/website" target="_blank"><img src="https://opencollective.com/Hyphenopoly/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/Hyphenopoly/sponsor/3/website" target="_blank"><img src="https://opencollective.com/Hyphenopoly/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/Hyphenopoly/sponsor/4/website" target="_blank"><img src="https://opencollective.com/Hyphenopoly/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/Hyphenopoly/sponsor/5/website" target="_blank"><img src="https://opencollective.com/Hyphenopoly/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/Hyphenopoly/sponsor/6/website" target="_blank"><img src="https://opencollective.com/Hyphenopoly/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/Hyphenopoly/sponsor/7/website" target="_blank"><img src="https://opencollective.com/Hyphenopoly/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/Hyphenopoly/sponsor/8/website" target="_blank"><img src="https://opencollective.com/Hyphenopoly/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/Hyphenopoly/sponsor/9/website" target="_blank"><img src="https://opencollective.com/Hyphenopoly/sponsor/9/avatar.svg"></a>
+
+
