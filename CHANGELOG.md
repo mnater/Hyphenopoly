@@ -1,5 +1,16 @@
 # Version History
 
+## Unreleased
+### Changed
+*   implement new hyphenation pattern binary (.hpb) format (issue #61)
+    *   update patterns to new format and include left-/rightmin according to source
+    *   update hyphenEngine.asm/.wasm to consume new pattern format
+    *   implement .hpb-version-check in Hyphenopoly.js and hyphenopoly.module.js
+    *   fix issue #65
+
+### Added
+*   tearDown event (issue #67)
+
 ## Version 2.8.0 (Feb 28, 2019)
 *   the error event now accepts a `lvl` field ("info"/"warn"/"error") and logs accordingly (issue #56)
 *   add list of supported languages in hyphenopoly.module.js (issue #57)
