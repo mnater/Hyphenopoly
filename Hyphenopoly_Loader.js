@@ -63,16 +63,6 @@
     (function configSetup() {
         if (H.setup) {
             H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
-            if (H.setup.classnames) {
-                // Convert classnames to selectors
-                eachKey(H.setup.classnames, function cn2sel(cn) {
-                    /* eslint-disable security/detect-object-injection */
-                    H.setup.selectors["." + cn] = H.setup.classnames[cn];
-                    /* eslint-enable security/detect-object-injection */
-                });
-                H.setup.classnames = null;
-                delete H.setup.classnames;
-            }
             H.setup.timeout = H.setup.timeout || 1000;
             H.setup.hide = H.setup.hide || "all";
         } else {

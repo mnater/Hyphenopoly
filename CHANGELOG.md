@@ -11,6 +11,9 @@
 ### Added
 *   tearDown event (issue #67)
 
+### Removed
+*   remove `Hyphenopoly.setup.classnames` – use [selectors](https://github.com/mnater/Hyphenopoly/wiki/Global-Hyphenopoly-Object#new-with-version-260-selectors) instead
+
 ## Version 2.8.0 (Feb 28, 2019)
 *   the error event now accepts a `lvl` field ("info"/"warn"/"error") and logs accordingly (issue #56)
 *   add list of supported languages in hyphenopoly.module.js (issue #57)
