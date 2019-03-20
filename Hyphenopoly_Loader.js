@@ -223,6 +223,12 @@
             false
         );
 
+        define(
+            "tearDown",
+            null,
+            true
+        );
+
         /**
          * Dispatch event <name> with arguments <data>
          * @param {string} name The name of the event
@@ -744,6 +750,7 @@
             handleDCL();
         }
     } else {
+        H.events.dispatch("tearDown", {});
         window.Hyphenopoly = null;
     }
 
