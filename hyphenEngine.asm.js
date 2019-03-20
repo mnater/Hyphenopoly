@@ -114,7 +114,6 @@ function asmHyphenEngine(std, ext, heap) {
         var i = 0;
         var last_i = 0;
         var charAti = 0;
-        var mode = 0; //0: init/collect patterns, 1: get patlen
         var plen = 0;
         var count = 0;
         var prevWasDigit = 0;
@@ -125,7 +124,9 @@ function asmHyphenEngine(std, ext, heap) {
         var valueStoreStartIndex = 0;
         var valueStoreCurrentIdx = 0;
         var valueStorePrevIdx = 0;
-         var alphabetlength = 0;
+        var alphabetlength = 0;
+        var first = 0;
+        var second = 0;
         valueStoreStartIndex = (valueStoreOffset + 1) | 0;
         valueStoreCurrentIdx = (valueStoreOffset + 1) | 0;
         valueStorePrevIdx = (valueStoreOffset + 1) | 0;
@@ -135,54 +136,61 @@ function asmHyphenEngine(std, ext, heap) {
         i = hpbPatternsOffset | 0;
         last_i = hpbPatternsOffset + patternsLength | 0;
         while ((i | 0) < (last_i | 0)) {
-            charAti = ui8[i | 0] | 0;
-            if ((charAti | 0) == 58) { //58 === ":"
-                mode = !mode;
-            } else {
-                if ((mode | 0) == 1) {
-                    plen = charAti | 0;
-                } else {
-                    count = (count + 1) | 0;
-//add to trie
-                    if ((charAti | 0) > 11) {
-                        if ((prevWasDigit | 0) == 0) {
-                            valueStoreCurrentIdx = (valueStoreCurrentIdx + 1) | 0;
-                        }
-                        prevWasDigit = 0;
-                        if ((nextRowStart | 0) == -1) {
-                            //start a new row
-                            trieNextEmptyRow = (trieNextEmptyRow + (((trieRowLength + 1) | 0) << 2)) | 0;
-                            nextRowStart = trieNextEmptyRow;
-                            i32[(patternTrieOffset + rowStart + rowOffset) >> 2] = nextRowStart;
-                        }
-                        rowOffset = ((charAti - 12) | 0) << 3;
-                        rowStart = nextRowStart;
-                        nextRowStart = i32[(patternTrieOffset + rowStart + rowOffset) >> 2] | 0;
-                        if ((nextRowStart | 0) == 0) {
-                            i32[(patternTrieOffset + rowStart + rowOffset) >> 2] = -1;
-                            nextRowStart = -1;
-                        }
-                    } else {
-                        ui8[valueStoreCurrentIdx | 0] = charAti | 0;
-                        valueStorePrevIdx = valueStoreCurrentIdx;
-                        valueStoreCurrentIdx = (valueStoreCurrentIdx + 1) | 0;
-                        prevWasDigit = 1;
-                    }
-                    if ((count | 0) == (plen | 0)) {
-//terminate valueStore and save link to valueStoreStartIndex
-                        ui8[(valueStorePrevIdx + 1) | 0] = 255; //mark end of pattern
-                        i32[(patternTrieOffset + rowStart + rowOffset + 4) >> 2] = (valueStoreStartIndex - valueStoreOffset) | 0;
-//reset indizes
-                        valueStoreStartIndex = (valueStorePrevIdx + 2) | 0;
-                        valueStoreCurrentIdx = valueStoreStartIndex;
-                        count = 0;
-                        rowStart = 0;
-                        nextRowStart = 0;
-                        prevWasDigit = 0;
-                    }
-                }
+            if ((ui8[i | 0] | 0) == 0) {
+                plen = ui8[(i + 1) | 0] | 0;
+                first = ui8[(i + 2) | 0] | 0;
+                second = ui8[(i + 3) | 0] | 0;
+                i = (i + 4) | 0;
             }
-            i = (i + 1) | 0;
+
+            while ((count | 0) < (plen | 0)) {
+                switch (count | 0) {
+                    case 0:
+                    charAti = first;
+                    break;
+                    case 1:
+                    charAti = second;
+                    break;
+                    default:
+                    charAti = ui8[i | 0] | 0;
+                    i = (i + 1) | 0;
+                }
+                if ((charAti | 0) > 11) {
+                    if ((prevWasDigit | 0) == 0) {
+                        valueStoreCurrentIdx = (valueStoreCurrentIdx + 1) | 0;
+                    }
+                    prevWasDigit = 0;
+                    if ((nextRowStart | 0) == -1) {
+                        //start a new row
+                        trieNextEmptyRow = (trieNextEmptyRow + (((trieRowLength + 1) | 0) << 2)) | 0;
+                        nextRowStart = trieNextEmptyRow;
+                        i32[(patternTrieOffset + rowStart + rowOffset) >> 2] = nextRowStart;
+                    }
+                    rowOffset = ((charAti - 12) | 0) << 3;
+                    rowStart = nextRowStart;
+                    nextRowStart = i32[(patternTrieOffset + rowStart + rowOffset) >> 2] | 0;
+                    if ((nextRowStart | 0) == 0) {
+                        i32[(patternTrieOffset + rowStart + rowOffset) >> 2] = -1;
+                        nextRowStart = -1;
+                    }
+                } else {
+                    ui8[valueStoreCurrentIdx | 0] = charAti | 0;
+                    valueStorePrevIdx = valueStoreCurrentIdx;
+                    valueStoreCurrentIdx = (valueStoreCurrentIdx + 1) | 0;
+                    prevWasDigit = 1;
+                }
+                count = (count + 1) | 0;
+            }
+//terminate valueStore and save link to valueStoreStartIndex
+            ui8[(valueStorePrevIdx + 1) | 0] = 255; //mark end of pattern
+            i32[(patternTrieOffset + rowStart + rowOffset + 4) >> 2] = (valueStoreStartIndex - valueStoreOffset) | 0;
+//reset indizes
+            valueStoreStartIndex = (valueStorePrevIdx + 2) | 0;
+            valueStoreCurrentIdx = valueStoreStartIndex;
+            count = 0;
+            rowStart = 0;
+            nextRowStart = 0;
+            prevWasDigit = 0;
         }
         return alphabetlength | 0;
     }

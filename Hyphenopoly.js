@@ -828,6 +828,18 @@
          */
         function calculateBaseData(hpbBuf) {
             const hpbMetaData = new Uint32Array(hpbBuf).subarray(0, 8);
+            if (hpbMetaData[0] !== 40005736) {
+                /*
+                 * Pattern files must begin with "hpb2"
+                 * Get current utf8 values with
+                 * `new Uint8Array(Uint32Array.of(hpbMetaData[0]).buffer)`
+                 */
+                H.events.dispatch("error", {
+                    "lvl": "error",
+                    "msg": "Pattern file format error: " + new Uint8Array(Uint32Array.of(hpbMetaData[0]).buffer)
+                });
+                throw new Error("Pattern file format error!");
+            }
             const valueStoreLength = hpbMetaData[7];
             const valueStoreOffset = 1280;
             const patternTrieOffset = valueStoreOffset + valueStoreLength +

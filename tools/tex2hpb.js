@@ -147,7 +147,7 @@
 "use strict";
 const fs = require("fs");
 
-const VERSION = 1;
+const VERSION = 2;
 const licenseFileName = process.argv[2];
 const charactersFileName = process.argv[3];
 const patternsFileName = process.argv[4];
@@ -451,17 +451,28 @@ function createPatterns(translate, patterns, exceptionsfile) {
     }
 
     const outPatterns = [];
+
     Object.keys(groupedPatterns).forEach(function eachPatternLength(k) {
         groupedPatterns[k].sort();
-        outPatterns.push(58);
-        outPatterns.push(parseInt(k, 10));
-        outPatterns.push(58);
         let l = 0;
         let j = 0;
+        const currentLength = parseInt(k, 10);
+        let currentFirst = 0;
+        let currentSecond = 0;
         longestP = Math.max(longestP, parseInt(k, 10));
         shortestP = Math.min(shortestP, parseInt(k, 10));
         while (l < groupedPatterns[k].length) {
-            j = 0;
+            j = 2;
+            if (currentFirst !== groupedPatterns[k][l][0] ||
+                currentSecond !== groupedPatterns[k][l][1]
+            ) {
+                currentFirst = groupedPatterns[k][l][0];
+                currentSecond = groupedPatterns[k][l][1];
+                outPatterns.push(0);
+                outPatterns.push(currentLength);
+                outPatterns.push(currentFirst);
+                outPatterns.push(currentSecond);
+            }
             while (j < groupedPatterns[k][l].length) {
                 outPatterns.push(groupedPatterns[k][l][j]);
                 j += 1;
@@ -469,6 +480,27 @@ function createPatterns(translate, patterns, exceptionsfile) {
             l += 1;
         }
     });
+
+    /*
+     * Object.keys(groupedPatterns).forEach(function eachPatternLength(k) {
+     * groupedPatterns[k].sort();
+     * outPatterns.push(58);
+     * outPatterns.push(parseInt(k, 10));
+     * outPatterns.push(58);
+     * let l = 0;
+     * let j = 0;
+     * longestP = Math.max(longestP, parseInt(k, 10));
+     * shortestP = Math.min(shortestP, parseInt(k, 10));
+     * while (l < groupedPatterns[k].length) {
+     * j = 0;
+     * while (j < groupedPatterns[k][l].length) {
+     * outPatterns.push(groupedPatterns[k][l][j]);
+     * j += 1;
+     * }
+     * l += 1;
+     * }
+     * });
+     */
     logger.log(`grouped and sorted patterns: shortest: ${shortestP}, longest: ${longestP}`);
     return Uint8Array.from(outPatterns);
     // eslint-enable security/detect-object-injection
@@ -481,8 +513,6 @@ function createPatterns(translate, patterns, exceptionsfile) {
  */
 function TrieCreator(patterns, trieRowLength) {
     let i = 0;
-    // 0: initial, 1: get patternslength, 2: collect trie
-    let mode = 0;
     let patternlength = 0;
     let count = 0;
     let rowStart = 0;
@@ -544,20 +574,16 @@ function TrieCreator(patterns, trieRowLength) {
      * @param {number} codePoint - Translated code Point
      */
     function addToTrie(codePoint) {
-        if (codePoint <= 11) {
-            // It's a digit
-            addToValueStore(codePoint);
-            prevWasDigit = true;
-        } else {
-            // The charCode is alphabetical
+        if (codePoint > 11) {
+            // It's a char
             if (!prevWasDigit) {
                 add0ToValueStore();
             }
             prevWasDigit = false;
             if (nextRowStart === -1) {
                 // Start a new row
-                nextRowStart = trieNextEmptyRow + trieRowLength + 1;
-                trieNextEmptyRow = nextRowStart;
+                trieNextEmptyRow = trieNextEmptyRow + trieRowLength + 1;
+                nextRowStart = trieNextEmptyRow;
                 patternTrie[rowStart + rowOffset] = makeRow(nextRowStart);
             }
             rowOffset = (codePoint - 12) * 2;
@@ -567,6 +593,10 @@ function TrieCreator(patterns, trieRowLength) {
                 patternTrie[rowStart + rowOffset] = -1;
                 nextRowStart = -1;
             }
+        } else {
+            // It's a digit
+            addToValueStore(codePoint);
+            prevWasDigit = true;
         }
     }
 
@@ -574,42 +604,46 @@ function TrieCreator(patterns, trieRowLength) {
      * Add last codePoint of a pattern to the Trie
      * @param {number} codePoint - Translated code Point
      */
-    function terminateTrie(codePoint) {
-        if (codePoint <= 11) {
-            // It's a digit
-            patternTrie[rowStart + rowOffset + 1] = getLinkToValueStore();
-        } else {
-            add0ToValueStore();
-            if (patternTrie[rowStart + rowOffset + 1] === 0) {
-                patternTrie[rowStart + rowOffset] = -1;
-            }
-            patternTrie[rowStart + rowOffset + 1] = getLinkToValueStore();
-        }
+    function terminateTrie() {
+        patternTrie[rowStart + rowOffset + 1] = getLinkToValueStore();
     }
 
     makeRow(0);
 
+    let first = 0;
+    let second = 0;
+
     while (i < patterns.length) {
-        if (patterns[i] === 58 && (mode === 0 || mode === 2)) {
-            mode = 1;
-        } else if (patterns[i] === 58 && mode === 1) {
-            mode = 2;
-        } else if (mode === 1) {
-            patternlength = patterns[i];
-        } else if (mode === 2) {
-            count += 1;
-            addToTrie(patterns[i]);
-            if (count === patternlength) {
-                terminateTrie(patterns[i]);
-                count = 0;
-                rowStart = 0;
-                nextRowStart = 0;
-                prevWasDigit = 0;
+        if (patterns[i] === 0) {
+            patternlength = patterns[i + 1];
+            first = patterns[i + 2];
+            second = patterns[i + 3];
+            i += 4;
+        }
+        while (count < patternlength) {
+            switch (count) {
+            case 0:
+                addToTrie(first);
+                count += 1;
+                break;
+            case 1:
+                addToTrie(second);
+                count += 1;
+                break;
+            default:
+                addToTrie(patterns[i]);
+                count += 1;
+                i += 1;
             }
         }
-        i += 1;
-    }
 
+        terminateTrie(patterns[i]);
+        // Reset indizes
+        count = 0;
+        rowStart = 0;
+        nextRowStart = 0;
+        prevWasDigit = 0;
+    }
     logger.log("created Trie.");
     logger.log(`trieLength: ${patternTrie.length}`, true);
     logger.log(`valueStoreLength: ${valueStore.length}`, true);
