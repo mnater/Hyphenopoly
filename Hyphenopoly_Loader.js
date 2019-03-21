@@ -214,6 +214,16 @@
         );
 
         define(
+            "loadError",
+            function def(e) {
+                deferred.push({
+                    "data": e,
+                    "name": "loadError"
+                });
+            }
+        );
+
+        define(
             "tearDown",
             null,
             true
@@ -410,6 +420,13 @@
                                     );
                                 });
                             }
+                        } else {
+                            H.events.dispatch("loadError", {
+                                "file": f,
+                                "msg": m,
+                                "name": n,
+                                "path": p
+                            });
                         }
                     }
                 );

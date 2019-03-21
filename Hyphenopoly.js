@@ -1071,6 +1071,17 @@
         );
 
         H.events.define(
+            "loadError",
+            function onLoadError(e) {
+                if (e.msg !== "wasm") {
+                    elements.list.delete(e.name);
+                    elements.counter[0] -= 1;
+                }
+            },
+            false
+        );
+
+        H.events.define(
             "engineReady",
             function onEngineReady(e) {
                 if (H.elementsReady) {
