@@ -190,6 +190,22 @@
             }
 
             /**
+             * Removes elements from the list and updates the counter
+             * @param {string} lang - The lang of the elements to remove
+             */
+            function rem(lang) {
+                let langCount = 0;
+                if (list.has(lang)) {
+                    langCount = list.get(lang).length;
+                    list.delete(lang);
+                    counter[0] -= langCount;
+                    if (counter[0] === 0) {
+                        H.events.dispatch("hyphenopolyEnd");
+                    }
+                }
+            }
+
+            /**
              * Execute fn for each element
              * @param {function} fn The function to execute
              * @returns {undefined}
@@ -204,7 +220,8 @@
                 "add": add,
                 "counter": counter,
                 "each": each,
-                "list": list
+                "list": list,
+                "rem": rem
             };
         }
 
@@ -1074,8 +1091,7 @@
             "loadError",
             function onLoadError(e) {
                 if (e.msg !== "wasm") {
-                    elements.list.delete(e.name);
-                    elements.counter[0] -= 1;
+                    elements.rem(e.name);
                 }
             },
             false
