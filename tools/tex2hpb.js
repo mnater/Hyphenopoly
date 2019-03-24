@@ -131,17 +131,16 @@
  * Example 3:
  * Given the TRANSLATE '_\0aAbBcC'
  * (0x0400 0x5f00 0x0000 0x6100 0x4100 0x6200 0x4200 0x6300 0x4300)
- * the pattern '1ba' is stored as '0x01 0x0e 0x0d' = '01 14 13'
+ * the characters for the pattern '1ba' are stored as
+ * '0x01 0x0e 0x0d' = '01 14 13'
  * Individual patterns are not separated. Instead patterns of the same
- * length are grouped and prefixed by their length surrounded by
- * colons (:).
+ * length and the same prefix are grouped. 0 (zero) marks the beginning of a new
+ * group.
  * Example 4:
  * The patterns '1ba 1be 1abd 1abf 5einstellunge' are grouped as
  * follows
- * ':3:1ba1be:4:1abd1abf:13:5einstellunge'
- * (0x3a 0x03 0x3a 0x01 0x0e 0x0d 0x01 0x0e etc.)
- * Patterns inside each group may be sorted by their code point
- * values to achieve better compression rates.
+ * '031bae041abdbf0135einstellunge'
+ * (0x00 0x01 0x03 0x0e 0x0d etc.)
  */
 
 "use strict";
