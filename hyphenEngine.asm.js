@@ -144,14 +144,11 @@ function asmHyphenEngine(std, ext, heap) {
             }
 
             while ((count | 0) < (plen | 0)) {
-                switch (count | 0) {
-                    case 0:
+                if ((count | 0) == 0) {
                     charAti = first;
-                    break;
-                    case 1:
+                } else if ((count | 0) == 1) {
                     charAti = second;
-                    break;
-                    default:
+                } else {
                     charAti = ui8[i | 0] | 0;
                     i = (i + 1) | 0;
                 }
