@@ -449,17 +449,26 @@
                 loadedBins.set(f, [m]);
                 const xhr = new XMLHttpRequest();
                 xhr.onload = function onload() {
-                    loadedBins.get(f).
-                        forEach(function eachHpb(rn) {
-                            H.binaries.set(
-                                rn,
-                                xhr.response
-                            );
-                            H.events.dispatch(
-                                "hpbLoaded",
-                                {"msg": rn}
-                            );
+                    if (xhr.statusText === "OK") {
+                        loadedBins.get(f).
+                            forEach(function eachHpb(rn) {
+                                H.binaries.set(
+                                    rn,
+                                    xhr.response
+                                );
+                                H.events.dispatch(
+                                    "hpbLoaded",
+                                    {"msg": rn}
+                                );
+                            });
+                    } else {
+                        H.events.dispatch("loadError", {
+                            "file": f,
+                            "msg": m,
+                            "name": n,
+                            "path": p
                         });
+                    }
                 };
                 xhr.open("GET", p + f);
                 xhr.responseType = "arraybuffer";
