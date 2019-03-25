@@ -135,12 +135,11 @@
  * '0x01 0x0e 0x0d' = '01 14 13'
  * Individual patterns are not separated. Instead patterns of the same
  * length and the same prefix are grouped. 0 (zero) marks the beginning of a new
- * group.
+ * group with same length, 255 marks a new prefix group.
  * Example 4:
- * The patterns '1ba 1be 1abd 1abf 5einstellunge' are grouped as
+ * The patterns '1ba 1be 1abd 1abf 1bba' are grouped as
  * follows
- * '031bae041abdbf0135einstellunge'
- * (0x00 0x01 0x03 0x0e 0x0d etc.)
+ * '0 3 255 1 b a e 0 4 255 1 a b d b f 255 1 b b a'
  */
 
 "use strict";
@@ -460,6 +459,8 @@ function createPatterns(translate, patterns, exceptionsfile) {
         let currentSecond = 0;
         longestP = Math.max(longestP, parseInt(k, 10));
         shortestP = Math.min(shortestP, parseInt(k, 10));
+        outPatterns.push(0);
+        outPatterns.push(currentLength);
         while (l < groupedPatterns[k].length) {
             j = 2;
             if (currentFirst !== groupedPatterns[k][l][0] ||
@@ -467,8 +468,7 @@ function createPatterns(translate, patterns, exceptionsfile) {
             ) {
                 currentFirst = groupedPatterns[k][l][0];
                 currentSecond = groupedPatterns[k][l][1];
-                outPatterns.push(0);
-                outPatterns.push(currentLength);
+                outPatterns.push(255);
                 outPatterns.push(currentFirst);
                 outPatterns.push(currentSecond);
             }
@@ -615,33 +615,37 @@ function TrieCreator(patterns, trieRowLength) {
     while (i < patterns.length) {
         if (patterns[i] === 0) {
             patternlength = patterns[i + 1];
-            first = patterns[i + 2];
-            second = patterns[i + 3];
-            i += 4;
-        }
-        while (count < patternlength) {
-            switch (count) {
-            case 0:
-                addToTrie(first);
-                count += 1;
-                break;
-            case 1:
-                addToTrie(second);
-                count += 1;
-                break;
-            default:
-                addToTrie(patterns[i]);
-                count += 1;
-                i += 1;
+            i += 2;
+        } else {
+            if (patterns[i] === 255) {
+                first = patterns[i + 1];
+                second = patterns[i + 2];
+                i += 3;
             }
-        }
+            while (count < patternlength) {
+                switch (count) {
+                case 0:
+                    addToTrie(first);
+                    count += 1;
+                    break;
+                case 1:
+                    addToTrie(second);
+                    count += 1;
+                    break;
+                default:
+                    addToTrie(patterns[i]);
+                    count += 1;
+                    i += 1;
+                }
+            }
 
-        terminateTrie(patterns[i]);
-        // Reset indizes
-        count = 0;
-        rowStart = 0;
-        nextRowStart = 0;
-        prevWasDigit = 0;
+            terminateTrie(patterns[i]);
+            // Reset indizes
+            count = 0;
+            rowStart = 0;
+            nextRowStart = 0;
+            prevWasDigit = 0;
+        }
     }
     logger.log("created Trie.");
     logger.log(`trieLength: ${patternTrie.length}`, true);
