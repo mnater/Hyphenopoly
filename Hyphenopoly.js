@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly 2.8.1-devel - client side hyphenation for webbrowsers
+ * @license Hyphenopoly 3.0.0 - client side hyphenation for webbrowsers
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -528,6 +528,7 @@
                 }
                 if (classSettings.orphanControl !== 1) {
                     tn = tn.replace(
+                        // eslint-disable-next-line prefer-named-capture-group
                         /(\u0020*)(\S+)(\s*)$/,
                         orphanController
                     );

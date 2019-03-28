@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 2.8.1-devel - hyphenation for node
+ * @license Hyphenopoly.module.js 3.0.0 - hyphenation for node
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -683,6 +683,7 @@ function createTextHyphenator(lang) {
         let tn = text.replace(lo.genRegExp, wordHyphenator);
         if (H.c.orphanControl !== 1) {
             tn = tn.replace(
+                // eslint-disable-next-line prefer-named-capture-group
                 /(\u0020*)(\S+)(\s*)$/,
                 orphanController
             );

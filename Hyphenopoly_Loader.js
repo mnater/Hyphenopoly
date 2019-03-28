@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly_Loader 2.8.1-devel - client side hyphenation
+ * @license Hyphenopoly_Loader 3.0.0 - client side hyphenation
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -734,7 +734,7 @@
      * @returns {undefined}
      */
     function handleDCL() {
-        if (H.setup.hide.match(/^(element|text)$/)) {
+        if (H.setup.hide.match(/^(?:element|text)$/)) {
             H.toggle("off");
         }
         H.events.dispatch(
