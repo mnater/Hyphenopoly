@@ -11,7 +11,11 @@
 /* eslint no-console: 0 */
 "use strict";
 
-const fs = require("fs");
+/*
+ * Use 'fs' in node environment and fallback to http if the module gets executed
+ * in a browser environment (e.g. browserified)
+ */
+let loader = require("fs");
 
 const {StringDecoder} = require("string_decoder");
 
@@ -21,7 +25,6 @@ const decode = (function makeDecoder() {
         return utf16ledecoder.write(Buffer.from(ui16));
     };
 }());
-
 
 /**
  * Create Object without standard Object-prototype
@@ -115,7 +118,6 @@ H.supportedLanguages = [
     "rm",
     "ro",
     "ru",
-    "sa",
     "sh-cyrl",
     "sh-latn",
     "sk",
@@ -135,13 +137,31 @@ H.supportedLanguages = [
  * Read a file and call callback
  * Use "fs" (node) or "http" (browser)
  * @param {string} file - the filename
- * @param {function} cb - callback function
+ * @param {function} cb - callback function with args (error, data)
  * @returns {undefined}
  */
-function readFile(file, cb) {
-    /* eslint-disable security/detect-non-literal-fs-filename */
-    fs.readFile(file, cb);
-    /* eslint-enable security/detect-non-literal-fs-filename */
+function readFile(file, cb, sync) {
+    if (H.c.loader === "fs") {
+        /* eslint-disable security/detect-non-literal-fs-filename */
+        if (sync) {
+            // eslint-disable-next-line no-sync
+            return loader.readFileSync(file);
+        }
+        loader.readFile(file, cb);
+        /* eslint-enable security/detect-non-literal-fs-filename */
+    } else {
+        console.log(file);
+        loader.get(file, function onData(res) {
+            const rawData = [];
+            res.on("data", function onChunk(chunk) {
+                rawData.push(chunk);
+            });
+            res.on("end", function onEnd() {
+                cb(null, Buffer.concat(rawData));
+            });
+        });
+    }
+    return null;
 }
 
 /**
@@ -150,9 +170,9 @@ function readFile(file, cb) {
  */
 function loadWasm() {
     if (H.c.sync) {
-        /* eslint-disable security/detect-non-literal-fs-filename, no-sync */
-        const data = fs.readFileSync(`${H.c.paths.maindir}hyphenEngine.wasm`);
-        /* eslint-enable security/detect-non-literal-fs-filename, no-sync */
+        /* eslint-disable security/detect-non-literal-fs-filename */
+        const data = readFile(`${H.c.paths.maindir}hyphenEngine.wasm`, null, true);
+        /* eslint-enable security/detect-non-literal-fs-filename */
         H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
         H.events.dispatch("engineLoaded");
     } else {
@@ -168,7 +188,8 @@ function loadWasm() {
                     H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
                     H.events.dispatch("engineLoaded");
                 }
-            }
+            },
+            false
         );
     }
 }
@@ -180,9 +201,7 @@ function loadWasm() {
  */
 function loadHpb(lang) {
     if (H.c.sync) {
-        /* eslint-disable security/detect-non-literal-fs-filename, no-sync */
-        const data = fs.readFileSync(`${H.c.paths.patterndir}${lang}.hpb`);
-        /* eslint-enable security/detect-non-literal-fs-filename, no-sync */
+        const data = readFile(`${H.c.paths.patterndir}${lang}.hpb`, null, true);
         H.binaries.set(lang, new Uint8Array(data).buffer);
         H.events.dispatch("hpbLoaded", {"msg": lang});
     } else {
@@ -198,7 +217,8 @@ function loadHpb(lang) {
                     H.binaries.set(lang, new Uint8Array(data).buffer);
                     H.events.dispatch("hpbLoaded", {"msg": lang});
                 }
-            }
+            },
+            false
         );
     }
 }
@@ -773,6 +793,7 @@ H.config = function config(userConfig) {
         "exceptions": setProp(empty(), 2),
         "hyphen": setProp(String.fromCharCode(173), 2),
         "leftmin": setProp(0, 2),
+        "loader": setProp("fs", 2),
         "minWordLength": setProp(6, 2),
         "normalize": setProp(false, 2),
         "orphanControl": setProp(1, 2),
@@ -795,6 +816,10 @@ H.config = function config(userConfig) {
         );
     });
     H.c = settings;
+    if (H.c.loader !== "fs") {
+        // eslint-disable-next-line global-require
+        loader = require("http");
+    }
     if (H.c.handleEvent) {
         Object.keys(H.c.handleEvent).forEach(function add(name) {
             /* eslint-disable security/detect-object-injection */

@@ -11,6 +11,7 @@
 ### Added
 *   feat: tearDown event (issue #67)
 *   feat: loadError event (issue #59)
+*   feat: hyphenopoly.module is now browserifyable
 
 ### Removed
 *   BREAKING CHANGE: remove `Hyphenopoly.setup.classnames` – use [selectors](https://github.com/mnater/Hyphenopoly/wiki/Global-Hyphenopoly-Object#new-with-version-260-selectors) instead
