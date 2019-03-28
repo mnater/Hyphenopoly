@@ -16,10 +16,6 @@
  * in a browser environment (e.g. browserified)
  */
 let loader = require("fs");
-if (typeof window !== "undefined") {
-    // eslint-disable-next-line global-require
-    loader = require("http");
-}
 
 const {StringDecoder} = require("string_decoder");
 
@@ -29,37 +25,6 @@ const decode = (function makeDecoder() {
         return utf16ledecoder.write(Buffer.from(ui16));
     };
 }());
-
-/**
- * Read a file and call callback
- * Use "fs" (node) or "http" (browser)
- * @param {string} file - the filename
- * @param {function} cb - callback function with args (error, data)
- * @returns {undefined}
- */
-function readFile(file, cb, sync) {
-    if (Object.keys(loader).includes("readFile")) {
-        /* eslint-disable security/detect-non-literal-fs-filename */
-        if (sync) {
-            // eslint-disable-next-line no-sync
-            return loader.readFileSync(file);
-        }
-        loader.readFile(file, cb);
-        /* eslint-enable security/detect-non-literal-fs-filename */
-    } else {
-        loader.get(file, function onData(res) {
-            const rawData = [];
-            res.on("data", function onChunk(chunk) {
-                rawData.push(chunk);
-            });
-            res.on("end", function onEnd() {
-                cb(null, Buffer.concat(rawData));
-            });
-        });
-    }
-    return null;
-}
-
 
 /**
  * Create Object without standard Object-prototype
@@ -153,7 +118,6 @@ H.supportedLanguages = [
     "rm",
     "ro",
     "ru",
-    "sa",
     "sh-cyrl",
     "sh-latn",
     "sk",
@@ -168,6 +132,37 @@ H.supportedLanguages = [
     "uk",
     "zh-latn-pinyin"
 ];
+
+/**
+ * Read a file and call callback
+ * Use "fs" (node) or "http" (browser)
+ * @param {string} file - the filename
+ * @param {function} cb - callback function with args (error, data)
+ * @returns {undefined}
+ */
+function readFile(file, cb, sync) {
+    if (H.c.loader === "fs") {
+        /* eslint-disable security/detect-non-literal-fs-filename */
+        if (sync) {
+            // eslint-disable-next-line no-sync
+            return loader.readFileSync(file);
+        }
+        loader.readFile(file, cb);
+        /* eslint-enable security/detect-non-literal-fs-filename */
+    } else {
+        console.log(file);
+        loader.get(file, function onData(res) {
+            const rawData = [];
+            res.on("data", function onChunk(chunk) {
+                rawData.push(chunk);
+            });
+            res.on("end", function onEnd() {
+                cb(null, Buffer.concat(rawData));
+            });
+        });
+    }
+    return null;
+}
 
 /**
  * Read a wasm file, dispatch "engineLoaded" on success
@@ -798,6 +793,7 @@ H.config = function config(userConfig) {
         "exceptions": setProp(empty(), 2),
         "hyphen": setProp(String.fromCharCode(173), 2),
         "leftmin": setProp(0, 2),
+        "loader": setProp("fs", 2),
         "minWordLength": setProp(6, 2),
         "normalize": setProp(false, 2),
         "orphanControl": setProp(1, 2),
@@ -820,6 +816,10 @@ H.config = function config(userConfig) {
         );
     });
     H.c = settings;
+    if (H.c.loader !== "fs") {
+        // eslint-disable-next-line global-require
+        loader = require("http");
+    }
     if (H.c.handleEvent) {
         Object.keys(H.c.handleEvent).forEach(function add(name) {
             /* eslint-disable security/detect-object-injection */
