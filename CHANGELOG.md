@@ -1,6 +1,6 @@
 # Version History
 
-## Unreleased
+## Version 3.0.0 (2019-03-29)
 ### Changed
 *   BREAKING CHANGE: implement new hyphenation pattern binary (.hpb) format (issue #61)
     *   update patterns to new format and include left-/rightmin according to source
@@ -11,7 +11,7 @@
 ### Added
 *   feat: tearDown event (issue #67)
 *   feat: loadError event (issue #59)
-*   feat: hyphenopoly.module is now browserifyable
+*   feat: hyphenopoly.module is now browserifyable. Added new config option "loader"
 
 ### Removed
 *   BREAKING CHANGE: remove `Hyphenopoly.setup.classnames` – use [selectors](https://github.com/mnater/Hyphenopoly/wiki/Global-Hyphenopoly-Object#new-with-version-260-selectors) instead
