@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly 2.8.1-devel - client side hyphenation for webbrowsers
+ * @license Hyphenopoly 3.0.0 - client side hyphenation for webbrowsers
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -190,6 +190,22 @@
             }
 
             /**
+             * Removes elements from the list and updates the counter
+             * @param {string} lang - The lang of the elements to remove
+             */
+            function rem(lang) {
+                let langCount = 0;
+                if (list.has(lang)) {
+                    langCount = list.get(lang).length;
+                    list.delete(lang);
+                    counter[0] -= langCount;
+                    if (counter[0] === 0) {
+                        H.events.dispatch("hyphenopolyEnd");
+                    }
+                }
+            }
+
+            /**
              * Execute fn for each element
              * @param {function} fn The function to execute
              * @returns {undefined}
@@ -204,7 +220,8 @@
                 "add": add,
                 "counter": counter,
                 "each": each,
-                "list": list
+                "list": list,
+                "rem": rem
             };
         }
 
@@ -511,6 +528,7 @@
                 }
                 if (classSettings.orphanControl !== 1) {
                     tn = tn.replace(
+                        // eslint-disable-next-line prefer-named-capture-group
                         /(\u0020*)(\S+)(\s*)$/,
                         orphanController
                     );
@@ -828,6 +846,18 @@
          */
         function calculateBaseData(hpbBuf) {
             const hpbMetaData = new Uint32Array(hpbBuf).subarray(0, 8);
+            if (hpbMetaData[0] !== 40005736) {
+                /*
+                 * Pattern files must begin with "hpb2"
+                 * Get current utf8 values with
+                 * `new Uint8Array(Uint32Array.of(hpbMetaData[0]).buffer)`
+                 */
+                H.events.dispatch("error", {
+                    "lvl": "error",
+                    "msg": "Pattern file format error: " + new Uint8Array(Uint32Array.of(hpbMetaData[0]).buffer)
+                });
+                throw new Error("Pattern file format error!");
+            }
             const valueStoreLength = hpbMetaData[7];
             const valueStoreOffset = 1280;
             const patternTrieOffset = valueStoreOffset + valueStoreLength +
@@ -1054,6 +1084,16 @@
             "hpbLoaded",
             function onHpbLoaded(e) {
                 prepare(e.msg, "*");
+            },
+            false
+        );
+
+        H.events.define(
+            "loadError",
+            function onLoadError(e) {
+                if (e.msg !== "wasm") {
+                    elements.rem(e.name);
+                }
             },
             false
         );

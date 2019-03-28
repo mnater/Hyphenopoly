@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly_Loader 2.8.1-devel - client side hyphenation
+ * @license Hyphenopoly_Loader 3.0.0 - client side hyphenation
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -63,16 +63,6 @@
     (function configSetup() {
         if (H.setup) {
             H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
-            if (H.setup.classnames) {
-                // Convert classnames to selectors
-                eachKey(H.setup.classnames, function cn2sel(cn) {
-                    /* eslint-disable security/detect-object-injection */
-                    H.setup.selectors["." + cn] = H.setup.classnames[cn];
-                    /* eslint-enable security/detect-object-injection */
-                });
-                H.setup.classnames = null;
-                delete H.setup.classnames;
-            }
             H.setup.timeout = H.setup.timeout || 1000;
             H.setup.hide = H.setup.hide || "all";
         } else {
@@ -221,6 +211,22 @@
                 });
             },
             false
+        );
+
+        define(
+            "loadError",
+            function def(e) {
+                deferred.push({
+                    "data": e,
+                    "name": "loadError"
+                });
+            }
+        );
+
+        define(
+            "tearDown",
+            null,
+            true
         );
 
         /**
@@ -414,6 +420,13 @@
                                     );
                                 });
                             }
+                        } else {
+                            H.events.dispatch("loadError", {
+                                "file": f,
+                                "msg": m,
+                                "name": n,
+                                "path": p
+                            });
                         }
                     }
                 );
@@ -436,17 +449,26 @@
                 loadedBins.set(f, [m]);
                 const xhr = new XMLHttpRequest();
                 xhr.onload = function onload() {
-                    loadedBins.get(f).
-                        forEach(function eachHpb(rn) {
-                            H.binaries.set(
-                                rn,
-                                xhr.response
-                            );
-                            H.events.dispatch(
-                                "hpbLoaded",
-                                {"msg": rn}
-                            );
+                    if (xhr.statusText === "OK") {
+                        loadedBins.get(f).
+                            forEach(function eachHpb(rn) {
+                                H.binaries.set(
+                                    rn,
+                                    xhr.response
+                                );
+                                H.events.dispatch(
+                                    "hpbLoaded",
+                                    {"msg": rn}
+                                );
+                            });
+                    } else {
+                        H.events.dispatch("loadError", {
+                            "file": f,
+                            "msg": m,
+                            "name": n,
+                            "path": p
                         });
+                    }
                 };
                 xhr.open("GET", p + f);
                 xhr.responseType = "arraybuffer";
@@ -712,7 +734,7 @@
      * @returns {undefined}
      */
     function handleDCL() {
-        if (H.setup.hide.match(/^(element|text)$/)) {
+        if (H.setup.hide.match(/^(?:element|text)$/)) {
             H.toggle("off");
         }
         H.events.dispatch(
@@ -744,6 +766,7 @@
             handleDCL();
         }
     } else {
+        H.events.dispatch("tearDown", {});
         window.Hyphenopoly = null;
     }
 
