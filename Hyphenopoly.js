@@ -528,6 +528,7 @@
                 }
                 if (classSettings.orphanControl !== 1) {
                     tn = tn.replace(
+                        // eslint-disable-next-line prefer-named-capture-group
                         /(\u0020*)(\S+)(\s*)$/,
                         orphanController
                     );

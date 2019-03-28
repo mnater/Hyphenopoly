@@ -683,6 +683,7 @@ function createTextHyphenator(lang) {
         let tn = text.replace(lo.genRegExp, wordHyphenator);
         if (H.c.orphanControl !== 1) {
             tn = tn.replace(
+                // eslint-disable-next-line prefer-named-capture-group
                 /(\u0020*)(\S+)(\s*)$/,
                 orphanController
             );

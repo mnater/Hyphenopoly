@@ -734,7 +734,7 @@
      * @returns {undefined}
      */
     function handleDCL() {
-        if (H.setup.hide.match(/^(element|text)$/)) {
+        if (H.setup.hide.match(/^(?:element|text)$/)) {
             H.toggle("off");
         }
         H.events.dispatch(
