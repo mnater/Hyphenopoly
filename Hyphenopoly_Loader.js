@@ -494,7 +494,7 @@
      */
     function allocateMemory(lang) {
         const specVal = new Map(
-            [["de", 55], ["hu", 207], ["nb-no", 92], ["nl", 41]]
+            [["de", 54], ["hu", 205], ["nb-no", 91], ["nl", 41]]
         );
         const wasmPages = specVal.get(lang) || 32;
         H.specMems = H.specMems || new Map();
