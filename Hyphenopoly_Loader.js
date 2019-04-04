@@ -102,24 +102,26 @@
         } else {
             const vis = " {visibility: hidden !important}\n";
             const sc = d.createElement("style");
+            let myStyle = "";
             sc.id = "H9Y_Styles";
             switch (H.setup.hide) {
             case "all":
-                sc.innerHTML = "html" + vis;
+                myStyle = "html" + vis;
                 break;
             case "element":
                 eachKey(H.setup.selectors, function eachSelector(sel) {
-                    sc.innerHTML += sel + vis;
+                    myStyle += sel + vis;
                 });
                 break;
             case "text":
                 eachKey(H.setup.selectors, function eachSelector(sel) {
-                    sc.innerHTML += sel + " {color: transparent !important}\n";
+                    myStyle += sel + " {color: transparent !important}\n";
                 });
                 break;
             default:
-                sc.innerHTML = "";
+                myStyle = "";
             }
+            sc.appendChild(document.createTextNode(myStyle));
             d.getElementsByTagName("head")[0].appendChild(sc);
         }
     };
