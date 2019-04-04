@@ -1,6 +1,10 @@
 # Version History
 
-## Unreleased
+## Version 3.0.1 (2019-04-04)
+### Changed
+*   Improve the way how `registerOnCopy` builds a closure. This prevents a memory leak.
+*   Removed "use strict" from RunKit example.
+*   Adapt the initial sizes of wasm-memory in some special cases
 
 ## Version 3.0.0 (2019-03-29)
 ### Changed
