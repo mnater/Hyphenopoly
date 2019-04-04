@@ -1,7 +1,11 @@
 # Version History
 
+## Unreleased
+### Security
+*   refactor(Loader): don't use innerHTML
+
 ## Version 3.0.1 (2019-04-04)
-### Changed
+### Fixed
 *   Improve the way how `registerOnCopy` builds a closure. This prevents a memory leak.
 *   Removed "use strict" from RunKit example.
 *   Adapt the initial sizes of wasm-memory in some special cases
