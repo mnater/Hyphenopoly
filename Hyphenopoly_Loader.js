@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly_Loader 3.0.0 - client side hyphenation
+ * @license Hyphenopoly_Loader 3.0.1 - client side hyphenation
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -494,7 +494,7 @@
      */
     function allocateMemory(lang) {
         const specVal = new Map(
-            [["de", 55], ["hu", 207], ["nb-no", 92], ["nl", 41]]
+            [["de", 54], ["hu", 205], ["nb-no", 91], ["nl", 41]]
         );
         const wasmPages = specVal.get(lang) || 32;
         H.specMems = H.specMems || new Map();

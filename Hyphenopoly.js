@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly 3.0.0 - client side hyphenation for webbrowsers
+ * @license Hyphenopoly 3.0.1 - client side hyphenation for webbrowsers
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -11,7 +11,6 @@
 
 (function mainWrapper(w) {
     "use strict";
-    const H = Hyphenopoly;
     const SOFTHYPHEN = String.fromCharCode(173);
 
     /**
@@ -66,7 +65,22 @@
         /* eslint-enable no-bitwise, sort-keys */
     }
 
-    (function configurationFactory() {
+    /**
+     * Register copy event on element
+     * @param {Object} el The element
+     * @returns {undefined}
+     */
+    function registerOnCopy(el) {
+        el.addEventListener("copy", function oncopy(e) {
+            e.preventDefault();
+            const selectedText = window.getSelection().toString();
+            /* eslint-disable security/detect-non-literal-regexp */
+            e.clipboardData.setData("text/plain", selectedText.replace(new RegExp(SOFTHYPHEN, "g"), ""));
+            /* eslint-enable security/detect-non-literal-regexp */
+        }, true);
+    }
+
+    (function configurationFactory(H) {
         const generalDefaults = Object.create(null, {
             "defaultLanguage": setProp("en-us", 2),
             "dontHyphenate": setProp((function createList() {
@@ -149,9 +163,9 @@
             }
         });
         H.c = settings;
-    }());
+    }(Hyphenopoly));
 
-    (function H9Y() {
+    (function H9Y(H) {
         const C = H.c;
         let mainLanguage = null;
         let elements = null;
@@ -223,21 +237,6 @@
                 "list": list,
                 "rem": rem
             };
-        }
-
-        /**
-         * Register copy event on element
-         * @param {Object} el The element
-         * @returns {undefined}
-         */
-        function registerOnCopy(el) {
-            el.addEventListener("copy", function oncopy(e) {
-                e.preventDefault();
-                const selectedText = window.getSelection().toString();
-                /* eslint-disable security/detect-non-literal-regexp */
-                e.clipboardData.setData("text/plain", selectedText.replace(new RegExp(SOFTHYPHEN, "g"), ""));
-                /* eslint-enable security/detect-non-literal-regexp */
-            }, true);
         }
 
         /**
@@ -1157,5 +1156,5 @@
             H.events.dispatch(deferredeo.name, deferredeo.data);
         });
         delete H.events.deferred;
-    }());
+    }(Hyphenopoly));
 }(window));

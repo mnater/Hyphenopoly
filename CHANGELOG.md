@@ -1,5 +1,7 @@
 # Version History
 
+## Unreleased
+
 ## Version 3.0.0 (2019-03-29)
 ### Changed
 *   BREAKING CHANGE: implement new hyphenation pattern binary (.hpb) format (issue #61)
