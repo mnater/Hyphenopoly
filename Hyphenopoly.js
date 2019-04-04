@@ -1120,7 +1120,6 @@
                 if (H.c.hide !== "none") {
                     H.toggle("on");
                 }
-                window.Hyphenopoly = null;
             },
             false
         );
