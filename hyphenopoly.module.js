@@ -8,7 +8,6 @@
  */
 
 /* eslint-env node */
-/* eslint no-console: 0 */
 "use strict";
 
 /*
@@ -150,7 +149,6 @@ function readFile(file, cb, sync) {
         loader.readFile(file, cb);
         /* eslint-enable security/detect-non-literal-fs-filename */
     } else {
-        console.log(file);
         loader.get(file, function onData(res) {
             const rawData = [];
             res.on("data", function onChunk(chunk) {
@@ -714,6 +712,7 @@ function createTextHyphenator(lang) {
     define(
         "error",
         function def(e) {
+            // eslint-disable-next-line no-console
             console.error(e.msg);
         },
         true
