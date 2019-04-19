@@ -7,34 +7,31 @@
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 /* eslint-disable */
-function asmHyphenEngine(std, ext, heap) {
+function asmHyphenEngine(std, x, heap) {
     "use asm";
     var ui8 = new std.Uint8Array(heap);
     var ui16 = new std.Uint16Array(heap);
     var i32 = new std.Int32Array(heap);
     var imul = std.Math.imul;
 
-    var hpbTranslateOffset = ext.hpbTranslateOffset | 0;
-    var hpbPatternsOffset = ext.hpbPatternsOffset | 0;
-    var patternsLength = ext.patternsLength | 0;
-    var valueStoreOffset = ext.valueStoreOffset | 0;
-    var patternTrieOffset = ext.patternTrieOffset | 0;
-    var wordOffset = ext.wordOffset | 0;
-    var translatedWordOffset = ext.translatedWordOffset | 0;
-    var hyphenPointsOffset = ext.hyphenPointsOffset | 0;
-    var hyphenatedWordOffset = ext.hyphenatedWordOffset | 0;
-
-    var trieRowLength = 0;
-    var alphabetCount = 0;
+    var to = x.to | 0;
+    var po = x.po | 0;
+    var pl = x.pl | 0;
+    var vs = x.vs | 0;
+    var pt = x.pt | 0;
+    var wo = x.wo | 0;
+    var tw = x.tw | 0;
+    var hp = x.hp | 0;
+    var hw = x.hw | 0;
 
     function hashCharCode(cc) {
-        //maps BMP-charCode (16bit) to 9bit adresses
-        //{0, 1, 2, ..., 2^16 - 1} -> {0, 1, 2, ..., 2^9 - 1}
+        //maps BMP-charCode (16bit) to 8bit adresses
+        //{0, 1, 2, ..., 2^16 - 1} -> {0, 1, 2, ..., 2^8 - 1}
         //collisions will occur!
         cc = cc | 0;
         var h = 0;
         h = imul(cc, 40503); // 2^16 (-1 + sqrt(5)) / 2 = 40’503.475...
-        h = (h >> 8) + 1 & 255; //shift and mask 8bits
+        h = h & 255; //mask 8bits
         return h << 1;
     }
 
@@ -53,17 +50,17 @@ function asmHyphenEngine(std, ext, heap) {
     function pullFromTranslateMap(cc) {
         cc = cc | 0;
         var addr = 0;
-        if ((cc | 0) == 0) {
-            return 255;
-        }
-        addr = hashCharCode(cc) | 0;
-        while ((ui16[addr >> 1] | 0) != (cc | 0)) {
-            addr = (addr + 2) | 0;
-            if ((addr | 0) >= 512) {
-                return 255;
+        if ((cc | 0) != 0) {
+            addr = hashCharCode(cc) | 0;
+            while ((ui16[addr >> 1] | 0) != (cc | 0)) {
+                addr = (addr + 2) | 0;
+                if ((addr | 0) >= 512) {
+                    return 255;
+                }
             }
+            return ui8[((addr >> 1) + 512) | 0] | 0;
         }
-        return ui8[((addr >> 1) + 512) | 0] | 0;
+        return 255;
     }
 
 
@@ -73,10 +70,10 @@ function asmHyphenEngine(std, ext, heap) {
         var first = 0;
         var second = 0;
         var secondInt = 0;
-        i = (hpbTranslateOffset + 2) | 0;
+        var alphabetCount = 0;
+        i = (to + 2) | 0;
         k = 12 | 0;
-        trieRowLength = ui16[hpbTranslateOffset >> 1] << 1;
-        while ((i | 0) < (hpbPatternsOffset | 0)) {
+        while ((i | 0) < (po | 0)) {
             first = ui16[i >> 1] | 0;
             second = ui16[(i + 2) >> 1] | 0;
             secondInt = pullFromTranslateMap(second) | 0;
@@ -100,19 +97,8 @@ function asmHyphenEngine(std, ext, heap) {
         return alphabetCount | 0;
     }
 
-    function translateCharCode(cc) {
-        cc = cc | 0;
-        var charIdx = 0;
-        charIdx = pullFromTranslateMap(cc | 0) | 0;
-        if ((charIdx | 0) == 255) {
-            return 255;
-        }
-        return (charIdx - 12) << 3;
-    }
-
     function convert() {
         var i = 0;
-        var last_i = 0;
         var charAti = 0;
         var plen = 0;
         var count = 0;
@@ -127,15 +113,18 @@ function asmHyphenEngine(std, ext, heap) {
         var alphabetlength = 0;
         var first = 0;
         var second = 0;
-        valueStoreStartIndex = (valueStoreOffset + 1) | 0;
-        valueStoreCurrentIdx = (valueStoreOffset + 1) | 0;
-        valueStorePrevIdx = (valueStoreOffset + 1) | 0;
+        var trieRowLength = 0;
+        trieRowLength = ((ui16[to >> 1] << 1) + 1) << 2;
+        nextRowStart = pt;
+        trieNextEmptyRow = pt;
+        rowStart = pt;
+        valueStoreStartIndex = (vs + 1) | 0;
+        valueStoreCurrentIdx = (vs + 1) | 0;
+        valueStorePrevIdx = (vs + 1) | 0;
 
         alphabetlength = createTranslateMap() | 0;
-
-        i = hpbPatternsOffset | 0;
-        last_i = hpbPatternsOffset + patternsLength | 0;
-        while ((i | 0) < (last_i | 0)) {
+        i = po | 0;
+        while ((i | 0) < (po + pl | 0)) {
             if ((ui8[i | 0] | 0) == 0) {
                 plen = ui8[(i + 1) | 0] | 0;
                 i = (i + 2) | 0;
@@ -161,15 +150,15 @@ function asmHyphenEngine(std, ext, heap) {
                         prevWasDigit = 0;
                         if ((nextRowStart | 0) == -1) {
                             //start a new row
-                            trieNextEmptyRow = (trieNextEmptyRow + (((trieRowLength + 1) | 0) << 2)) | 0;
+                            trieNextEmptyRow = trieNextEmptyRow + trieRowLength | 0;
                             nextRowStart = trieNextEmptyRow;
-                            i32[(patternTrieOffset + rowStart + rowOffset) >> 2] = nextRowStart;
+                            i32[(rowStart + rowOffset) >> 2] = nextRowStart;
                         }
                         rowOffset = ((charAti - 12) | 0) << 3;
                         rowStart = nextRowStart;
-                        nextRowStart = i32[(patternTrieOffset + rowStart + rowOffset) >> 2] | 0;
+                        nextRowStart = i32[(rowStart + rowOffset) >> 2] | 0;
                         if ((nextRowStart | 0) == 0) {
-                            i32[(patternTrieOffset + rowStart + rowOffset) >> 2] = -1;
+                            i32[(rowStart + rowOffset) >> 2] = -1;
                             nextRowStart = -1;
                         }
                     } else {
@@ -180,15 +169,15 @@ function asmHyphenEngine(std, ext, heap) {
                     }
                     count = (count + 1) | 0;
                 }
-//terminate     valueStore and save link to valueStoreStartIndex
+//terminate valueStore and save link to valueStoreStartIndex
                 ui8[(valueStorePrevIdx + 1) | 0] = 255; //mark end of pattern
-                i32[(patternTrieOffset + rowStart + rowOffset + 4) >> 2] = (valueStoreStartIndex - valueStoreOffset) | 0;
-//reset indi    zes
+                i32[(rowStart + rowOffset + 4) >> 2] = (valueStoreStartIndex - vs) | 0;
+//reset indizes
                 valueStoreStartIndex = (valueStorePrevIdx + 2) | 0;
                 valueStoreCurrentIdx = valueStoreStartIndex;
                 count = 0;
-                rowStart = 0;
-                nextRowStart = 0;
+                rowStart = pt;
+                nextRowStart = pt;
                 prevWasDigit = 0;
             }
         }
@@ -201,59 +190,49 @@ function asmHyphenEngine(std, ext, heap) {
         var patternStartPos = 0;
         var wordLength = 0;
         var charOffset = 0;
+        var cc = 0;
         var row = 0;
-        var wordStartOffset = 0;
         var rowOffset2 = 0;
         var link = 0;
         var value = 0;
         var hyphenPointsCount = 0;
         var hyphenPoint = 0;
         var hpPos = 0;
-        var unknownChar = 0;
         var translatedChar = 0;
-        wordLength = (ui8[wordOffset | 0] << 1) | 0;
-        wordStartOffset = (wordOffset + 2) | 0;
 
-        //translate UTF16 word to internal ints
-        while ((charOffset | 0) < (wordLength | 0)) {
-            translatedChar = translateCharCode(ui16[(wordStartOffset + charOffset) >> 1] | 0) | 0;
+        //translate UTF16 word to internal ints and clear hpPos-Array
+        cc = ui16[wo >> 1] | 0;
+        while ((cc | 0) != 0) {
+            ui8[(hp + charOffset) | 0] = 0;
+            translatedChar = pullFromTranslateMap(cc | 0) | 0;
             if ((translatedChar | 0) == 255) {
-                unknownChar = 1;
-                break;
+                return 0;
             }
-            ui16[(translatedWordOffset + charOffset) >> 1] = translatedChar | 0;
-            charOffset = (charOffset + 2) | 0;
+            translatedChar = (translatedChar - 12) | 0;
+            ui8[(tw + charOffset) | 0] = translatedChar | 0;
+            charOffset = (charOffset + 1) | 0;
+            cc = ui16[(wo + (charOffset << 1)) >> 1] | 0;
         }
-
-        while ((hpPos | 0) < ((wordLength + 1) | 0)) {
-            ui8[(hyphenPointsOffset + hpPos) | 0] = 0;
-            hpPos = (hpPos + 1) | 0;
-        }
-
-        if ((unknownChar | 0) == 1) {
-            return 0;
-        }
-
-        hpPos = 0;
-
-
+        ui8[(hp + charOffset) | 0] = 0;
+        //find patterns and collect hyphenPoints
+        wordLength = charOffset;
         while ((patternStartPos | 0) < (wordLength | 0)) {
-            row = 0;
+            row = pt;
             charOffset = patternStartPos | 0;
             while ((charOffset | 0) < (wordLength | 0)) {
-                rowOffset2 = ui16[(translatedWordOffset + charOffset) >> 1] | 0;
-                link = i32[(patternTrieOffset + row + rowOffset2) >> 2] | 0;
-                value = i32[(patternTrieOffset + row + rowOffset2 + 4) >> 2] | 0;
+                rowOffset2 = ui8[(tw + charOffset) | 0] << 3;
+                link = i32[(row + rowOffset2) >> 2] | 0;
+                value = i32[(row + rowOffset2 + 4) >> 2] | 0;
                 if ((value | 0) > 0) {
                     hyphenPointsCount = 0;
-                    hyphenPoint = ui8[(valueStoreOffset + value) | 0] | 0;
+                    hyphenPoint = ui8[(vs + value) | 0] | 0;
                     while ((hyphenPoint | 0) != 255) {
-                        hpPos = (hyphenPointsOffset + (patternStartPos >> 1) + hyphenPointsCount) | 0;
+                        hpPos = (hp + patternStartPos + hyphenPointsCount) | 0;
                         if ((hyphenPoint | 0) > (ui8[hpPos | 0] | 0)) {
                             ui8[hpPos | 0] = hyphenPoint | 0;
                         }
                         hyphenPointsCount = (hyphenPointsCount + 1) | 0;
-                        hyphenPoint = ui8[(valueStoreOffset + value + hyphenPointsCount) | 0] | 0;
+                        hyphenPoint = ui8[(vs + value + hyphenPointsCount) | 0] | 0;
                     }
                 }
                 if ((link | 0) > 0) {
@@ -261,26 +240,28 @@ function asmHyphenEngine(std, ext, heap) {
                 } else {
                     break;
                 }
-                charOffset = (charOffset + 2) | 0;
+                charOffset = (charOffset + 1) | 0;
             }
-            patternStartPos = (patternStartPos + 2) | 0;
+            patternStartPos = (patternStartPos + 1) | 0;
         }
 
+        //get chars of original word and insert hyphenPoints
         charOffset = 0;
         hyphenPointsCount = 0;
         while ((charOffset | 0) <= (wordLength | 0)) {
-            ui16[(hyphenatedWordOffset + charOffset + hyphenPointsCount) >> 1] = ui16[(wordStartOffset + charOffset) >> 1] | 0;
-            if ((charOffset >> 1) >= (lm | 0)) {
-                if ((charOffset >> 1) <= (((wordLength >> 1) - rm - 2) | 0)) {
-                    if (ui8[(hyphenPointsOffset + (charOffset >> 1) + 1) | 0] & 1 == 1) {
-                        ui16[(hyphenatedWordOffset + charOffset + hyphenPointsCount + 2) >> 1] = 173;
-                        hyphenPointsCount = (hyphenPointsCount + 2) | 0
-                    }
+            ui16[(hw + (charOffset << 1) + hyphenPointsCount) >> 1] = ui16[(wo + (charOffset << 1)) >> 1] | 0;
+            if (
+                (((charOffset | 0) >= (lm | 0)) | 0) &
+                (((charOffset | 0) <= ((wordLength - rm - 2) | 0)) | 0)
+            ) {
+                if (ui8[(hp + charOffset + 1) | 0] & 1 == 1) {
+                    ui16[(hw + (charOffset << 1) + hyphenPointsCount + 2) >> 1] = 173;
+                    hyphenPointsCount = (hyphenPointsCount + 2) | 0
                 }
             }
-            charOffset = (charOffset + 2) | 0;
+            charOffset = (charOffset + 1) | 0;
         }
-        ui16[hyphenatedWordOffset >> 1] = ((wordLength >> 1) + (hyphenPointsCount >> 1) - 2) | 0;
+        ui16[hw >> 1] = (wordLength + (hyphenPointsCount >> 1) - 2) | 0;
         return 1;
     }
 

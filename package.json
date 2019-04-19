@@ -172,10 +172,9 @@
   },
   "scripts": {
     "preinstall3rdparty": "rm -fR third-party",
-    "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen && git clone --recursive https://github.com/WebAssembly/wabt.git third-party/wabt",
-    "postinstall3rdparty": "npm run compile-binaryen && npm run compile-wabt",
+    "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen",
+    "postinstall3rdparty": "npm run compile-binaryen",
     "compile-binaryen": "cd ./third-party/binaryen/ && cmake . && make",
-    "compile-wabt": "cd ./third-party/wabt/ && make",
     "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
     "test": "tap test/*.js --coverage",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",

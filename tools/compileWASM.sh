@@ -6,15 +6,17 @@
 SRCFILE="$1.asm.js"
 WASTNAME="$1.wast"
 WASMNAME="$1.wasm"
-#DISNAME="$1.wat"
 
 echo 'running asm2wasm...'
-./third-party/binaryen/bin/asm2wasm $SRCFILE -O4 -m 2097152 -mm 16777216 > $WASTNAME
+#./third-party/binaryen/bin/asm2wasm $SRCFILE --disable-mutable-globals -O4 -m 2097152 -mm 16777216 > $WASTNAME
+
+# until https://github.com/WebAssembly/binaryen/issues/2011 is solved
+# lets replace mutable globals manually
+./third-party/binaryen/bin/asm2wasm $SRCFILE --disable-mutable-globals -O4 -m 2097152 -mm 16777216\
+| sed 's/$asm2wasm$import// ; /^ (global.*$/d' > $WASTNAME
 
 echo 'optimize > WASM...'
-./third-party/binaryen/bin/wasm-opt $WASTNAME -Oz -o $WASMNAME
+./third-party/binaryen/bin/wasm-opt $WASTNAME -O4 -o $WASMNAME
 
+wc -c $WASMNAME
 rm $WASTNAME
-
-#echo 'disassemble WASM...'
-#./third-party/wabt/bin/wasm2wat $WASMNAME > $DISNAME
