@@ -254,9 +254,9 @@ function asmHyphenEngine(std, x, heap) {
                 (((charOffset | 0) >= (lm | 0)) | 0) &
                 (((charOffset | 0) <= ((wordLength - rm - 2) | 0)) | 0)
             ) {
-                if (ui8[(hp + charOffset + 1) | 0] & 1 == 1) {
+                if (ui8[(hp + charOffset + 1) | 0] & 1) {
                     ui16[(hw + (charOffset << 1) + hyphenPointsCount + 2) >> 1] = 173;
-                    hyphenPointsCount = (hyphenPointsCount + 2) | 0
+                    hyphenPointsCount = (hyphenPointsCount + 2) | 0;
                 }
             }
             charOffset = (charOffset + 1) | 0;

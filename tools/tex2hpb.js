@@ -259,6 +259,7 @@ function getPatternsFile() {
     logger.log(`read patterns file: ${patternsFileName} (${fs.statSync(patternsFileName).size} Bytes)`);
     let patternsfile = fs.readFileSync("./" + patternsFileName, "utf8");
     patternsfile = patternsfile.trim();
+    // eslint-disable-next-line prefer-named-capture-group
     patternsfile = patternsfile.replace(/(\d{2})\n/, function repl(ignore, p1) {
         const digits = p1.split("");
         leftmin = parseInt(digits[0], 10);
@@ -639,7 +640,7 @@ function TrieCreator(patterns, trieRowLength) {
                 }
             }
 
-            terminateTrie(patterns[i]);
+            terminateTrie();
             // Reset indizes
             count = 0;
             rowStart = 0;
@@ -669,7 +670,7 @@ function main() {
     const patternsfile = getPatternsFile();
     const exceptionsfile = getExceptionsFile();
 
-    const translate = createTranslate(charactersfile, patternsfile);
+    const translate = createTranslate(charactersfile);
     const patterns = createPatterns(translate, patternsfile, exceptionsfile);
     const dummyTrie = new TrieCreator(patterns, translate[0] * 2);
     const header = createHeader(

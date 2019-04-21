@@ -387,7 +387,6 @@
                 const zeroWidthSpace = String.fromCharCode(8203);
                 let parts = null;
                 let wordHyphenator = null;
-                let hw = word;
                 if (classSettings.compound === "auto" ||
                     classSettings.compound === "all") {
                     wordHyphenator = createWordHyphenator(lo, lang, sel);
@@ -398,14 +397,14 @@
                         return p;
                     });
                     if (classSettings.compound === "auto") {
-                        hw = parts.join("-");
+                        word = parts.join("-");
                     } else {
-                        hw = parts.join("-" + zeroWidthSpace);
+                        word = parts.join("-" + zeroWidthSpace);
                     }
                 } else {
-                    hw = word.replace("-", "-" + zeroWidthSpace);
+                    word = word.replace("-", "-" + zeroWidthSpace);
                 }
-                return hw;
+                return word;
             }
 
             /**

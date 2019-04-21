@@ -574,7 +574,6 @@ function createWordHyphenator(lo, lang) {
         const zeroWidthSpace = String.fromCharCode(8203);
         let parts = null;
         let wordHyphenator = null;
-        let hw = word;
         if (H.c.compound === "auto" ||
             H.c.compound === "all") {
             wordHyphenator = createWordHyphenator(lo, lang);
@@ -585,14 +584,14 @@ function createWordHyphenator(lo, lang) {
                 return p;
             });
             if (H.c.compound === "auto") {
-                hw = parts.join("-");
+                word = parts.join("-");
             } else {
-                hw = parts.join("-" + zeroWidthSpace);
+                word = parts.join("-" + zeroWidthSpace);
             }
         } else {
-            hw = word.replace("-", "-" + zeroWidthSpace);
+            word = word.replace("-", "-" + zeroWidthSpace);
         }
-        return hw;
+        return word;
     }
 
     /**
