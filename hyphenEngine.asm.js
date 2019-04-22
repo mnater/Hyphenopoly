@@ -102,7 +102,6 @@ function asmHyphenEngine(std, x, heap) {
         var charAti = 0;
         var plen = 0;
         var count = 0;
-        var prevWasDigit = 0;
         var nextRowStart = 0;
         var trieNextEmptyRow = 0;
         var rowStart = 0;
@@ -144,10 +143,7 @@ function asmHyphenEngine(std, x, heap) {
                         i = (i + 1) | 0;
                     }
                     if ((charAti | 0) > 11) {
-                        if ((prevWasDigit | 0) == 0) {
-                            valueStoreCurrentIdx = (valueStoreCurrentIdx + 1) | 0;
-                        }
-                        prevWasDigit = 0;
+                        valueStoreCurrentIdx = (valueStoreCurrentIdx + 1) | 0;
                         if ((nextRowStart | 0) == -1) {
                             //start a new row
                             trieNextEmptyRow = trieNextEmptyRow + trieRowLength | 0;
@@ -164,8 +160,6 @@ function asmHyphenEngine(std, x, heap) {
                     } else {
                         ui8[valueStoreCurrentIdx | 0] = charAti | 0;
                         valueStorePrevIdx = valueStoreCurrentIdx;
-                        valueStoreCurrentIdx = (valueStoreCurrentIdx + 1) | 0;
-                        prevWasDigit = 1;
                     }
                     count = (count + 1) | 0;
                 }
@@ -178,7 +172,6 @@ function asmHyphenEngine(std, x, heap) {
                 count = 0;
                 rowStart = pt;
                 nextRowStart = pt;
-                prevWasDigit = 0;
             }
         }
         return alphabetlength | 0;
