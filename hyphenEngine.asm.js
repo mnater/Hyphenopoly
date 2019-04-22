@@ -117,9 +117,9 @@ function asmHyphenEngine(std, x, heap) {
         nextRowStart = pt;
         trieNextEmptyRow = pt;
         rowStart = pt;
-        valueStoreStartIndex = (vs + 1) | 0;
-        valueStoreCurrentIdx = (vs + 1) | 0;
-        valueStorePrevIdx = (vs + 1) | 0;
+        valueStoreStartIndex = vs;
+        valueStoreCurrentIdx = vs;
+        valueStorePrevIdx = vs;
 
         alphabetlength = createTranslateMap() | 0;
         i = po | 0;
@@ -165,7 +165,7 @@ function asmHyphenEngine(std, x, heap) {
                 }
 //terminate valueStore and save link to valueStoreStartIndex
                 ui8[(valueStorePrevIdx + 1) | 0] = 255; //mark end of pattern
-                i32[(rowStart + rowOffset + 4) >> 2] = (valueStoreStartIndex - vs) | 0;
+                i32[(rowStart + rowOffset + 4) >> 2] = valueStoreStartIndex | 0;
 //reset indizes
                 valueStoreStartIndex = (valueStorePrevIdx + 2) | 0;
                 valueStoreCurrentIdx = valueStoreStartIndex;
@@ -218,14 +218,14 @@ function asmHyphenEngine(std, x, heap) {
                 value = i32[(row + rowOffset2 + 4) >> 2] | 0;
                 if ((value | 0) > 0) {
                     hyphenPointsCount = 0;
-                    hyphenPoint = ui8[(vs + value) | 0] | 0;
+                    hyphenPoint = ui8[value | 0] | 0;
                     while ((hyphenPoint | 0) != 255) {
                         hpPos = (hp + patternStartPos + hyphenPointsCount) | 0;
                         if ((hyphenPoint | 0) > (ui8[hpPos | 0] | 0)) {
                             ui8[hpPos | 0] = hyphenPoint | 0;
                         }
                         hyphenPointsCount = (hyphenPointsCount + 1) | 0;
-                        hyphenPoint = ui8[(vs + value + hyphenPointsCount) | 0] | 0;
+                        hyphenPoint = ui8[(value + hyphenPointsCount) | 0] | 0;
                     }
                 }
                 if ((link | 0) > 0) {
