@@ -239,13 +239,14 @@ function asmHyphenEngine(std, x, heap) {
         }
 
         //get chars of original word and insert hyphenPoints
-        charOffset = 0;
+        charOffset = 1;
         hyphenPointsCount = 0;
+        wordLength = (wordLength - 2) | 0;
         while ((charOffset | 0) <= (wordLength | 0)) {
             ui16[(hw + (charOffset << 1) + hyphenPointsCount) >> 1] = ui16[(wo + (charOffset << 1)) >> 1] | 0;
             if (
                 (((charOffset | 0) >= (lm | 0)) | 0) &
-                (((charOffset | 0) <= ((wordLength - rm - 2) | 0)) | 0)
+                (((charOffset | 0) <= ((wordLength - rm) | 0)) | 0)
             ) {
                 if (ui8[(hp + charOffset + 1) | 0] & 1) {
                     ui16[(hw + (charOffset << 1) + hyphenPointsCount + 2) >> 1] = 173;
@@ -254,7 +255,7 @@ function asmHyphenEngine(std, x, heap) {
             }
             charOffset = (charOffset + 1) | 0;
         }
-        ui16[hw >> 1] = (wordLength + (hyphenPointsCount >> 1) - 2) | 0;
+        ui16[hw >> 1] = (wordLength + (hyphenPointsCount >> 1)) | 0;
         return 1;
     }
 
