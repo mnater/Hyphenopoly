@@ -766,18 +766,15 @@
          * Polyfill for TextDecoder
          */
         const decode = (function makeDecoder() {
-            let decoder = null;
             if (window.TextDecoder) {
                 const utf16ledecoder = new TextDecoder("utf-16le");
-                decoder = function (ui16) {
+                return function decoder(ui16) {
                     return utf16ledecoder.decode(ui16);
                 };
-            } else {
-                decoder = function (ui16) {
-                    return String.fromCharCode.apply(null, ui16);
-                };
             }
-            return decoder;
+            return function decoder(ui16) {
+                return String.fromCharCode.apply(null, ui16);
+            };
         }());
 
         /**
