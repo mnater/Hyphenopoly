@@ -5,6 +5,7 @@
 *   refactor(Loader): don't use innerHTML
 ### Fixed
 *   slightly improved performance of hyphenEngine
+*   bump devDependencies
 
 ## Version 3.0.1 (2019-04-04)
 ### Fixed

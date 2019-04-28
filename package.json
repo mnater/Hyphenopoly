@@ -43,11 +43,11 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^5.15.3",
+    "eslint": "^5.16.0",
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^6.0.1",
     "remark-preset-lint-recommended": "^3.0.2",
-    "tap": "^12.6.1",
+    "tap": "^13.1.0",
     "terser": "^3.17.0"
   },
   "eslintConfig": {
