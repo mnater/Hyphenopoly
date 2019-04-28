@@ -17,10 +17,10 @@ t.afterEach(function tearDown(done) {
 
 t.test("run config with one language", async function (t) {
     const deHyphenator = await H9Y.config({
-        "loader": "http",
+        "loader": "https",
         "paths": {
-            "maindir": "http://mnater.github.io/Hyphenopoly/",
-            "patterndir": "http://mnater.github.io/Hyphenopoly/patterns/"
+            "maindir": "https://mnater.github.io/Hyphenopoly/",
+            "patterndir": "https://mnater.github.io/Hyphenopoly/patterns/"
         },
         "require": ["de"]
     });
