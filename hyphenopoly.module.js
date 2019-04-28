@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 3.0.1 - hyphenation for node
+ * @license Hyphenopoly.module.js 3.0.2 - hyphenation for node
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -250,29 +250,29 @@ function calculateHeapSize(targetSize) {
  * -------------------- <- 768 Bytes
  * |     alphabet     |
  * |256 chars * 2Bytes|
- * -------------------- <- valueStoreOffset = 1280
+ * -------------------- <- valueStoreOffset (vs) = 1280
  * |    valueStore    |
  * |      1 Byte      |
  * |* valueStoreLength|
  * --------------------
  * | align to 4Bytes  |
- * -------------------- <- patternTrieOffset
+ * -------------------- <- patternTrieOffset (pt)
  * |    patternTrie   |
  * |     4 Bytes      |
  * |*patternTrieLength|
- * -------------------- <- wordOffset
+ * -------------------- <- wordOffset (wo)
  * |    wordStore     |
  * |    Uint16[64]    | 128 bytes
- * -------------------- <- translatedWordOffset
+ * -------------------- <- translatedWordOffset (tw)
  * | transl.WordStore |
- * |    Uint16[64]     | 128 bytes
- * -------------------- <- hyphenPointsOffset
+ * |    Uint8[64]     | 64 bytes
+ * -------------------- <- hyphenPointsOffset (hp)
  * |   hyphenPoints   |
  * |    Uint8[64]     | 64 bytes
- * -------------------- <- hyphenatedWordOffset
+ * -------------------- <- hyphenatedWordOffset (hw)
  * |  hyphenatedWord  |
  * |   Uint16[128]    | 256 Bytes
- * -------------------- <- hpbOffset           -
+ * -------------------- <- hpbOffset (ho)      -
  * |     HEADER       |                        |
  * |    6*4 Bytes     |                        |
  * |    24 Bytes      |                        |
@@ -284,12 +284,12 @@ function calculateHeapSize(targetSize) {
  * -------------------- <- hpbTranslateOffset  |
  * |    TRANSLATE     |                        |
  * | 2 + [0] * 2Bytes |                        |
- * -------------------- <- hpbPatternsOffset   |
+ * -------------------- <-hpbPatternsOffset(po)|
  * |     PATTERNS     |                        |
  * |  patternsLength  |                        |
  * -------------------- <- heapEnd             -
  * | align to 4Bytes  |
- * -------------------- <- heapSize
+ * -------------------- <- heapSize (hs)
  * @param {Object} hpbBuf FileBuffer from .hpb-file
  * @returns {Object} baseData-object
  */
@@ -301,19 +301,32 @@ function calculateBaseData(hpbBuf) {
         (4 - ((valueStoreOffset + valueStoreLength) % 4));
     const wordOffset = patternTrieOffset + (hpbMetaData[6] * 4);
     return {
-        "heapSize": Math.max(calculateHeapSize(wordOffset + 576 + hpbMetaData[2] + hpbMetaData[3]), 32 * 1024 * 64),
-        "hpbOffset": wordOffset + 576,
-        "hpbPatternsOffset": wordOffset + 576 + hpbMetaData[2],
-        "hpbTranslateOffset": wordOffset + 576 + hpbMetaData[1],
-        "hyphenatedWordOffset": wordOffset + 320,
-        "hyphenPointsOffset": wordOffset + 256,
-        "leftmin": hpbMetaData[4],
-        "patternsLength": hpbMetaData[3],
-        "patternTrieOffset": patternTrieOffset,
-        "rightmin": hpbMetaData[5],
-        "translatedWordOffset": wordOffset + 128,
-        "valueStoreOffset": valueStoreOffset,
-        "wordOffset": wordOffset
+        // Set hpbOffset
+        "ho": wordOffset + 512,
+        // Set hyphenPointsOffset
+        "hp": wordOffset + 192,
+        // Set heapSize
+        "hs": Math.max(calculateHeapSize(wordOffset + 512 + hpbMetaData[2] + hpbMetaData[3]), 32 * 1024 * 64),
+        // Set hyphenatedWordOffset
+        "hw": wordOffset + 256,
+        // Set leftmin
+        "lm": hpbMetaData[4],
+        // Set patternsLength
+        "pl": hpbMetaData[3],
+        // Set hpbPatternsOffset
+        "po": wordOffset + 512 + hpbMetaData[2],
+        // Set patternTrieOffset
+        "pt": patternTrieOffset,
+        // Set rightmin
+        "rm": hpbMetaData[5],
+        // Set translateOffset
+        "to": wordOffset + 512 + hpbMetaData[1],
+        // Set translatedWordOffset
+        "tw": wordOffset + 128,
+        // Set valueStoreOffset
+        "vs": valueStoreOffset,
+        // Set wordOffset
+        "wo": wordOffset
     };
 }
 
@@ -401,17 +414,16 @@ function prepareLanguagesObj(
 function encloseHyphenateFunction(baseData, hyphenateFunc) {
     /* eslint-disable no-bitwise */
     const heapBuffer = baseData.wasmMemory.buffer;
-    const wordOffset = baseData.wordOffset;
-    const hyphenatedWordOffset = baseData.hyphenatedWordOffset;
+    const wordOffset = baseData.wo;
     const wordStore = (new Uint16Array(heapBuffer)).subarray(
         wordOffset >> 1,
         (wordOffset >> 1) + 64
     );
-    const defLeftmin = baseData.leftmin;
-    const defRightmin = baseData.rightmin;
+    const defLeftmin = baseData.lm;
+    const defRightmin = baseData.rm;
     const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(
-        hyphenatedWordOffset >> 1,
-        (hyphenatedWordOffset >> 1) + 128
+        baseData.hw >> 1,
+        (baseData.hw >> 1) + 128
     );
     /* eslint-enable no-bitwise */
 
@@ -425,19 +437,20 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
      * @param {Number} rightmin – min number of chars to go to new line
      * @returns {String} the hyphenated word
      */
-    return function hyphenate(word, hyphenchar, leftmin, rightmin) {
+    wordStore[0] = 95;
+    return function enclHyphenate(word, hyphenchar, leftmin, rightmin) {
         let i = 0;
-        const wordLength = word.length;
+        let cc = word.charCodeAt(i);
         leftmin = leftmin || defLeftmin;
         rightmin = rightmin || defRightmin;
-        wordStore[0] = wordLength + 2;
-        wordStore[1] = 95;
-        while (i < wordLength) {
-            wordStore[i + 2] = word.charCodeAt(i);
+        while (cc) {
             i += 1;
+            // eslint-disable-next-line security/detect-object-injection
+            wordStore[i] = cc;
+            cc = word.charCodeAt(i);
         }
-        wordStore[i + 2] = 95;
-
+        wordStore[i + 1] = 95;
+        wordStore[i + 2] = 0;
         if (hyphenateFunc(leftmin, rightmin) === 1) {
             word = String.fromCharCode.apply(
                 null,
@@ -463,14 +476,14 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
 function instantiateWasmEngine(lang) {
     const baseData = calculateBaseData(H.binaries.get(lang));
     const wasmMemory = new WebAssembly.Memory({
-        "initial": baseData.heapSize / 65536,
+        "initial": baseData.hs / 65536,
         "maximum": 256
     });
     const ui32wasmMemory = new Uint32Array(wasmMemory.buffer);
     ui32wasmMemory.set(
         new Uint32Array(H.binaries.get(lang)),
         // eslint-disable-next-line no-bitwise
-        baseData.hpbOffset >> 2
+        baseData.ho >> 2
     );
     baseData.wasmMemory = wasmMemory;
     const importObj = {
@@ -478,17 +491,7 @@ function instantiateWasmEngine(lang) {
             "memory": baseData.wasmMemory,
             "memoryBase": 0
         },
-        "ext": {
-            "hpbPatternsOffset": baseData.hpbPatternsOffset,
-            "hpbTranslateOffset": baseData.hpbTranslateOffset,
-            "hyphenatedWordOffset": baseData.hyphenatedWordOffset,
-            "hyphenPointsOffset": baseData.hyphenPointsOffset,
-            "patternsLength": baseData.patternsLength,
-            "patternTrieOffset": baseData.patternTrieOffset,
-            "translatedWordOffset": baseData.translatedWordOffset,
-            "valueStoreOffset": baseData.valueStoreOffset,
-            "wordOffset": baseData.wordOffset
-        }
+        "x": baseData
     };
     if (H.c.sync) {
         const heInstance = new WebAssembly.Instance(
@@ -506,8 +509,8 @@ function instantiateWasmEngine(lang) {
                 (new Uint8Array(wasmMemory.buffer)).
                     subarray(768, 1280)
             ),
-            baseData.leftmin,
-            baseData.rightmin
+            baseData.lm,
+            baseData.rm
         );
     } else {
         WebAssembly.instantiate(H.binaries.get("hyphenEngine"), importObj).then(
@@ -523,8 +526,8 @@ function instantiateWasmEngine(lang) {
                         (new Uint8Array(wasmMemory.buffer)).
                             subarray(768, 1280)
                     ),
-                    baseData.leftmin,
-                    baseData.rightmin
+                    baseData.lm,
+                    baseData.rm
                 );
             }
         );
@@ -571,7 +574,6 @@ function createWordHyphenator(lo, lang) {
         const zeroWidthSpace = String.fromCharCode(8203);
         let parts = null;
         let wordHyphenator = null;
-        let hw = word;
         if (H.c.compound === "auto" ||
             H.c.compound === "all") {
             wordHyphenator = createWordHyphenator(lo, lang);
@@ -582,14 +584,14 @@ function createWordHyphenator(lo, lang) {
                 return p;
             });
             if (H.c.compound === "auto") {
-                hw = parts.join("-");
+                word = parts.join("-");
             } else {
-                hw = parts.join("-" + zeroWidthSpace);
+                word = parts.join("-" + zeroWidthSpace);
             }
         } else {
-            hw = word.replace("-", "-" + zeroWidthSpace);
+            word = word.replace("-", "-" + zeroWidthSpace);
         }
-        return hw;
+        return word;
     }
 
     /**

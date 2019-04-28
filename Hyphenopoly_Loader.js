@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly_Loader 3.0.1 - client side hyphenation
+ * @license Hyphenopoly_Loader 3.0.2 - client side hyphenation
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -102,24 +102,26 @@
         } else {
             const vis = " {visibility: hidden !important}\n";
             const sc = d.createElement("style");
+            let myStyle = "";
             sc.id = "H9Y_Styles";
             switch (H.setup.hide) {
             case "all":
-                sc.innerHTML = "html" + vis;
+                myStyle = "html" + vis;
                 break;
             case "element":
                 eachKey(H.setup.selectors, function eachSelector(sel) {
-                    sc.innerHTML += sel + vis;
+                    myStyle += sel + vis;
                 });
                 break;
             case "text":
                 eachKey(H.setup.selectors, function eachSelector(sel) {
-                    sc.innerHTML += sel + " {color: transparent !important}\n";
+                    myStyle += sel + " {color: transparent !important}\n";
                 });
                 break;
             default:
-                sc.innerHTML = "";
+                myStyle = "";
             }
+            sc.appendChild(document.createTextNode(myStyle));
             d.getElementsByTagName("head")[0].appendChild(sc);
         }
     };

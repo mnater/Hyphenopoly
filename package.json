@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -43,11 +43,11 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^5.15.3",
+    "eslint": "^5.16.0",
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^6.0.1",
     "remark-preset-lint-recommended": "^3.0.2",
-    "tap": "^12.6.1",
+    "tap": "^13.1.0",
     "terser": "^3.17.0"
   },
   "eslintConfig": {
@@ -172,10 +172,9 @@
   },
   "scripts": {
     "preinstall3rdparty": "rm -fR third-party",
-    "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen && git clone --recursive https://github.com/WebAssembly/wabt.git third-party/wabt",
-    "postinstall3rdparty": "npm run compile-binaryen && npm run compile-wabt",
+    "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen",
+    "postinstall3rdparty": "npm run compile-binaryen",
     "compile-binaryen": "cd ./third-party/binaryen/ && cmake . && make",
-    "compile-wabt": "cd ./third-party/wabt/ && make",
     "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
     "test": "tap test/*.js --coverage",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
