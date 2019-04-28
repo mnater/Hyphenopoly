@@ -1,10 +1,10 @@
 # Version History
 
-## Unreleased
+## Version 3.0.2 (2019-04-28)
 ### Security
 *   refactor(Loader): don't use innerHTML
 ### Fixed
-*   slightly improved performance of hyphenEngine
+*   performance: slightly improved hyphenEngine
 *   bump devDependencies
 
 ## Version 3.0.1 (2019-04-04)
