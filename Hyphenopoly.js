@@ -334,12 +334,12 @@
                 isChild = isChild || false;
                 const eLang = getElementLanguage(el, pLang);
                 /* eslint-disable security/detect-object-injection */
-                if (H.clientFeat.langs[eLang] === "H9Y") {
+                if (H.cf.langs[eLang] === "H9Y") {
                     elements.add(el, eLang, sel);
                     if (!isChild && C.safeCopy) {
                         registerOnCopy(el);
                     }
-                } else if (!H.clientFeat.langs[eLang]) {
+                } else if (!H.cf.langs[eLang]) {
                     H.events.dispatch("error", {
                         "lvl": "warn",
                         "msg": "Element with '" + eLang + "' found, but '" + eLang + ".hpb' not loaded. Check language tags!"
@@ -748,7 +748,7 @@
          */
         function calculateHeapSize(targetSize) {
             /* eslint-disable no-bitwise */
-            if (H.clientFeat.wasm) {
+            if (H.cf.wasm) {
                 return Math.ceil(targetSize / 65536) * 65536;
             }
             const exp = Math.ceil(Math.log2(targetSize));
@@ -896,7 +896,7 @@
          */
         function encloseHyphenateFunction(baseData, hyphenateFunc) {
             /* eslint-disable no-bitwise */
-            const heapBuffer = H.clientFeat.wasm
+            const heapBuffer = H.cf.wasm
                 ? baseData.wasmMemory.buffer
                 : baseData.heapBuffer;
             const wordStore = (new Uint16Array(heapBuffer)).subarray(
@@ -940,7 +940,7 @@
          * @returns {undefined}
          */
         function instantiateWasmEngine(lang) {
-            Promise.all([H.binaries.get(lang), H.binaries.get("hyphenEngine")]).then(
+            Promise.all([H.bins.get(lang), H.bins.get("hyphenEngine")]).then(
                 function onAll(binaries) {
                     const hpbBuf = binaries[0];
                     const baseData = calculateBaseData(hpbBuf);
@@ -995,7 +995,7 @@
          * @returns {undefined}
          */
         function instantiateAsmEngine(lang) {
-            const hpbBuf = H.binaries.get(lang);
+            const hpbBuf = H.bins.get(lang);
             const baseData = calculateBaseData(hpbBuf);
             const specMem = H.specMems.get(lang);
             const heapBuffer = (specMem.byteLength >= baseData.hs)
