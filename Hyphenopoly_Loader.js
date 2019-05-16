@@ -262,7 +262,8 @@
                     "data": e,
                     "name": "loadError"
                 });
-            }
+            },
+            false
         );
 
         define(
@@ -453,7 +454,7 @@
             /* eslint-disable-next-line no-negated-condition */
             const xhr = new XMLHttpRequest();
             xhr.onload = function onload() {
-                if (xhr.statusText === "OK") {
+                if (xhr.status === 200) {
                     loadedBins.get(f).
                         forEach(function eachHpb(rn) {
                             H.bins.set(
@@ -623,11 +624,20 @@
                                 rs(H.createHyphenator(e.msg));
                             }
                         }, true);
-                        H.events.addListener("error", function handler(e) {
-                            if (e.key === lang || e.key === "hyphenEngine") {
-                                rj(e.msg);
+                        H.events.addListener("loadError", function handler(e) {
+                            if (e.name === lang || e.name === "hyphenEngine") {
+                                rj(new Error("File " + e.file + " can't be loaded from " + e.path));
                             }
-                        }, true);
+                        }, false);
+                    });
+                    H.hyphenators[lang].catch(function catchPromiseError(e) {
+                        H.events.dispatch(
+                            "error",
+                            {
+                                "lvl": "error",
+                                "msg": e.message
+                            }
+                        );
                     });
                 } else {
                     H.hyphenators[lang] = {

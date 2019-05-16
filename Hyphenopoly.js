@@ -8,7 +8,6 @@
  */
 
 /* globals asmHyphenEngine, Hyphenopoly */
-
 (function mainWrapper(w) {
     "use strict";
     const SOFTHYPHEN = String.fromCharCode(173);
@@ -1095,7 +1094,7 @@
             false
         );
 
-        H.events.define(
+        H.events.addListener(
             "loadError",
             function onLoadError(e) {
                 if (e.msg !== "wasm") {
