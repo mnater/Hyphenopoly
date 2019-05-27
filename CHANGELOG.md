@@ -1,6 +1,6 @@
 # Version History
 
-## Next release (tbd)
+## Version 3.1.0 (2019-04-28)
 ### Fixed
 *   Correctly reject hyphenator promises (issue#77)
 *   performance: reduce file size of Hyphenopoly_Loader.js
