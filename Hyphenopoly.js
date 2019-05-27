@@ -750,7 +750,7 @@
             if (H.cf.wasm) {
                 return Math.ceil(targetSize / 65536) * 65536;
             }
-            const exp = Math.ceil(Math.log2(targetSize));
+            const exp = Math.ceil(Math.log(targetSize) * Math.LOG2E);
             if (exp <= 12) {
                 return 1 << 12;
             }

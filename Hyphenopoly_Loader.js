@@ -21,7 +21,7 @@
     "use strict";
 
     const store = sessionStorage;
-    const wa = WebAssembly;
+    const wa = w.WebAssembly;
     const lcFallbacks = new Map();
     const lcRequire = new Map();
 
@@ -68,7 +68,7 @@
     (function configPaths() {
         const maindir = (d.currentScript)
             ? d.currentScript.src.replace(/Hyphenopoly_Loader.js/i, "")
-            : "../Hyphenopoly/";
+            : "../";
         const patterndir = maindir + "patterns/";
         if (H.paths) {
             H.paths.maindir = H.paths.maindir || maindir;

@@ -28,13 +28,24 @@
 
         window.onload = function () {
             function hyphenate_fur(text) {
-                Hyphenopoly.hyphenators.fur.then(
-                function (furhyph) {
-                    document.getElementById("test1").innerText = furhyph(text);
-                    assertAll();
-                }).catch(function(e) {
-                    assertError(e);
-                });
+                if (window.Promise) {
+                    Hyphenopoly.hyphenators.fur.then(
+                    function (furhyph) {
+                        document.getElementById("test1").innerText = furhyph(text);
+                        assertAll();
+                    }).catch(function(e) {
+                        assertError(e);
+                    });
+                } else {
+                    result = false
+                    if (parent != window) {
+                        parent.postMessage(JSON.stringify({
+                            desc: document.getElementById("desc").innerHTML,
+                            index: 36,
+                            result: (result ? "passed" : "failed")
+                        }), window.location.href);
+                    }
+                }
             }
             hyphenate_fur("Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont. Cualchi volte al ven clamât Ladin orientâl, parcè che al à diviers ponts in comun cul ladin, ma si è svilupât in un altri mût cul passâ dal timp, sot de influence des lenghis ator dal Friûl");
         };
