@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 038</title>
+        <script>
+        var mode = window.location.search.substring(1);
+        var path = "../patterns/";
+        var result = false;
+        var Hyphenopoly = {
+            require: {
+                "de": "FORCEHYPHENOPOLY",
+                "en": "FORCEHYPHENOPOLY"
+            },
+            paths: {
+                patterndir: path
+            },
+            setup: {
+                selectors: {
+                    ".hyphenate": {
+                        hyphen: "|",
+                        minWordLength: 4
+                    }
+                }
+            }
+        };
+
+        window.onload = function () {
+            if (window.Promise) {
+                function hyphenate_en(text) {
+                    Hyphenopoly.hyphenators["en"].then(
+                    function (enhyph) {
+                        document.getElementById("test1").innerText = enhyph(text);
+                        assertAll();
+                    }).catch(function(e) {
+                        assertError(e);
+                    });
+                }
+                function hyphenate_de(text) {
+                    Hyphenopoly.hyphenators["de"].then(
+                    function (dehyph) {
+                        document.getElementById("test2").innerText = dehyph(text);
+                        assertAll();
+                    }).catch(function(e) {
+                        assertError(e);
+                    });
+                }
+                hyphenate_en("hyphenation algorithm");
+                hyphenate_de("Silbentrennungsalgorithmus");
+            } else {
+                result = false
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 38,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
+
+            }
+        };
+
+        function assertError(e) {
+            if (e.message.indexOf("File en.hpb can't be loaded from ../patterns/") !== -1) {
+                result = true;
+            }
+            if (result) {
+                document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + 1 + " passed</p>";
+            }
+        }
+        function assertAll() {
+            var tests = 2;
+            var i = 2;
+            var test = "";
+            var ref = "";
+            while (i <= tests) {
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                    result = result || true;
+                } else {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                    result = result || false;
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 38,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+                hyphens: auto;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test37.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test39.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 038</h1>
+        <p id="desc">Reject only hyphenator-promise if it's pattern can't be loaded.</p>
+        <div id="result"></div>
+        <hr>
+        <h2>en-us</h2>
+        <p id="test1" lang="en-us" class="test"></p>
+        <p id="ref1" lang="en-us" class="ref">hy|phen|ation al|go|rithm</p>
+        <h2>de</h2>
+        <p id="test2" lang="de" class="test"></p>
+        <p id="ref2" lang="de" class="ref">Sil|ben|tren|nungs|al|go|rith|mus</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+    </body>
+</html>

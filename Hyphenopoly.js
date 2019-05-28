@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly 3.0.2 - client side hyphenation for webbrowsers
+ * @license Hyphenopoly 3.1.0 - client side hyphenation for webbrowsers
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -8,7 +8,6 @@
  */
 
 /* globals asmHyphenEngine, Hyphenopoly */
-
 (function mainWrapper(w) {
     "use strict";
     const SOFTHYPHEN = String.fromCharCode(173);
@@ -334,12 +333,12 @@
                 isChild = isChild || false;
                 const eLang = getElementLanguage(el, pLang);
                 /* eslint-disable security/detect-object-injection */
-                if (H.clientFeat.langs[eLang] === "H9Y") {
+                if (H.cf.langs[eLang] === "H9Y") {
                     elements.add(el, eLang, sel);
                     if (!isChild && C.safeCopy) {
                         registerOnCopy(el);
                     }
-                } else if (!H.clientFeat.langs[eLang]) {
+                } else if (!H.cf.langs[eLang]) {
                     H.events.dispatch("error", {
                         "lvl": "warn",
                         "msg": "Element with '" + eLang + "' found, but '" + eLang + ".hpb' not loaded. Check language tags!"
@@ -748,10 +747,10 @@
          */
         function calculateHeapSize(targetSize) {
             /* eslint-disable no-bitwise */
-            if (H.clientFeat.wasm) {
+            if (H.cf.wasm) {
                 return Math.ceil(targetSize / 65536) * 65536;
             }
-            const exp = Math.ceil(Math.log2(targetSize));
+            const exp = Math.ceil(Math.log(targetSize) * Math.LOG2E);
             if (exp <= 12) {
                 return 1 << 12;
             }
@@ -896,7 +895,7 @@
          */
         function encloseHyphenateFunction(baseData, hyphenateFunc) {
             /* eslint-disable no-bitwise */
-            const heapBuffer = H.clientFeat.wasm
+            const heapBuffer = H.cf.wasm
                 ? baseData.wasmMemory.buffer
                 : baseData.heapBuffer;
             const wordStore = (new Uint16Array(heapBuffer)).subarray(
@@ -940,7 +939,7 @@
          * @returns {undefined}
          */
         function instantiateWasmEngine(lang) {
-            Promise.all([H.binaries.get(lang), H.binaries.get("hyphenEngine")]).then(
+            Promise.all([H.bins.get(lang), H.bins.get("hyphenEngine")]).then(
                 function onAll(binaries) {
                     const hpbBuf = binaries[0];
                     const baseData = calculateBaseData(hpbBuf);
@@ -995,7 +994,7 @@
          * @returns {undefined}
          */
         function instantiateAsmEngine(lang) {
-            const hpbBuf = H.binaries.get(lang);
+            const hpbBuf = H.bins.get(lang);
             const baseData = calculateBaseData(hpbBuf);
             const specMem = H.specMems.get(lang);
             const heapBuffer = (specMem.byteLength >= baseData.hs)
@@ -1095,7 +1094,7 @@
             false
         );
 
-        H.events.define(
+        H.events.addListener(
             "loadError",
             function onLoadError(e) {
                 if (e.msg !== "wasm") {

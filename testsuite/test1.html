@@ -9,10 +9,6 @@
                 "en-us": "FORCEHYPHENOPOLY",
                 "hy": "ձայնավորձայնավոր"
             },
-            paths: {
-                "maindir": "../",
-                "patterndir": "../patterns/"
-            },
             handleEvent: {
                 hyphenopolyEnd: function (e) {
                     assert();
@@ -28,7 +24,7 @@
             var lang = "";
             while (i <= tests) {
                 lang = document.getElementById("test" + i).lang;
-                if (Hyphenopoly.clientFeat.langs[lang] === "CSS") {
+                if (Hyphenopoly.cf.langs[lang] === "CSS") {
                     document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
                     result = result && true;
                 } else {

@@ -1,5 +1,14 @@
 # Version History
 
+## Version 3.1.0 (2019-04-28)
+### Fixed
+*   Correctly reject hyphenator promises (issue#77)
+*   performance: reduce file size of Hyphenopoly_Loader.js
+*   update devDependencies
+
+### Added
+*   feature: get maindir and patterndir from currentScript
+
 ## Version 3.0.2 (2019-04-28)
 ### Security
 *   refactor(Loader): don't use innerHTML
