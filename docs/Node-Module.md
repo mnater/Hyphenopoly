@@ -122,15 +122,15 @@ This is useful if the module is transformed to a script used in a webbrowser (e.
 ### other options
 For documentation about the other options see the `Hyphenopoly.js`-documentation:
 
-- [compound](https://github.com/mnater/Hyphenopoly/wiki/Setup#compound)
-- [exceptions](https://github.com/mnater/Hyphenopoly/wiki/Setup#exceptions)
-- [hyphen](https://github.com/mnater/Hyphenopoly/wiki/Setup#hyphen)
-- [leftmin](https://github.com/mnater/Hyphenopoly/wiki/Setup#leftmin-and-rightmin)
-- [minWordLength](https://github.com/mnater/Hyphenopoly/wiki/Setup#minwordlength)
-- [normalize](https://github.com/mnater/Hyphenopoly/wiki/Setup#normalize)
-- [orphanControl](https://github.com/mnater/Hyphenopoly/wiki/Setup#orphancontrol)
-- [paths](https://github.com/mnater/Hyphenopoly/wiki/Global-Hyphenopoly-Object#paths)
-- [rightmin](https://github.com/mnater/Hyphenopoly/wiki/Setup#leftmin-and-rightmin)
+- [compound](./Setup#compound)
+- [exceptions](./Setup#exceptions)
+- [hyphen](./Setup#hyphen)
+- [leftmin](./Setup#leftmin-and-rightmin)
+- [minWordLength](./Setup#minwordlength)
+- [normalize](./Setup#normalize)
+- [orphanControl](./Setup#orphancontrol)
+- [paths](./Global-Hyphenopoly-Object#paths)
+- [rightmin](./Setup#leftmin-and-rightmin)
 
 ## Supported languages (since Version 2.8.0)
 A list of supported languages can be programmatically obtained by looking at `Hyphenopoly.supportedLanguages`:

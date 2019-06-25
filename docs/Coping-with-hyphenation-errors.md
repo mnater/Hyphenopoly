@@ -1,3 +1,4 @@
+# Hyphenation errors
 Automatic hyphenation can not be error free! Because ...
 * ... [homographs](https://en.wikipedia.org/wiki/Homograph) may be hyphenated differently.
     ````

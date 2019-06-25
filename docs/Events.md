@@ -1,7 +1,8 @@
+# Events
 Hyphenopoly fires a bunch of events while executing. As a user you can extend or overwrite the actions performed by these events.
 Some events have a default action that may be prevented (if event is cancellable).
 
-### timeout-Event
+## timeout-Event
 Fired when the Flash Of Unhyphenated Content-prevention timed out.
 
 ````
@@ -10,7 +11,7 @@ cancellable: false
 Fields: `delay` (timeout in ms)
 ````
 
-### error-Event
+## error-Event
 Fired when an error occurs.
 
 ````
@@ -34,7 +35,7 @@ const Hyphenopoly = {
 }
 ````
 
-### contentLoaded-Event
+## contentLoaded-Event
 Handles the DOMContentLoaded internally.
 Can be manually fired if contentChanges to rehyphenate the document.
 
@@ -44,9 +45,9 @@ cancellable: false
 Fields: `msg` (list of what has been loaded)
 ````
 
-_note: use [Hyphenators](https://github.com/mnater/Hyphenopoly/wiki/Hyphenators) to prevent a costly rehyphenation of the whole document_
+_note: use [Hyphenators](./Hyphenators) to prevent a costly rehyphenation of the whole document_
 
-### engineLoaded-Event
+## engineLoaded-Event
 Fired when the (w)asm-engine is instantiated.
 
 ````
@@ -55,7 +56,7 @@ cancellable: false
 Fields: `msg` (list of what has been loaded)
 ````
 
-### hpbLoaded-Event
+## hpbLoaded-Event
 Fired on each load of a patternfile.
 
 ````
@@ -64,7 +65,7 @@ cancellable: false
 Fields: `msg` (list of what has been loaded)
 ````
 
-### loadError-Event
+## loadError-Event
 (new in v3.0.0)
 Fired just before Hyphenopoly is deleted if the browser supports native CSS.
 
@@ -74,7 +75,7 @@ cancellable: false
 Fields: `msg` (list of what has not been loaded)
 ````
 
-### elementsReady-Event
+## elementsReady-Event
 Fired when elements are collected and ready for hyphenation.
 
 ````
@@ -83,7 +84,7 @@ cancellable: false
 Fields: null
 ````
 
-### engineReady-Event
+## engineReady-Event
 Fired when engine and pattern files are ready.
 
 ````
@@ -92,7 +93,7 @@ cancellable: false
 Fields: msg (language code)
 ````
 
-### hyphenopolyStart-Event
+## hyphenopolyStart-Event
 Fired when Hyphenopoly starts.
 
 ````
@@ -101,7 +102,7 @@ cancellable: true
 Fields: msg
 ````
 
-### hyphenopolyEnd-Event
+## hyphenopolyEnd-Event
 Fired when all collected elements are hyphenated.
 
 ````
@@ -110,7 +111,7 @@ cancellable: false
 Fields: null
 ````
 
-### beforeElementHyphenation-Event
+## beforeElementHyphenation-Event
 Fired before an element gets hyphenated.
 
 ````
@@ -119,7 +120,7 @@ cancellable: true
 Fields: `el` (element), `lang` (language-code)
 ````
 
-### afterElementHyphenation-Event
+## afterElementHyphenation-Event
 Fired after an element has been hyphenated.
 
 ````
@@ -128,7 +129,7 @@ cancellable: true
 Fields: `el` (element), `lang` (language-code)
 ````
 
-### tearDown-Event
+## tearDown-Event
 (new in v3.0.0)
 Fired just before Hyphenopoly is deleted if the browser supports native CSS.
 

@@ -1,3 +1,4 @@
+# Hyphenators
 While the main functionality of Hyphenopoly is to just hyphenate your HTML with no further ado, it is sometimes usefull to have a function at hand that hyphenates text.
 
 Possible usecases are:
@@ -5,11 +6,11 @@ Possible usecases are:
 * hyphenating text provided by the user (e.g. in a preview window of a blogging software)
 * …
 
-Up to version 2.4.0 the only way to hyphenate text after the page has loaded was to [dispatch a `contentLoaded`-Event](https://github.com/mnater/Hyphenopoly/wiki/Events#contentloaded-event) in order to restart the hyphenation process. This works but is a bit like using a sledgehammer to crack a nut, since the whole page is reprocessed.
+Up to version 2.4.0 the only way to hyphenate text after the page has loaded was to [dispatch a `contentLoaded`-Event](./Events#contentloaded-event) in order to restart the hyphenation process. This works but is a bit like using a sledgehammer to crack a nut, since the whole page is reprocessed.
 
 _Since Version 2.5.0 Hyphenopoly.js exposes `hyphenators` – language specific functions that hyphenates a string or a DOM-Object._
 
-### Create and access `Hyphenopoly.hyphenators`
+## Create and access `Hyphenopoly.hyphenators`
 `hyphenators` are language specific functions that hyphenate their input.
 
 Hyphenopoly_Loader.js creates a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) for a `hyphenator` for each language it loads (i.e. languages the UA doesn't support or languages you "FORCEHYPHENOPOLY"-ied).
@@ -31,7 +32,7 @@ Hyphenopoly_Loader.js creates a [Promise](https://developer.mozilla.org/en-US/do
 
 In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for `en-us`. Since the UA seems to support CSS3-hyphens for German, `Hyphenopoly.hyphenators` only contain a Promise for a `en-us`-hyphenator.
 
-### Use `Hyphenopoly.hyphenators` for Strings
+## Use `Hyphenopoly.hyphenators` for Strings
 `hyphenators` are Promises. They are resolved as soon as everything necessary is loaded and ready (or rejected when something goes wrong). `hyphenators` resolve to a language specific function (a `hyphenator`) that hyphenates its input according to the settings for selectors (default: `.hyphenate`):
 
 `function hyphenator({string|DOM-Element}, [Optional: selector=".hyphenate"]) => {string|undefined}`
@@ -70,7 +71,7 @@ In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for
 
 In the example a `string` is handed over to the `hyphenator` which returns a hyphenated string according to the settings for the `selector`. If no `selector` is defined it defaults to `".hyphenate"`.
 
-### Use `Hyphenopoly.hyphenators` for DOM-Elements
+## Use `Hyphenopoly.hyphenators` for DOM-Elements
 When handing over a HTMLELEMENT instead of a string `hyphenators` directly hyphenate the contents of a HTMLElement and return nothing (`undefined`).
 
 ````html
@@ -106,7 +107,7 @@ When handing over a HTMLELEMENT instead of a string `hyphenators` directly hyphe
 </html>
 ````
 
-### Further notes and compatibility
+## Further notes and compatibility
 Instead of using `.then` on the Promises we could also use `async/await`:
 
 ````javascript
@@ -120,7 +121,7 @@ If Promises are not supported by the browser an error is dispatched.
 
 All modern Browsers [support Promises](https://caniuse.com/#feat=promises) and the [`async/await`-syntax](https://caniuse.com/#feat=async-functions). If you need to support IE11 use a polyfill for promises (e.g. [taylorhakes/promise-polyfill](https://github.com/taylorhakes/promise-polyfill)) and stick to the `.then`-syntax.
 
-## Use case: Hyphenopoly in react
+# Use case: Hyphenopoly in react
 `hyphenators` are very important in dynamically generated web-content (web-apps). The following describes some first steps in how to use Hyphenopoly in react-apps. Please note that I'm not an expert in react.js If you find a better way I'd highly appreciate your ideas.
 
 1. [download](https://github.com/mnater/Hyphenopoly/releases/latest) and copy the latest version of Hyphenopoly to your react's `public` folder.

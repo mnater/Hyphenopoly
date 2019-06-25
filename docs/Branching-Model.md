@@ -1,3 +1,4 @@
+# Branching model
 With the release of Version 3.0.0 a branching model based on [https://nvie.com/posts/a-successful-git-branching-model/](https://nvie.com/posts/a-successful-git-branching-model/) will be used.
 
 ## Overview

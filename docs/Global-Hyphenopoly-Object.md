@@ -1,9 +1,11 @@
+# The global Hyphenopoly object
+
 Before loading Hyphenopoly_Loader.js initial settings must be provided in a global `Hyphenopoly`-object. This is the only place in global space where Hyphenopoly.js puts data.
 
-# Mandatory Fields
+## Mandatory Fields
 These fields in the `Hyphenopoly`-object must be defined.
 
-## require
+### require
 The `require` field must be an object of key-value-pairs, where the keys are language codes and the values are a long word (>=12 characters) in the required language.
 ````javascript
 require: {
@@ -18,8 +20,8 @@ Use this to test support for every language used on the current page. If e.g. th
 
 To force the usage of Hyphenopoly.js (e.g. for testing or if you prefer to use your own patterns) the special keyword `"FORCEHYPHENOPOLY"` can be used as value. Note: Disable CSS-hyphenation while using `"FORCEHYPHENOPOLY"`.
 
-# Optional Fields
-## paths
+## Optional Fields
+### paths
 By default Hyphenopoly looks in `../Hyphenopoly/patterns/` for .hpb-files and in `../Hyphenopoly/` for other resources.
 
 These pathes can be reconfigured:
@@ -31,7 +33,7 @@ paths: {
 }
 ````
 
-## fallbacks
+### fallbacks
 
 In some cases a fallback-language need to be defined:
   * patterns for a given language are not (yet) available but patterns of an other language can be used.
@@ -53,13 +55,13 @@ const Hyphenopoly = {
 }
 ````
 
-## cacheFeatureTests
-See [cacheFeatureTests](https://github.com/mnater/Hyphenopoly/wiki/cacheFeatureTests)
+### cacheFeatureTests
+See [cacheFeatureTests](./cacheFeatureTests)
 
-## setup
+### setup
 By default Hyphenopoly.js hyphenates elements with the classname `.hyphenate` and sets a FOUHC-timeout of 1000ms.
 
-### selectors
+#### selectors
 
 With selectors elements can be selected very precicely without the need of adding classes to the HTML. The selectors-object is a list of key-value-pairs where the key is a selector and the value is an object of settings specific to the selected elements.
 
@@ -77,19 +79,19 @@ See [CSS-Selectors on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_
 
 Note: There was a field called `classnames` in older versions of Hyphenopoly. `classnames` had been deprecated since v2.6.0 and are completly removed in v3.0.0 in favor of `selectors`.
 
-### Optional fields in setup
-See [Setup](https://github.com/mnater/Hyphenopoly/wiki/Setup)
+#### Optional fields in setup
+See [Setup](./Setup)
 
-## Events
-See [Events](https://github.com/mnater/Hyphenopoly/wiki/Events)
+### Events
+See [Events](./Events)
 
-## Hyphenate manually
-See [Hyphenators](https://github.com/mnater/Hyphenopoly/wiki/Hyphenators)
+### Hyphenate manually
+See [Hyphenators](./Hyphenators)
 
-## Unhyphenate
+### Unhyphenate
 To remove all hyphenation previously applied by Hyphenopoly call `Hyphenopoly.unhyphenate();`.
 
-# Putting it all together
+## Putting it all together
 A typical init could look like this:
 ````javascript
 const Hyphenopoly = {
@@ -109,10 +111,10 @@ const Hyphenopoly = {
 }
 ````
 
-# Internal Fields
+## Internal Fields
 If you `console.dir(Hyphenopoly)` you'll see lots of other data that is internally used by Hyphenopoly_Loader.js and Hyphenopoly.js but isn't meant to be changed by the user.
 
-# Reclaim memory
+## Reclaim memory
 Hyphenopoly is quite hungry regarding to memory usage: for each language 2MB of wasm/asm memory are allocated. If you're done with Hyphenopoly you can set `window.Hyphenopoly = null` and leave it to the garbage collector to free the memory:
 
 ````javascript
@@ -122,4 +124,4 @@ handleEvent: {
     }
 }
 ````
-See [Events](https://github.com/mnater/Hyphenopoly/wiki/Events) for more details about the `hyphenopolyEnd`-event.
+See [Events](./Events) for more details about the `hyphenopolyEnd`-event.

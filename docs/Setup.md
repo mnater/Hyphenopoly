@@ -1,3 +1,4 @@
+# optional fields in `setup`
 These page documents the optional fields in `setup`:
 * [Global Settings](#global-settings)
   * [defaultLanguage](#defaultlanguage)
@@ -16,10 +17,10 @@ These page documents the optional fields in `setup`:
   * [minWordLength](#minwordlength)
   * [orphanControl](#orphancontrol)
 
-# Global Settings
+## Global Settings
 These settings apply to Hyphenopoly in general.
 
-## defaultLanguage
+### defaultLanguage
 ````
 type: String
 default: "en-us"
@@ -42,7 +43,7 @@ Hyphenopoly.js does a good job here: it searches for a `lang`-tag going up all t
 
 _It's strongly recommended to set the language in HTML and use `defaultLanguage` only in cases where this wouldn't be possible!_
 
-## dontHyphenate
+### dontHyphenate
 ````
 type: Object
 default: {
@@ -107,7 +108,7 @@ var Hyphenopoly = {
 </script>
 ````
 
-## dontHyphenateClass
+### dontHyphenateClass
 ````
 type: String
 default: "donthyphenate"
@@ -133,7 +134,7 @@ Hyphenopoly.js hyphenates all elements that match the selectors defined in `sele
 </div>
 ````
 
-## exceptions
+### exceptions
 ````
 type: Object
 default: undefined
@@ -157,7 +158,7 @@ var Hyphenopoly = {
 The exceptions object must contain language-codes as keys (or "global" for all languages). The values must be words separated by `,⎵` (comma, space), where a hyphen-minus marks the hyphenation points.
 If the word does not contain a hyphen, it will not be hyphenated by Hyphenopoly.js
 
-## hide
+### hide
 ````
 type: string ("all" | "element" | "text")
 default: "all"
@@ -184,7 +185,7 @@ To prevent a flash of unhyphenated content (FOUHC) Hyphenopoly hides the element
 These CSS-rules are removed, when Hyphenopoly has finished its job or when the [timeout](#timeout) gets fired.
 
 
-## normalize
+### normalize
 ````
 type: boolean
 default: false
@@ -206,7 +207,7 @@ The pattern files work with _precomposed_ characters. So an `Å` (LATIN CAPITAL 
 If the text contains _composed_ characters they must be normalised to _precomposed_ characters. If `normalize` is activated and the user agent supports `String.prototype.normalize()` this can happen automatically.
 Since this comes with a performance penalty it is deactivated by default and it's recommended to use _precomposed_ characters in HTML.
 
-## safeCopy
+### safeCopy
 ````
 type: boolean
 default: true
@@ -228,7 +229,7 @@ To prevent soft hyphens from beeing copied to the clipboard, Hyphenopoly.js regi
 _It does NOT remove other `hyphen`-characters!_
 This feature is on by default, but it's a hack – disable it if you don't like it.
 
-## timeout
+### timeout
 ````
 type: number
 default: 1000
@@ -252,10 +253,10 @@ If the timeout kicks in, the `onTimeOut`event is fired.
 
 See [hide](#hide) about different ways of hiding.
 
-# Selector Based Settings
+## Selector Based Settings
 These settings can be set for each set of elements that are matched by the given selector.
 
-## compound
+### compound
 ````
 type: string ("auto" | "all" | "hyphen")
 default: "hyphen"
@@ -285,7 +286,7 @@ There are three possible values:
 
 **"hyphen":** don't hyphenate the parts but insert a zero-width space after the hyphen: `computer-|aided`
 
-## hyphen
+### hyphen
 ````
 type: String (a single character!)
 default: "\u00AD" (&shy; | &#173;)
@@ -308,7 +309,7 @@ var Hyphenopoly = {
 ````
 Can be set to something visible for testing and documentation.
 
-## leftmin and rightmin
+### leftmin and rightmin
 ````
 type: number
 default: 0
@@ -333,7 +334,7 @@ var Hyphenopoly = {
 Leftmin and rightmin are provided by the pattern-file but can be overwritten with larger values.
 If the value is smaller than the value from the pattern-file, it has no effect. `leftmin` and `rightmin` have an effect for the whole set of elements, disregarding the language of the subelements.
 
-## leftminPerLang and rightminPerLang:
+### leftminPerLang and rightminPerLang:
 ````
 type: object | 0
 default: 0
@@ -359,7 +360,7 @@ var Hyphenopoly = {
 ````
 If both (left-/rightmin and left-/rightminPerLanguage) are given, the highest value is respectively taken in account.
 
-## minWordLength
+### minWordLength
 ````
 type: number
 default: 6
@@ -381,7 +382,7 @@ var Hyphenopoly = {
 </script>
 ````
 
-## orphanControl
+### orphanControl
 ````
 type: number (1 | 2 | 3)
 default: 1

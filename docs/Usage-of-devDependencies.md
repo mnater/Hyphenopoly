@@ -1,3 +1,4 @@
+# Usage of devDependencies
 Hyphenopoly has no dependencies for deployment but relies on other packages for development (devDependencies).
 
 ## Clone and install devDependencies
@@ -42,9 +43,7 @@ and their dependencies.
 ### Install 3rd-party software
 Some dependencies are not available on npm. Run `npm run-script install3rdparty`. This will install more tools in a directory called `third-party`.
 
-This will install and compile:
-* [binaryen](https://github.com/WebAssembly/binaryen)
-* [wabt](https://github.com/WebAssembly/wabt)
+This will install and compile [binaryen](https://github.com/WebAssembly/binaryen).
 
 ## Use the tools
 With the tools mentioned above installed you can run the following scripts:

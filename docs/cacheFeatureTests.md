@@ -1,3 +1,4 @@
+# Cache feature Tests
 On the first run Hyphenopoly_Loader.js does the following feature tests:
 
 * Test if the client supports **WASM**
@@ -12,7 +13,7 @@ browser occasionally gets updated.
 
 Because the law in some contries require a user opt-in or opt-out or whatever if you store
 data on the client, `cacheFeatureTests` is deactivated by default and has to be activated
-explicitely by hand in the [`Hyphenopoly` global object](https://github.com/mnater/Hyphenopoly/wiki/Global-Hyphenopoly-Object):
+explicitely by hand in the [`Hyphenopoly` global object](./Global-Hyphenopoly-Object):
 ````javascript
 const Hyphenopoly = {
     require: {...},

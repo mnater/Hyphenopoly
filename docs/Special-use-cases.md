@@ -1,10 +1,10 @@
 # Special use cases and how-to's
 
-1. [Browserify hyphenopoly.module.js](https://github.com/mnater/Hyphenopoly/wiki/Special-use-cases#browserify-hyphenopolymodulejs)
-2. [Webpack](https://github.com/mnater/Hyphenopoly/wiki/Special-use-cases#webpack)
-3. [Hyphenate depending on media queries](https://github.com/mnater/Hyphenopoly/wiki/Special-use-cases#hyphenate-depending-on-media-queries)
+1. [Browserify hyphenopoly.module.js](#browserify-hyphenopolymodulejs)
+2. [Webpack](#webpack)
+3. [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
 
-__Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](https://github.com/mnater/Hyphenopoly/wiki/Hyphenators#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.__
+__Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.__
 
 ## Browserify hyphenopoly.module.js
 __Note: A browserifyed hyphenopoly.module.js is by far larger then the Hyphenopoly_Loader.js and Hyphenopoly.js scripts which are optimized for usage in browsers.__
