@@ -1,8 +1,5 @@
-Hyphenopoly.js is a JavaScript-polyfill for hyphenation in HTML.
 
-Welcome to the wiki!
-***
-**In the browser – Hyphenopoly_Loader.js & Hyphenopoly.js**
+## In the browser – Hyphenopoly_Loader.js & Hyphenopoly.js
 * [Download for deployment](./Download,-install-and-setup-for-deployment)
   * [Notes](./Download,-install-and-setup-for-deployment#general-notes)
   * [GitHub](./Download,-install-and-setup-for-deployment#using-github)
@@ -22,12 +19,14 @@ Welcome to the wiki!
 * [Hyphenators](./Hyphenators)
 * [Hyphenation Errors](./Coping-with-hyphenation-errors)
 
-**In node.js – hyphenopoly.module.js**
+## In node.js – hyphenopoly.module.js
 * [hyphenopoly.module](./Node-Module)
 
-**Special use cases**
-* [->](./Special-use-cases)
+## Special use cases
+* [Browserify hyphenopoly.module.js](./Special-use-cases#browserify-hyphenopolymodulejs)
+* [Webpack](./Special-use-cases#webpack)
+* [Hyphenate depending on media queries](./Special-use-cases#hyphenate-depending-on-media-queries)
 
-**Develop**
+## Develop
 * [Dev Tools (devDeps)](./Usage-of-devDependencies)
 * [Branching Model](./Branching-Model)
