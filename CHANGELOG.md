@@ -1,6 +1,12 @@
 # Version History
 
-## Version 3.1.0 (2019-04-28)
+## Version 3.1.1 (2019-06-27)
+### Fixed
+*   Build github page from docs folder
+*   move eslint config from package.json to .eslintrc
+*   bump devDependencies
+
+## Version 3.1.0 (2019-05-28)
 ### Fixed
 *   Correctly reject hyphenator promises (issue#77)
 *   performance: reduce file size of Hyphenopoly_Loader.js
