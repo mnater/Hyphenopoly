@@ -7,8 +7,6 @@
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
-/* global Hyphenopoly */
-
 /**
  * Wrap all code in an iife to keep a scope. Important objects are parameters
  * of this iife to keep codesize low.

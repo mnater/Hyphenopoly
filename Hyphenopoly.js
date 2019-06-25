@@ -7,7 +7,8 @@
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
-/* globals asmHyphenEngine, Hyphenopoly */
+/* globals asmHyphenEngine */
+
 (function mainWrapper(w) {
     "use strict";
     const SOFTHYPHEN = String.fromCharCode(173);
