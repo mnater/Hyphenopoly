@@ -19,8 +19,8 @@ t.test("run config with one language", async function (t) {
     const deHyphenator = await H9Y.config({
         "loader": "https",
         "paths": {
-            "maindir": "https://mnater.github.io/Hyphenopoly/",
-            "patterndir": "https://mnater.github.io/Hyphenopoly/patterns/"
+            "maindir": "https://unpkg.com/hyphenopoly@3.1.0/",
+            "patterndir": "https://unpkg.com/hyphenopoly@3.1.0/patterns/"
         },
         "require": ["de"]
     });
