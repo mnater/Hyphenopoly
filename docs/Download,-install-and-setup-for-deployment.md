@@ -34,5 +34,5 @@ Let me now, if you have a use case for hyphenation in node.js
  
 ### Using npm.js
 1. Run `npm i hyphenopoly` in your project folder
-2. Tell Hyphenopoly where to find the files: ./Global-Hyphenopoly-Object#paths
+2. Tell Hyphenopoly where to find the files: [paths](./Global-Hyphenopoly-Object#paths)
 3. Follow the instructions on [https://github.com/mnater/Hyphenopoly#usage-browser](https://github.com/mnater/Hyphenopoly#usage-browser) (don't forget to adapt the paths)

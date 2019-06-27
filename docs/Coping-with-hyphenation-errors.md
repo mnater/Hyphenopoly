@@ -8,11 +8,14 @@ Automatic hyphenation can not be error free! Because ...
     In some patterns this is solved by not hyphenating ambiguous words at all.
 * ... [neologisms](https://en.wikipedia.org/wiki/Neologism) that are not in the list of words used for pattern creation may be hyphenated incorrectly.
     ````
-    blogosphere -> blog·o·sphere (Merriam webster) // bl‧o‧gos‧phere (en-us patterns) // blo‧go‧sphere (en-gb patterns)
+    blogosphere -> blog·o·sphere (Merriam webster)
+        // bl‧o‧gos‧phere (en-us patterns)
+        // blo‧go‧sphere (en-gb patterns)
     ````
 * ... the rules for hyphenation may have changed or are not specified unambiguously.
     ````
-    dictionary -> dic‧tion‧ary (Wiktionary) // dic·tio·nary (Merriam-Webster)
+    dictionary -> dic‧tion‧ary (Wiktionary)
+        // dic·tio·nary (Merriam-Webster)
     ````
 * ... the patterns differ in quality. Some are very new and reflect the current state of the language others are older. Some are based on a very large list of words others are crafted by hand (which is not necessarily bad).
 
@@ -34,7 +37,7 @@ var Hyphenopoly = {
 };
 </script>
 ````
-See also https://github.com/mnater/Hyphenopoly/wiki/Setup#hyphen
+See also [Setup#hyphen](./Setup#hyphen)
 
 ## Fix hyphenation
 There are three levels of fixing possibilities:
