@@ -1,4 +1,3 @@
-
 ## In the browser – Hyphenopoly_Loader.js & Hyphenopoly.js
 * [Download for deployment](./Download,-install-and-setup-for-deployment)
   * [Notes](./Download,-install-and-setup-for-deployment#general-notes)
@@ -12,7 +11,7 @@
     * [setup](./Global-Hyphenopoly-Object#setup)
     * [events](./Events)
     * [cacheFeatureTests](./cacheFeatureTests)
-* Optional fields in [setup](./Setup)
+* [Optional fields in setup](./Setup)
   * [Global Settings](./Setup#global-settings)
   * [Selector Based Settings](./Setup#selector-based-settings)
 * [Events](./Events)

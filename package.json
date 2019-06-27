@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -47,7 +47,7 @@
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^6.0.1",
     "remark-preset-lint-recommended": "^3.0.3",
-    "tap": "^14.2.5",
+    "tap": "^14.3.1",
     "terser": "^4.0.0"
   },
   "remarkConfig": {
@@ -66,7 +66,8 @@
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js && npm run lint-md",
     "lint-md": "remark *.md",
     "prepare": "npm run minify",
-    "minify": "sh ./tools/minify.sh"
+    "minify": "sh ./tools/minify.sh",
+    "doc": "cd ./docs/ && bundle exec jekyll serve -l -o"
   },
   "runkitExampleFilename": "example.js"
 }

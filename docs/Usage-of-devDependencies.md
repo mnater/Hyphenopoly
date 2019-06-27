@@ -52,4 +52,5 @@ With the tools mentioned above installed you can run the following scripts:
 * `npm test` – runs the tap tests for Hyphenopoly.module.js
 * `npm run testsuite` – opens a browser and runs the test suite
 * `npm run lint` – runs the linter on all .js files
-* `npm run-script compilewasm` - compiles `hyphenEngine.asm.js` to `hyphenEngine.wasm`
+* `npm run compilewasm` - compiles `hyphenEngine.asm.js` to `hyphenEngine.wasm`
+* `npm run doc` – build and open documentation page locally
