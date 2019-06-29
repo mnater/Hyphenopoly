@@ -1,5 +1,5 @@
 ## In the browser – Hyphenopoly_Loader.js & Hyphenopoly.js
-* [Download for deployment](./Download,-install-and-setup-for-deployment)
+* [Download for deployment](./Download,-install-and-setup-for-deployment.md)
   * [Notes](./Download,-install-and-setup-for-deployment#general-notes)
   * [GitHub](./Download,-install-and-setup-for-deployment#using-github)
   * [npm](./Download,-install-and-setup-for-deployment#using-npmjs)
