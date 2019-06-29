@@ -70,7 +70,7 @@ the browser occasionally gets updated.
 
 Because the law in some contries require a user opt-in or opt-out or whatever if you store
 data on the client, `cacheFeatureTests` is deactivated by default and has to be activated
-explicitely by hand in the [Hyphenopoly global object](./Global-Hyphenopoly-Object):
+explicitely by hand in the [Hyphenopoly global object](./Global-Hyphenopoly-Object.md):
 ````javascript
 const Hyphenopoly = {
     "require": {...},
@@ -101,13 +101,13 @@ See [CSS-Selectors on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_
 Note: There was a field called `classnames` in older versions of Hyphenopoly. `classnames` had been deprecated since v2.6.0 and are completly removed in v3.0.0 in favor of `selectors`.
 
 #### Optional fields in setup
-See [Setup](./Setup)
+See [Setup](./Setup.md)
 
 ### Events
-See [Events](./Events)
+See [Events](./Events.md)
 
 ### Hyphenate manually
-See [Hyphenators](./Hyphenators)
+See [Hyphenators](./Hyphenators.md)
 
 ### Unhyphenate
 To remove all hyphenation previously applied by Hyphenopoly call `Hyphenopoly.unhyphenate();`.
@@ -145,4 +145,4 @@ handleEvent: {
     }
 }
 ````
-See [Events](./Events) for more details about the `hyphenopolyEnd`-event.
+See [Events](./Events.md) for more details about the `hyphenopolyEnd`-event.

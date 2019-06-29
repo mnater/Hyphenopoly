@@ -4,7 +4,7 @@
 2. [Webpack](#webpack)
 3. [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
 
-__Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.__
+__Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators.md#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.__
 
 ## Browserify hyphenopoly.module.js
 __Note: A browserifyed hyphenopoly.module.js is by far larger then the Hyphenopoly_Loader.js and Hyphenopoly.js scripts which are optimized for usage in browsers.__

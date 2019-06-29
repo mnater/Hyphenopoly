@@ -14,7 +14,7 @@ All files have good compression rates when using gzip, deflate and the like. You
 Hyphenopoly_Loader.js and Hyphenopoly.js use some basic es6-syntax (`let`, `const`, etc. not the fancy stuff). If for some reason you need es5-syntax use [babel](http://babeljs.io) to transpile the scripts.
 
 ### node
-Hyphenopoly_Loader.js and Hyphenopoly.js is designed for use in browsers. For usage in node.js see: [node module](./node-module)
+Hyphenopoly_Loader.js and Hyphenopoly.js is designed for use in browsers. For usage in node.js see: [node module](./node-module.md)
 
 Let me now, if you have a use case for hyphenation in node.js
 
@@ -34,5 +34,5 @@ Let me now, if you have a use case for hyphenation in node.js
  
 ### Using npm.js
 1. Run `npm i hyphenopoly` in your project folder
-2. Tell Hyphenopoly where to find the files: [paths](./Global-Hyphenopoly-Object#paths)
+2. Tell Hyphenopoly where to find the files: [paths](./Global-Hyphenopoly-Object.md#paths)
 3. Follow the instructions on [https://github.com/mnater/Hyphenopoly#usage-browser](https://github.com/mnater/Hyphenopoly#usage-browser) (don't forget to adapt the paths)

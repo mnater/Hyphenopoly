@@ -45,7 +45,7 @@ cancellable: false
 Fields: `msg` (list of what has been loaded)
 ````
 
-_note: use [Hyphenators](./Hyphenators) to prevent a costly rehyphenation of the whole document_
+_note: use [Hyphenators](./Hyphenators.md) to prevent a costly rehyphenation of the whole document_
 
 ## engineLoaded-Event
 Fired when the (w)asm-engine is instantiated.
