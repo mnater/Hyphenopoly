@@ -6,7 +6,7 @@ Possible usecases are:
 * hyphenating text provided by the user (e.g. in a preview window of a blogging software)
 * …
 
-Up to version 2.4.0 the only way to hyphenate text after the page has loaded was to [dispatch a `contentLoaded`-Event](./Events#contentloaded-event) in order to restart the hyphenation process. This works but is a bit like using a sledgehammer to crack a nut, since the whole page is reprocessed.
+Up to version 2.4.0 the only way to hyphenate text after the page has loaded was to [dispatch a `contentLoaded`-Event](./Events.md#contentloaded-event) in order to restart the hyphenation process. This works but is a bit like using a sledgehammer to crack a nut, since the whole page is reprocessed.
 
 _Since Version 2.5.0 Hyphenopoly.js exposes `hyphenators` – language specific functions that hyphenates a string or a DOM-Object._
 

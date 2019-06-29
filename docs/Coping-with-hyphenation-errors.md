@@ -37,7 +37,7 @@ var Hyphenopoly = {
 };
 </script>
 ````
-See also [Setup#hyphen](./Setup#hyphen)
+See also [Setup#hyphen](./Setup.md#hyphen)
 
 ## Fix hyphenation
 There are three levels of fixing possibilities:
