@@ -7,6 +7,8 @@
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
+/* globals Hyphenopoly:readonly */
+
 /**
  * Wrap all code in an iife to keep a scope. Important objects are parameters
  * of this iife to keep codesize low.
