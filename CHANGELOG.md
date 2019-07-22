@@ -3,6 +3,7 @@
 ## Version 3.1.2 (unreleased)
 ### Fixed
 *   Fixed "Critical dependency: the request of a dependency is an expression" in webpack (issue#70)
+*   bump devDependencies
 
 ## Version 3.1.1 (2019-06-28)
 ### Fixed
