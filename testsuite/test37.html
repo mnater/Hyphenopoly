@@ -37,7 +37,7 @@
                         assertError(e);
                     });
                 } else {
-                    result = false
+                    var result = false
                     if (parent != window) {
                         parent.postMessage(JSON.stringify({
                             desc: document.getElementById("desc").innerHTML,

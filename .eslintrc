@@ -6,9 +6,6 @@
     "browser": true,
     "es6": true
   },
-  "globals": {
-    "Hyphenopoly": "readable"
-  },
   "plugins": [
     "security"
   ],

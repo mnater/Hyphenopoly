@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 3.1.1 - hyphenation for node
+ * @license Hyphenopoly.module.js 3.1.2 - hyphenation for node
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -818,10 +818,13 @@ H.config = function config(userConfig) {
         );
     });
     H.c = settings;
-    if (H.c.loader === "https" || H.c.loader === "http") {
-        /* eslint-disable global-require, security/detect-non-literal-require */
-        loader = require(H.c.loader);
-        /* eslint-enable global-require, security/detect-non-literal-require */
+    if (H.c.loader === "https") {
+        // eslint-disable-next-line global-require
+        loader = require("https");
+    }
+    if (H.c.loader === "http") {
+        // eslint-disable-next-line global-require
+        loader = require("http");
     }
     if (H.c.handleEvent) {
         Object.keys(H.c.handleEvent).forEach(function add(name) {
