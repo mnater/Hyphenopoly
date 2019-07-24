@@ -42,10 +42,10 @@ t.test("use https loader", async function (t) {
 // Need to update to http when hyphenaopoly is available on cdnjs
 t.test("use http loader", async function (t) {
     const deHyphenator = await H9Y.config({
-        "loader": "https",
+        "loader": "http",
         "paths": {
-            "maindir": "https://unpkg.com/hyphenopoly@3.1.1/",
-            "patterndir": "https://unpkg.com/hyphenopoly@3.1.1/patterns/"
+            "maindir": "http://www.nonsequence.ch/h9y/",
+            "patterndir": "http://www.nonsequence.ch/h9y/patterns/"
         },
         "require": ["de"]
     });
