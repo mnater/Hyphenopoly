@@ -405,7 +405,7 @@
          * @returns {undefined}
          */
         function fetchBinary(p, f, n, m) {
-            w.fetch(p + f).then(
+            w.fetch(p + f, {"credentials": "include"}).then(
                 function resolve(response) {
                     if (response.ok) {
                         if (n === "hyphenEngine") {
