@@ -1,5 +1,12 @@
 # Version History
 
+## Version 3.2.0 (2019-08-XX)
+### Fixed
+*   Fixed "a potential security vulnerability" in github-pages dependencies
+
+### Changed
+*   OnCopy-eventHandler now also includes content with type "text/html" (besides "text/plain") (issue#87)
+
 ## Version 3.1.2 (2019-07-24)
 ### Fixed
 *   Fixed "Critical dependency: the request of a dependency is an expression" in webpack (issue#70)

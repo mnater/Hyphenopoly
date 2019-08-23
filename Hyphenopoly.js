@@ -73,9 +73,15 @@
     function registerOnCopy(el) {
         el.addEventListener("copy", function oncopy(e) {
             e.preventDefault();
-            const selectedText = window.getSelection().toString();
+            const sel = w.getSelection();
+            const docFrag = sel.getRangeAt(0).cloneContents();
+            const div = document.createElement("div");
+            div.appendChild(docFrag);
+            const selectedHTML = div.innerHTML;
+            const selectedText = sel.toString();
             /* eslint-disable security/detect-non-literal-regexp */
             e.clipboardData.setData("text/plain", selectedText.replace(new RegExp(SOFTHYPHEN, "g"), ""));
+            e.clipboardData.setData("text/html", selectedHTML.replace(new RegExp(SOFTHYPHEN, "g"), ""));
             /* eslint-enable security/detect-non-literal-regexp */
         }, true);
     }
@@ -766,7 +772,7 @@
          * Polyfill for TextDecoder
          */
         const decode = (function makeDecoder() {
-            if (window.TextDecoder) {
+            if (w.TextDecoder) {
                 const utf16ledecoder = new TextDecoder("utf-16le");
                 return function decoder(ui16) {
                     return utf16ledecoder.decode(ui16);
@@ -1007,10 +1013,10 @@
             baseData.heapBuffer = heapBuffer;
             const theHyphenEngine = asmHyphenEngine(
                 {
-                    "Int32Array": window.Int32Array,
+                    "Int32Array": w.Int32Array,
                     "Math": Math,
-                    "Uint16Array": window.Uint16Array,
-                    "Uint8Array": window.Uint8Array
+                    "Uint16Array": w.Uint16Array,
+                    "Uint8Array": w.Uint8Array
                 },
                 baseData,
                 baseData.heapBuffer
