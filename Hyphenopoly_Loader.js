@@ -107,7 +107,7 @@
     (function configRequire() {
         eachKey(H.require, function copyRequire(k) {
             // eslint-disable-next-line security/detect-object-injection
-            lcRequire.set(k.toLowerCase(), H.require[k]);
+            lcRequire.set(k.toLowerCase(), H.require[k].toLowerCase());
         });
         if (H.fallbacks) {
             eachKey(H.fallbacks, function copyFallbacks(k) {
@@ -681,7 +681,7 @@
             H.cf.wasm = runWasmTest();
         }
         lcRequire.forEach(function eachReq(value, lang) {
-            if (value === "FORCEHYPHENOPOLY" ||
+            if (value === "forcehyphenopoly" ||
                 // eslint-disable-next-line security/detect-object-injection
                 (H.cf.langs[lang] && H.cf.langs[lang] === "H9Y")
             ) {
