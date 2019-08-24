@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly_Loader 3.1.2 - client side hyphenation
+ * @license Hyphenopoly_Loader 3.2.0 - client side hyphenation
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -405,7 +405,7 @@
          * @returns {undefined}
          */
         function fetchBinary(p, f, n, m) {
-            w.fetch(p + f).then(
+            w.fetch(p + f, {"credentials": "include"}).then(
                 function resolve(response) {
                     if (response.ok) {
                         if (n === "hyphenEngine") {
@@ -554,7 +554,9 @@
                 const testDiv = d.createElement("div");
                 testDiv.lang = lang;
                 testDiv.style.cssText = css;
-                testDiv.appendChild(d.createTextNode(lcRequire.get(lang)));
+                testDiv.appendChild(
+                    d.createTextNode(lcRequire.get(lang).toLowerCase())
+                );
                 fakeBody.appendChild(testDiv);
             }
 
@@ -619,16 +621,24 @@
             if (!H.hyphenators[lang]) {
                 if (w.Promise) {
                     H.hyphenators[lang] = new Promise(function pro(rs, rj) {
-                        H.events.addListener("engineReady", function handler(e) {
-                            if (e.msg === lang) {
-                                rs(H.createHyphenator(e.msg));
-                            }
-                        }, true);
-                        H.events.addListener("loadError", function handler(e) {
-                            if (e.name === lang || e.name === "hyphenEngine") {
-                                rj(new Error("File " + e.file + " can't be loaded from " + e.path));
-                            }
-                        }, false);
+                        H.events.addListener(
+                            "engineReady",
+                            function handler(e) {
+                                if (e.msg === lang) {
+                                    rs(H.createHyphenator(e.msg));
+                                }
+                            },
+                            true
+                        );
+                        H.events.addListener(
+                            "loadError",
+                            function handler(e) {
+                                if (e.name === lang || e.name === "hyphenEngine") {
+                                    rj(new Error("File " + e.file + " can't be loaded from " + e.path));
+                                }
+                            },
+                            false
+                        );
                     });
                     H.hyphenators[lang].catch(function catchPromiseError(e) {
                         H.events.dispatch(

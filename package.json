@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "3.1.2",
+  "version": "3.2.0",
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -43,12 +43,12 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^6.1.0",
+    "eslint": "^6.2.2",
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^7.0.0",
     "remark-preset-lint-recommended": "^3.0.3",
-    "tap": "^14.4.3",
-    "terser": "^4.1.2"
+    "tap": "^14.6.1",
+    "terser": "^4.2.1"
   },
   "remarkConfig": {
     "plugins": [

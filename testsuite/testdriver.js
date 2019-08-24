@@ -56,12 +56,27 @@
      */
     function addTestResult(name, desc, result) {
         var dl = document.getElementById("testresults");
-        var template = document.getElementById("template").innerHTML;
-        template = template.replace(/@file@/g, name);
-        template = template.replace(/@desc@/, desc);
-        template = template.replace(/@result@/g, result);
-        dl.innerHTML += template;
-        window.scrollBy(0, 20);
+        var li = document.createElement("li");
+        var linkSpan = document.createElement("span");
+        var filelink = document.createElement("a");
+        var resultSpan = document.createElement("span");
+        var descSpan = document.createElement("span");
+
+        linkSpan.setAttribute("class", "testname");
+        filelink.setAttribute("href", name);
+        filelink.appendChild(document.createTextNode(name));
+        linkSpan.appendChild(filelink);
+        li.appendChild(linkSpan);
+
+        resultSpan.setAttribute("class", "result " + result);
+        resultSpan.appendChild(document.createTextNode("[" + result + "]"));
+        li.appendChild(resultSpan);
+
+        descSpan.setAttribute("class", "desc");
+        descSpan.appendChild(document.createTextNode(desc));
+        li.appendChild(descSpan);
+
+        dl.appendChild(li);
     }
 
     /**
