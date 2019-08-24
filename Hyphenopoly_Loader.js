@@ -107,7 +107,7 @@
     (function configRequire() {
         eachKey(H.require, function copyRequire(k) {
             // eslint-disable-next-line security/detect-object-injection
-            lcRequire.set(k.toLowerCase(), H.require[k].toLowerCase());
+            lcRequire.set(k.toLowerCase(), H.require[k]);
         });
         if (H.fallbacks) {
             eachKey(H.fallbacks, function copyFallbacks(k) {
@@ -554,7 +554,9 @@
                 const testDiv = d.createElement("div");
                 testDiv.lang = lang;
                 testDiv.style.cssText = css;
-                testDiv.appendChild(d.createTextNode(lcRequire.get(lang)));
+                testDiv.appendChild(
+                    d.createTextNode(lcRequire.get(lang).toLowerCase())
+                );
                 fakeBody.appendChild(testDiv);
             }
 
@@ -619,16 +621,24 @@
             if (!H.hyphenators[lang]) {
                 if (w.Promise) {
                     H.hyphenators[lang] = new Promise(function pro(rs, rj) {
-                        H.events.addListener("engineReady", function handler(e) {
-                            if (e.msg === lang) {
-                                rs(H.createHyphenator(e.msg));
-                            }
-                        }, true);
-                        H.events.addListener("loadError", function handler(e) {
-                            if (e.name === lang || e.name === "hyphenEngine") {
-                                rj(new Error("File " + e.file + " can't be loaded from " + e.path));
-                            }
-                        }, false);
+                        H.events.addListener(
+                            "engineReady",
+                            function handler(e) {
+                                if (e.msg === lang) {
+                                    rs(H.createHyphenator(e.msg));
+                                }
+                            },
+                            true
+                        );
+                        H.events.addListener(
+                            "loadError",
+                            function handler(e) {
+                                if (e.name === lang || e.name === "hyphenEngine") {
+                                    rj(new Error("File " + e.file + " can't be loaded from " + e.path));
+                                }
+                            },
+                            false
+                        );
                     });
                     H.hyphenators[lang].catch(function catchPromiseError(e) {
                         H.events.dispatch(
@@ -681,7 +691,7 @@
             H.cf.wasm = runWasmTest();
         }
         lcRequire.forEach(function eachReq(value, lang) {
-            if (value === "forcehyphenopoly" ||
+            if (value === "FORCEHYPHENOPOLY" ||
                 // eslint-disable-next-line security/detect-object-injection
                 (H.cf.langs[lang] && H.cf.langs[lang] === "H9Y")
             ) {
