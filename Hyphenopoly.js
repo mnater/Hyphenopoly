@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly 3.1.2 - client side hyphenation for webbrowsers
+ * @license Hyphenopoly 3.2.0 - client side hyphenation for webbrowsers
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -71,19 +71,23 @@
      * @returns {undefined}
      */
     function registerOnCopy(el) {
-        el.addEventListener("copy", function oncopy(e) {
-            e.preventDefault();
-            const sel = w.getSelection();
-            const docFrag = sel.getRangeAt(0).cloneContents();
-            const div = document.createElement("div");
-            div.appendChild(docFrag);
-            const selectedHTML = div.innerHTML;
-            const selectedText = sel.toString();
-            /* eslint-disable security/detect-non-literal-regexp */
-            e.clipboardData.setData("text/plain", selectedText.replace(new RegExp(SOFTHYPHEN, "g"), ""));
-            e.clipboardData.setData("text/html", selectedHTML.replace(new RegExp(SOFTHYPHEN, "g"), ""));
-            /* eslint-enable security/detect-non-literal-regexp */
-        }, true);
+        el.addEventListener(
+            "copy",
+            function oncopy(e) {
+                e.preventDefault();
+                const sel = w.getSelection();
+                const docFrag = sel.getRangeAt(0).cloneContents();
+                const div = document.createElement("div");
+                div.appendChild(docFrag);
+                const selectedHTML = div.innerHTML;
+                const selectedText = sel.toString();
+                /* eslint-disable security/detect-non-literal-regexp */
+                e.clipboardData.setData("text/plain", selectedText.replace(new RegExp(SOFTHYPHEN, "g"), ""));
+                e.clipboardData.setData("text/html", selectedHTML.replace(new RegExp(SOFTHYPHEN, "g"), ""));
+                /* eslint-enable security/detect-non-literal-regexp */
+            },
+            true
+        );
     }
 
     (function configurationFactory(H) {

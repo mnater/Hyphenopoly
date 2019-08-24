@@ -1,9 +1,10 @@
 # Version History
 
-## Version 3.2.0 (2019-08-XX)
+## Version 3.2.0 (2019-08-24)
 ### Fixed
 *   Fixed "a potential security vulnerability" in github-pages dependencies
 *   Fixed issue with Firefox 68, where feature detection in Hyphenopoly_Loader fails
+*   bump devDependencies
 
 ### Changed
 *   OnCopy-eventHandler now also includes content with type "text/html" (besides "text/plain") (issue#87)
