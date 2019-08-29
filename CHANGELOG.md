@@ -1,5 +1,8 @@
 # Version History
 
+## Version 3.2.1 (2019-08-29)
+Bugfix release, because I had to unpublish from npm
+
 ## Version 3.2.0 (2019-08-29)
 ### Fixed
 *   Fixed issue with SSL Certificates and FireFox 60.x ESR (issue#85)
