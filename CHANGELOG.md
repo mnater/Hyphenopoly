@@ -1,7 +1,13 @@
 # Version History
 
+<<<<<<< HEAD
 ## Version 3.2.0 (2019-08-24)
 ### Fixed
+=======
+## Version 3.2.0 (2019-08-29)
+### Fixed
+*   Fixed issue with SSL Certificates and FireFox 60.x ESR (issue#85)
+>>>>>>> master
 *   Fixed "a potential security vulnerability" in github-pages dependencies
 *   Fixed issue with Firefox 68, where feature detection in Hyphenopoly_Loader fails
 *   bump devDependencies
