@@ -1,6 +1,6 @@
 # Version History
 
-## Version 3.2.0 (2019-08-24)
+## Version 3.2.0 (2019-08-29)
 ### Fixed
 *   Fixed issue with SSL Certificates and FireFox 60.x ESR (issue#85)
 *   Fixed "a potential security vulnerability" in github-pages dependencies
