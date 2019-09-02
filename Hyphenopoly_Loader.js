@@ -153,8 +153,7 @@
                     myStyle += sel + " {color: transparent !important}\n";
                 });
                 break;
-            default:
-                myStyle = "";
+            // No Default
             }
             sc.appendChild(d.createTextNode(myStyle));
             d.head.appendChild(sc);
@@ -173,7 +172,7 @@
         const deferred = [];
 
         /*
-         * Eegister for custom event handlers, where event is not yet defined
+         * Register for custom event handlers, where event is not yet defined
          * these events will be correctly registered in Hyphenopoly.js
          */
         const tempRegister = [];
@@ -357,12 +356,12 @@
             /* eslint-disable array-element-newline */
             const module = new wa.Module(Uint8Array.from([
                 0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127,
-                3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 8, 1, 4, 116, 101, 115,
-                116, 0, 0, 10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32,
-                0, 40, 2, 0, 11
+                3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 5, 1, 1, 116, 0, 0,
+                10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2,
+                0, 11
             ]));
             /* eslint-enable array-element-newline */
-            return (new wa.Instance(module).exports.test(4) !== 0);
+            return (new wa.Instance(module).exports.t(4) !== 0);
         }
         return false;
     }
@@ -524,18 +523,18 @@
             let fakeBody = null;
             /* eslint-disable array-element-newline */
             const css = [
-                "visibility:hidden;",
-                "-moz-hyphens:auto;",
-                "-webkit-hyphens:auto;",
-                "-ms-hyphens:auto;",
-                "hyphens:auto;",
-                "width:48px;",
-                "font-size:12px;",
-                "line-height:12px;",
-                "border:none;",
-                "padding:0;",
+                "visibility:hidden",
+                "-moz-hyphens:auto",
+                "-webkit-hyphens:auto",
+                "-ms-hyphens:auto",
+                "hyphens:auto",
+                "width:48px",
+                "font-size:12px",
+                "line-height:12px",
+                "border:none",
+                "padding:0",
                 "word-wrap:normal"
-            ].join("");
+            ].join(";");
             /* eslint-enable array-element-newline */
 
             /**
