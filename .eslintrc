@@ -112,5 +112,6 @@
         "caseSensitive": false
       }
     ]
-  }
+  },
+  "reportUnusedDisableDirectives": true
 }

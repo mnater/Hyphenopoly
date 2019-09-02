@@ -451,7 +451,6 @@
          * @returns {undefined}
          */
         function requestBinary(p, f, n, m) {
-            /* eslint-disable-next-line no-negated-condition */
             const xhr = new XMLHttpRequest();
             xhr.onload = function onload() {
                 if (xhr.status === 200) {

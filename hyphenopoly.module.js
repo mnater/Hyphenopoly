@@ -168,9 +168,7 @@ function readFile(file, cb, sync) {
  */
 function loadWasm() {
     if (H.c.sync) {
-        /* eslint-disable security/detect-non-literal-fs-filename */
         const data = readFile(`${H.c.paths.maindir}hyphenEngine.wasm`, null, true);
-        /* eslint-enable security/detect-non-literal-fs-filename */
         H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
         H.events.dispatch("engineLoaded");
     } else {

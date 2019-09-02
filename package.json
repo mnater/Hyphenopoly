@@ -43,7 +43,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^6.2.2",
+    "eslint": "^6.3.0",
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^7.0.0",
     "remark-preset-lint-recommended": "^3.0.3",
