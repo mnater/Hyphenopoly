@@ -1,5 +1,9 @@
 # Version History
 
+## Version next (tbd)
+### Fixed
+*   bump dev Dependencies (removed some unused eslint directives)
+
 ## Version 3.2.1 (2019-08-29)
 Bugfix release, because I had to unpublish from npm
 
