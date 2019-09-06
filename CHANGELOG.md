@@ -2,6 +2,7 @@
 
 ## Version next (tbd)
 ### Fixed
+*   Fixed issue where babelized Loader didn't work in iOS9 (issue #88)
 *   bump dev Dependencies (removed some unused eslint directives)
 
 ## Version 3.2.1 (2019-08-29)
@@ -9,17 +10,17 @@ Bugfix release, because I had to unpublish from npm
 
 ## Version 3.2.0 (2019-08-29)
 ### Fixed
-*   Fixed issue with SSL Certificates and FireFox 60.x ESR (issue#85)
+*   Fixed issue with SSL Certificates and FireFox 60.x ESR (issue #85)
 *   Fixed "a potential security vulnerability" in github-pages dependencies
 *   Fixed issue with Firefox 68, where feature detection in Hyphenopoly_Loader fails
 *   bump devDependencies
 
 ### Changed
-*   OnCopy-eventHandler now also includes content with type "text/html" (besides "text/plain") (issue#87)
+*   OnCopy-eventHandler now also includes content with type "text/html" (besides "text/plain") (issue #87)
 
 ## Version 3.1.2 (2019-07-24)
 ### Fixed
-*   Fixed "Critical dependency: the request of a dependency is an expression" in webpack (issue#70)
+*   Fixed "Critical dependency: the request of a dependency is an expression" in webpack (issue #70)
 *   bump devDependencies
 
 ## Version 3.1.1 (2019-06-28)
@@ -33,7 +34,7 @@ Bugfix release, because I had to unpublish from npm
 
 ## Version 3.1.0 (2019-05-28)
 ### Fixed
-*   Correctly reject hyphenator promises (issue#77)
+*   Correctly reject hyphenator promises (issue #77)
 *   performance: reduce file size of Hyphenopoly_Loader.js
 *   update devDependencies
 

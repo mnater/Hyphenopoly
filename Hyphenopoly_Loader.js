@@ -701,15 +701,13 @@
 
         const testContainer = tester.append(d.documentElement);
         if (testContainer !== null) {
-            const nl = testContainer.getElementsByTagName("div");
-            eachKey(nl, function eachNode(n) {
-                /* eslint-disable security/detect-object-injection */
-                if (checkCSSHyphensSupport(nl[n]) && nl[n].offsetHeight > 12) {
-                    H.cf.langs[nl[n].lang] = "CSS";
+            const nl = testContainer.querySelectorAll("div");
+            Array.prototype.forEach.call(nl, function eachNode(n) {
+                if (checkCSSHyphensSupport(n) && n.offsetHeight > 12) {
+                    H.cf.langs[n.lang] = "CSS";
                 } else {
-                    loadPattern(nl[n].lang);
+                    loadPattern(n.lang);
                 }
-                /* eslint-enable security/detect-object-injection */
             });
             tester.clear();
         }
