@@ -42,7 +42,8 @@
         {"exec": true, "path": "test35.html"},
         {"exec": true, "path": "test36.html"},
         {"exec": true, "path": "test37.html"},
-        {"exec": true, "path": "test38.html"}
+        {"exec": true, "path": "test38.html"},
+        {"exec": true, "path": "test39.html"}
     ];
     var testframe = document.getElementById("testframe");
     var currentTest = 1;
@@ -101,14 +102,18 @@
         /* eslint-enable security/detect-object-injection */
     }
 
-    window.addEventListener("message", function onMessage(e) {
-        var msg = JSON.parse(e.data);
-        addTestResult(tests[msg.index].path, msg.desc, msg.result);
-        if (msg.result === "failed") {
-            total = "failed";
-        }
-        run(msg.index + 1);
-    }, false);
+    window.addEventListener(
+        "message",
+        function onMessage(e) {
+            var msg = JSON.parse(e.data);
+            addTestResult(tests[msg.index].path, msg.desc, msg.result);
+            if (msg.result === "failed") {
+                total = "failed";
+            }
+            run(msg.index + 1);
+        },
+        false
+    );
 
     run(currentTest);
 }());
