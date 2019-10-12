@@ -9,6 +9,7 @@
                     "hu": "FORCEHYPHENOPOLY"
                 },
                 setup: {
+                    keepAlive: false,
                     selectors: {
                         ".hyphenate": {
                             hyphen: "•"
@@ -17,8 +18,7 @@
                 },
                 handleEvent: {
                     hyphenopolyEnd: function (e) {
-                        window.Hyphenopoly = null;
-                        assert();
+                        window.setTimeout(assert, 500);
                     }
                 }
             };

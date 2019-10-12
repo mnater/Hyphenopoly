@@ -6,6 +6,7 @@ These page documents the optional fields in `setup`:
   * [dontHyphenateClass](#donthyphenateclass)
   * [exceptions](#exceptions)
   * [hide](#hide)
+  * [keepAlive](#keepalive)
   * [normalize](#normalize)
   * [safeCopy](#safecopy)
   * [timeout](#timeout)
@@ -184,6 +185,24 @@ To prevent a flash of unhyphenated content (FOUHC) Hyphenopoly hides the element
 
 These CSS-rules are removed, when Hyphenopoly has finished its job or when the [timeout](#timeout) gets fired.
 
+### keepAlive
+````
+type: boolean
+default: true
+````
+Keeps object `window.Hyphenopoly` in memory to be accessible for further use (e.g. hyphenators). If Hyphenopoly is not used after initial run, it should be cleared to save memory.
+````html
+<script>
+var Hyphenopoly = {
+    require: {...},
+    paths: {...},
+    setup: {
+        keepAlive: false,
+        selectors: {...}
+    }
+};
+</script>
+````
 
 ### normalize
 ````

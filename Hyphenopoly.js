@@ -105,6 +105,7 @@
             }()), 2),
             "dontHyphenateClass": setProp("donthyphenate", 2),
             "exceptions": setProp(empty(), 2),
+            "keepAlive": setProp(true, 2),
             "normalize": setProp(false, 2),
             "safeCopy": setProp(true, 2),
             "timeout": setProp(1000, 2)
@@ -1135,8 +1136,11 @@
             "hyphenopolyEnd",
             function def() {
                 w.clearTimeout(C.timeOutHandler);
-                if (H.c.hide !== "none") {
+                if (C.hide !== "none") {
                     H.toggle("on");
+                }
+                if (!C.keepAlive) {
+                    window.Hyphenopoly = null;
                 }
             },
             false

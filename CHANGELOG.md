@@ -1,6 +1,8 @@
 # Version History
 
 ## Version next (tbd)
+### Changed
+*   Add configuration option `keepAlive` (issue #69)
 ### Fixed
 *   Fixed issue where babelized Loader didn't work in iOS9 (issue #88)
 *   bump dev Dependencies (removed some unused eslint directives)
