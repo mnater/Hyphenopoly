@@ -3,6 +3,7 @@
 1. [Browserify hyphenopoly.module.js](#browserify-hyphenopolymodulejs)
 2. [Webpack](#webpack)
 3. [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
+4. [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
 
 __Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators.md#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.__
 
@@ -182,3 +183,8 @@ var Hyphenopoly = {
 }());
 </script>
 ````
+
+## Set .focus() while Hyphenopoly is running
+By default `Hyphenopoly_Loader.js` hides the whole document to prevent a "Flash of unhyphenated content" (FOUHC) until hyphenation has finished. If `focus()` is called while the document is hidden the focus will not change.
+
+To prevent this behavior experiment with [different settings for hiding](./Setup.md#hide). Using "element" or "text" should work in most cases.

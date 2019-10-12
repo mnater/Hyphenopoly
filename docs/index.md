@@ -25,6 +25,7 @@
 * [Browserify hyphenopoly.module.js](./Special-use-cases.md#browserify-hyphenopolymodulejs)
 * [Webpack](./Special-use-cases.md#webpack)
 * [Hyphenate depending on media queries](./Special-use-cases.md#hyphenate-depending-on-media-queries)
+* [Set .focus() while Hyphenopoly is running](./Special-use-cases.md#set-focus-while-hyphenopoly-is-running)
 
 ## Develop
 * [Dev Tools (devDeps)](./Usage-of-devDependencies.md)
