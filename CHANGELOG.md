@@ -1,8 +1,10 @@
 # Version History
 
-## Version next (tbd)
-### Changed
+## Version 3.3.0 (2019-10-14)
+### Added
 *   Add configuration option `keepAlive` (issue #69)
+*   Add documentation for issue #89
+
 ### Fixed
 *   Fixed issue where babelized Loader didn't work in iOS9 (issue #88)
 *   bump dev Dependencies (removed some unused eslint directives)
