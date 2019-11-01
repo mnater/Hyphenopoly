@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 040</title>
+        <script>
+        var Hyphenopoly = {
+            require: {
+                "en-us": "FORCEHYPHENOPOLY"
+            },
+            setup: {
+                selectors: {
+                    ".class1": {
+                        hyphen: "·"
+                    },
+                    ".class2": {
+                        hyphen: "·",
+                        mixedCase: false
+                    }
+                }
+            },
+            handleEvent: {
+                hyphenopolyEnd: function (e) {
+                    assert();
+                }
+            }
+        };
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
+        function assert() {
+            var tests = 2;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = true;
+            while (i <= tests) {
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                    result = result && true;
+                } else {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                    result = false;
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 40,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        if (!Hyphenopoly) {
+            document.addEventListener("DOMContentLoaded", function() {
+                assert();
+            });
+        }
+        </script>
+        
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test39.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test41.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 040</h1>
+        <p id="desc">Handle mixed cased words</p>
+        <div id="result"></div>
+        <hr>
+        <h2>1: hyphenate mixed case</h2>
+        <p id="test1" class="test class1" lang="en-us">Hyphenation algorithm camelCase</p>
+        <p id="ref1" class="ref" lang="en-us">Hy·phen·ation al·go·rithm camel·Case</p>
+        <h2>2: don't hyphenate mixed case</h2>
+        <p id="test2" class="test class2" lang="en-us">Hyphenation algorithm camelCase</p>
+        <p id="ref2" class="ref" lang="en-us">Hyphenation al·go·rithm camelCase</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+    </body>
+</html>

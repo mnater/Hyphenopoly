@@ -593,12 +593,29 @@ function createWordHyphenator(lo, lang) {
     }
 
     /**
+     * Checks if a string is mixed case
+     * @param {string} s The string
+     * @returns {boolean} true if s is mixed case
+     */
+    function isMixedCase(s) {
+        return Array.prototype.map.call(s, function mapper(c) {
+            return (c === c.toLowerCase());
+        }).some(function checker(v, i, a) {
+            return (v !== a[0]);
+        });
+    }
+
+    /* eslint-disable complexity */
+    /**
      * HyphenateFunction for words (compound or not)
      * @param {string} word The word
      * @returns {string} The hyphenated word
      */
     function hyphenator(word) {
         let hw = lo.cache.get(word);
+        if (!H.c.mixedCase && isMixedCase(word)) {
+            hw = word;
+        }
         if (!hw) {
             if (lo.exceptions.has(word)) {
                 hw = lo.exceptions.get(word).replace(
@@ -624,6 +641,7 @@ function createWordHyphenator(lo, lang) {
         }
         return hw;
     }
+    /* eslint-enable complexity */
     wordHyphenatorPool.set(lang, hyphenator);
     return hyphenator;
 }
@@ -795,6 +813,7 @@ H.config = function config(userConfig) {
         "leftmin": setProp(0, 2),
         "loader": setProp("fs", 2),
         "minWordLength": setProp(6, 2),
+        "mixedCase": setProp(true, 2),
         "normalize": setProp(false, 2),
         "orphanControl": setProp(1, 2),
         "paths": setProp(Object.create(null, {

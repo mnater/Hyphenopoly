@@ -229,6 +229,31 @@ t.test("set options: minWordLength", function (t) {
     t.end();
 });
 
+t.test("set options: mixedCase", function (t) {
+    let H9Y = null;
+    t.beforeEach(function setup(done) {
+        H9Y = require("../hyphenopoly.module");
+        done();
+    });
+
+    t.afterEach(function tearDown(done) {
+        H9Y = null;
+        delete require.cache[require.resolve("../hyphenopoly.module")];
+        done();
+    });
+
+    t.test("mixedCase: false", async function (t) {
+        const hyphenator = await H9Y.config({
+            "hyphen": "•",
+            "mixedCase": false,
+            "require": ["de"]
+        });
+        t.equal(hyphenator("silbentrennen Silbentrennung camelCase"), "sil•ben•tren•nen Silbentrennung camelCase");
+        t.end();
+    });
+    t.end();
+});
+
 t.test("set options: normalize", function (t) {
     let H9Y = null;
     t.beforeEach(function setup(done) {

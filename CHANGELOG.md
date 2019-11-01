@@ -1,5 +1,9 @@
 # Version History
 
+## Version 3.4.0 (2019-11-xx)
+### Added
+*   Option to disable mixed cased words (issue #91)
+
 ## Version 3.3.0 (2019-10-14)
 ### Added
 *   Add configuration option `keepAlive` (issue #69)

@@ -93,6 +93,7 @@ Defaults:
     "leftmin": 0,
     "loader": "fs",
     "minWordLength": 6,
+    "mixedCase": true,
     "normalize": false,
     "orphanControl": 1,
     "paths": {
@@ -127,6 +128,7 @@ For documentation about the other options see the `Hyphenopoly.js`-documentation
 - [hyphen](./Setup.md#hyphen)
 - [leftmin](./Setup.md#leftmin-and-rightmin)
 - [minWordLength](./Setup.md#minwordlength)
+- [mixedCase](./Setup.md#mixedcase)
 - [normalize](./Setup.md#normalize)
 - [orphanControl](./Setup.md#orphancontrol)
 - [paths](./Global-Hyphenopoly-Object.md#paths)
