@@ -4,6 +4,9 @@
 ### Added
 *   Option to disable mixed cased words (issue #91)
 
+### Fixed
+*   Refactor encloseHyphenateFunction and enclHyphenate
+
 ## Version 3.3.0 (2019-10-14)
 ### Added
 *   Add configuration option `keepAlive` (issue #69)

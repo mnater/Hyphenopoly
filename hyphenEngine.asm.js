@@ -177,9 +177,10 @@ function asmHyphenEngine(std, x, heap) {
         return alphabetlength | 0;
     }
 
-    function hyphenate(lm, rm) {
+    function hyphenate(lm, rm, hc) {
         lm = lm | 0;
         rm = rm | 0;
+        hc = hc | 0;
         var patternStartPos = 0;
         var wordLength = 0;
         var charOffset = 0;
@@ -249,7 +250,7 @@ function asmHyphenEngine(std, x, heap) {
                 (((charOffset | 0) <= ((wordLength - rm) | 0)) | 0)
             ) {
                 if (ui8[(hp + charOffset + 1) | 0] & 1) {
-                    ui16[(hw + (charOffset << 1) + hyphenPointsCount + 2) >> 1] = 173;
+                    ui16[(hw + (charOffset << 1) + hyphenPointsCount + 2) >> 1] = hc;
                     hyphenPointsCount = (hyphenPointsCount + 2) | 0;
                 }
             }
