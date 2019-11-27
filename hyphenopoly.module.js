@@ -412,18 +412,17 @@ function prepareLanguagesObj(
 function encloseHyphenateFunction(baseData, hyphenateFunc) {
     /* eslint-disable no-bitwise */
     const heapBuffer = baseData.wasmMemory.buffer;
-    const wordOffset = baseData.wo;
     const wordStore = (new Uint16Array(heapBuffer)).subarray(
-        wordOffset >> 1,
-        (wordOffset >> 1) + 64
+        baseData.wo >> 1,
+        (baseData.wo >> 1) + 64
     );
-    const defLeftmin = baseData.lm;
-    const defRightmin = baseData.rm;
     const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(
         baseData.hw >> 1,
         (baseData.hw >> 1) + 128
     );
     /* eslint-enable no-bitwise */
+    const defLeftmin = baseData.lm;
+    const defRightmin = baseData.rm;
 
     /**
      * The hyphenateFunction that encloses the env above
@@ -436,20 +435,21 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
      * @returns {String} the hyphenated word
      */
     wordStore[0] = 95;
-    return function enclHyphenate(word, hyphenchar, leftmin, rightmin) {
-        let i = 0;
-        let cc = word.charCodeAt(i);
+    return function enclHyphenate(word, hyphencc, leftmin, rightmin) {
         leftmin = leftmin || defLeftmin;
         rightmin = rightmin || defRightmin;
-        while (cc) {
+        let i = 0;
+        let cc = 0;
+        do {
+            cc = word.charCodeAt(i);
             i += 1;
             // eslint-disable-next-line security/detect-object-injection
             wordStore[i] = cc;
-            cc = word.charCodeAt(i);
-        }
-        wordStore[i + 1] = 95;
-        wordStore[i + 2] = 0;
-        if (hyphenateFunc(leftmin, rightmin) === 1) {
+        } while (cc);
+        /* eslint-disable security/detect-object-injection */
+        wordStore[i] = 95;
+        wordStore[i + 1] = 0;
+        if (hyphenateFunc(leftmin, rightmin, hyphencc) === 1) {
             word = String.fromCharCode.apply(
                 null,
                 hyphenatedWordStore.subarray(
@@ -457,9 +457,6 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
                     hyphenatedWordStore[0] + 1
                 )
             );
-            if (hyphenchar !== "\u00AD") {
-                word = word.replace(/\u00AD/g, hyphenchar);
-            }
         }
         return word;
     };
@@ -629,7 +626,7 @@ function createWordHyphenator(lo, lang) {
                 } else {
                     hw = lo.hyphenateFunction(
                         word,
-                        H.c.hyphen,
+                        H.c.hyphen.charCodeAt(0),
                         H.c.leftmin,
                         H.c.rightmin
                     );
