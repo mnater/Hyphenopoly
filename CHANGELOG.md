@@ -6,6 +6,7 @@
 
 ### Fixed
 *   Refactor encloseHyphenateFunction and enclHyphenate
+*   bump devDependencies
 
 ## Version 3.3.0 (2019-10-14)
 ### Added
