@@ -72,7 +72,6 @@ function asmHyphenEngine(std, x, heap) {
         var secondInt = 0;
         var alphabetCount = 0;
         i = (to + 2) | 0;
-        k = 12 | 0;
         while ((i | 0) < (po | 0)) {
             first = ui16[i >> 1] | 0;
             second = ui16[(i + 2) >> 1] | 0;
@@ -202,7 +201,6 @@ function asmHyphenEngine(std, x, heap) {
             if ((translatedChar | 0) == 255) {
                 return 0;
             }
-            translatedChar = (translatedChar - 12) | 0;
             ui8[(tw + charOffset) | 0] = translatedChar | 0;
             charOffset = (charOffset + 1) | 0;
             cc = ui16[(wo + (charOffset << 1)) >> 1] | 0;
