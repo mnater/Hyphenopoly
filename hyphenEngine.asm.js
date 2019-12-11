@@ -50,17 +50,14 @@ function asmHyphenEngine(std, x, heap) {
     function pullFromTranslateMap(cc) {
         cc = cc | 0;
         var addr = 0;
-        if ((cc | 0) != 0) {
-            addr = hashCharCode(cc) | 0;
-            while ((ui16[addr >> 1] | 0) != (cc | 0)) {
-                addr = (addr + 2) | 0;
-                if ((addr | 0) >= 512) {
-                    return 255;
-                }
+        addr = hashCharCode(cc) | 0;
+        while ((ui16[addr >> 1] | 0) != (cc | 0)) {
+            addr = (addr + 2) | 0;
+            if ((addr | 0) >= 512) {
+                return 255;
             }
-            return ui8[((addr >> 1) + 512) | 0] | 0;
         }
-        return 255;
+        return ui8[((addr >> 1) + 512) | 0] | 0;
     }
 
 
@@ -75,7 +72,11 @@ function asmHyphenEngine(std, x, heap) {
         while ((i | 0) < (po | 0)) {
             first = ui16[i >> 1] | 0;
             second = ui16[(i + 2) >> 1] | 0;
-            secondInt = pullFromTranslateMap(second) | 0;
+            if ((second | 0) == 0) {
+                secondInt = 255;
+            } else {
+                secondInt = pullFromTranslateMap(second) | 0;
+            }
             if ((secondInt | 0) == 255) {
                 //there's no such char yet in the TranslateMap
                 pushToTranslateMap(first, k);
