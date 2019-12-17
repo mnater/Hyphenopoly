@@ -144,7 +144,7 @@ function asmHyphenEngine(std, x, heap) {
                     }
                     if ((charAti | 0) > 11) {
                         valueStoreCurrentIdx = (valueStoreCurrentIdx + 1) | 0;
-                        if ((nextRowStart | 0) == -1) {
+                        if ((nextRowStart | 0) == 0) {
                             //start a new row
                             trieNextEmptyRow = trieNextEmptyRow + trieRowLength | 0;
                             nextRowStart = trieNextEmptyRow;
@@ -153,10 +153,6 @@ function asmHyphenEngine(std, x, heap) {
                         rowOffset = ((charAti - 12) | 0) << 3;
                         rowStart = nextRowStart;
                         nextRowStart = i32[(rowStart + rowOffset) >> 2] | 0;
-                        if ((nextRowStart | 0) == 0) {
-                            i32[(rowStart + rowOffset) >> 2] = -1;
-                            nextRowStart = -1;
-                        }
                     } else {
                         ui8[valueStoreCurrentIdx | 0] = charAti | 0;
                         valueStorePrevIdx = valueStoreCurrentIdx;
