@@ -193,16 +193,15 @@ function asmHyphenEngine(std, x, heap) {
         //translate UTF16 word to internal ints and clear hpPos-Array
         cc = ui16[wo >> 1] | 0;
         while ((cc | 0) != 0) {
-            ui8[(hp + charOffset) | 0] = 0;
             translatedChar = pullFromTranslateMap(cc | 0) | 0;
             if ((translatedChar | 0) == 255) {
                 return 0;
             }
             ui8[(tw + charOffset) | 0] = translatedChar | 0;
             charOffset = (charOffset + 1) | 0;
+            ui8[(hp + charOffset) | 0] = 0;
             cc = ui16[(wo + (charOffset << 1)) >> 1] | 0;
         }
-        ui8[(hp + charOffset) | 0] = 0;
         //find patterns and collect hyphenPoints
         wordLength = charOffset;
         while ((patternStartPos | 0) < (wordLength | 0)) {
@@ -245,8 +244,8 @@ function asmHyphenEngine(std, x, heap) {
                 (((charOffset | 0) <= ((wordLength - rm) | 0)) | 0)
             ) {
                 if (ui8[(hp + charOffset + 1) | 0] & 1) {
-                    ui16[(hw + (charOffset << 1) + hyphenPointsCount + 2) >> 1] = hc;
                     hyphenPointsCount = (hyphenPointsCount + 2) | 0;
+                    ui16[(hw + (charOffset << 1) + hyphenPointsCount) >> 1] = hc;
                 }
             }
             charOffset = (charOffset + 1) | 0;
