@@ -1,6 +1,6 @@
 # Version History
 
-## Version 3.4.0 (2019-11-xx)
+## Version 3.4.0 (2019-12-26)
 ### Added
 *   Option to disable mixed cased words (issue #91)
 
