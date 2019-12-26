@@ -1,5 +1,5 @@
 /**
- * @license hyphenEngine.asm.js 3.3.0 - client side hyphenation for webbrowsers
+ * @license hyphenEngine.asm.js 3.4.0 - client side hyphenation for webbrowsers
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -50,17 +50,14 @@ function asmHyphenEngine(std, x, heap) {
     function pullFromTranslateMap(cc) {
         cc = cc | 0;
         var addr = 0;
-        if ((cc | 0) != 0) {
-            addr = hashCharCode(cc) | 0;
-            while ((ui16[addr >> 1] | 0) != (cc | 0)) {
-                addr = (addr + 2) | 0;
-                if ((addr | 0) >= 512) {
-                    return 255;
-                }
+        addr = hashCharCode(cc) | 0;
+        while ((ui16[addr >> 1] | 0) != (cc | 0)) {
+            addr = (addr + 2) | 0;
+            if ((addr | 0) >= 512) {
+                return 255;
             }
-            return ui8[((addr >> 1) + 512) | 0] | 0;
         }
-        return 255;
+        return ui8[((addr >> 1) + 512) | 0] | 0;
     }
 
 
@@ -72,11 +69,14 @@ function asmHyphenEngine(std, x, heap) {
         var secondInt = 0;
         var alphabetCount = 0;
         i = (to + 2) | 0;
-        k = 12 | 0;
         while ((i | 0) < (po | 0)) {
             first = ui16[i >> 1] | 0;
             second = ui16[(i + 2) >> 1] | 0;
-            secondInt = pullFromTranslateMap(second) | 0;
+            if ((second | 0) == 0) {
+                secondInt = 255;
+            } else {
+                secondInt = pullFromTranslateMap(second) | 0;
+            }
             if ((secondInt | 0) == 255) {
                 //there's no such char yet in the TranslateMap
                 pushToTranslateMap(first, k);
@@ -144,7 +144,7 @@ function asmHyphenEngine(std, x, heap) {
                     }
                     if ((charAti | 0) > 11) {
                         valueStoreCurrentIdx = (valueStoreCurrentIdx + 1) | 0;
-                        if ((nextRowStart | 0) == -1) {
+                        if ((nextRowStart | 0) == 0) {
                             //start a new row
                             trieNextEmptyRow = trieNextEmptyRow + trieRowLength | 0;
                             nextRowStart = trieNextEmptyRow;
@@ -153,10 +153,6 @@ function asmHyphenEngine(std, x, heap) {
                         rowOffset = ((charAti - 12) | 0) << 3;
                         rowStart = nextRowStart;
                         nextRowStart = i32[(rowStart + rowOffset) >> 2] | 0;
-                        if ((nextRowStart | 0) == 0) {
-                            i32[(rowStart + rowOffset) >> 2] = -1;
-                            nextRowStart = -1;
-                        }
                     } else {
                         ui8[valueStoreCurrentIdx | 0] = charAti | 0;
                         valueStorePrevIdx = valueStoreCurrentIdx;
@@ -177,9 +173,10 @@ function asmHyphenEngine(std, x, heap) {
         return alphabetlength | 0;
     }
 
-    function hyphenate(lm, rm) {
+    function hyphenate(lm, rm, hc) {
         lm = lm | 0;
         rm = rm | 0;
+        hc = hc | 0;
         var patternStartPos = 0;
         var wordLength = 0;
         var charOffset = 0;
@@ -196,17 +193,15 @@ function asmHyphenEngine(std, x, heap) {
         //translate UTF16 word to internal ints and clear hpPos-Array
         cc = ui16[wo >> 1] | 0;
         while ((cc | 0) != 0) {
-            ui8[(hp + charOffset) | 0] = 0;
             translatedChar = pullFromTranslateMap(cc | 0) | 0;
             if ((translatedChar | 0) == 255) {
                 return 0;
             }
-            translatedChar = (translatedChar - 12) | 0;
             ui8[(tw + charOffset) | 0] = translatedChar | 0;
             charOffset = (charOffset + 1) | 0;
+            ui8[(hp + charOffset) | 0] = 0;
             cc = ui16[(wo + (charOffset << 1)) >> 1] | 0;
         }
-        ui8[(hp + charOffset) | 0] = 0;
         //find patterns and collect hyphenPoints
         wordLength = charOffset;
         while ((patternStartPos | 0) < (wordLength | 0)) {
@@ -249,8 +244,8 @@ function asmHyphenEngine(std, x, heap) {
                 (((charOffset | 0) <= ((wordLength - rm) | 0)) | 0)
             ) {
                 if (ui8[(hp + charOffset + 1) | 0] & 1) {
-                    ui16[(hw + (charOffset << 1) + hyphenPointsCount + 2) >> 1] = 173;
                     hyphenPointsCount = (hyphenPointsCount + 2) | 0;
+                    ui16[(hw + (charOffset << 1) + hyphenPointsCount) >> 1] = hc;
                 }
             }
             charOffset = (charOffset + 1) | 0;

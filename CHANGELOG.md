@@ -1,5 +1,13 @@
 # Version History
 
+## Version 3.4.0 (2019-12-26)
+### Added
+*   Option to disable mixed cased words (issue #91)
+
+### Fixed
+*   Refactor encloseHyphenateFunction and enclHyphenate
+*   bump devDependencies
+
 ## Version 3.3.0 (2019-10-14)
 ### Added
 *   Add configuration option `keepAlive` (issue #69)

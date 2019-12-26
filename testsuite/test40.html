@@ -2,18 +2,22 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 039</title>
+        <title>Test 040</title>
         <script>
-        document.addEventListener("DOMContentLoaded", function(event) {
-            document.getElementById("myTextField").focus();
-        });
-        
         var Hyphenopoly = {
             require: {
                 "en-us": "FORCEHYPHENOPOLY"
             },
             setup: {
-                hide: "element"
+                selectors: {
+                    ".class1": {
+                        hyphen: "·"
+                    },
+                    ".class2": {
+                        hyphen: "·",
+                        mixedCase: false
+                    }
+                }
             },
             handleEvent: {
                 hyphenopolyEnd: function (e) {
@@ -21,15 +25,18 @@
                 }
             }
         };
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
         function assert() {
-            var tests = 1;
+            var tests = 2;
             var i = 1;
             var test = "";
             var ref = "";
             var result = true;
             while (i <= tests) {
-                test = document.getElementById("myTextField");
-                ref = document.activeElement;
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
                 if (test === ref) {
                     document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
                     result = result && true;
@@ -42,13 +49,18 @@
             if (parent != window) {
                 parent.postMessage(JSON.stringify({
                     desc: document.getElementById("desc").innerHTML,
-                    index: 39,
+                    index: 40,
                     result: (result ? "passed" : "failed")
                 }), window.location.href);
             }
         }
+        if (!Hyphenopoly) {
+            document.addEventListener("DOMContentLoaded", function() {
+                assert();
+            });
+        }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
+        
         <style type="text/css">
             body {
                 width:50%;
@@ -72,18 +84,19 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test38.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test40.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test39.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test41.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 039</h1>
-        <p id="desc">Focus an element.</p>
+        <h1>Test 040</h1>
+        <p id="desc">Handle mixed cased words</p>
         <div id="result"></div>
         <hr>
-        <h2>1: en-us</h2>
-        <input type="text" id="myTextField" value="Text field.">
-        <div id="test1" class="test hyphenate" lang="en-us">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</div>
-        <div id="ref1" class="ref" lang="en-us">A hy&shy;phen&shy;ation al&shy;go&shy;rithm is a set of rules that de&shy;cides at which points a word can be bro&shy;ken over two lines with a hy&shy;phen.</div>
+        <h2>1: hyphenate mixed case</h2>
+        <p id="test1" class="test class1" lang="en-us">Hyphenation algorithm camelCase</p>
+        <p id="ref1" class="ref" lang="en-us">Hy·phen·ation al·go·rithm camel·Case</p>
+        <h2>2: don't hyphenate mixed case</h2>
+        <p id="test2" class="test class2" lang="en-us">Hyphenation algorithm camelCase</p>
+        <p id="ref2" class="ref" lang="en-us">Hyphenation al·go·rithm camelCase</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
-
     </body>
 </html>

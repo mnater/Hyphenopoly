@@ -16,6 +16,7 @@ These page documents the optional fields in `setup`:
   * [leftmin and rightmin](#leftmin-and-rightmin)
   * [leftminPerLang and rightminPerLang](#leftminperlang-and-rightminperlang)
   * [minWordLength](#minwordlength)
+  * [mixedCase](#mixedcase)
   * [orphanControl](#orphancontrol)
 
 ## Global Settings
@@ -400,6 +401,31 @@ var Hyphenopoly = {
 };
 </script>
 ````
+
+### mixedCase
+````
+type: boolean
+default: true
+````
+If set to false, prevents hyphenation of mixed case words.
+````html
+<script>
+var Hyphenopoly = {
+    require: {...},
+    paths: {...},
+    setup: {
+        selectors: {
+            ".hyphenate": {
+                mixedCase: false
+            }
+        }
+    }
+};
+</script>
+````
+According to a [note in the css-text draft](https://drafts.csswg.org/css-text-3/#valdef-hyphens-auto)
+mixed case words may not be hyphenated. This setting defaults to true, because this simple heuristic
+excludes words at the beginning of a sentence from being hyphenated.
 
 ### orphanControl
 ````

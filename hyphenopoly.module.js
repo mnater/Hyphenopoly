@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 3.3.0 - hyphenation for node
+ * @license Hyphenopoly.module.js 3.4.0 - hyphenation for node
  * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -412,18 +412,17 @@ function prepareLanguagesObj(
 function encloseHyphenateFunction(baseData, hyphenateFunc) {
     /* eslint-disable no-bitwise */
     const heapBuffer = baseData.wasmMemory.buffer;
-    const wordOffset = baseData.wo;
     const wordStore = (new Uint16Array(heapBuffer)).subarray(
-        wordOffset >> 1,
-        (wordOffset >> 1) + 64
+        baseData.wo >> 1,
+        (baseData.wo >> 1) + 64
     );
-    const defLeftmin = baseData.lm;
-    const defRightmin = baseData.rm;
     const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(
         baseData.hw >> 1,
         (baseData.hw >> 1) + 128
     );
     /* eslint-enable no-bitwise */
+    const defLeftmin = baseData.lm;
+    const defRightmin = baseData.rm;
 
     /**
      * The hyphenateFunction that encloses the env above
@@ -436,20 +435,21 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
      * @returns {String} the hyphenated word
      */
     wordStore[0] = 95;
-    return function enclHyphenate(word, hyphenchar, leftmin, rightmin) {
-        let i = 0;
-        let cc = word.charCodeAt(i);
+    return function enclHyphenate(word, hyphencc, leftmin, rightmin) {
         leftmin = leftmin || defLeftmin;
         rightmin = rightmin || defRightmin;
-        while (cc) {
+        let i = 0;
+        let cc = 0;
+        do {
+            cc = word.charCodeAt(i);
             i += 1;
             // eslint-disable-next-line security/detect-object-injection
             wordStore[i] = cc;
-            cc = word.charCodeAt(i);
-        }
-        wordStore[i + 1] = 95;
-        wordStore[i + 2] = 0;
-        if (hyphenateFunc(leftmin, rightmin) === 1) {
+        } while (cc);
+        /* eslint-disable security/detect-object-injection */
+        wordStore[i] = 95;
+        wordStore[i + 1] = 0;
+        if (hyphenateFunc(leftmin, rightmin, hyphencc) === 1) {
             word = String.fromCharCode.apply(
                 null,
                 hyphenatedWordStore.subarray(
@@ -457,9 +457,6 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
                     hyphenatedWordStore[0] + 1
                 )
             );
-            if (hyphenchar !== "\u00AD") {
-                word = word.replace(/\u00AD/g, hyphenchar);
-            }
         }
         return word;
     };
@@ -593,12 +590,29 @@ function createWordHyphenator(lo, lang) {
     }
 
     /**
+     * Checks if a string is mixed case
+     * @param {string} s The string
+     * @returns {boolean} true if s is mixed case
+     */
+    function isMixedCase(s) {
+        return Array.prototype.map.call(s, function mapper(c) {
+            return (c === c.toLowerCase());
+        }).some(function checker(v, i, a) {
+            return (v !== a[0]);
+        });
+    }
+
+    /* eslint-disable complexity */
+    /**
      * HyphenateFunction for words (compound or not)
      * @param {string} word The word
      * @returns {string} The hyphenated word
      */
     function hyphenator(word) {
         let hw = lo.cache.get(word);
+        if (!H.c.mixedCase && isMixedCase(word)) {
+            hw = word;
+        }
         if (!hw) {
             if (lo.exceptions.has(word)) {
                 hw = lo.exceptions.get(word).replace(
@@ -612,7 +626,7 @@ function createWordHyphenator(lo, lang) {
                 } else {
                     hw = lo.hyphenateFunction(
                         word,
-                        H.c.hyphen,
+                        H.c.hyphen.charCodeAt(0),
                         H.c.leftmin,
                         H.c.rightmin
                     );
@@ -624,6 +638,7 @@ function createWordHyphenator(lo, lang) {
         }
         return hw;
     }
+    /* eslint-enable complexity */
     wordHyphenatorPool.set(lang, hyphenator);
     return hyphenator;
 }
@@ -795,6 +810,7 @@ H.config = function config(userConfig) {
         "leftmin": setProp(0, 2),
         "loader": setProp("fs", 2),
         "minWordLength": setProp(6, 2),
+        "mixedCase": setProp(true, 2),
         "normalize": setProp(false, 2),
         "orphanControl": setProp(1, 2),
         "paths": setProp(Object.create(null, {
