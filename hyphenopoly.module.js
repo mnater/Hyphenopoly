@@ -331,11 +331,9 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
  * @returns {undefined}
  */
 function instantiateWasmEngine(lang) {
-    if (H.c.sync) {
-        const heInstance = new WebAssembly.Instance(
-            new WebAssembly.Module(H.binaries.get(lang))
-        );
-        const exp = heInstance.exports;
+    // eslint-disable-next-line require-jsdoc
+    function handleWasm(inst) {
+        const exp = inst.exports;
         const baseData = {
             "hw": exp.hwo,
             "lm": exp.lmi,
@@ -357,33 +355,16 @@ function instantiateWasmEngine(lang) {
             baseData.lm,
             baseData.rm
         );
-    } else {
-        WebAssembly.instantiate(H.binaries.get(lang)).then(
-            function runWasm(res) {
-                const exp = res.instance.exports;
-                const baseData = {
-                    "hw": exp.hwo,
-                    "lm": exp.lmi,
-                    "rm": exp.rmi,
-                    "wasmMem": exp.mem,
-                    "wo": exp.uwo
-                };
-                exp.conv();
-                prepareLanguagesObj(
-                    lang,
-                    encloseHyphenateFunction(
-                        baseData,
-                        exp.hyphenate
-                    ),
-                    decode(
-                        (new Uint8Array(exp.mem.buffer)).
-                            subarray(768, 1280)
-                    ),
-                    baseData.lm,
-                    baseData.rm
-                );
-            }
+    }
+    if (H.c.sync) {
+        const heInstance = new WebAssembly.Instance(
+            new WebAssembly.Module(H.binaries.get(lang))
         );
+        handleWasm(heInstance);
+    } else {
+        WebAssembly.instantiate(H.binaries.get(lang)).then((res) => {
+            handleWasm(res.instance);
+        });
     }
 }
 
