@@ -106,7 +106,7 @@ Fields: null
 ````
 
 ## tearDown-Event
-Fired when Hyphenopoly_Loader.js decides NOT to load Hyphenopoly.js and before it deletes the global 'Hyphenopoly' object.
+Fired when Hyphenopoly_Loader.js decides NOT to load Hyphenopoly.js and before it deletes the global 'Hyphenopoly' object. This event can be used to invoke other scripts if native CSS hyphenation is available.
 
 ````
 Default-action: `w.Hyphenopoly = null`
