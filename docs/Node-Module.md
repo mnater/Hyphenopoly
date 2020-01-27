@@ -110,11 +110,11 @@ The only option that Must be set is `require` which takes an array of language-t
 
 ### loader
 By default hyphenopoly.module.js loads pattern files and hyphenEnginge by using nodes "fs"-module.
-This can be changed to the "http"-module by setting the `loader` to "http":
+This can be changed to the "https"-module by setting the `loader` to "https":
 ````javascript
 const hyphenator = hyphenopoly.config({
     "require": […],
-    "loader": "http"
+    "loader": "https"
 });
 
 ````

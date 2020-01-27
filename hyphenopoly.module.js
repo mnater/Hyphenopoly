@@ -661,10 +661,6 @@ H.config = function config(userConfig) {
         // eslint-disable-next-line global-require
         loader = require("https");
     }
-    if (H.c.loader === "http") {
-        // eslint-disable-next-line global-require
-        loader = require("http");
-    }
     if (H.c.handleEvent) {
         Object.keys(H.c.handleEvent).forEach(function add(name) {
             /* eslint-disable security/detect-object-injection */

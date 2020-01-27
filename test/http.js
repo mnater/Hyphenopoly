@@ -19,8 +19,8 @@ t.test("use https loader", async function (t) {
     const deHyphenator = await H9Y.config({
         "loader": "https",
         "paths": {
-            "maindir": "https://unpkg.com/hyphenopoly@4.4.0/",
-            "patterndir": "https://unpkg.com/hyphenopoly@4.4.0/patterns/"
+            "maindir": "https://cdn.jsdelivr.net/gh/mnater/Hyphenopoly@develop/",
+            "patterndir": "https://cdn.jsdelivr.net/gh/mnater/Hyphenopoly@develop/patterns/"
         },
         "require": ["de"]
     });
