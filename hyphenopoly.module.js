@@ -286,8 +286,6 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
     const defLeftmin = baseData.lm;
     const defRightmin = baseData.rm;
     /* eslint-enable no-bitwise */
-    const defLeftmin = baseData.lm;
-    const defRightmin = baseData.rm;
 
     /**
      * The hyphenateFunction that encloses the env above

@@ -1,11 +1,6 @@
 /**
-<<<<<<< HEAD
- * @license Hyphenopoly_Loader 3.4.0 - client side hyphenation
- * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
-=======
  * @license Hyphenopoly_Loader 4.0.0 - client side hyphenation
  * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
->>>>>>> noIE
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
@@ -184,9 +179,7 @@
         const tester = (() => {
             let fakeBody = null;
             const ha = "hyphens:auto";
-            /* eslint-disable array-element-newline */
             const css = `visibility:hidden;-moz-${ha};-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
-            /* eslint-enable array-element-newline */
 
             return {
 
