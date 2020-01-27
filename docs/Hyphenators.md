@@ -6,13 +6,7 @@ Possible usecases are:
 * hyphenating text provided by the user (e.g. in a preview window of a blogging software)
 * …
 
-<<<<<<< HEAD
-Up to version 2.4.0 the only way to hyphenate text after the page has loaded was to [dispatch a `contentLoaded`-Event](./Events.md#contentloaded-event) in order to restart the hyphenation process. This works but is a bit like using a sledgehammer to crack a nut, since the whole page is reprocessed.
-
-_Since Version 2.5.0 Hyphenopoly.js exposes `hyphenators` – language specific functions that hyphenates a string or a DOM-Object._
-=======
 For this use cases Hyphenopoly.js exposes `hyphenators` – language specific functions that hyphenates a string or a DOM-Object.
->>>>>>> noIE
 
 ## Create and access `Hyphenopoly.hyphenators`
 `hyphenators` are language specific functions that hyphenate their input.
@@ -121,13 +115,6 @@ async function runHyphenator(id) {
 runHyphenator("hyphenateme");
 ````
 
-<<<<<<< HEAD
-If Promises are not supported by the browser an error is dispatched.
-
-All modern Browsers [support Promises](https://caniuse.com/#feat=promises) and the [`async/await`-syntax](https://caniuse.com/#feat=async-functions). If you need to support IE11 use a polyfill for promises (e.g. [taylorhakes/promise-polyfill](https://github.com/taylorhakes/promise-polyfill)) and stick to the `.then`-syntax.
-
-=======
->>>>>>> noIE
 # Use case: Hyphenopoly in react
 `hyphenators` are very important in dynamically generated web-content (web-apps). The following describes some first steps in how to use Hyphenopoly in react-apps. Please note that I'm not an expert in react.js If you find a better way I'd highly appreciate your ideas.
 

@@ -1,24 +1,13 @@
 /**
-<<<<<<< HEAD
- * @license Hyphenopoly 3.4.0 - client side hyphenation for webbrowsers
- * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
-=======
  * @license Hyphenopoly 4.0.0 - client side hyphenation for webbrowsers
  * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
->>>>>>> noIE
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
-<<<<<<< HEAD
-/* globals asmHyphenEngine:readonly, Hyphenopoly:readonly */
-
-(function mainWrapper(w) {
-=======
 ((w) => {
->>>>>>> noIE
     "use strict";
     const SOFTHYPHEN = String.fromCharCode(173);
 
@@ -71,11 +60,7 @@
     function registerOnCopy(el) {
         el.addEventListener(
             "copy",
-<<<<<<< HEAD
-            function oncopy(e) {
-=======
             (e) => {
->>>>>>> noIE
                 e.preventDefault();
                 const sel = w.getSelection();
                 const docFrag = sel.getRangeAt(0).cloneContents();
@@ -882,13 +867,8 @@
         /**
          * Polyfill for TextDecoder
          */
-<<<<<<< HEAD
-        const decode = (function makeDecoder() {
-            if (w.TextDecoder) {
-=======
         const decode = (() => {
             if (window.TextDecoder) {
->>>>>>> noIE
                 const utf16ledecoder = new TextDecoder("utf-16le");
                 return ((ui16) => utf16ledecoder.decode(ui16));
             }
@@ -914,16 +894,12 @@
             );
             /* eslint-enable no-bitwise */
             wordStore[0] = 95;
-<<<<<<< HEAD
-            return function enclHyphenate(word, hyphencc, leftmin, rightmin) {
-=======
             return ((
                 word,
                 hyphencc,
                 leftmin,
                 rightmin
             ) => {
->>>>>>> noIE
                 let i = 0;
                 let cc = 0;
                 do {
@@ -977,68 +953,6 @@
                                 baseData.lm,
                                 baseData.rm
                             );
-<<<<<<< HEAD
-                        }
-                    );
-                }
-            );
-        }
-
-        /**
-         * Instantiate asm Engine
-         * @param {string} lang The language
-         * @returns {undefined}
-         */
-        function instantiateAsmEngine(lang) {
-            const hpbBuf = H.bins.get(lang);
-            const baseData = calculateBaseData(hpbBuf);
-            const specMem = H.specMems.get(lang);
-            const heapBuffer = (specMem.byteLength >= baseData.hs)
-                ? specMem
-                : new ArrayBuffer(baseData.hs);
-            const ui8Heap = new Uint8Array(heapBuffer);
-            const ui8Patterns = new Uint8Array(hpbBuf);
-            ui8Heap.set(ui8Patterns, baseData.ho);
-            baseData.heapBuffer = heapBuffer;
-            const theHyphenEngine = asmHyphenEngine(
-                {
-                    "Int32Array": w.Int32Array,
-                    "Math": Math,
-                    "Uint16Array": w.Uint16Array,
-                    "Uint8Array": w.Uint8Array
-                },
-                baseData,
-                baseData.heapBuffer
-            );
-            const alphalen = theHyphenEngine.convert();
-            prepareLanguagesObj(
-                lang,
-                encloseHyphenateFunction(baseData, theHyphenEngine.hyphenate),
-                decode(
-                    (new Uint16Array(heapBuffer)).
-                        subarray(385, 384 + alphalen)
-                ),
-                baseData.lm,
-                baseData.rm
-            );
-        }
-
-        let engineInstantiator = null;
-        const hpb = [];
-
-        /**
-         * Instantiate hyphenEngines for languages
-         * @param {string} lang The language
-         * @param {string} engineType The engineType: "wasm" or "asm"
-         * @returns {undefined}
-         */
-        function prepare(lang, engineType) {
-            if (lang === "*") {
-                if (engineType === "wasm") {
-                    engineInstantiator = instantiateWasmEngine;
-                } else if (engineType === "asm") {
-                    engineInstantiator = instantiateAsmEngine;
-=======
                         });
                     });
                 } else {
@@ -1057,7 +971,6 @@
                         "msg": `1 File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
                     });
                     /* eslint-enable security/detect-object-injection */
->>>>>>> noIE
                 }
             });
         }
@@ -1074,84 +987,7 @@
                         hyphenateLangElements(lang, values);
                     }
                 });
-<<<<<<< HEAD
-            },
-            false
-        );
-
-        H.events.define(
-            "engineLoaded",
-            function onEngineLoaded(e) {
-                prepare("*", e.msg);
-            },
-            false
-        );
-
-        H.events.define(
-            "hpbLoaded",
-            function onHpbLoaded(e) {
-                prepare(e.msg, "*");
-            },
-            false
-        );
-
-        H.events.addListener(
-            "loadError",
-            function onLoadError(e) {
-                if (e.msg !== "wasm") {
-                    elements.rem(e.name);
-                }
-            },
-            false
-        );
-
-        H.events.define(
-            "engineReady",
-            function onEngineReady(e) {
-                if (H.elementsReady) {
-                    hyphenateLangElements(e.msg, elements.list.get(e.msg));
-                }
-            },
-            false
-        );
-
-        H.events.define(
-            "hyphenopolyStart",
-            null,
-            true
-        );
-
-        H.events.define(
-            "hyphenopolyEnd",
-            function def() {
-                w.clearTimeout(C.timeOutHandler);
-                if (C.hide !== "none") {
-                    H.toggle("on");
-                }
-                if (!C.keepAlive) {
-                    window.Hyphenopoly = null;
-                }
-            },
-            false
-        );
-
-        H.events.define(
-            "beforeElementHyphenation",
-            null,
-            true
-        );
-
-        H.events.define(
-            "afterElementHyphenation",
-            null,
-            true
-        );
-
-        H.events.tempRegister.forEach(function eachEo(eo) {
-            H.events.addListener(eo.name, eo.handler, false);
-=======
             });
->>>>>>> noIE
         });
 
         H.res.get("he").forEach((_ignore, lang) => {

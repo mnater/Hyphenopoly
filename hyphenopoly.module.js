@@ -1,11 +1,6 @@
 /**
-<<<<<<< HEAD
- * @license Hyphenopoly.module.js 3.4.0 - hyphenation for node
- * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
-=======
  * @license Hyphenopoly.module.js 4.0.0 - hyphenation for node
  * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
->>>>>>> noIE
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
@@ -168,37 +163,6 @@ function readFile(file, cb, sync) {
 }
 
 /**
-<<<<<<< HEAD
- * Read a wasm file, dispatch "engineLoaded" on success
- * @returns {undefined}
- */
-function loadWasm() {
-    if (H.c.sync) {
-        const data = readFile(`${H.c.paths.maindir}hyphenEngine.wasm`, null, true);
-        H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
-        H.events.dispatch("engineLoaded");
-    } else {
-        readFile(
-            `${H.c.paths.maindir}hyphenEngine.wasm`,
-            function cb(err, data) {
-                if (err) {
-                    H.events.dispatch("error", {
-                        "key": "hyphenEngine",
-                        "msg": `${H.c.paths.maindir}hyphenEngine.wasm not found.`
-                    });
-                } else {
-                    H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
-                    H.events.dispatch("engineLoaded");
-                }
-            },
-            false
-        );
-    }
-}
-
-/**
-=======
->>>>>>> noIE
  * Read a hpb file, dispatch "hpbLoaded" on success
  * @param {string} lang - The language
  * @returns {undefined}
@@ -310,11 +274,7 @@ function prepareLanguagesObj(
  */
 function encloseHyphenateFunction(baseData, hyphenateFunc) {
     /* eslint-disable no-bitwise */
-<<<<<<< HEAD
-    const heapBuffer = baseData.wasmMemory.buffer;
-=======
     const heapBuffer = baseData.wasmMem.buffer;
->>>>>>> noIE
     const wordStore = (new Uint16Array(heapBuffer)).subarray(
         baseData.wo >> 1,
         (baseData.wo >> 1) + 64

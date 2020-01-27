@@ -12,21 +12,7 @@
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
-<<<<<<< HEAD
-/* globals Hyphenopoly:readonly */
-
-/**
- * Wrap all code in an iife to keep a scope. Important objects are parameters
- * of this iife to keep codesize low.
- * @param {Object} w shorthand for window
- * @param {Object} d shorthand for document
- * @param {Object} H shorthand for Hyphenopoly
- * @param {Object} o shorthand for object
- */
-(function H9YL(w, d, H, o) {
-=======
 ((w, d, H, o) => {
->>>>>>> noIE
     "use strict";
 
     const store = sessionStorage;
@@ -108,17 +94,9 @@
             case "element":
                 return 2;
             case "text":
-<<<<<<< HEAD
-                eachKey(H.setup.selectors, function eachSelector(sel) {
-                    myStyle += sel + " {color: transparent !important}\n";
-                });
-                break;
-            // No Default
-=======
                 return 3;
             default:
                 return 0;
->>>>>>> noIE
             }
         })();
     })();
@@ -128,208 +106,6 @@
      * eventually fallbacks to local lcFallbacks (lowercaseFallbacks).
      * This is in an iife to keep complexity low.
      */
-<<<<<<< HEAD
-    (function setupEvents() {
-        // Events known to the system
-        const definedEvents = new Map();
-        // Default events, execution deferred to Hyphenopoly.js
-        const deferred = [];
-
-        /*
-         * Register for custom event handlers, where event is not yet defined
-         * these events will be correctly registered in Hyphenopoly.js
-         */
-        const tempRegister = [];
-
-        /**
-         * Create Event Object
-         * @param {string} name The Name of the event
-         * @param {function} defFunc The default method of the event
-         * @param {boolean} cancellable Is the default cancellable
-         * @returns {undefined}
-         */
-        function define(name, defFunc, cancellable) {
-            definedEvents.set(name, {
-                "cancellable": cancellable,
-                "default": defFunc,
-                "register": []
-            });
-        }
-
-        define(
-            "timeout",
-            function def(e) {
-                H.toggle("on");
-                w.console.info(
-                    "Hyphenopolys 'FOUHC'-prevention timed out after %dms",
-                    e.delay
-                );
-            },
-            false
-        );
-
-        define(
-            "error",
-            function def(e) {
-                switch (e.lvl) {
-                case "info":
-                    w.console.info(e.msg);
-                    break;
-                case "warn":
-                    w.console.warn(e.msg);
-                    break;
-                default:
-                    w.console.error(e.msg);
-                }
-            },
-            true
-        );
-
-        define(
-            "contentLoaded",
-            function def(e) {
-                deferred.push({
-                    "data": e,
-                    "name": "contentLoaded"
-                });
-            },
-            false
-        );
-
-        define(
-            "engineLoaded",
-            function def(e) {
-                deferred.push({
-                    "data": e,
-                    "name": "engineLoaded"
-                });
-            },
-            false
-        );
-
-        define(
-            "hpbLoaded",
-            function def(e) {
-                deferred.push({
-                    "data": e,
-                    "name": "hpbLoaded"
-                });
-            },
-            false
-        );
-
-        define(
-            "loadError",
-            function def(e) {
-                deferred.push({
-                    "data": e,
-                    "name": "loadError"
-                });
-            },
-            false
-        );
-
-        define(
-            "tearDown",
-            null,
-            true
-        );
-
-        /**
-         * Dispatch event <name> with arguments <data>
-         * @param {string} name The name of the event
-         * @param {Object|undefined} data Data of the event
-         * @returns {undefined}
-         */
-        function dispatch(name, data) {
-            data = data || empty();
-            let defaultPrevented = false;
-            definedEvents.get(name).register.forEach(
-                function call(currentHandler) {
-                    data.preventDefault = function preventDefault() {
-                        if (definedEvents.get(name).cancellable) {
-                            defaultPrevented = true;
-                        }
-                    };
-                    currentHandler(data);
-                }
-            );
-            if (
-                !defaultPrevented &&
-                definedEvents.get(name).default
-            ) {
-                definedEvents.get(name).default(data);
-            }
-        }
-
-        /**
-         * Add EventListender <handler> to event <name>
-         * @param {string} name The name of the event
-         * @param {function} handler Function to register
-         * @param {boolean} defer If the registration is deferred
-         * @returns {undefined}
-         */
-        function addListener(name, handler, defer) {
-            if (definedEvents.has(name)) {
-                definedEvents.get(name).register.push(handler);
-            } else if (defer) {
-                tempRegister.push({
-                    "handler": handler,
-                    "name": name
-                });
-            } else {
-                H.events.dispatch(
-                    "error",
-                    {
-                        "lvl": "warn",
-                        "msg": "unknown Event \"" + name + "\" discarded"
-                    }
-                );
-            }
-        }
-
-        if (H.handleEvent) {
-            eachKey(H.handleEvent, function add(name) {
-                /* eslint-disable security/detect-object-injection */
-                addListener(name, H.handleEvent[name], true);
-                /* eslint-enable security/detect-object-injection */
-            });
-        }
-
-        H.events = empty();
-        H.events.deferred = deferred;
-        H.events.tempRegister = tempRegister;
-        H.events.dispatch = dispatch;
-        H.events.define = define;
-        H.events.addListener = addListener;
-    }());
-
-    /**
-     * Feature test for wasm.
-     * @returns {boolean} support
-     */
-    function runWasmTest() {
-        /*
-         * Wasm feature test with iOS bug detection
-         * (https://bugs.webkit.org/show_bug.cgi?id=181781)
-         */
-        if (
-            typeof wa === "object" &&
-            typeof wa.Instance === "function"
-        ) {
-            /* eslint-disable array-element-newline */
-            const module = new wa.Module(Uint8Array.from([
-                0, 97, 115, 109, 1, 0, 0, 0, 1, 6, 1, 96, 1, 127, 1, 127,
-                3, 2, 1, 0, 5, 3, 1, 0, 1, 7, 5, 1, 1, 116, 0, 0,
-                10, 16, 1, 14, 0, 32, 0, 65, 1, 54, 2, 0, 32, 0, 40, 2,
-                0, 11
-            ]));
-            /* eslint-enable array-element-newline */
-            return (new wa.Instance(module).exports.t(4) !== 0);
-        }
-        return false;
-    }
-=======
     (() => {
         eachKey(H.require, (k) => {
             /* eslint-disable security/detect-object-injection */
@@ -342,7 +118,6 @@
             /* eslint-enable security/detect-object-injection */
         });
     })();
->>>>>>> noIE
 
     /**
      * Create deferred Promise
@@ -374,43 +149,6 @@
      * @param {integer} state - State
      * @param {integer} mode  - Mode
      */
-<<<<<<< HEAD
-    function loadBinary(path, fne, name, msg) {
-        /**
-         * Get bin file using fetch
-         * @param {string} p Where the script is stored
-         * @param {string} f Filename of the script with extension
-         * @param {string} n Name of the ressource
-         * @param {Object} m Message
-         * @returns {undefined}
-         */
-        function fetchBinary(p, f, n, m) {
-            w.fetch(p + f, {"credentials": "include"}).then(
-                function resolve(response) {
-                    if (response.ok) {
-                        if (n === "hyphenEngine") {
-                            H.bins.set(n, response.arrayBuffer().then(
-                                function getModule(buf) {
-                                    return new wa.Module(buf);
-                                }
-                            ));
-                            H.events.dispatch("engineLoaded", {"msg": m});
-                        } else {
-                            const files = loadedBins.get(f);
-                            files.forEach(function eachHpb(rn) {
-                                H.bins.set(
-                                    rn,
-                                    (files.length > 1)
-                                        ? response.clone().arrayBuffer()
-                                        : response.arrayBuffer()
-                                );
-                                H.events.dispatch(
-                                    "hpbLoaded",
-                                    {"msg": rn}
-                                );
-                            });
-                        }
-=======
     H.hiding = (state, mode) => {
         const sid = "H9Y_Styles";
         if (state === 1) {
@@ -429,60 +167,10 @@
                 eachKey(H.setup.selectors, (sel) => {
                     if (mode === 2) {
                         myStyle += sel + vis;
->>>>>>> noIE
                     } else {
                         myStyle += sel + " {color: transparent !important}\n";
                     }
-<<<<<<< HEAD
-                }
-            );
-        }
-
-        /**
-         * Get bin file using XHR
-         * @param {string} p Where the script is stored
-         * @param {string} f Filename of the script with extension
-         * @param {string} n Name of the ressource
-         * @param {Object} m Message
-         * @returns {undefined}
-         */
-        function requestBinary(p, f, n, m) {
-            const xhr = new XMLHttpRequest();
-            xhr.onload = function onload() {
-                if (xhr.status === 200) {
-                    loadedBins.get(f).
-                        forEach(function eachHpb(rn) {
-                            H.bins.set(
-                                rn,
-                                xhr.response
-                            );
-                            H.events.dispatch(
-                                "hpbLoaded",
-                                {"msg": rn}
-                            );
-                        });
-                } else {
-                    H.events.dispatch("loadError", {
-                        "file": f,
-                        "msg": m,
-                        "name": n,
-                        "path": p
-                    });
-                }
-            };
-            xhr.open("GET", p + f);
-            xhr.responseType = "arraybuffer";
-            xhr.send();
-        }
-        if (!loadedBins.has(fne)) {
-            loadedBins.set(fne, [msg]);
-            if (H.cf.wasm) {
-                fetchBinary(path, fne, name, msg);
-            } else {
-                requestBinary(path, fne, name, msg);
-=======
                 });
->>>>>>> noIE
             }
             sc[shortcuts.ac](d[shortcuts.ct](myStyle));
             d.head[shortcuts.ac](sc);
@@ -497,61 +185,10 @@
             let fakeBody = null;
             const ha = "hyphens:auto";
             /* eslint-disable array-element-newline */
-<<<<<<< HEAD
-            const css = [
-                "visibility:hidden",
-                "-moz-hyphens:auto",
-                "-webkit-hyphens:auto",
-                "-ms-hyphens:auto",
-                "hyphens:auto",
-                "width:48px",
-                "font-size:12px",
-                "line-height:12px",
-                "border:none",
-                "padding:0",
-                "word-wrap:normal"
-            ].join(";");
-            /* eslint-enable array-element-newline */
-
-            /**
-             * Create and append div with CSS-hyphenated word
-             * @param {string} lang Language
-             * @returns {undefined}
-             */
-            function create(lang) {
-                /* eslint-disable security/detect-object-injection */
-                if (H.cf.langs[lang]) {
-                    return;
-                }
-                /* eslint-enable security/detect-object-injection */
-                fakeBody = fakeBody || d.createElement("body");
-                const testDiv = d.createElement("div");
-                testDiv.lang = lang;
-                testDiv.style.cssText = css;
-                testDiv.appendChild(
-                    d.createTextNode(lcRequire.get(lang).toLowerCase())
-                );
-                fakeBody.appendChild(testDiv);
-            }
-
-            /**
-             * Append fakeBody with tests to target (document)
-             * @param {Object} target Where to append fakeBody
-             * @returns {Object|null} The body element or null, if no tests
-             */
-            function append(target) {
-                if (fakeBody) {
-                    target.appendChild(fakeBody);
-                    return fakeBody;
-                }
-                return null;
-            }
-=======
             const css = `visibility:hidden;-moz-${ha};-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
             /* eslint-enable array-element-newline */
 
             return {
->>>>>>> noIE
 
                 /**
                  * Append fakeBody with tests to target (document)
@@ -622,44 +259,6 @@
          * @param {string} lang The language
          * @returns {undefined}
          */
-<<<<<<< HEAD
-        function exposeHyphenateFunction(lang) {
-            /* eslint-disable security/detect-object-injection */
-            H.hyphenators = H.hyphenators || empty();
-            if (!H.hyphenators[lang]) {
-                if (w.Promise) {
-                    H.hyphenators[lang] = new Promise(function pro(rs, rj) {
-                        H.events.addListener(
-                            "engineReady",
-                            function handler(e) {
-                                if (e.msg === lang) {
-                                    rs(H.createHyphenator(e.msg));
-                                }
-                            },
-                            true
-                        );
-                        H.events.addListener(
-                            "loadError",
-                            function handler(e) {
-                                if (e.name === lang || e.name === "hyphenEngine") {
-                                    rj(new Error("File " + e.file + " can't be loaded from " + e.path));
-                                }
-                            },
-                            false
-                        );
-                    });
-                    H.hyphenators[lang].catch(function catchPromiseError(e) {
-                        H.events.dispatch(
-                            "error",
-                            {
-                                "lvl": "error",
-                                "msg": e.message
-                            }
-                        );
-                    });
-                } else {
-                    H.hyphenators[lang] = {
-=======
         function loadhyphenEngine(lang) {
             const filename = lcRequire.get(lang).get("fn") + ".wasm";
             H.cf.pf = true;
@@ -670,7 +269,6 @@
                 w.fetch(H.paths.patterndir + filename, {"credentials": "include"})
             );
         }
->>>>>>> noIE
 
         /**
          * Tear Down Hyphenopoly
@@ -705,19 +303,11 @@
         const testContainer = tester.ap(d.documentElement);
         if (testContainer !== null) {
             const nl = testContainer.querySelectorAll("div");
-<<<<<<< HEAD
-            Array.prototype.forEach.call(nl, function eachNode(n) {
-                if (checkCSSHyphensSupport(n) && n.offsetHeight > 12) {
-                    H.cf.langs[n.lang] = "CSS";
-                } else {
-                    loadPattern(n.lang);
-=======
             nl.forEach((n) => {
                 if (checkCSSHyphensSupport(n) && n.offsetHeight > 12) {
                     H.cf.langs[n.lang] = "CSS";
                 } else {
                     loadhyphenEngine(n.lang);
->>>>>>> noIE
                 }
             });
             tester.cl();

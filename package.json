@@ -1,10 +1,6 @@
 {
   "name": "hyphenopoly",
-<<<<<<< HEAD
-  "version": "3.4.0",
-=======
   "version": "4.0.0",
->>>>>>> noIE
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -43,21 +39,13 @@
   },
   "dependencies": {},
   "devDependencies": {
-<<<<<<< HEAD
-=======
     "assemblyscript": "^0.9.0",
->>>>>>> noIE
     "eslint": "^6.8.0",
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^7.0.1",
     "remark-preset-lint-recommended": "^3.0.3",
-<<<<<<< HEAD
-    "tap": "^14.10.5",
-    "terser": "^4.4.3"
-=======
     "tap": "^14.10.6",
     "terser": "^4.6.3"
->>>>>>> noIE
   },
   "remarkConfig": {
     "plugins": [
@@ -68,22 +56,12 @@
     "preinstall3rdparty": "rm -fR third-party",
     "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen",
     "postinstall3rdparty": "cd ./third-party/binaryen/ && cmake . && make",
-<<<<<<< HEAD
-    "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
-    "test": "tap test/*.js --coverage",
-    "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
-    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js && npm run lint-md",
-    "lint-md": "remark *.md",
-    "prepare": "npm run minify",
-    "minify": "sh ./tools/minify.sh",
-=======
     "createWasmForLang": "sh ./tools/createWasmForLang.sh en-us",
     "createAllWasm": "sh ./tools/createAllWasm.sh",
     "test": "tap test/*.js --coverage",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js && remark *.md",
     "prepare": "sh ./tools/minify.sh",
->>>>>>> noIE
     "doc": "cd ./docs/ && bundle exec jekyll serve -l -o"
   },
   "runkitExampleFilename": "example.js"
