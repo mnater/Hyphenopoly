@@ -16,21 +16,6 @@ t.afterEach(function tearDown(done) {
     done();
 });
 
-t.test("path to maindir not resolvable", async function (t) {
-    await H9Y.config({
-        "paths": {
-            "maindir": "fail/",
-            "patterndir": "./patterns/"
-        },
-        "require": ["de"]
-    }).catch(
-        function (e) {
-            t.equal(e, "fail/hyphenEngine.wasm not found.");
-            t.end();
-        }
-    );
-});
-
 t.test("path to patternfile not resolvable", async function (t) {
     await H9Y.config({
         "paths": {
@@ -40,7 +25,7 @@ t.test("path to patternfile not resolvable", async function (t) {
         "require": ["en"]
     }).catch(
         function (e) {
-            t.equal(e, "./patterns/en.hpb not found.");
+            t.equal(e, "./patterns/en.wasm not found.");
             t.end();
         }
     );
@@ -51,7 +36,7 @@ t.test("run config with two languages", async function (t) {
     t.test("get the hyphenator function for a language", async function (t) {
         await hyphenators.get("en").catch(
             function (e) {
-                t.equal(e.slice(-27), "/patterns/en.hpb not found.");
+                t.equal(e.slice(-28), "/patterns/en.wasm not found.");
             }
         );
         t.end();

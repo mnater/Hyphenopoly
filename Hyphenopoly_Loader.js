@@ -1,12 +1,18 @@
 /**
+<<<<<<< HEAD
  * @license Hyphenopoly_Loader 3.4.0 - client side hyphenation
  * ©2019  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+=======
+ * @license Hyphenopoly_Loader 4.0.0 - client side hyphenation
+ * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
+>>>>>>> noIE
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
+<<<<<<< HEAD
 /* globals Hyphenopoly:readonly */
 
 /**
@@ -18,21 +24,26 @@
  * @param {Object} o shorthand for object
  */
 (function H9YL(w, d, H, o) {
+=======
+((w, d, H, o) => {
+>>>>>>> noIE
     "use strict";
 
     const store = sessionStorage;
-    const wa = w.WebAssembly;
-    const lcFallbacks = new Map();
+    const storeID = "Hyphenopoly_Loader";
     const lcRequire = new Map();
 
     /**
      * Create Object without standard Object-prototype
      * @returns {Object} empty object
      */
-    function empty() {
-        return o.create(null);
-    }
+    const empty = () => o.create(null);
 
+    const shortcuts = {
+        "ac": "appendChild",
+        "ce": "createElement",
+        "ct": "createTextNode"
+    };
 
     /**
      * Shorthand for Object.keys(obj).forEach(function () {})
@@ -40,56 +51,48 @@
      * @param {function} fn the function to execute
      * @returns {undefined}
      */
-    function eachKey(obj, fn) {
-        o.keys(obj).forEach(fn);
-    }
+    const eachKey = (obj, fn) => o.keys(obj).forEach(fn);
 
     /**
      * Set H.cf (Hyphenopoly.clientFeatures) either by reading out previously
      * computed settings from sessionStorage or creating an template object.
      * This is in an iife to keep complexity low.
      */
-    (function configFeat() {
-        if (H.cacheFeatureTests && store.getItem("Hyphenopoly_Loader")) {
-            H.cf = JSON.parse(store.getItem("Hyphenopoly_Loader"));
+    (() => {
+        if (H.cacheFeatureTests && store.getItem(storeID)) {
+            H.cf = JSON.parse(store.getItem(storeID));
         } else {
             H.cf = {
                 "langs": empty(),
-                "polyfill": false,
-                "wasm": null
+                "pf": false
             };
         }
-    }());
+    })();
 
     /**
-     * Set H.paths defaults or overwrite with user settings.
-     * This is in an iife to keep complexity low.
+     * Set H.paths and some H.setup fields to defaults or
+     * overwrite with user settings.
+     * These are iifes to keep complexity low.
      */
-    (function configPaths() {
-        const maindir = (d.currentScript)
-            ? d.currentScript.src.replace(/Hyphenopoly_Loader.js/i, "")
-            : "../";
+    (() => {
+        const maindir = d.currentScript.src.replace(/Hyphenopoly_Loader.js/i, "");
         const patterndir = maindir + "patterns/";
         if (H.paths) {
             H.paths.maindir = H.paths.maindir || maindir;
             H.paths.patterndir = H.paths.patterndir || patterndir;
         } else {
-            H.paths = o.create({
-                "maindir": maindir,
-                "patterndir": patterndir
-            });
+            H.paths = {
+                maindir,
+                patterndir
+            };
         }
-    }());
+    })();
 
-    /**
-     * Set some H.setup fields to defaults or overwrite with user settings.
-     * This is in an iife to keep complexity low.
-     */
-    (function configSetup() {
+    (() => {
         if (H.setup) {
+            H.setup.hide = H.setup.hide || "all";
             H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
             H.setup.timeout = H.setup.timeout || 1000;
-            H.setup.hide = H.setup.hide || "all";
         } else {
             H.setup = {
                 "hide": "all",
@@ -97,74 +100,35 @@
                 "timeout": 1000
             };
         }
-    }());
-
-    /**
-     * Copy required languages to local lcRequire and
-     * eventually fallbacks to local lcFallbacks.
-     * This is in an iife to keep complexity low.
-     */
-    (function configRequire() {
-        eachKey(H.require, function copyRequire(k) {
-            // eslint-disable-next-line security/detect-object-injection
-            lcRequire.set(k.toLowerCase(), H.require[k]);
-        });
-        if (H.fallbacks) {
-            eachKey(H.fallbacks, function copyFallbacks(k) {
-                lcFallbacks.set(
-                    k.toLowerCase(),
-                    // eslint-disable-next-line security/detect-object-injection
-                    H.fallbacks[k].toLowerCase()
-                );
-            });
-        }
-    }());
-
-    /**
-     * Define function H.toggle.
-     * This function hides or unhides (depending of the parameter state)
-     * the whole document (H.setup.hide == "all") or
-     * each selected element (H.setup.hide == "element") or
-     * text of each selected element (H.setup.hide == "text")
-     * @param {string} state State: either on (visible) or off (hidden)
-     */
-    H.toggle = function toggle(state) {
-        if (state === "on") {
-            const stylesNode = d.getElementById("H9Y_Styles");
-            if (stylesNode) {
-                stylesNode.parentNode.removeChild(stylesNode);
-            }
-        } else {
-            const vis = " {visibility: hidden !important}\n";
-            const sc = d.createElement("style");
-            let myStyle = "";
-            sc.id = "H9Y_Styles";
+        // Change mode string to mode int
+        H.setup.hide = (() => {
             switch (H.setup.hide) {
             case "all":
-                myStyle = "html" + vis;
-                break;
+                return 1;
             case "element":
-                eachKey(H.setup.selectors, function eachSelector(sel) {
-                    myStyle += sel + vis;
-                });
-                break;
+                return 2;
             case "text":
+<<<<<<< HEAD
                 eachKey(H.setup.selectors, function eachSelector(sel) {
                     myStyle += sel + " {color: transparent !important}\n";
                 });
                 break;
             // No Default
+=======
+                return 3;
+            default:
+                return 0;
+>>>>>>> noIE
             }
-            sc.appendChild(d.createTextNode(myStyle));
-            d.head.appendChild(sc);
-        }
-    };
+        })();
+    })();
 
     /**
-     * Setup basic event system. Some events are defined but the definition of
-     * what happens when they are triggered is deferred to Hyphenopoly.js
+     * Copy required languages to local lcRequire (lowercaseRequire) and
+     * eventually fallbacks to local lcFallbacks (lowercaseFallbacks).
      * This is in an iife to keep complexity low.
      */
+<<<<<<< HEAD
     (function setupEvents() {
         // Events known to the system
         const definedEvents = new Map();
@@ -365,35 +329,52 @@
         }
         return false;
     }
+=======
+    (() => {
+        eachKey(H.require, (k) => {
+            /* eslint-disable security/detect-object-injection */
+            const fn = (H.fallbacks && H.fallbacks[k])
+                ? H.fallbacks[k]
+                : k;
+            lcRequire.set(k.toLowerCase(), new Map(
+                [["fn", fn], ["wo", H.require[k]]]
+            ));
+            /* eslint-enable security/detect-object-injection */
+        });
+    })();
+>>>>>>> noIE
 
     /**
-     * Load script by adding <script>-tag
-     * @param {string} path Where the script is stored
-     * @param {string} filename Filename of the script
-     * @returns {undefined}
+     * Create deferred Promise
+     *
+     * Kudos to http://lea.verou.me/2016/12/resolve-promises-externally-with-
+     * this-one-weird-trick/
+     * @return {promise}
      */
-    function loadScript(path, filename) {
-        const script = d.createElement("script");
-        script.src = path + filename;
-        if (filename === "hyphenEngine.asm.js") {
-            script.addEventListener("load", function listener() {
-                H.events.dispatch("engineLoaded", {"msg": "asm"});
-            });
-        }
-        d.head.appendChild(script);
-    }
+    H.defProm = () => {
+        let res = null;
+        let rej = null;
+        const promise = new Promise((resolve, reject) => {
+            res = resolve;
+            rej = reject;
+        });
+        promise.resolve = res;
+        promise.reject = rej;
 
-    const loadedBins = new Map();
+        return promise;
+    };
 
     /**
-     * Load binary files either with fetch (on new browsers that support wasm)
-     * or with xmlHttpRequest
-     * @param {string} path Where the script is stored
-     * @param {string} fne Filename of the script with extension
-     * @param {string} name Name of the ressource
-     * @param {Object} msg Message
-     * @returns {undefined}
+     * Define function H.toggle.
+     * This function hides (state = 0) or unhides (state = 1)
+     * the whole document (mode == 1) or
+     * each selected element (mode == 2) or
+     * text of each selected element (mode == 3) or
+     * nothing (mode == 0)
+     * @param {integer} state - State
+     * @param {integer} mode  - Mode
      */
+<<<<<<< HEAD
     function loadBinary(path, fne, name, msg) {
         /**
          * Get bin file using fetch
@@ -429,14 +410,30 @@
                                 );
                             });
                         }
+=======
+    H.hiding = (state, mode) => {
+        const sid = "H9Y_Styles";
+        if (state === 1) {
+            const stylesNode = d.getElementById(sid);
+            if (stylesNode) {
+                stylesNode.parentNode.removeChild(stylesNode);
+            }
+        } else {
+            const vis = " {visibility: hidden !important}\n";
+            const sc = d[shortcuts.ce]("style");
+            let myStyle = "";
+            sc.id = sid;
+            if (mode === 1) {
+                myStyle = "html" + vis;
+            } else {
+                eachKey(H.setup.selectors, (sel) => {
+                    if (mode === 2) {
+                        myStyle += sel + vis;
+>>>>>>> noIE
                     } else {
-                        H.events.dispatch("loadError", {
-                            "file": f,
-                            "msg": m,
-                            "name": n,
-                            "path": p
-                        });
+                        myStyle += sel + " {color: transparent !important}\n";
                     }
+<<<<<<< HEAD
                 }
             );
         }
@@ -483,45 +480,24 @@
                 fetchBinary(path, fne, name, msg);
             } else {
                 requestBinary(path, fne, name, msg);
+=======
+                });
+>>>>>>> noIE
             }
-        } else if (name !== "hyphenEngine") {
-            loadedBins.get(fne).push(msg);
+            sc[shortcuts.ac](d[shortcuts.ct](myStyle));
+            d.head[shortcuts.ac](sc);
         }
-    }
+    };
 
-    /**
-     * Pre-Allocate memory for (w)asm
-     * Default is 32 wasm Pages (). For languages with larger .hpb
-     * files a higher value is needed.
-     * Get the value from baseData.heapSize in Hyphenopoly.js
-     * @param {string} lang Language
-     * @returns {undefined}
-     */
-    function allocateMemory(lang) {
-        const specVal = new Map(
-            [["de", 54], ["hu", 205], ["nb-no", 91], ["nl", 41]]
-        );
-        const wasmPages = specVal.get(lang) || 32;
-        H.specMems = H.specMems || new Map();
-        if (H.cf.wasm) {
-            H.specMems.set(lang, new wa.Memory({
-                "initial": wasmPages,
-                "maximum": 256
-            }));
-        } else {
-            /* eslint-disable no-bitwise */
-            const asmPages = (2 << Math.floor(
-                Math.log(wasmPages) * Math.LOG2E
-            )) << 16;
-            /* eslint-enable no-bitwise */
-            H.specMems.set(lang, new ArrayBuffer(asmPages));
-        }
-    }
+    H.res = new Map();
+    H.res.set("he", new Map());
 
-    (function testClientFeatures() {
-        const tester = (function tester() {
+    (() => {
+        const tester = (() => {
             let fakeBody = null;
+            const ha = "hyphens:auto";
             /* eslint-disable array-element-newline */
+<<<<<<< HEAD
             const css = [
                 "visibility:hidden",
                 "-moz-hyphens:auto",
@@ -570,22 +546,61 @@
                 }
                 return null;
             }
+=======
+            const css = `visibility:hidden;-moz-${ha};-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
+            /* eslint-enable array-element-newline */
 
-            /**
-             * Remove fakeBody
-             * @returns {undefined}
-             */
-            function clear() {
-                if (fakeBody) {
-                    fakeBody.parentNode.removeChild(fakeBody);
-                }
-            }
             return {
-                "append": append,
-                "clear": clear,
-                "create": create
+>>>>>>> noIE
+
+                /**
+                 * Append fakeBody with tests to target (document)
+                 * @param {Object} target Where to append fakeBody
+                 * @returns {Object|null} The body element or null, if no tests
+                 */
+                "ap": (target) => {
+                    if (fakeBody) {
+                        target[shortcuts.ac](fakeBody);
+                        return fakeBody;
+                    }
+                    return null;
+                },
+
+                /**
+                 * Remove fakeBody
+                 * @returns {undefined}
+                 */
+                "cl": () => {
+                    if (fakeBody) {
+                        fakeBody.parentNode.removeChild(fakeBody);
+                    }
+                },
+
+                /**
+                 * Create and append div with CSS-hyphenated word
+                 * @param {string} lang Language
+                 * @returns {undefined}
+                 */
+                "cr": (lang) => {
+                    /* eslint-disable security/detect-object-injection */
+                    if (H.cf.langs[lang]) {
+                        return;
+                    }
+                    /* eslint-enable security/detect-object-injection */
+                    fakeBody = fakeBody || d[shortcuts.ce]("body");
+                    const testDiv = d[shortcuts.ce]("div");
+                    testDiv.lang = lang;
+                    testDiv.style.cssText = css;
+                    testDiv[shortcuts.ac](
+                        d[shortcuts.ct](
+                            lcRequire.get(lang).get("wo").
+                                toLowerCase()
+                        )
+                    );
+                    fakeBody[shortcuts.ac](testDiv);
+                }
             };
-        }());
+        })();
 
         /**
          * Checks if hyphens (ev.prefixed) is set to auto for the element.
@@ -593,26 +608,21 @@
          * @returns {Boolean} result of the check
          */
         function checkCSSHyphensSupport(elm) {
-            return (
-                elm.style.hyphens === "auto" ||
-                elm.style.webkitHyphens === "auto" ||
-                elm.style.msHyphens === "auto" ||
-                elm.style["-moz-hyphens"] === "auto"
-            );
+            const a = "auto";
+            const h = elm.style.hyphens ||
+                elm.style.webkitHyphens ||
+                elm.style.msHyphens ||
+                elm.style["-moz-hyphens"];
+            return (h === a);
         }
 
         /**
-         * Expose the hyphenate-function of a specific language to
-         * Hyphenopoly.hyphenators.<language>
+         * Load hyphenEngines
          *
-         * Hyphenopoly.hyphenators.<language> is a Promise that fullfills
-         * to hyphenate(entity, sel) as soon as the ressources are loaded
-         * and the engine is ready.
-         * If Promises aren't supported (e.g. IE11) a error message is produced.
-         *
-         * @param {string} lang - the language
+         * @param {string} lang The language
          * @returns {undefined}
          */
+<<<<<<< HEAD
         function exposeHyphenateFunction(lang) {
             /* eslint-disable security/detect-object-injection */
             H.hyphenators = H.hyphenators || empty();
@@ -649,137 +659,121 @@
                     });
                 } else {
                     H.hyphenators[lang] = {
+=======
+        function loadhyphenEngine(lang) {
+            const filename = lcRequire.get(lang).get("fn") + ".wasm";
+            H.cf.pf = true;
+            // eslint-disable-next-line security/detect-object-injection
+            H.cf.langs[lang] = "H9Y";
+            H.res.get("he").set(
+                lang,
+                w.fetch(H.paths.patterndir + filename, {"credentials": "include"})
+            );
+        }
+>>>>>>> noIE
 
-                        /**
-                         * Fires an error message, if then is called
-                         * @returns {undefined}
-                         */
-                        "then": function () {
-                            H.events.dispatch(
-                                "error",
-                                {"msg": "Promises not supported in this engine. Use a polyfill."}
-                            );
-                        }
-                    };
-                }
+        /**
+         * Tear Down Hyphenopoly
+         */
+        function tearDown() {
+            if (H.handleEvent && H.handleEvent.tearDown) {
+                H.handleEvent.tearDown();
             }
-            /* eslint-enable security/detect-object-injection */
+            w.Hyphenopoly = null;
         }
 
         /**
-         * Load .hpb files
-         * @param {string} lang The language
-         * @returns {undefined}
+         * Polyfill event
          */
-        function loadPattern(lang) {
-            let filename = lang + ".hpb";
-            let langFallback = lang;
-            H.cf.polyfill = true;
-            // eslint-disable-next-line security/detect-object-injection
-            H.cf.langs[lang] = "H9Y";
-            if (lcFallbacks && lcFallbacks.has(lang)) {
-                langFallback = lcFallbacks.get(lang);
-                filename = langFallback + ".hpb";
+        function polyfill() {
+            if (H.handleEvent && H.handleEvent.polyfill) {
+                H.handleEvent.polyfill();
             }
-            H.bins = H.bins || new Map();
-            loadBinary(H.paths.patterndir, filename, langFallback, lang);
         }
 
-        if (H.cf.wasm === null) {
-            H.cf.wasm = runWasmTest();
-        }
-        lcRequire.forEach(function eachReq(value, lang) {
-            if (value === "FORCEHYPHENOPOLY" ||
+        lcRequire.forEach((value, lang) => {
+            if (value.get("wo") === "FORCEHYPHENOPOLY" ||
                 // eslint-disable-next-line security/detect-object-injection
                 (H.cf.langs[lang] && H.cf.langs[lang] === "H9Y")
             ) {
-                loadPattern(lang);
+                loadhyphenEngine(lang);
             } else {
-                tester.create(lang);
+                tester.cr(lang);
             }
         });
 
-        const testContainer = tester.append(d.documentElement);
+        const testContainer = tester.ap(d.documentElement);
         if (testContainer !== null) {
             const nl = testContainer.querySelectorAll("div");
+<<<<<<< HEAD
             Array.prototype.forEach.call(nl, function eachNode(n) {
                 if (checkCSSHyphensSupport(n) && n.offsetHeight > 12) {
                     H.cf.langs[n.lang] = "CSS";
                 } else {
                     loadPattern(n.lang);
+=======
+            nl.forEach((n) => {
+                if (checkCSSHyphensSupport(n) && n.offsetHeight > 12) {
+                    H.cf.langs[n.lang] = "CSS";
+                } else {
+                    loadhyphenEngine(n.lang);
+>>>>>>> noIE
                 }
             });
-            tester.clear();
+            tester.cl();
         }
-        if (H.cf.polyfill) {
-            loadScript(H.paths.maindir, "Hyphenopoly.js");
-            if (H.cf.wasm) {
-                loadBinary(
-                    H.paths.maindir,
-                    "hyphenEngine.wasm",
-                    "hyphenEngine",
-                    "wasm"
-                );
-            } else {
-                loadScript(H.paths.maindir, "hyphenEngine.asm.js");
+        if (H.cf.pf) {
+            H.res.set("DOM", new Promise((res) => {
+                if (d.readyState === "loading") {
+                    d.addEventListener(
+                        "DOMContentLoaded",
+                        res,
+                        {
+                            "once": true,
+                            "passive": true
+                        }
+                    );
+                } else {
+                    res();
+                }
+            }));
+            if (H.setup.hide === 1) {
+                H.hiding(0, 1);
             }
-            eachKey(H.cf.langs, function prepareEach(lang) {
+            if (H.setup.hide !== 0) {
+                H.setup.timeOutHandler = w.setTimeout(() => {
+                    H.hiding(1, null);
+                    // eslint-disable-next-line no-console
+                    console.error(`Hyphenopoly timed out after ${H.setup.timeout}ms`);
+                }, H.setup.timeout);
+            }
+            H.res.get("DOM").then(() => {
+                if (H.setup.hide > 1) {
+                    H.hiding(0, H.setup.hide);
+                }
+            });
+            // Load main script
+            const script = d[shortcuts.ce]("script");
+            script.src = H.paths.maindir + "Hyphenopoly.js";
+            d.head[shortcuts.ac](script);
+
+            eachKey(H.cf.langs, (lang) => {
                 /* eslint-disable security/detect-object-injection */
                 if (H.cf.langs[lang] === "H9Y") {
-                    allocateMemory(lang);
-                    exposeHyphenateFunction(lang);
+                    H.hyphenators = H.hyphenators || empty();
+                    if (!H.hyphenators[lang]) {
+                        H.hyphenators[lang] = H.defProm();
+                    }
                 }
                 /* eslint-enable security/detect-object-injection */
             });
-        }
-    }());
 
-    /**
-     * Hides the specified elements and starts the process by
-     * dispatching a "contentLoaded"-event in Hyphenopoly
-     * @returns {undefined}
-     */
-    function handleDCL() {
-        if (H.setup.hide.match(/^(?:element|text)$/)) {
-            H.toggle("off");
-        }
-        H.events.dispatch(
-            "contentLoaded",
-            {"msg": ["contentLoaded"]}
-        );
-    }
-
-    if (H.cf.polyfill) {
-        if (H.setup.hide === "all") {
-            H.toggle("off");
-        }
-        if (H.setup.hide !== "none") {
-            H.setup.timeOutHandler = w.setTimeout(function timedOut() {
-                H.toggle("on");
-                H.events.dispatch("timeout", {"delay": H.setup.timeout});
-            }, H.setup.timeout);
-        }
-        if (d.readyState === "loading") {
-            d.addEventListener(
-                "DOMContentLoaded",
-                handleDCL,
-                {
-                    "once": true,
-                    "passive": true
-                }
-            );
+            polyfill();
         } else {
-            handleDCL();
+            tearDown();
         }
-    } else {
-        H.events.dispatch("tearDown", {});
-        w.Hyphenopoly = null;
-    }
-
-    if (H.cacheFeatureTests) {
-        store.setItem(
-            "Hyphenopoly_Loader",
-            JSON.stringify(H.cf)
-        );
-    }
-}(window, document, Hyphenopoly, Object));
+        if (H.cacheFeatureTests) {
+            store.setItem(storeID, JSON.stringify(H.cf));
+        }
+    })();
+})(window, document, Hyphenopoly, Object);

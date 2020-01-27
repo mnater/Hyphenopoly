@@ -60,7 +60,7 @@ t.test("try to overwrite noncancellable event", async function (t) {
              * @param {Object} e Event
              * @returns {undefined}
              */
-            "hpbLoaded": function (e) {
+            "engineLoaded": function (e) {
                 e.preventDefault();
             }
         },

@@ -17,7 +17,7 @@
                 }
             },
             handleEvent: {
-                engineReady: function (e) {
+                polyfill: function (e) {
                     /*async function hyphenate_de(text) {
                         document.getElementById("test2").innerText = (await Hyphenopoly.hyphenators.fur)(text);
                         assert();
@@ -87,6 +87,7 @@
             .test {
                 background-color: #D8E2F9;
                 hyphens: auto;
+                -webkit-hyphens: auto;
             }
             .ref {
                 background-color: #FEEFC0;

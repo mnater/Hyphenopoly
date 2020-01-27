@@ -56,6 +56,7 @@ const Hyphenopoly = {
 ````
 
 ### cacheFeatureTests
+<<<<<<< HEAD
 On the first run Hyphenopoly_Loader.js does the following feature tests:
 
 * Test if the client supports **WASM**
@@ -64,6 +65,14 @@ On the first run Hyphenopoly_Loader.js does the following feature tests:
 The result of these tests is stored in `Hyphenopoly.testResults`. Because these tests take 
 some time and may cause a reflow of the document, Hyphenopoly_Loader.js can store their
 result and retrieve these stored results for other pages in the same browsing session.
+=======
+On the first run Hyphenopoly_Loader.js feature tests the client for support of **CSS-hyphenation**
+for each language in `Hyphenopoly.require`.
+
+The result of these tests is stored in `Hyphenopoly.cf` (cf = client features). Because these tests take 
+some time and may cause a reflow of the document, Hyphenopoly_Loader.js can store their
+results and retrieve these stored results for other pages in the same browsing session.
+>>>>>>> noIE
 
 The test results are stored in sessionStorage to assure that the tests are rerun when
 the browser occasionally gets updated.
@@ -98,8 +107,11 @@ setup: {
 ````
 See [CSS-Selectors on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) for a complete reference on CSS-Selectors.
 
+<<<<<<< HEAD
 Note: There was a field called `classnames` in older versions of Hyphenopoly. `classnames` had been deprecated since v2.6.0 and are completly removed in v3.0.0 in favor of `selectors`.
 
+=======
+>>>>>>> noIE
 #### Optional fields in setup
 See [Setup](./Setup.md)
 
@@ -136,7 +148,11 @@ const Hyphenopoly = {
 If you `console.dir(Hyphenopoly)` you'll see lots of other data that is internally used by Hyphenopoly_Loader.js and Hyphenopoly.js but isn't meant to be changed by the user.
 
 ## Reclaim memory
+<<<<<<< HEAD
 Hyphenopoly is quite hungry regarding to memory usage: for each language 2MB of wasm/asm memory are allocated. If you're done with Hyphenopoly you can set `window.Hyphenopoly = null` and leave it to the garbage collector to free the memory:
+=======
+Hyphenopoly is quite hungry regarding to memory usage: for each language ~2MB of wasm memory are allocated. If you're done with Hyphenopoly you can set `window.Hyphenopoly = null` and leave it to the garbage collector to free the memory:
+>>>>>>> noIE
 
 ````javascript
 handleEvent: {

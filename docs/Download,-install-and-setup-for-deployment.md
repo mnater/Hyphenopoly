@@ -3,15 +3,23 @@
 ## General Notes
 
 ### Minifying
+<<<<<<< HEAD
 While the .wasm and .hpb files are already compact by design, the .js files are not minified. I highly recommend to use one of the es6-savy JavaScript minifier tools.
+=======
+While the .wasm files are already compact by design, the .js files are not minified. I highly recommend to use one of the es6-savy JavaScript minifier tools.
+>>>>>>> noIE
 
 If you [installed Hyphenopoly with npm](#using-npmjs) run `npm run minify` to create a directory called `min` that contains a full set of minified files (and the test suite) minified with `terser`.
 
 ### Compression
+<<<<<<< HEAD
 All files have good compression rates when using gzip, deflate and the like. You may need to configure your server to be able to compress `.hpb`-files though!
 
 ### es6
 Hyphenopoly_Loader.js and Hyphenopoly.js use some basic es6-syntax (`let`, `const`, etc. not the fancy stuff). If for some reason you need es5-syntax use [babel](http://babeljs.io) to transpile the scripts.
+=======
+All files have good compression rates when using gzip, deflate and the like. You may need to configure your server to be able to compress `.wasm`-files though!
+>>>>>>> noIE
 
 ### node
 Hyphenopoly_Loader.js and Hyphenopoly.js is designed for use in browsers. For usage in node.js see: [node module](./Node-Module.md)
@@ -25,8 +33,11 @@ Let me now, if you have a use case for hyphenation in node.js
 2. Unpack the package and copy the following files and folders to your server:
     * `Hyphenopoly_Loader.js`
     * `Hyphenopoly.js`
+<<<<<<< HEAD
     * `hyphenEngine.asm.js`
     * `hyphenEnginge.wasm`
+=======
+>>>>>>> noIE
     * `patterns/`
 
     (Of course you can delete the patterns for the language you won't need.)

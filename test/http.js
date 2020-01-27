@@ -19,6 +19,7 @@ t.test("use https loader", async function (t) {
     const deHyphenator = await H9Y.config({
         "loader": "https",
         "paths": {
+<<<<<<< HEAD
             "maindir": "https://unpkg.com/hyphenopoly@3.1.1/",
             "patterndir": "https://unpkg.com/hyphenopoly@3.1.1/patterns/"
         },
@@ -46,6 +47,10 @@ t.test("use http loader", async function (t) {
         "paths": {
             "maindir": "http://www.nonsequence.ch/h9y/",
             "patterndir": "http://www.nonsequence.ch/h9y/patterns/"
+=======
+            "maindir": "https://unpkg.com/hyphenopoly@4.4.0/",
+            "patterndir": "https://unpkg.com/hyphenopoly@4.4.0/patterns/"
+>>>>>>> noIE
         },
         "require": ["de"]
     });

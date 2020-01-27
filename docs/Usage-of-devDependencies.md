@@ -51,6 +51,11 @@ With the tools mentioned above installed you can run the following scripts:
 * `npm prepare` – recreates a minified subset of the files in the `min`-directory.
 * `npm test` – runs the tap tests for Hyphenopoly.module.js
 * `npm run testsuite` – opens a browser and runs the test suite
+<<<<<<< HEAD
 * `npm run lint` – runs the linter on all .js files
 * `npm run compilewasm` - compiles `hyphenEngine.asm.js` to `hyphenEngine.wasm`
+=======
+* `npm run lint` – runs the linter on all .js and .md files
+* `npm run createAllWasm` - compiles language-specific hyphenEngines from AssemblyScript and textPatterns (not included) to './lang/' and copies the '.wasm'-files to './patterns/'
+>>>>>>> noIE
 * `npm run doc` – build and open documentation page locally
