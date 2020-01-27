@@ -1,12 +1,24 @@
+/* eslint-disable no-implicit-globals */
+
+/**
+ * Convert a node buffer to a typed array
+ * @param {buffer} buf - A Node buffer object
+ * @return {TypedArray.buffer}
+ */
 function nodeBuffer2typedArray(buf) {
-    //https://github.com/jhiesey/to-arraybuffer/blob/master/index.js
-    // If the buffer isn't a subarray, return the underlying ArrayBuffer
+    "use strict";
+
+    /*
+     * https://github.com/jhiesey/to-arraybuffer/blob/master/index.js
+     * If the buffer isn't a subarray, return the underlying ArrayBuffer
+     */
     if (buf.byteOffset === 0 && buf.byteLength === buf.buffer.byteLength) {
         return buf.buffer;
-    } else if (typeof buf.buffer.slice === 'function') {
+    } else if (typeof buf.buffer.slice === "function") {
         // Otherwise we need to get a proper copy
         return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
     }
+    return null;
 }
 
 /**
@@ -72,6 +84,7 @@ function nodeBuffer2typedArray(buf) {
  * @returns {Object} baseData-object
  */
 function calculateBaseData(hpbBuf) {
+    "use strict";
     hpbBuf = nodeBuffer2typedArray(hpbBuf);
     const hpbMetaData = new Uint32Array(hpbBuf).subarray(0, 8);
     const valueStoreLength = hpbMetaData[7];

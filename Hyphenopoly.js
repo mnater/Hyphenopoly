@@ -348,18 +348,6 @@
         }
 
         /**
-         * Set mainLanguage
-         * @returns {undefined}
-         */
-        function autoSetMainLanguage() {
-            const el = w.document.getElementsByTagName("html")[0];
-            mainLanguage = getLang(el, false);
-            if (!mainLanguage && C.defaultLanguage !== "") {
-                mainLanguage = C.defaultLanguage;
-            }
-        }
-
-        /**
          * Check if node is matched by a given selector
          * @param {Node} n The Node to check
          * @param {String} sel Selector(s)
@@ -864,15 +852,9 @@
             });
         }
 
-        /**
-         * Polyfill for TextDecoder
-         */
         const decode = (() => {
-            if (window.TextDecoder) {
-                const utf16ledecoder = new TextDecoder("utf-16le");
-                return ((ui16) => utf16ledecoder.decode(ui16));
-            }
-            return ((ui16) => String.fromCharCode.apply(null, ui16));
+            const utf16ledecoder = new TextDecoder("utf-16le");
+            return ((ui16) => utf16ledecoder.decode(ui16));
         })();
 
         /**
@@ -882,24 +864,11 @@
          * @returns {function} hyphenateFunction with closured environment
          */
         function encloseHyphenateFunction(baseData, hyphenateFunc) {
-            /* eslint-disable no-bitwise */
             const heapBuffer = baseData.wasmMem.buffer;
-            const wordStore = (new Uint16Array(heapBuffer)).subarray(
-                baseData.wo >> 1,
-                (baseData.wo >> 1) + 64
-            );
-            const hydWrdStore = (new Uint16Array(heapBuffer)).subarray(
-                baseData.hw >> 1,
-                (baseData.hw >> 1) + 128
-            );
-            /* eslint-enable no-bitwise */
+            const wordStore = new Uint16Array(heapBuffer, baseData.wo, 64);
+            const hydWrdStore = new Uint16Array(heapBuffer, baseData.hw, 128);
             wordStore[0] = 95;
-            return ((
-                word,
-                hyphencc,
-                leftmin,
-                rightmin
-            ) => {
+            return ((word, hyphencc, leftmin, rightmin) => {
                 let i = 0;
                 let cc = 0;
                 do {
@@ -924,37 +893,48 @@
          * @param {string} lang The language
          * @returns {undefined}
          */
-        function instantiateWasmEngine(lang) {
-            const heProm = H.res.get("he").get(lang);
+        function instantiateWasmEngine(heProm, lang) {
+            // eslint-disable-next-line require-jsdoc
+            function handleWasm(res) {
+                const exp = res.instance.exports;
+                const alphalen = exp.conv();
+                const baseData = {
+                    "hw": exp.hwo,
+                    "lm": exp.lmi,
+                    "rm": exp.rmi,
+                    "wasmMem": exp.mem,
+                    "wo": exp.uwo
+                };
+                prepareLanguagesObj(
+                    lang,
+                    encloseHyphenateFunction(
+                        baseData,
+                        exp.hyphenate
+                    ),
+                    decode(
+                        new Uint16Array(
+                            exp.mem.buffer,
+                            770,
+                            alphalen
+                        )
+                    ),
+                    baseData.lm,
+                    baseData.rm
+                );
+            }
             heProm.then((response) => {
                 if (response.ok) {
                     const wa = window.WebAssembly;
-                    response.arrayBuffer().then((ab) => {
-                        wa.instantiate(ab).then((res) => {
-                            const exp = res.instance.exports;
-                            const alphalen = exp.conv();
-                            const baseData = {
-                                "hw": exp.hwo,
-                                "lm": exp.lmi,
-                                "rm": exp.rmi,
-                                "wasmMem": exp.mem,
-                                "wo": exp.uwo
-                            };
-                            prepareLanguagesObj(
-                                lang,
-                                encloseHyphenateFunction(
-                                    baseData,
-                                    exp.hyphenate
-                                ),
-                                decode(
-                                    (new Uint16Array(exp.mem.buffer)).
-                                        subarray(385, 384 + alphalen)
-                                ),
-                                baseData.lm,
-                                baseData.rm
-                            );
+                    if (
+                        wa.instantiateStreaming &&
+                        (response.headers.get("Content-Type") === "application/wasm")
+                    ) {
+                        wa.instantiateStreaming(response).then(handleWasm);
+                    } else {
+                        response.arrayBuffer().then((ab) => {
+                            window.WebAssembly.instantiate(ab).then(handleWasm);
                         });
-                    });
+                    }
                 } else {
                     H.res.get("elements").then((elements) => {
                         elements.rem(lang);
@@ -976,7 +956,10 @@
         }
 
         H.res.get("DOM").then(() => {
-            autoSetMainLanguage();
+            mainLanguage = getLang(w.document.documentElement, false);
+            if (!mainLanguage && C.defaultLanguage !== "") {
+                mainLanguage = C.defaultLanguage;
+            }
             collectElements();
             H.res.get("elements").then((elements) => {
                 elements.each((lang, values) => {
@@ -990,8 +973,8 @@
             });
         });
 
-        H.res.get("he").forEach((_ignore, lang) => {
-            instantiateWasmEngine(lang);
+        H.res.get("he").forEach((heProm, lang) => {
+            instantiateWasmEngine(heProm, lang);
         });
     })(Hyphenopoly);
 })(window);
