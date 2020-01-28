@@ -780,8 +780,6 @@
                 }
                 /* eslint-enable security/detect-object-injection */
                 lo.genRegExps = new Map();
-                lo.leftmin = patternLeftmin;
-                lo.rightmin = patternRightmin;
                 lo.hyphenateFunction = hyphenateFunction;
                 C.selectors.forEach((sel) => {
                     /* eslint-disable security/detect-object-injection */
@@ -804,25 +802,25 @@
                     /* eslint-disable security/detect-object-injection */
                     if (selSettings.leftminPerLang[lang]) {
                         selSettings.leftminPerLang[lang] = Math.max(
-                            lo.leftmin,
+                            patternLeftmin,
                             selSettings.leftmin,
                             selSettings.leftminPerLang[lang]
                         );
                     } else {
                         selSettings.leftminPerLang[lang] = Math.max(
-                            lo.leftmin,
+                            patternLeftmin,
                             selSettings.leftmin
                         );
                     }
                     if (selSettings.rightminPerLang[lang]) {
                         selSettings.rightminPerLang[lang] = Math.max(
-                            lo.rightmin,
+                            patternRightmin,
                             selSettings.rightmin,
                             selSettings.rightminPerLang[lang]
                         );
                     } else {
                         selSettings.rightminPerLang[lang] = Math.max(
-                            lo.rightmin,
+                            patternRightmin,
                             selSettings.rightmin
                         );
                     }
