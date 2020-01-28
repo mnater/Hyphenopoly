@@ -258,30 +258,16 @@ function prepareLanguagesObj(
         lo.genRegExp = new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${H.c.minWordLength},}`, "gi");
         /* eslint-enable security/detect-non-literal-regexp */
         (function setLRmin() {
-            if (H.c.leftminPerLang[lang]) {
-                H.c.leftminPerLang[lang] = Math.max(
-                    patternLeftmin,
-                    H.c.leftmin,
-                    H.c.leftminPerLang[lang]
-                );
-            } else {
-                H.c.leftminPerLang[lang] = Math.max(
-                    patternLeftmin,
-                    H.c.leftmin
-                );
-            }
-            if (H.c.rightminPerLang[lang]) {
-                H.c.rightminPerLang[lang] = Math.max(
-                    patternRightmin,
-                    H.c.rightmin,
-                    H.c.rightminPerLang[lang]
-                );
-            } else {
-                H.c.rightminPerLang[lang] = Math.max(
-                    patternRightmin,
-                    H.c.rightmin
-                );
-            }
+            H.c.leftminPerLang[lang] = Math.max(
+                patternLeftmin,
+                H.c.leftmin,
+                Number(H.c.leftminPerLang[lang]) || 0
+            );
+            H.c.rightminPerLang[lang] = Math.max(
+                patternRightmin,
+                H.c.rightmin,
+                Number(H.c.rightminPerLang[lang]) || 0
+            );
         }());
         /* eslint-enable security/detect-object-injection */
         lo.hyphenateFunction = hyphenateFunction;

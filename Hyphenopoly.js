@@ -800,30 +800,17 @@
                         );
                     }
                     /* eslint-disable security/detect-object-injection */
-                    if (selSettings.leftminPerLang[lang]) {
-                        selSettings.leftminPerLang[lang] = Math.max(
-                            patternLeftmin,
-                            selSettings.leftmin,
-                            selSettings.leftminPerLang[lang]
-                        );
-                    } else {
-                        selSettings.leftminPerLang[lang] = Math.max(
-                            patternLeftmin,
-                            selSettings.leftmin
-                        );
-                    }
-                    if (selSettings.rightminPerLang[lang]) {
-                        selSettings.rightminPerLang[lang] = Math.max(
-                            patternRightmin,
-                            selSettings.rightmin,
-                            selSettings.rightminPerLang[lang]
-                        );
-                    } else {
-                        selSettings.rightminPerLang[lang] = Math.max(
-                            patternRightmin,
-                            selSettings.rightmin
-                        );
-                    }
+                    selSettings.leftminPerLang[lang] = Math.max(
+                        patternLeftmin,
+                        selSettings.leftmin,
+                        Number(selSettings.leftminPerLang[lang]) || 0
+                    );
+
+                    selSettings.rightminPerLang[lang] = Math.max(
+                        patternRightmin,
+                        selSettings.rightmin,
+                        Number(selSettings.rightminPerLang[lang]) || 0
+                    );
                     /* eslint-enable security/detect-object-injection */
 
                     /*
