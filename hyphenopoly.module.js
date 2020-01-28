@@ -21,7 +21,7 @@ const {StringDecoder} = require("string_decoder");
 const decode = (function makeDecoder() {
     const utf16ledecoder = new StringDecoder("utf-16le");
     return function dec(ui16) {
-        return utf16ledecoder.write(Buffer.from(ui16));
+        return utf16ledecoder.write(ui16);
     };
 }());
 
@@ -273,19 +273,11 @@ function prepareLanguagesObj(
  * @returns {function} hyphenateFunction with closured environment
  */
 function encloseHyphenateFunction(baseData, hyphenateFunc) {
-    /* eslint-disable no-bitwise */
     const heapBuffer = baseData.wasmMem.buffer;
-    const wordStore = (new Uint16Array(heapBuffer)).subarray(
-        baseData.wo >> 1,
-        (baseData.wo >> 1) + 64
-    );
-    const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(
-        baseData.hw >> 1,
-        (baseData.hw >> 1) + 128
-    );
+    const wordStore = new Uint16Array(heapBuffer, baseData.wo, 64);
+    const hydWordStore = new Uint16Array(heapBuffer, baseData.hw, 128);
     const defLeftmin = baseData.lm;
     const defRightmin = baseData.rm;
-    /* eslint-enable no-bitwise */
 
     /**
      * The hyphenateFunction that encloses the env above
@@ -313,13 +305,7 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
         wordStore[i] = 95;
         wordStore[i + 1] = 0;
         if (hyphenateFunc(leftmin, rightmin, hyphencc) === 1) {
-            word = String.fromCharCode.apply(
-                null,
-                hyphenatedWordStore.subarray(
-                    1,
-                    hyphenatedWordStore[0] + 1
-                )
-            );
+            word = decode(hydWordStore.subarray(1, hydWordStore[0] + 1));
         }
         return word;
     };
@@ -341,17 +327,14 @@ function instantiateWasmEngine(lang) {
             "wasmMem": exp.mem,
             "wo": exp.uwo
         };
-        exp.conv();
+        const alphalen = exp.conv();
         prepareLanguagesObj(
             lang,
             encloseHyphenateFunction(
                 baseData,
                 exp.hyphenate
             ),
-            decode(
-                (new Uint8Array(exp.mem.buffer)).
-                    subarray(768, 1280)
-            ),
+            decode(new Uint16Array(exp.mem.buffer, 770, alphalen - 1)),
             baseData.lm,
             baseData.rm
         );
