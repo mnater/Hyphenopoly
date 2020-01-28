@@ -36,8 +36,8 @@ paths: {
 ### fallbacks
 
 In some cases a fallback-language need to be defined:
-  * patterns for a given language are not (yet) available but patterns of an other language can be used.
-  * the language on the webpage has a region tag.
+*   patterns for a given language are not (yet) available but patterns of an other language can be used.
+*   the language on the webpage has a region tag.
 
 E.g. you'd like to use `en-gb` patterns for `en-au` and `de` for `de-DE`:
 

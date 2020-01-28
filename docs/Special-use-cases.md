@@ -1,9 +1,9 @@
 # Special use cases and how-to's
 
-1. [Browserify hyphenopoly.module.js](#browserify-hyphenopolymodulejs)
-2. [Webpack](#webpack)
-3. [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
-4. [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
+1.  [Browserify hyphenopoly.module.js](#browserify-hyphenopolymodulejs)
+2.  [Webpack](#webpack)
+3.  [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
+4.  [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
 
 __Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators.md#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.__
 

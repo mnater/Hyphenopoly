@@ -18,16 +18,16 @@ Let me now, if you have a use case for hyphenation in node.js
 ## Download
 
 ### Using GitHub
-1. Go to [https://github.com/mnater/Hyphenopoly/releases/latest](https://github.com/mnater/Hyphenopoly/releases/latest) and download the latest stable version (don't be afraid of the name `Source code`).
-2. Unpack the package and copy the following files and folders to your server:
-    * `Hyphenopoly_Loader.js`
-    * `Hyphenopoly.js`
-    * `patterns/`
+1.  Go to [https://github.com/mnater/Hyphenopoly/releases/latest](https://github.com/mnater/Hyphenopoly/releases/latest) and download the latest stable version (don't be afraid of the name `Source code`).
+2.  Unpack the package and copy the following files and folders to your server:
+    *   `Hyphenopoly_Loader.js`
+    *   `Hyphenopoly.js`
+    *   `patterns/`
 
     (Of course you can delete the patterns for the language you won't need.)
-3. Then follow the instructions on [https://github.com/mnater/Hyphenopoly#usage-browser](https://github.com/mnater/Hyphenopoly#usage-browser)
+3.  Then follow the instructions on [https://github.com/mnater/Hyphenopoly#usage-browser](https://github.com/mnater/Hyphenopoly#usage-browser)
  
 ### Using npm.js
-1. Run `npm i hyphenopoly` in your project folder
-2. Tell Hyphenopoly where to find the files: [paths](./Global-Hyphenopoly-Object.md#paths)
-3. Follow the instructions on [https://github.com/mnater/Hyphenopoly#usage-browser](https://github.com/mnater/Hyphenopoly#usage-browser) (don't forget to adapt the paths)
+1.  Run `npm i hyphenopoly` in your project folder
+2.  Tell Hyphenopoly where to find the files: [paths](./Global-Hyphenopoly-Object.md#paths)
+3.  Follow the instructions on [https://github.com/mnater/Hyphenopoly#usage-browser](https://github.com/mnater/Hyphenopoly#usage-browser) (don't forget to adapt the paths)

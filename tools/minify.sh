@@ -8,6 +8,5 @@ terser Hyphenopoly.js -o min/Hyphenopoly.js --comments -c -m --warn
 wc -c min/Hyphenopoly_Loader.js
 wc -c min/Hyphenopoly.js
 
-cp hyphenEngine.wasm min/hyphenEngine.wasm
 cp -R patterns/ min/patterns
 cp -R testsuite/ min/testsuite

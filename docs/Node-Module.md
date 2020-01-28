@@ -123,16 +123,16 @@ This is useful if the module is transformed to a script used in a webbrowser (e.
 ### other options
 For documentation about the other options see the `Hyphenopoly.js`-documentation:
 
-- [compound](./Setup.md#compound)
-- [exceptions](./Setup.md#exceptions)
-- [hyphen](./Setup.md#hyphen)
-- [leftmin](./Setup.md#leftmin-and-rightmin)
-- [minWordLength](./Setup.md#minwordlength)
-- [mixedCase](./Setup.md#mixedcase)
-- [normalize](./Setup.md#normalize)
-- [orphanControl](./Setup.md#orphancontrol)
-- [paths](./Global-Hyphenopoly-Object.md#paths)
-- [rightmin](./Setup.md#leftmin-and-rightmin)
+-   [compound](./Setup.md#compound)
+-   [exceptions](./Setup.md#exceptions)
+-   [hyphen](./Setup.md#hyphen)
+-   [leftmin](./Setup.md#leftmin-and-rightmin)
+-   [minWordLength](./Setup.md#minwordlength)
+-   [mixedCase](./Setup.md#mixedcase)
+-   [normalize](./Setup.md#normalize)
+-   [orphanControl](./Setup.md#orphancontrol)
+-   [paths](./Global-Hyphenopoly-Object.md#paths)
+-   [rightmin](./Setup.md#leftmin-and-rightmin)
 
 ## Supported languages (since Version 2.8.0)
 A list of supported languages can be programmatically obtained by looking at `Hyphenopoly.supportedLanguages`:
@@ -151,5 +151,3 @@ On my machine with node.js 13.7.0:
 | _hyphenopoly_ | _10ms_        | _0.5ms_                  |
 | [hyphen](https://www.npmjs.com/package/hyphen)        | 18ms          | 72ms                  |
 | [hypher](https://www.npmjs.com/package/hypher)        | 35ms          | 1.2ms                    |
-
-
