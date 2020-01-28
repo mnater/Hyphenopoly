@@ -855,17 +855,15 @@
             wordStore[0] = 95;
             return ((word, hyphencc, leftmin, rightmin) => {
                 let i = 0;
-                let cc = 0;
-                do {
-                    cc = word.charCodeAt(i);
+                let cc = word.charCodeAt(i);
+                while (cc) {
                     i += 1;
                     // eslint-disable-next-line security/detect-object-injection
                     wordStore[i] = cc;
-                } while (cc);
-                /* eslint-disable security/detect-object-injection */
-                wordStore[i] = 95;
-                wordStore[i + 1] = 0;
-                /* eslint-enable security/detect-object-injection */
+                    cc = word.charCodeAt(i);
+                }
+                wordStore[i + 1] = 95;
+                wordStore[i + 2] = 0;
                 if (hyphenateFunc(leftmin, rightmin, hyphencc) === 1) {
                     word = decode(hydWrdStore.subarray(1, hydWrdStore[0] + 1));
                 }
@@ -899,7 +897,7 @@
                         baseData,
                         exp.hyphenate
                     ),
-                    decode(new Uint16Array(exp.mem.buffer, 770, alphalen)),
+                    decode(new Uint16Array(exp.mem.buffer, 770, alphalen - 1)),
                     baseData.lm,
                     baseData.rm
                 );
