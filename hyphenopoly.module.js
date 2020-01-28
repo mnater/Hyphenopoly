@@ -300,16 +300,15 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
     wordStore[0] = 95;
     return function enclHyphenate(word, hyphencc, leftmin, rightmin) {
         let i = 0;
-        let cc = 0;
-        do {
-            cc = word.charCodeAt(i);
+        let cc = word.charCodeAt(i);
+        while (cc) {
             i += 1;
             // eslint-disable-next-line security/detect-object-injection
             wordStore[i] = cc;
-        } while (cc);
-        /* eslint-disable security/detect-object-injection */
-        wordStore[i] = 95;
-        wordStore[i + 1] = 0;
+            cc = word.charCodeAt(i);
+        }
+        wordStore[i + 1] = 95;
+        wordStore[i + 2] = 0;
         if (hyphenateFunc(leftmin, rightmin, hyphencc) === 1) {
             word = decode(hydWordStore.subarray(1, hydWordStore[0] + 1));
         }
@@ -435,8 +434,10 @@ function createWordHyphenator(lo, lang) {
                     hw = lo.hyphenateFunction(
                         word,
                         H.c.hyphen.charCodeAt(0),
+                        /* eslint-disable security/detect-object-injection */
                         H.c.leftminPerLang[lang],
                         H.c.rightminPerLang[lang]
+                        /* eslint-enable security/detect-object-injection */
                     );
                 }
             } else {
