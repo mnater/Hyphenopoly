@@ -225,16 +225,16 @@ function createLangObj(lang) {
  * @param {string} lang The language
  * @param {function} hyphenateFunction The hyphenateFunction
  * @param {string} alphabet List of used characters
- * @param {number} leftmin leftmin
- * @param {number} rightmin rightmin
+ * @param {number} patternLeftmin leftmin as defined in patterns
+ * @param {number} patternRightmin rightmin as defined in patterns
  * @returns {undefined}
  */
 function prepareLanguagesObj(
     lang,
     hyphenateFunction,
     alphabet,
-    leftmin,
-    rightmin
+    patternLeftmin,
+    patternRightmin
 ) {
     alphabet = alphabet.replace(/-/g, "");
     const lo = createLangObj(lang);
@@ -254,12 +254,36 @@ function prepareLanguagesObj(
         } else {
             lo.exceptions = new Map();
         }
-        /* eslint-enable security/detect-object-injection */
         /* eslint-disable security/detect-non-literal-regexp */
         lo.genRegExp = new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${H.c.minWordLength},}`, "gi");
         /* eslint-enable security/detect-non-literal-regexp */
-        lo.leftmin = leftmin;
-        lo.rightmin = rightmin;
+        (function setLRmin() {
+            if (H.c.leftminPerLang[lang]) {
+                H.c.leftminPerLang[lang] = Math.max(
+                    patternLeftmin,
+                    H.c.leftmin,
+                    H.c.leftminPerLang[lang]
+                );
+            } else {
+                H.c.leftminPerLang[lang] = Math.max(
+                    patternLeftmin,
+                    H.c.leftmin
+                );
+            }
+            if (H.c.rightminPerLang[lang]) {
+                H.c.rightminPerLang[lang] = Math.max(
+                    patternRightmin,
+                    H.c.rightmin,
+                    H.c.rightminPerLang[lang]
+                );
+            } else {
+                H.c.rightminPerLang[lang] = Math.max(
+                    patternRightmin,
+                    H.c.rightmin
+                );
+            }
+        }());
+        /* eslint-enable security/detect-object-injection */
         lo.hyphenateFunction = hyphenateFunction;
         lo.engineReady = true;
     }
@@ -276,8 +300,6 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
     const heapBuffer = baseData.wasmMem.buffer;
     const wordStore = new Uint16Array(heapBuffer, baseData.wo, 64);
     const hydWordStore = new Uint16Array(heapBuffer, baseData.hw, 128);
-    const defLeftmin = baseData.lm;
-    const defRightmin = baseData.rm;
 
     /**
      * The hyphenateFunction that encloses the env above
@@ -291,8 +313,6 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
      */
     wordStore[0] = 95;
     return function enclHyphenate(word, hyphencc, leftmin, rightmin) {
-        leftmin = leftmin || defLeftmin;
-        rightmin = rightmin || defRightmin;
         let i = 0;
         let cc = 0;
         do {
@@ -321,11 +341,13 @@ function instantiateWasmEngine(lang) {
     function handleWasm(inst) {
         const exp = inst.exports;
         const baseData = {
-            "hw": exp.hwo,
-            "lm": exp.lmi,
-            "rm": exp.rmi,
+            /* eslint-disable multiline-ternary */
+            "hw": (WebAssembly.Global) ? exp.hwo.value : exp.hwo,
+            "lm": (WebAssembly.Global) ? exp.lmi.value : exp.lmi,
+            "rm": (WebAssembly.Global) ? exp.rmi.value : exp.rmi,
             "wasmMem": exp.mem,
-            "wo": exp.uwo
+            "wo": (WebAssembly.Global) ? exp.uwo.value : exp.uwo
+            /* eslint-enable multiline-ternary */
         };
         const alphalen = exp.conv();
         prepareLanguagesObj(
@@ -427,8 +449,8 @@ function createWordHyphenator(lo, lang) {
                     hw = lo.hyphenateFunction(
                         word,
                         H.c.hyphen.charCodeAt(0),
-                        H.c.leftmin,
-                        H.c.rightmin
+                        H.c.leftminPerLang[lang],
+                        H.c.rightminPerLang[lang]
                     );
                 }
             } else {
@@ -596,7 +618,8 @@ H.config = function config(userConfig) {
         "compound": setProp("hyphen", 2),
         "exceptions": setProp(empty(), 2),
         "hyphen": setProp(String.fromCharCode(173), 2),
-        "leftmin": setProp(0, 2),
+        "leftmin": setProp(0, 3),
+        "leftminPerLang": setProp(empty(), 2),
         "loader": setProp("fs", 2),
         "minWordLength": setProp(6, 2),
         "mixedCase": setProp(true, 2),
@@ -607,7 +630,8 @@ H.config = function config(userConfig) {
             "patterndir": setProp(`${__dirname}/patterns/`, 2)
         }), 2),
         "require": setProp([], 2),
-        "rightmin": setProp(0, 2),
+        "rightmin": setProp(0, 3),
+        "rightminPerLang": setProp(empty(), 2),
         "sync": setProp(false, 2)
     });
     const settings = Object.create(defaults);

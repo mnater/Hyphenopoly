@@ -166,6 +166,21 @@ t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
         t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
         t.end();
     });
+
+    t.test("left-/rightminPerLang: 4, 5", async function (t) {
+        const hyphenator = await H9Y.config({
+            "hyphen": "•",
+            "leftminPerLang": {
+                "de": 4
+            },
+            "require": ["de"],
+            "rightminPerLang": {
+                "de": 5
+            }
+        });
+        t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
+        t.end();
+    });
     t.end();
 });
 
@@ -189,7 +204,7 @@ t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
             "require": ["pt"],
             "rightmin": 2
         });
-        t.equal(hyphenator("relativo"), "re•la•ti•vo");
+        t.equal(hyphenator("relativo"), "re•la•tivo");
         t.end();
     });
 

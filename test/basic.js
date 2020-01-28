@@ -32,6 +32,18 @@ t.test("run config with one language", async function (t) {
     t.end();
 });
 
+t.test("disable Webassembly.Globals", async function (t) {
+    const wag = WebAssembly.Global;
+    WebAssembly.Global = null;
+    const deHyphenator = await H9Y.config({"require": ["de"]});
+    t.test("hyphenate one word with Globals disabled", function (t) {
+        t.equal(deHyphenator("Silbentrennung"), "Sil\u00ADben\u00ADtren\u00ADnung", deHyphenator("Silbentrennung"));
+        t.end();
+        WebAssembly.Global = wag;
+    });
+    t.end();
+});
+
 t.test("run config with two languages", async function (t) {
     const hyphenators = await H9Y.config({"require": ["de", "en-us"]});
     t.test("return a Map", function (t) {
