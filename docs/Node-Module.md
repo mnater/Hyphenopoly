@@ -144,12 +144,12 @@ Hyphenopoly.supportedLanguages.includes("en"); //false
 
 ## Performance
 
-On my machine with node.js 10.0.1:
+On my machine with node.js 13.7.0:
 
-| module        | setup         | hyphenate 100 de words |
+| module        | setup         | hyphenate 270 en words |
 | ------------- | -------------:| ----------------------:|
-| _hyphenopoly_ | _12ms_        | _2ms_                  |
-| [hyphen](https://www.npmjs.com/package/hyphen)        | 40ms          | 370ms                  |
-| [hypher](https://www.npmjs.com/package/hypher)        | 70ms          | 3ms                    |
+| _hyphenopoly_ | _10ms_        | _0.5ms_                  |
+| [hyphen](https://www.npmjs.com/package/hyphen)        | 18ms          | 72ms                  |
+| [hypher](https://www.npmjs.com/package/hypher)        | 35ms          | 1.2ms                    |
 
 
