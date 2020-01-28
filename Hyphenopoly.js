@@ -104,7 +104,7 @@
 
         const settings = Object.create(generalDefaults);
 
-        const perClassDefaults = Object.create(null, {
+        const perSelectorDefaults = Object.create(null, {
             "compound": setProp("hyphen", 2),
             "hyphen": setProp(SOFTHYPHEN, 2),
             "leftmin": setProp(0, 2),
@@ -134,7 +134,7 @@
                     Object.defineProperty(
                         settings,
                         sel,
-                        setProp(Object.create(perClassDefaults, tmp), 2)
+                        setProp(Object.create(perSelectorDefaults, tmp), 2)
                     );
                 });
             } else if (key === "dontHyphenate") {
@@ -439,7 +439,7 @@
         const wordHyphenatorPool = new Map();
 
         /**
-         * Factory for hyphenatorFunctions for a specific language and class
+         * Factory for hyphenatorFunctions for a specific language and selector
          * @param {Object} lo Language-Object
          * @param {string} lang The language
          * @param {string} sel The selector
@@ -447,8 +447,8 @@
          */
         function createWordHyphenator(lo, lang, sel) {
             /* eslint-disable-next-line security/detect-object-injection */
-            const classSettings = C[sel];
-            const hyphen = classSettings.hyphen;
+            const selSettings = C[sel];
+            const hyphen = selSettings.hyphen;
             lo.cache.set(sel, new Map());
 
             /**
@@ -460,16 +460,16 @@
                 const zeroWidthSpace = String.fromCharCode(8203);
                 let parts = null;
                 let wordHyphenator = null;
-                if (classSettings.compound === "auto" ||
-                    classSettings.compound === "all") {
+                if (selSettings.compound === "auto" ||
+                    selSettings.compound === "all") {
                     wordHyphenator = createWordHyphenator(lo, lang, sel);
                     parts = word.split("-").map((p) => {
-                        if (p.length >= classSettings.minWordLength) {
+                        if (p.length >= selSettings.minWordLength) {
                             return wordHyphenator(p);
                         }
                         return p;
                     });
-                    if (classSettings.compound === "auto") {
+                    if (selSettings.compound === "auto") {
                         word = parts.join("-");
                     } else {
                         word = parts.join("-" + zeroWidthSpace);
@@ -501,14 +501,14 @@
              */
             function hyphenator(word) {
                 let hw = lo.cache.get(sel).get(word);
-                if (!classSettings.mixedCase && isMixedCase(word)) {
+                if (!selSettings.mixedCase && isMixedCase(word)) {
                     hw = word;
                 }
                 if (!hw) {
                     if (lo.exceptions.has(word)) {
                         hw = lo.exceptions.get(word).replace(
                             /-/g,
-                            classSettings.hyphen
+                            selSettings.hyphen
                         );
                     } else if (word.indexOf("-") === -1) {
                         if (word.length > 61) {
@@ -522,8 +522,8 @@
                             hw = lo.hyphenateFunction(
                                 word,
                                 hyphen.charCodeAt(0),
-                                classSettings.leftminPerLang[lang],
-                                classSettings.rightminPerLang[lang]
+                                selSettings.leftminPerLang[lang],
+                                selSettings.rightminPerLang[lang]
                             );
                         /* eslint-enable security/detect-object-injection */
                         }
@@ -562,13 +562,13 @@
                 trailingWhiteSpace
             ) {
                 /* eslint-disable security/detect-object-injection */
-                const classSettings = C[sel];
+                const selSettings = C[sel];
                 /* eslint-enable security/detect-object-injection */
-                let h = classSettings.hyphen;
-                if (".\\+*?[^]$(){}=!<>|:-".indexOf(classSettings.hyphen) !== -1) {
-                    h = "\\" + classSettings.hyphen;
+                let h = selSettings.hyphen;
+                if (".\\+*?[^]$(){}=!<>|:-".indexOf(selSettings.hyphen) !== -1) {
+                    h = "\\" + selSettings.hyphen;
                 }
-                if (classSettings.orphanControl === 3 && leadingWhiteSpace === " ") {
+                if (selSettings.orphanControl === 3 && leadingWhiteSpace === " ") {
                     leadingWhiteSpace = String.fromCharCode(160);
                 }
                 /* eslint-disable security/detect-non-literal-regexp */
@@ -589,9 +589,9 @@
         function hyphenate(lang, sel, entity) {
             const lo = H.languages.get(lang);
             /* eslint-disable security/detect-object-injection */
-            const classSettings = C[sel];
+            const selSettings = C[sel];
             /* eslint-enable security/detect-object-injection */
-            const minWordLength = classSettings.minWordLength;
+            const minWordLength = selSettings.minWordLength;
             const normalize = C.normalize &&
                 Boolean(String.prototype.normalize);
             const poolKey = lang + "-" + sel;
@@ -615,7 +615,7 @@
                 } else {
                     tn = text.replace(re, wordHyphenator);
                 }
-                if (classSettings.orphanControl !== 1) {
+                if (selSettings.orphanControl !== 1) {
                     tn = tn.replace(
                         // eslint-disable-next-line prefer-named-capture-group
                         /(\u0020*)(\S+)(\s*)$/,
@@ -757,8 +757,8 @@
             lang,
             hyphenateFunction,
             alphabet,
-            leftmin,
-            rightmin
+            patternLeftmin,
+            patternRightmin
         ) {
             alphabet = alphabet.replace(/-/g, "");
             const lo = createLangObj(lang);
@@ -780,50 +780,50 @@
                 }
                 /* eslint-enable security/detect-object-injection */
                 lo.genRegExps = new Map();
-                lo.leftmin = leftmin;
-                lo.rightmin = rightmin;
+                lo.leftmin = patternLeftmin;
+                lo.rightmin = patternRightmin;
                 lo.hyphenateFunction = hyphenateFunction;
                 C.selectors.forEach((sel) => {
                     /* eslint-disable security/detect-object-injection */
-                    const classSettings = C[sel];
+                    const selSettings = C[sel];
                     /* eslint-enable security/detect-object-injection */
-                    if (classSettings.leftminPerLang === 0) {
+                    if (selSettings.leftminPerLang === 0) {
                         Object.defineProperty(
-                            classSettings,
+                            selSettings,
                             "leftminPerLang",
                             setProp(empty(), 2)
                         );
                     }
-                    if (classSettings.rightminPerLang === 0) {
+                    if (selSettings.rightminPerLang === 0) {
                         Object.defineProperty(
-                            classSettings,
+                            selSettings,
                             "rightminPerLang",
                             setProp(empty(), 2)
                         );
                     }
                     /* eslint-disable security/detect-object-injection */
-                    if (classSettings.leftminPerLang[lang]) {
-                        classSettings.leftminPerLang[lang] = Math.max(
+                    if (selSettings.leftminPerLang[lang]) {
+                        selSettings.leftminPerLang[lang] = Math.max(
                             lo.leftmin,
-                            classSettings.leftmin,
-                            classSettings.leftminPerLang[lang]
+                            selSettings.leftmin,
+                            selSettings.leftminPerLang[lang]
                         );
                     } else {
-                        classSettings.leftminPerLang[lang] = Math.max(
+                        selSettings.leftminPerLang[lang] = Math.max(
                             lo.leftmin,
-                            classSettings.leftmin
+                            selSettings.leftmin
                         );
                     }
-                    if (classSettings.rightminPerLang[lang]) {
-                        classSettings.rightminPerLang[lang] = Math.max(
+                    if (selSettings.rightminPerLang[lang]) {
+                        selSettings.rightminPerLang[lang] = Math.max(
                             lo.rightmin,
-                            classSettings.rightmin,
-                            classSettings.rightminPerLang[lang]
+                            selSettings.rightmin,
+                            selSettings.rightminPerLang[lang]
                         );
                     } else {
-                        classSettings.rightminPerLang[lang] = Math.max(
+                        selSettings.rightminPerLang[lang] = Math.max(
                             lo.rightmin,
-                            classSettings.rightmin
+                            selSettings.rightmin
                         );
                     }
                     /* eslint-enable security/detect-object-injection */
@@ -837,7 +837,7 @@
                      * Word delimiters are not taken in account.
                      */
                     /* eslint-disable security/detect-non-literal-regexp */
-                    lo.genRegExps.set(sel, new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${classSettings.minWordLength},}`, "gi"));
+                    lo.genRegExps.set(sel, new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${selSettings.minWordLength},}`, "gi"));
                     /* eslint-enable security/detect-non-literal-regexp */
                 });
                 lo.engineReady = true;
@@ -894,16 +894,19 @@
          * @returns {undefined}
          */
         function instantiateWasmEngine(heProm, lang) {
+            const wa = window.WebAssembly;
             // eslint-disable-next-line require-jsdoc
             function handleWasm(res) {
                 const exp = res.instance.exports;
                 const alphalen = exp.conv();
                 const baseData = {
-                    "hw": exp.hwo,
-                    "lm": exp.lmi,
-                    "rm": exp.rmi,
+                    /* eslint-disable multiline-ternary */
+                    "hw": (wa.Global) ? exp.hwo.value : exp.hwo,
+                    "lm": (wa.Global) ? exp.lmi.value : exp.lmi,
+                    "rm": (wa.Global) ? exp.rmi.value : exp.rmi,
                     "wasmMem": exp.mem,
-                    "wo": exp.uwo
+                    "wo": (wa.Global) ? exp.uwo.value : exp.uwo
+                    /* eslint-enable multiline-ternary */
                 };
                 prepareLanguagesObj(
                     lang,
@@ -911,20 +914,13 @@
                         baseData,
                         exp.hyphenate
                     ),
-                    decode(
-                        new Uint16Array(
-                            exp.mem.buffer,
-                            770,
-                            alphalen
-                        )
-                    ),
+                    decode(new Uint16Array(exp.mem.buffer, 770, alphalen)),
                     baseData.lm,
                     baseData.rm
                 );
             }
             heProm.then((response) => {
                 if (response.ok) {
-                    const wa = window.WebAssembly;
                     if (
                         wa.instantiateStreaming &&
                         (response.headers.get("Content-Type") === "application/wasm")
