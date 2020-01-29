@@ -37,5 +37,4 @@ WASMNAME=$DIST_PATH$LANG.wasm
 ../../../third-party/binaryen/bin/wasm-opt $WASMUNOPT -Oz -o ../$LANG.wasm
 
 echo '(G) clean-up'
-rm lang.txt
 rm $WASMUNOPT

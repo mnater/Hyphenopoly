@@ -1,0 +1,26 @@
+{
+  "name": "h9y_de",
+  "version": "1.0.0",
+  "description": "Webassembly module for hyphenation of german words. Primarly used by Hyphenopoly",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mnater/Hyphenopoly.git"
+  },
+  "keywords": [
+    "Hyphenopoly",
+    "pattern",
+    "hyphenation",
+    "hyphenate",
+    "webassembly"
+  ],
+  "author": "Mathias Nater (mathias.nater (at)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mnater/Hyphenopoly/issues"
+  },
+  "homepage": "https://github.com/mnater/Hyphenopoly#readme"
+}
