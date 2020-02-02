@@ -1,23 +1,23 @@
 # optional fields in `setup`
 These page documents the optional fields in `setup`:
-* [Global Settings](#global-settings)
-  * [defaultLanguage](#defaultlanguage)
-  * [dontHyphenate](#donthyphenate)
-  * [dontHyphenateClass](#donthyphenateclass)
-  * [exceptions](#exceptions)
-  * [hide](#hide)
-  * [keepAlive](#keepalive)
-  * [normalize](#normalize)
-  * [safeCopy](#safecopy)
-  * [timeout](#timeout)
-* [Selector Based Settings](#selector-based-settings)
-  * [compound](#compound)
-  * [hyphen](#hyphen)
-  * [leftmin and rightmin](#leftmin-and-rightmin)
-  * [leftminPerLang and rightminPerLang](#leftminperlang-and-rightminperlang)
-  * [minWordLength](#minwordlength)
-  * [mixedCase](#mixedcase)
-  * [orphanControl](#orphancontrol)
+*   [Global Settings](#global-settings)
+    *   [defaultLanguage](#defaultlanguage)
+    *   [dontHyphenate](#donthyphenate)
+    *   [dontHyphenateClass](#donthyphenateclass)
+    *   [exceptions](#exceptions)
+    *   [hide](#hide)
+    *   [keepAlive](#keepalive)
+    *   [normalize](#normalize)
+    *   [safeCopy](#safecopy)
+    *   [timeout](#timeout)
+*   [Selector Based Settings](#selector-based-settings)
+    *   [compound](#compound)
+    *   [hyphen](#hyphen)
+    *   [leftmin and rightmin](#leftmin-and-rightmin)
+    *   [leftminPerLang and rightminPerLang](#leftminperlang-and-rightminperlang)
+    *   [minWordLength](#minwordlength)
+    *   [mixedCase](#mixedcase)
+    *   [orphanControl](#orphancontrol)
 
 ## Global Settings
 These settings apply to Hyphenopoly in general.
@@ -179,10 +179,10 @@ var Hyphenopoly = {
 ````
 To prevent a flash of unhyphenated content (FOUHC) Hyphenopoly hides the elements being hyphenated. Depending on the structure of your page this can lead to visual flicker. You can change the way Hyphenopoly hides the content:
 
-- `all` hides the whole page by inserting the following CSS-rule `html {visibility: hidden !important}`
-- `element` hides the selected elements by inserting the following CSS-rule for each selector: `<selector> {visibility: hidden !important}`
-- `text` hides only the text of the selected elements by inserting the following CSS-rule for each selector: `<selector> {color: transparent !important}`
-- any other keyword prevents hiding.
+-   `all` hides the whole page by inserting the following CSS-rule `html {visibility: hidden !important}`
+-   `element` hides the selected elements by inserting the following CSS-rule for each selector: `<selector> {visibility: hidden !important}`
+-   `text` hides only the text of the selected elements by inserting the following CSS-rule for each selector: `<selector> {color: transparent !important}`
+-   any other keyword prevents hiding.
 
 These CSS-rules are removed, when Hyphenopoly has finished its job or when the [timeout](#timeout) gets fired.
 

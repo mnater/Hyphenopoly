@@ -1,5 +1,15 @@
 # Version History
 
+## Version 4.0.0 (2020-02-02)
+With this major update Hyphenopoly NO LONGER SUPPORTS InternetExplorer.
+This step allows the usage of modern JavaScript features which leads to smaller filesizes and thus better performance.
+
+### Changed
+*   No fallback to asm.js
+*   hyphenEngine and patterns in one file per language
+*   Promise based events
+*   Usage of modern ES2016 features
+
 ## Version 3.4.0 (2019-12-26)
 ### Added
 *   Option to disable mixed cased words (issue #91)

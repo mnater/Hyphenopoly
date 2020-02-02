@@ -2,13 +2,57 @@
 Hyphenopoly fires a bunch of events while executing. As a user you can extend or overwrite the actions performed by these events.
 Some events have a default action that may be prevented (if event is cancellable).
 
-## timeout-Event
-Fired when the Flash Of Unhyphenated Content-prevention timed out.
+*   [afterElementHyphenation](#afterelementhyphenation-event)
+*   [beforeElementHyphenation](#beforeelementhyphenation-event)
+*   [engineReady](#engineready-event)
+*   [error](#error-event)
+*   [hyphenopolyEnd](#hyphenopolyend-event)
+*   [hyphenopolyStart](#hyphenopolystart-event)
+*   [polyfill](#polyfill-event)
+*   [tearDown](#teardown-event)
+
+To handle some of these events, you may specify a 'handleEvent' property in the global 'Hyphenopoly' object:
+
+````javascript
+const Hyphenopoly = {
+    require: {
+        //[...]
+    },
+    handleEvent: {
+        "hyphenopolyEnd": function () {
+            console.log("Hyphenopoly ended");
+        }
+    }
+}
+````
+
+Internally events in Hyphenopoly are implemented as Promises that fullfill with a certain value.
+
+## afterElementHyphenation-Event
+Fired after an element has been hyphenated.
 
 ````
-Default-action: unhides content
+Default-action: null
+cancellable: true
+Fields: `el` (element), `lang` (language-code)
+````
+
+## beforeElementHyphenation-Event
+Fired before an element gets hyphenated.
+
+````
+Default-action: null
+cancellable: true
+Fields: `el` (element), `lang` (language-code)
+````
+
+## engineReady-Event
+Fired when engine and pattern files are ready.
+
+````
+Default-action: Starts hyphenation if elements are ready.
 cancellable: false
-Fields: `delay` (timeout in ms)
+Fields: msg (language code)
 ````
 
 ## error-Event
@@ -34,63 +78,13 @@ const Hyphenopoly = {
     }
 }
 ````
-
-## contentLoaded-Event
-Handles the DOMContentLoaded internally.
-Can be manually fired if contentChanges to rehyphenate the document.
+## hyphenopolyEnd-Event
+Fired when all collected elements are hyphenated.
 
 ````
-Default-action: runs Hyphenopoly (together with `engineLoaded` and `hpbLoaded`)
-cancellable: false
-Fields: `msg` (list of what has been loaded)
-````
-
-_note: use [Hyphenators](./Hyphenators.md) to prevent a costly rehyphenation of the whole document_
-
-## engineLoaded-Event
-Fired when the (w)asm-engine is instantiated.
-
-````
-Default-action: starts Hyphenopoly (together with `DOMContentLoaded ` and `hpbLoaded`)
-cancellable: false
-Fields: `msg` (list of what has been loaded)
-````
-
-## hpbLoaded-Event
-Fired on each load of a patternfile.
-
-````
-Default-action: starts Hyphenopoly (together with `DOMContentLoaded ` and `engineLoaded `)
-cancellable: false
-Fields: `msg` (list of what has been loaded)
-````
-
-## loadError-Event
-(new in v3.0.0)
-Fired just before Hyphenopoly is deleted if the browser supports native CSS.
-
-````
-Default-action: Remove elements from the internal list of elements to be hyphenated.
-cancellable: false
-Fields: `msg` (list of what has not been loaded)
-````
-
-## elementsReady-Event
-Fired when elements are collected and ready for hyphenation.
-
-````
-Default-action: Starts hyphenation if pattern file and engine are ready.
+Default-action: clears FOUHC-timeout and unhides elements
 cancellable: false
 Fields: null
-````
-
-## engineReady-Event
-Fired when engine and pattern files are ready.
-
-````
-Default-action: Starts hyphenation if elements are ready.
-cancellable: false
-Fields: msg (language code)
 ````
 
 ## hyphenopolyStart-Event
@@ -102,39 +96,20 @@ cancellable: true
 Fields: msg
 ````
 
-## hyphenopolyEnd-Event
-Fired when all collected elements are hyphenated.
+## polyfill-Event
+Fired when Hyphenopoly_Loader.js decides to load Hyphenopoly.js.
 
 ````
-Default-action: clears FOUHC-timeout and unhides elements
+Default-action: null
 cancellable: false
 Fields: null
 ````
 
-## beforeElementHyphenation-Event
-Fired before an element gets hyphenated.
-
-````
-Default-action: null
-cancellable: true
-Fields: `el` (element), `lang` (language-code)
-````
-
-## afterElementHyphenation-Event
-Fired after an element has been hyphenated.
-
-````
-Default-action: null
-cancellable: true
-Fields: `el` (element), `lang` (language-code)
-````
-
 ## tearDown-Event
-(new in v3.0.0)
-Fired just before Hyphenopoly is deleted if the browser supports native CSS.
+Fired when Hyphenopoly_Loader.js decides NOT to load Hyphenopoly.js and before it deletes the global 'Hyphenopoly' object. This event can be used to invoke other scripts if native CSS hyphenation is available.
 
 ````
-Default-action: null
-cancellable: true
+Default-action: `w.Hyphenopoly = null`
+cancellable: false
 Fields: null
 ````

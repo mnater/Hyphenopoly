@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -10,7 +10,9 @@
     "hyphen",
     "soft",
     "hyphenate",
-    "JavaScript"
+    "JavaScript",
+    "wasm",
+    "Webassembly"
   ],
   "homepage": "https://github.com/mnater/Hyphenopoly",
   "bugs": "https://github.com/mnater/Hyphenopoly/issues",
@@ -20,13 +22,9 @@
     "email": "mathiasnater@gmail.com"
   },
   "files": [
-    "hyphenEngine.asm.js",
-    "hyphenEngine.wasm",
     "Hyphenopoly_Loader.js",
     "Hyphenopoly.js",
     "patterns/",
-    "min/hyphenEngine.asm.js",
-    "min/hyphenEngine.wasm",
     "min/Hyphenopoly_Loader.js",
     "min/Hyphenopoly.js",
     "min/patterns/",
@@ -43,12 +41,13 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "assemblyscript": "^0.9.0",
     "eslint": "^6.8.0",
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^7.0.1",
     "remark-preset-lint-recommended": "^3.0.3",
-    "tap": "^14.10.5",
-    "terser": "^4.4.3"
+    "tap": "^14.10.6",
+    "terser": "^4.6.3"
   },
   "remarkConfig": {
     "plugins": [
@@ -59,13 +58,12 @@
     "preinstall3rdparty": "rm -fR third-party",
     "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen",
     "postinstall3rdparty": "cd ./third-party/binaryen/ && cmake . && make",
-    "compilewasm": "sh ./tools/compileWASM.sh hyphenEngine",
+    "createWasmForLang": "sh ./tools/createWasmForLang.sh de",
+    "createAllWasm": "sh ./tools/createAllWasm.sh",
     "test": "tap test/*.js --coverage",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
-    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js && npm run lint-md",
-    "lint-md": "remark *.md",
-    "prepare": "npm run minify",
-    "minify": "sh ./tools/minify.sh",
+    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js && remark *.md && remark */*.md",
+    "prepare": "sh ./tools/minify.sh",
     "doc": "cd ./docs/ && bundle exec jekyll serve -l -o"
   },
   "runkitExampleFilename": "example.js"

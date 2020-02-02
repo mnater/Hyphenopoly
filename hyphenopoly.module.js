@@ -1,6 +1,6 @@
 /**
- * @license Hyphenopoly.module.js 3.4.0 - hyphenation for node
- * ©2018  Mathias Nater, Zürich (mathiasnater at gmail dot com)
+ * @license Hyphenopoly.module.js 4.0.0 - hyphenation for node
+ * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
@@ -21,7 +21,7 @@ const {StringDecoder} = require("string_decoder");
 const decode = (function makeDecoder() {
     const utf16ledecoder = new StringDecoder("utf-16le");
     return function dec(ui16) {
-        return utf16ledecoder.write(Buffer.from(ui16));
+        return utf16ledecoder.write(ui16);
     };
 }());
 
@@ -163,169 +163,32 @@ function readFile(file, cb, sync) {
 }
 
 /**
- * Read a wasm file, dispatch "engineLoaded" on success
- * @returns {undefined}
- */
-function loadWasm() {
-    if (H.c.sync) {
-        const data = readFile(`${H.c.paths.maindir}hyphenEngine.wasm`, null, true);
-        H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
-        H.events.dispatch("engineLoaded");
-    } else {
-        readFile(
-            `${H.c.paths.maindir}hyphenEngine.wasm`,
-            function cb(err, data) {
-                if (err) {
-                    H.events.dispatch("error", {
-                        "key": "hyphenEngine",
-                        "msg": `${H.c.paths.maindir}hyphenEngine.wasm not found.`
-                    });
-                } else {
-                    H.binaries.set("hyphenEngine", new Uint8Array(data).buffer);
-                    H.events.dispatch("engineLoaded");
-                }
-            },
-            false
-        );
-    }
-}
-
-/**
  * Read a hpb file, dispatch "hpbLoaded" on success
  * @param {string} lang - The language
  * @returns {undefined}
  */
-function loadHpb(lang) {
+function loadHyphenEngine(lang) {
     if (H.c.sync) {
-        const data = readFile(`${H.c.paths.patterndir}${lang}.hpb`, null, true);
+        const data = readFile(`${H.c.paths.patterndir}${lang}.wasm`, null, true);
         H.binaries.set(lang, new Uint8Array(data).buffer);
-        H.events.dispatch("hpbLoaded", {"msg": lang});
+        H.events.dispatch("engineLoaded", {"msg": lang});
     } else {
         readFile(
-            `${H.c.paths.patterndir}${lang}.hpb`,
+            `${H.c.paths.patterndir}${lang}.wasm`,
             function cb(err, data) {
                 if (err) {
                     H.events.dispatch("error", {
                         "key": lang,
-                        "msg": `${H.c.paths.patterndir}${lang}.hpb not found.`
+                        "msg": `${H.c.paths.patterndir}${lang}.wasm not found.`
                     });
                 } else {
                     H.binaries.set(lang, new Uint8Array(data).buffer);
-                    H.events.dispatch("hpbLoaded", {"msg": lang});
+                    H.events.dispatch("engineLoaded", {"msg": lang});
                 }
             },
             false
         );
     }
-}
-
-/**
- * Calculate heap size for wasm
- * wasm page size: 65536 = 64 Ki
- * @param {number} targetSize The targetet Size
- * @returns {number} The necessary heap size
- */
-function calculateHeapSize(targetSize) {
-    return Math.ceil(targetSize / 65536) * 65536;
-}
-
-/**
- * Calculate Base Data
- *
- * Build Heap (the heap object's byteLength must be
- * either 2^n for n in [12, 24)
- * or 2^24 · n for n ≥ 1;)
- *
- * MEMORY LAYOUT:
- *
- * -------------------- <- Offset 0
- * |   translateMap   |
- * |        keys:     |
- * |256 chars * 2Bytes|
- * |         +        |
- * |      values:     |
- * |256 chars * 1Byte |
- * -------------------- <- 768 Bytes
- * |     alphabet     |
- * |256 chars * 2Bytes|
- * -------------------- <- valueStoreOffset (vs) = 1280
- * |    valueStore    |
- * |      1 Byte      |
- * |* valueStoreLength|
- * --------------------
- * | align to 4Bytes  |
- * -------------------- <- patternTrieOffset (pt)
- * |    patternTrie   |
- * |     4 Bytes      |
- * |*patternTrieLength|
- * -------------------- <- wordOffset (wo)
- * |    wordStore     |
- * |    Uint16[64]    | 128 bytes
- * -------------------- <- translatedWordOffset (tw)
- * | transl.WordStore |
- * |    Uint8[64]     | 64 bytes
- * -------------------- <- hyphenPointsOffset (hp)
- * |   hyphenPoints   |
- * |    Uint8[64]     | 64 bytes
- * -------------------- <- hyphenatedWordOffset (hw)
- * |  hyphenatedWord  |
- * |   Uint16[128]    | 256 Bytes
- * -------------------- <- hpbOffset (ho)      -
- * |     HEADER       |                        |
- * |    6*4 Bytes     |                        |
- * |    24 Bytes      |                        |
- * --------------------                        |
- * |    PATTERN LIC   |                        |
- * |  variable Length |                        |
- * --------------------                        |
- * | align to 4Bytes  |                        } this is the .hpb-file
- * -------------------- <- hpbTranslateOffset  |
- * |    TRANSLATE     |                        |
- * | 2 + [0] * 2Bytes |                        |
- * -------------------- <-hpbPatternsOffset(po)|
- * |     PATTERNS     |                        |
- * |  patternsLength  |                        |
- * -------------------- <- heapEnd             -
- * | align to 4Bytes  |
- * -------------------- <- heapSize (hs)
- * @param {Object} hpbBuf FileBuffer from .hpb-file
- * @returns {Object} baseData-object
- */
-function calculateBaseData(hpbBuf) {
-    const hpbMetaData = new Uint32Array(hpbBuf).subarray(0, 8);
-    const valueStoreLength = hpbMetaData[7];
-    const valueStoreOffset = 1280;
-    const patternTrieOffset = valueStoreOffset + valueStoreLength +
-        (4 - ((valueStoreOffset + valueStoreLength) % 4));
-    const wordOffset = patternTrieOffset + (hpbMetaData[6] * 4);
-    return {
-        // Set hpbOffset
-        "ho": wordOffset + 512,
-        // Set hyphenPointsOffset
-        "hp": wordOffset + 192,
-        // Set heapSize
-        "hs": Math.max(calculateHeapSize(wordOffset + 512 + hpbMetaData[2] + hpbMetaData[3]), 32 * 1024 * 64),
-        // Set hyphenatedWordOffset
-        "hw": wordOffset + 256,
-        // Set leftmin
-        "lm": hpbMetaData[4],
-        // Set patternsLength
-        "pl": hpbMetaData[3],
-        // Set hpbPatternsOffset
-        "po": wordOffset + 512 + hpbMetaData[2],
-        // Set patternTrieOffset
-        "pt": patternTrieOffset,
-        // Set rightmin
-        "rm": hpbMetaData[5],
-        // Set translateOffset
-        "to": wordOffset + 512 + hpbMetaData[1],
-        // Set translatedWordOffset
-        "tw": wordOffset + 128,
-        // Set valueStoreOffset
-        "vs": valueStoreOffset,
-        // Set wordOffset
-        "wo": wordOffset
-    };
 }
 
 /**
@@ -362,16 +225,16 @@ function createLangObj(lang) {
  * @param {string} lang The language
  * @param {function} hyphenateFunction The hyphenateFunction
  * @param {string} alphabet List of used characters
- * @param {number} leftmin leftmin
- * @param {number} rightmin rightmin
+ * @param {number} patternLeftmin leftmin as defined in patterns
+ * @param {number} patternRightmin rightmin as defined in patterns
  * @returns {undefined}
  */
 function prepareLanguagesObj(
     lang,
     hyphenateFunction,
     alphabet,
-    leftmin,
-    rightmin
+    patternLeftmin,
+    patternRightmin
 ) {
     alphabet = alphabet.replace(/-/g, "");
     const lo = createLangObj(lang);
@@ -391,12 +254,22 @@ function prepareLanguagesObj(
         } else {
             lo.exceptions = new Map();
         }
-        /* eslint-enable security/detect-object-injection */
         /* eslint-disable security/detect-non-literal-regexp */
         lo.genRegExp = new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${H.c.minWordLength},}`, "gi");
         /* eslint-enable security/detect-non-literal-regexp */
-        lo.leftmin = leftmin;
-        lo.rightmin = rightmin;
+        (function setLRmin() {
+            H.c.leftminPerLang[lang] = Math.max(
+                patternLeftmin,
+                H.c.leftmin,
+                Number(H.c.leftminPerLang[lang]) || 0
+            );
+            H.c.rightminPerLang[lang] = Math.max(
+                patternRightmin,
+                H.c.rightmin,
+                Number(H.c.rightminPerLang[lang]) || 0
+            );
+        }());
+        /* eslint-enable security/detect-object-injection */
         lo.hyphenateFunction = hyphenateFunction;
         lo.engineReady = true;
     }
@@ -410,19 +283,9 @@ function prepareLanguagesObj(
  * @returns {function} hyphenateFunction with closured environment
  */
 function encloseHyphenateFunction(baseData, hyphenateFunc) {
-    /* eslint-disable no-bitwise */
-    const heapBuffer = baseData.wasmMemory.buffer;
-    const wordStore = (new Uint16Array(heapBuffer)).subarray(
-        baseData.wo >> 1,
-        (baseData.wo >> 1) + 64
-    );
-    const hyphenatedWordStore = (new Uint16Array(heapBuffer)).subarray(
-        baseData.hw >> 1,
-        (baseData.hw >> 1) + 128
-    );
-    /* eslint-enable no-bitwise */
-    const defLeftmin = baseData.lm;
-    const defRightmin = baseData.rm;
+    const heapBuffer = baseData.wasmMem.buffer;
+    const wordStore = new Uint16Array(heapBuffer, baseData.wo, 64);
+    const hydWordStore = new Uint16Array(heapBuffer, baseData.hw, 128);
 
     /**
      * The hyphenateFunction that encloses the env above
@@ -436,118 +299,62 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
      */
     wordStore[0] = 95;
     return function enclHyphenate(word, hyphencc, leftmin, rightmin) {
-        leftmin = leftmin || defLeftmin;
-        rightmin = rightmin || defRightmin;
         let i = 0;
-        let cc = 0;
-        do {
-            cc = word.charCodeAt(i);
+        let cc = word.charCodeAt(i);
+        while (cc) {
             i += 1;
             // eslint-disable-next-line security/detect-object-injection
             wordStore[i] = cc;
-        } while (cc);
-        /* eslint-disable security/detect-object-injection */
-        wordStore[i] = 95;
-        wordStore[i + 1] = 0;
+            cc = word.charCodeAt(i);
+        }
+        wordStore[i + 1] = 95;
+        wordStore[i + 2] = 0;
         if (hyphenateFunc(leftmin, rightmin, hyphencc) === 1) {
-            word = String.fromCharCode.apply(
-                null,
-                hyphenatedWordStore.subarray(
-                    1,
-                    hyphenatedWordStore[0] + 1
-                )
-            );
+            word = decode(hydWordStore.subarray(1, hydWordStore[0] + 1));
         }
         return word;
     };
 }
 
 /**
- * Instantiate Wasm Engine, then compute the pattern trie and
- * call prepareLanguagesObj.
+ * Instantiate Wasm Engine
  * @param {string} lang The language
  * @returns {undefined}
  */
 function instantiateWasmEngine(lang) {
-    const baseData = calculateBaseData(H.binaries.get(lang));
-    const wasmMemory = new WebAssembly.Memory({
-        "initial": baseData.hs / 65536,
-        "maximum": 256
-    });
-    const ui32wasmMemory = new Uint32Array(wasmMemory.buffer);
-    ui32wasmMemory.set(
-        new Uint32Array(H.binaries.get(lang)),
-        // eslint-disable-next-line no-bitwise
-        baseData.ho >> 2
-    );
-    baseData.wasmMemory = wasmMemory;
-    const importObj = {
-        "env": {
-            "memory": baseData.wasmMemory,
-            "memoryBase": 0
-        },
-        "x": baseData
-    };
-    if (H.c.sync) {
-        const heInstance = new WebAssembly.Instance(
-            new WebAssembly.Module(H.binaries.get("hyphenEngine")),
-            importObj
-        );
-        heInstance.exports.convert();
+    // eslint-disable-next-line require-jsdoc
+    function handleWasm(inst) {
+        const exp = inst.exports;
+        const baseData = {
+            /* eslint-disable multiline-ternary */
+            "hw": (WebAssembly.Global) ? exp.hwo.value : exp.hwo,
+            "lm": (WebAssembly.Global) ? exp.lmi.value : exp.lmi,
+            "rm": (WebAssembly.Global) ? exp.rmi.value : exp.rmi,
+            "wasmMem": exp.mem,
+            "wo": (WebAssembly.Global) ? exp.uwo.value : exp.uwo
+            /* eslint-enable multiline-ternary */
+        };
+        const alphalen = exp.conv();
         prepareLanguagesObj(
             lang,
             encloseHyphenateFunction(
                 baseData,
-                heInstance.exports.hyphenate
+                exp.hyphenate
             ),
-            decode(
-                (new Uint8Array(wasmMemory.buffer)).
-                    subarray(768, 1280)
-            ),
+            decode(new Uint16Array(exp.mem.buffer, 770, alphalen - 1)),
             baseData.lm,
             baseData.rm
         );
-    } else {
-        WebAssembly.instantiate(H.binaries.get("hyphenEngine"), importObj).then(
-            function runWasm(result) {
-                result.instance.exports.convert();
-                prepareLanguagesObj(
-                    lang,
-                    encloseHyphenateFunction(
-                        baseData,
-                        result.instance.exports.hyphenate
-                    ),
-                    decode(
-                        (new Uint8Array(wasmMemory.buffer)).
-                            subarray(768, 1280)
-                    ),
-                    baseData.lm,
-                    baseData.rm
-                );
-            }
-        );
     }
-}
-
-
-let engineInstantiator = null;
-const hpb = [];
-
-/**
- * Instantiate hyphenEngines for languages
- * @param {string} lang The language
- * @returns {undefined}
- */
-function prepare(lang) {
-    if (lang === "*") {
-        engineInstantiator = instantiateWasmEngine;
-        hpb.forEach(function eachHbp(hpbLang) {
-            engineInstantiator(hpbLang);
-        });
-    } else if (engineInstantiator) {
-        engineInstantiator(lang);
+    if (H.c.sync) {
+        const heInstance = new WebAssembly.Instance(
+            new WebAssembly.Module(H.binaries.get(lang))
+        );
+        handleWasm(heInstance);
     } else {
-        hpb.push(lang);
+        WebAssembly.instantiate(H.binaries.get(lang)).then((res) => {
+            handleWasm(res.instance);
+        });
     }
 }
 
@@ -627,8 +434,10 @@ function createWordHyphenator(lo, lang) {
                     hw = lo.hyphenateFunction(
                         word,
                         H.c.hyphen.charCodeAt(0),
-                        H.c.leftmin,
-                        H.c.rightmin
+                        /* eslint-disable security/detect-object-injection */
+                        H.c.leftminPerLang[lang],
+                        H.c.rightminPerLang[lang]
+                        /* eslint-enable security/detect-object-injection */
                     );
                 }
             } else {
@@ -735,16 +544,8 @@ function createTextHyphenator(lang) {
 
     define(
         "engineLoaded",
-        function def() {
-            prepare("*");
-        },
-        false
-    );
-
-    define(
-        "hpbLoaded",
         function def(e) {
-            prepare(e.msg);
+            instantiateWasmEngine(e.msg);
         },
         false
     );
@@ -762,9 +563,6 @@ function createTextHyphenator(lang) {
      * @returns {undefined}
      */
     function dispatch(name, data) {
-        if (!data) {
-            data = empty();
-        }
         data.defaultPrevented = false;
         data.preventDefault = function preventDefault() {
             if (definedEvents.get(name).cancellable) {
@@ -807,7 +605,8 @@ H.config = function config(userConfig) {
         "compound": setProp("hyphen", 2),
         "exceptions": setProp(empty(), 2),
         "hyphen": setProp(String.fromCharCode(173), 2),
-        "leftmin": setProp(0, 2),
+        "leftmin": setProp(0, 3),
+        "leftminPerLang": setProp(empty(), 2),
         "loader": setProp("fs", 2),
         "minWordLength": setProp(6, 2),
         "mixedCase": setProp(true, 2),
@@ -818,7 +617,8 @@ H.config = function config(userConfig) {
             "patterndir": setProp(`${__dirname}/patterns/`, 2)
         }), 2),
         "require": setProp([], 2),
-        "rightmin": setProp(0, 2),
+        "rightmin": setProp(0, 3),
+        "rightminPerLang": setProp(empty(), 2),
         "sync": setProp(false, 2)
     });
     const settings = Object.create(defaults);
@@ -836,10 +636,6 @@ H.config = function config(userConfig) {
         // eslint-disable-next-line global-require
         loader = require("https");
     }
-    if (H.c.loader === "http") {
-        // eslint-disable-next-line global-require
-        loader = require("http");
-    }
     if (H.c.handleEvent) {
         Object.keys(H.c.handleEvent).forEach(function add(name) {
             /* eslint-disable security/detect-object-injection */
@@ -855,7 +651,6 @@ H.config = function config(userConfig) {
         );
     }
     H.c.require.forEach(function each(lang) {
-        loadHpb(lang);
         if (H.c.sync) {
             H.events.addListener("engineReady", function handler(e) {
                 if (e.msg === lang) {
@@ -878,8 +673,8 @@ H.config = function config(userConfig) {
             });
             result.set(lang, prom);
         }
+        loadHyphenEngine(lang);
     });
-    loadWasm();
     return (result.size === 1)
         ? result.get(H.c.require[0])
         : result;

@@ -1,0 +1,11 @@
+export const to: i32 = 158620;
+export const po: i32 = 158758;
+export const pl: i32 = 4662;
+export const vs: i32 = 1280;
+export const pt: i32 = 6552;
+export const wo: i32 = 157520;
+export const tw: i32 = 157648;
+export const hp: i32 = 157712;
+export const hw: i32 = 157776;
+export const lm: i32 = 2;
+export const rm: i32 = 2;

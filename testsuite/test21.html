@@ -23,11 +23,16 @@
                 },
                 fantasyEvent: function (e) {
                     console.log(e);
+                },
+                error: function (e) {
+                    e.preventDefault();
+                    msgs += "Listener 1: " + e.msg;
+                    console.warn("Listener 1: " + e.msg)
                 }
             }
         };
         function assert(e) {
-                var ref = "Listener 1:unknown Event \"fantasyEvent\" discardedListener 1:unknown Event \"fantasyEvent\" discardedListener 1:unknown Event \"fantasyEvent\" discarded";
+                var ref = "Listener 1: unknown Event \"fantasyEvent\" discarded";
                 var test = e;
                 var result = false;
                 if (test === ref) {
@@ -47,23 +52,6 @@
             }
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
-        <script>
-            Hyphenopoly.events.addListener("error", function (e) {
-                e.preventDefault();
-                msgs += "Listener 1:" + e.msg;
-                console.log("Listener 1:" + e.msg)
-            });
-            Hyphenopoly.events.addListener("error", function (e) {
-                e.preventDefault();
-                msgs += "Listener 1:" + e.msg;
-                console.log("Listener 2:" + e.msg)
-            });
-            Hyphenopoly.events.addListener("error", function (e) {
-                e.preventDefault();
-                msgs += "Listener 1:" + e.msg;
-                console.log("Listener 3:" + e.msg)
-            });
-        </script>
         <style type="text/css">
             body {
                 width:50%;
@@ -90,7 +78,7 @@
         <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test20.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test22.html">Next&nbsp;&rarr;</a></div>
 
         <h1>Test 021</h1>
-        <p id="desc">Register multiple error handlers (also watch console)</p>
+        <p id="desc">Discard unknown events (watch console!)</p>
         <div id="result"></div>
         <hr>
         <h2>1: en-us</h2>

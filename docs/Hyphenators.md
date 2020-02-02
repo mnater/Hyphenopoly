@@ -2,13 +2,11 @@
 While the main functionality of Hyphenopoly is to just hyphenate your HTML with no further ado, it is sometimes usefull to have a function at hand that hyphenates text.
 
 Possible usecases are:
-* dynamically loaded text
-* hyphenating text provided by the user (e.g. in a preview window of a blogging software)
-* …
+*   dynamically loaded text
+*   hyphenating text provided by the user (e.g. in a preview window of a blogging software)
+*   …
 
-Up to version 2.4.0 the only way to hyphenate text after the page has loaded was to [dispatch a `contentLoaded`-Event](./Events.md#contentloaded-event) in order to restart the hyphenation process. This works but is a bit like using a sledgehammer to crack a nut, since the whole page is reprocessed.
-
-_Since Version 2.5.0 Hyphenopoly.js exposes `hyphenators` – language specific functions that hyphenates a string or a DOM-Object._
+For this use cases Hyphenopoly.js exposes `hyphenators` – language specific functions that hyphenates a string or a DOM-Object.
 
 ## Create and access `Hyphenopoly.hyphenators`
 `hyphenators` are language specific functions that hyphenate their input.
@@ -117,16 +115,12 @@ async function runHyphenator(id) {
 runHyphenator("hyphenateme");
 ````
 
-If Promises are not supported by the browser an error is dispatched.
-
-All modern Browsers [support Promises](https://caniuse.com/#feat=promises) and the [`async/await`-syntax](https://caniuse.com/#feat=async-functions). If you need to support IE11 use a polyfill for promises (e.g. [taylorhakes/promise-polyfill](https://github.com/taylorhakes/promise-polyfill)) and stick to the `.then`-syntax.
-
 # Use case: Hyphenopoly in react
 `hyphenators` are very important in dynamically generated web-content (web-apps). The following describes some first steps in how to use Hyphenopoly in react-apps. Please note that I'm not an expert in react.js If you find a better way I'd highly appreciate your ideas.
 
-1. [download](https://github.com/mnater/Hyphenopoly/releases/latest) and copy the latest version of Hyphenopoly to your react's `public` folder.
+1.  [download](https://github.com/mnater/Hyphenopoly/releases/latest) and copy the latest version of Hyphenopoly to your react's `public` folder.
 
-2. Configure `window.Hyphenopoly` and load `Hyphenopoly_Loader.js` in your react's index.html:
+2.  Configure `window.Hyphenopoly` and load `Hyphenopoly_Loader.js` in your react's index.html:
 
 ````html
 <!DOCTYPE html>
@@ -172,7 +166,7 @@ All modern Browsers [support Promises](https://caniuse.com/#feat=promises) and t
 ````
 
 
-3. Define a `React.Component` that triggers Hyphenopoly (if necessary) on `componentDidUpdate`.
+3.  Define a `React.Component` that triggers Hyphenopoly (if necessary) on `componentDidUpdate`.
 
 `hyphenateText.js`:
 ````javascript
@@ -224,4 +218,3 @@ class Toggle extends React.Component {
 const domContainer = document.querySelector('#container');
 ReactDOM.render(e(Toggle), domContainer);
 ````
-

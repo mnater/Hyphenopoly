@@ -4,11 +4,9 @@
 Hyphenopoly.js is a __JavaScript-polyfill for hyphenation in HTML__: it hyphenates text if the user agent does not support CSS-hyphenation at all or not for the required languages and it is a __Node.js-module__.
 
 The package consists of the following parts:
--   _Hyphenopoly_Loader.js_ (~27KB unpacked, ~4KB minified and compressed): feature-checks the client and loads other resources if necessary.
--   _Hyphenopoly.js_ (~45KB unpacked, ~4KB minified and compressed): does the whole DOM-foo and wraps (w)asm.
--   _hyphenEngine.wasm_ (~1KB uncompressed): wasm code for creating pattern trie and finding hyphenation points.
--   _hyphenEngine.asm.js_ (~11KB uncompressed, ~1KB minified and compressed): fallback for clients that don't support wasm.
--   _pattern.hpb_ (sizes differ! e.g. en-us.hpb: ~23KB uncompressed, ~14KB compressed): space saving binary format of the hyphenation patterns (including their license).
+-   _Hyphenopoly_Loader.js_ (~12KB unpacked, ~2KB minified and compressed): feature-checks the client and loads other resources if necessary.
+-   _Hyphenopoly.js_ (~37KB unpacked, ~4KB minified and compressed): does the whole DOM-foo and wraps wasm.
+-   _wasm-Modules_ (sizes differ! e.g. en-us.wasm: ~24KB uncompressed, ~15KB compressed): core hyphenation functions and hyphenation patterns in a space saving binary format (including pattern license).
 -   _hyphenopoly.module.js_: the node module
 
 ## Usage (Browser)
@@ -75,14 +73,14 @@ Make sure your page is encoded as utf-8.
 Hyphenopoly_Loader.js needs some information to run. This information is provided in a globally accessible Object called `Hyphenopoly`. Hyphenopoly_Loader.js and (if necessary) Hyphenopoly.js will add other methods and properties only to this object – there will be no other global variables/functions beyond this object.
 
 #### require
-The `Hyphenopoly` object must have exactly one property called `require` which itself is an object containing at least one nameValuePair where the name is a language code string (Some patterns are region-specific. See the patterns directory for supported languages. E.g. just using `en` won't work, use either `en-us`or `en-gb`) and the value is a long word string in that language (preferably more than 12 characters long).
+The `Hyphenopoly` object must have exactly one property called `require` which itself is an object containing at least one nameValuePair where the name is a language code string (Some languages are region-specific. See the patterns directory for supported languages. E.g. just using `en` won't work, use either `en-us`or `en-gb`) and the value is a long word string in that language (preferably more than 12 characters long).
 
 Hyphenator_Loader.js will feature test the client (aka browser, aka user agent) for CSS-hyphens support for the given languages with the given words respectively. In the example above it will test if the client supports CSS-hyphenation for latin, german and us-english.
 
 If you want to force the usage of Hyphenopoly.js for a language (e.g. for testing purposes) write `"FORCEHYPHENOPOLY"` instead of the long word.
 
 ### Second script block – load and run Hyphenopoly_Loader.js
-Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary patterns. Hyphenopoly.js – once loaded – will hyphenate the elements according to the settings and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and unhides the document and writes a message to the console.
+Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary Webassembly modules. Hyphenopoly.js – once loaded – will hyphenate the elements according to the settings and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and unhides the document and writes a message to the console.
 If the browser supports all required languages the script deletes the `Hyphenopoly`-object and terminates without further ado.
 
 ### enable CSS-hyphenation
@@ -159,21 +157,3 @@ Hy-phen-ation
 The patterns are precomputed and available for many languages on CTAN. Hyphenopoly.js uses a proprietary binary format (including pattern licence, metadata and the patterns). Patterns are computed from a large list of hyphenated words by a program called patgen. They aim to find some hyphenation points – not all – because it's better to miss a hyphenation point then to have some false hyphenation points. Most patterns are really good but none is error free.
 
 These pattern vary in size. This is mostly due to the different linguistic characteristics of the languages.
-
-## Hyphenopoly.js vs. Hyphenator.js
-[Hyphenator.js](https://github.com/mnater/Hyphenator) started 2007 and had evolved ever since.
-But web browsers have evolved much more!
-Almost all of them support [native hyphenation](https://developer.mozilla.org/en-US/docs/Web/CSS/hyphens) for a [specific set of languages](https://developer.mozilla.org/en-US/docs/Web/CSS/hyphens#Browser_compatibility). So it was time for something new!
-
-Hyphenopoly.js is based on Hyphenator.js (they share some code) but - in favor of simplicity and speed – lacks many features of Hyphenator.js. Most of these features aren't needed in modern webdesign anymore:
--   dropped support for usage as bookmarklet
--   dropped support for frames
--   dropped support for ancient browsers
--   dropped caching of patterns in browser storage
--   dropped breaking of non-textual content (urls, code etc.)
--   and some more…
-
-If you need one of those features use Hyphenator.js – or give some feedback and proof that the feature is really useful and should be implemented in Hyphenopoly.js
-
-On the other hand Hyphenopoly has a much finer-grained configuration system that allows you to make settings based on CSS-classes.
-And last but not least it is faster than Hyphenator.js

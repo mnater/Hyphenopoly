@@ -110,11 +110,11 @@ The only option that Must be set is `require` which takes an array of language-t
 
 ### loader
 By default hyphenopoly.module.js loads pattern files and hyphenEnginge by using nodes "fs"-module.
-This can be changed to the "http"-module by setting the `loader` to "http":
+This can be changed to the "https"-module by setting the `loader` to "https":
 ````javascript
 const hyphenator = hyphenopoly.config({
     "require": […],
-    "loader": "http"
+    "loader": "https"
 });
 
 ````
@@ -123,16 +123,16 @@ This is useful if the module is transformed to a script used in a webbrowser (e.
 ### other options
 For documentation about the other options see the `Hyphenopoly.js`-documentation:
 
-- [compound](./Setup.md#compound)
-- [exceptions](./Setup.md#exceptions)
-- [hyphen](./Setup.md#hyphen)
-- [leftmin](./Setup.md#leftmin-and-rightmin)
-- [minWordLength](./Setup.md#minwordlength)
-- [mixedCase](./Setup.md#mixedcase)
-- [normalize](./Setup.md#normalize)
-- [orphanControl](./Setup.md#orphancontrol)
-- [paths](./Global-Hyphenopoly-Object.md#paths)
-- [rightmin](./Setup.md#leftmin-and-rightmin)
+-   [compound](./Setup.md#compound)
+-   [exceptions](./Setup.md#exceptions)
+-   [hyphen](./Setup.md#hyphen)
+-   [leftmin](./Setup.md#leftmin-and-rightmin)
+-   [minWordLength](./Setup.md#minwordlength)
+-   [mixedCase](./Setup.md#mixedcase)
+-   [normalize](./Setup.md#normalize)
+-   [orphanControl](./Setup.md#orphancontrol)
+-   [paths](./Global-Hyphenopoly-Object.md#paths)
+-   [rightmin](./Setup.md#leftmin-and-rightmin)
 
 ## Supported languages (since Version 2.8.0)
 A list of supported languages can be programmatically obtained by looking at `Hyphenopoly.supportedLanguages`:
@@ -144,12 +144,10 @@ Hyphenopoly.supportedLanguages.includes("en"); //false
 
 ## Performance
 
-On my machine with node.js 10.0.1:
+On my machine with node.js 13.7.0:
 
-| module        | setup         | hyphenate 100 de words |
+| module        | setup         | hyphenate 270 en words |
 | ------------- | -------------:| ----------------------:|
-| _hyphenopoly_ | _12ms_        | _2ms_                  |
-| [hyphen](https://www.npmjs.com/package/hyphen)        | 40ms          | 370ms                  |
-| [hypher](https://www.npmjs.com/package/hypher)        | 70ms          | 3ms                    |
-
-
+| _hyphenopoly_ | _10ms_        | _0.5ms_                  |
+| [hyphen](https://www.npmjs.com/package/hyphen)        | 18ms          | 72ms                  |
+| [hypher](https://www.npmjs.com/package/hypher)        | 35ms          | 1.2ms                    |

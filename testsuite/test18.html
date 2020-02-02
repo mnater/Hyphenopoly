@@ -4,65 +4,39 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 018</title>
         <script>
-            var Hyphenopoly = {
-                require: {
-                    "de": "FORCEHYPHENOPOLY"
-                },
-                setup: {
-                    selectors: {
-                        ".hyphenate": {
-                            hyphen: "•"
-                        }
-                    }
-                },
-                handleEvent: {
-                    hyphenopolyEnd: function (e) {
-                        assert();
-                    }
-                }
-            };
-            var assertRunCount = 0;
-            function assert() {
-                assertRunCount += 1;
-                var tests = (assertRunCount === 1) ? 1 : 3;
-                var i = 1;
-                var test = "";
-                var ref = "";
-                var result = false;
-                document.getElementById("result").innerHTML = "";
-                while (i <= tests) {
-                    test = document.getElementById("test" + i).innerHTML;
-                    ref = document.getElementById("ref" + i).innerHTML;
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + i + "</span> ";
-                        result = result || true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + i + "</span> ";
-                        result = result || false;
-                    }
-                    i += 1;
-                }
-                if (parent != window && assertRunCount === 2) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 18,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
+        function assert() {
+            const r = !Hyphenopoly
+                ? "passed"
+                : "failed";
+            if (r === "passed") {
+                document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">passed</p>";
+            } else {
+                document.getElementById("result").innerHTML = "<p style=\"background-color: #ffd6d6\">failed</p>";
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 18,
+                    result: r,
+                }), window.location.href);
+            }
+        }
+        var Hyphenopoly = {
+            require: {
+                "en-us": "supercalifragilisticexpialidocious"
+            },
+            handleEvent: {
+                tearDown: function () {
+                    window.onload = assert;
                 }
             }
-            window.setTimeout(function () {
-                document.getElementById("test1").innerHTML = "Typografie";
-                document.getElementById("ref1").innerHTML = "Ty•po•gra•fie";
-
-                document.getElementById("test2").innerHTML = "Textlayout";
-                document.getElementById("ref2").innerHTML = "Text•lay•out";
-
-                document.getElementById("test3").innerHTML ='<p class="hyphenate">Satzstruktur</p>';
-                document.getElementById("ref3").innerHTML ='<p class="hyphenate">Satz•struk•tur</p>';
-                Hyphenopoly.events.dispatch("contentLoaded");
-            }, 500);
+        };
+        window.setTimeout(assert, 1000);
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
+
+        </script>
         <style type="text/css">
             body {
                 width:50%;
@@ -72,9 +46,17 @@
 
             .test {
                 background-color: #D8E2F9;
+                text-align: justify;
             }
             .ref {
                 background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
             }
         </style>
     </head>
@@ -82,20 +64,11 @@
         <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test17.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test19.html">Next&nbsp;&rarr;</a></div>
 
         <h1>Test 018</h1>
-        <p id="desc">Hyphenate element manually</p>
-        <div id="result">wait for it...</div>
+        <p id="desc">Check tearDown-Event (Chrome on Windows will fail because it doesn't tearDown...)</p>
+        <div id="result"></div>
         <hr>
-        <h2>1: Hyphenate on load, changed later</h2>
-        <p id="test1" class="test hyphenate" lang="de">Silbentrennungsalgorithmus</p>
-        <p id="ref1" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus</p>
-        <h2>2: Hyphenate text added to element with class="hyphenate"</h2>
-        <p id="test2" class="test hyphenate" lang="de"></p>
-        <p id="ref2" class="ref" lang="de"></p>
-        <h2>3: Hyphenate element with class="hyphenate" added to container</h2>
-        <div id="test3" class="test" lang="de"></div>
-        <div id="ref3" class="ref" lang="de"></div>
-        <hr>
-        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+        <div id="test1" class="test hyphenate" lang="en-us">hyphenation</div>
 
-    </body>
+<hr>
+</body>
 </html>
