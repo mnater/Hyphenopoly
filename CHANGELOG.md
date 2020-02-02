@@ -1,6 +1,6 @@
 # Version History
 
-## Version 4.0.0 (2020-01-27)
+## Version 4.0.0 (2020-02-02)
 With this major update Hyphenopoly NO LONGER SUPPORTS InternetExplorer.
 This step allows the usage of modern JavaScript features which leads to smaller filesizes and thus better performance.
 
