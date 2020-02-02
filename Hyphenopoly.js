@@ -849,9 +849,8 @@
          * @returns {function} hyphenateFunction with closured environment
          */
         function encloseHyphenateFunction(baseData, hyphenateFunc) {
-            const heapBuffer = baseData.wasmMem.buffer;
-            const wordStore = new Uint16Array(heapBuffer, baseData.wo, 64);
-            const hydWrdStore = new Uint16Array(heapBuffer, baseData.hw, 128);
+            const wordStore = new Uint16Array(baseData.buf, baseData.wo, 64);
+            const hydWrdStore = new Uint16Array(baseData.buf, baseData.hw, 128);
             wordStore[0] = 95;
             return ((word, hyphencc, leftmin, rightmin) => {
                 let i = 0;
@@ -884,10 +883,10 @@
                 const alphalen = exp.conv();
                 const baseData = {
                     /* eslint-disable multiline-ternary */
+                    "buf": exp.mem.buffer,
                     "hw": (wa.Global) ? exp.hwo.value : exp.hwo,
                     "lm": (wa.Global) ? exp.lmi.value : exp.lmi,
                     "rm": (wa.Global) ? exp.rmi.value : exp.rmi,
-                    "wasmMem": exp.mem,
                     "wo": (wa.Global) ? exp.uwo.value : exp.uwo
                     /* eslint-enable multiline-ternary */
                 };
