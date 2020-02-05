@@ -41,7 +41,7 @@
      * @param {number} props bitfield
      * @returns {Object} Property object
      */
-    function setProp(val, props) {
+    const setProp = (val, props) => {
         /* eslint-disable no-bitwise, sort-keys */
         return {
             "configurable": (props & 4) > 0,
@@ -50,7 +50,7 @@
             "value": val
         };
         /* eslint-enable no-bitwise, sort-keys */
-    }
+    };
 
     /**
      * Register copy event on element
@@ -171,17 +171,6 @@
     ((H) => {
         H.events = new Map();
 
-        /**
-         * Create eventPromise
-         * @returns {undefined}
-         */
-        H.createEventPromise = (name, immediate) => {
-            const promise = H.defProm();
-            H.events.set(name, promise);
-            if (immediate) {
-                promise.resolve(name);
-            }
-        };
         /* eslint-disable array-element-newline */
         const knownEvents = new Set([
             "afterElementHyphenation",
@@ -192,7 +181,7 @@
             "hyphenopolyStart"
         ]);
         /* eslint-enable array-element-newline */
-        H.createEventPromise("error");
+        H.events.set("error", H.defProm());
         H.events.get("error").then((e) => {
             e.runDefault = true;
             e.preventDefault = () => {
@@ -203,7 +192,7 @@
             eachKey(H.handleEvent, (name) => {
                 if (knownEvents.has(name)) {
                     if (!H.events.has(name)) {
-                        H.createEventPromise(name);
+                        H.events.set(name, H.defProm());
                     }
                     H.events.get(name).then((v) => {
                     // eslint-disable-next-line security/detect-object-injection
@@ -246,7 +235,7 @@
          */
         function reinitEventPromise(name) {
             H.events.delete(name);
-            H.createEventPromise(name);
+            H.events.set(name, H.defProm());
             H.events.get(name).then((v) => {
                 // eslint-disable-next-line security/detect-object-injection
                 H.handleEvent[name](v);
@@ -319,11 +308,11 @@
             }
 
             return {
-                "add": add,
-                "counter": counter,
-                "each": each,
-                "list": list,
-                "rem": rem
+                add,
+                counter,
+                each,
+                list,
+                rem
             };
         }
 
@@ -486,9 +475,9 @@
              * @returns {boolean} true if s is mixed case
              */
             function isMixedCase(s) {
-                return Array.prototype.map.call(s, function mapper(c) {
+                return Array.prototype.map.call(s, (c) => {
                     return (c === c.toLowerCase());
-                }).some(function checker(v, i, a) {
+                }).some((v, i, a) => {
                     return (v !== a[0]);
                 });
             }
@@ -633,8 +622,8 @@
             function hyphenateElement(el) {
                 if (H.events.has("beforeElementHyphenation")) {
                     H.events.get("beforeElementHyphenation").resolve({
-                        "el": el,
-                        "lang": lang
+                        el,
+                        lang
                     });
                     reinitEventPromise("beforeElementHyphenation");
                 }
@@ -651,8 +640,8 @@
                 });
                 if (H.events.has("afterElementHyphenation")) {
                     H.events.get("afterElementHyphenation").resolve({
-                        "el": el,
-                        "lang": lang
+                        el,
+                        lang
                     });
                     reinitEventPromise("afterElementHyphenation");
                 }
@@ -666,7 +655,11 @@
             return r;
         }
 
-        H.createHyphenator = (lang) => ((entity, sel = ".hyphenate") => hyphenate(lang, sel, entity));
+        H.createHyphenator = ((lang) => {
+            return ((entity, sel = ".hyphenate") => {
+                return hyphenate(lang, sel, entity);
+            });
+        });
 
         H.unhyphenate = () => {
             H.res.get("elements").then((elements) => {
@@ -703,7 +696,7 @@
                 if (elements.counter[0] === 0) {
                     w.clearTimeout(C.timeOutHandler);
                     if (C.hide !== 0) {
-                        H.hiding(1, null);
+                        H.hide(0, null);
                     }
                     if (H.events.has("hyphenopolyEnd")) {
                         H.events.get("hyphenopolyEnd").resolve("hyphenopolyEnd");
@@ -839,7 +832,9 @@
 
         const decode = (() => {
             const utf16ledecoder = new TextDecoder("utf-16le");
-            return ((ui16) => utf16ledecoder.decode(ui16));
+            return ((ui16) => {
+                return utf16ledecoder.decode(ui16);
+            });
         })();
 
         /**
@@ -926,7 +921,7 @@
                     });
                     H.hyphenators[lang].reject({
                         "lvl": "warn",
-                        "msg": `1 File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
+                        "msg": `1 File ${lang}.wasm can't be loaded from ${H.ps.patterndir}`
                     });
                     /* eslint-enable security/detect-object-injection */
                 }
