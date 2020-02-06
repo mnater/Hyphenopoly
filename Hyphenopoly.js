@@ -896,17 +896,23 @@
                     baseData.rm
                 );
             }
-            heProm.then((response) => {
+            heProm.w.then((response) => {
                 if (response.ok) {
+                    let r2 = response;
+                    if (heProm.c > 1) {
+                        r2 = response.clone();
+                    }
                     if (
                         wa.instantiateStreaming &&
                         (response.headers.get("Content-Type") === "application/wasm")
                     ) {
-                        wa.instantiateStreaming(response).then(handleWasm);
+                        wa.instantiateStreaming(r2).then(handleWasm);
                     } else {
-                        response.arrayBuffer().then((ab) => {
-                            window.WebAssembly.instantiate(ab).then(handleWasm);
-                        });
+                        r2.arrayBuffer().
+                            then((ab) => {
+                                window.WebAssembly.instantiate(ab).
+                                    then(handleWasm);
+                            });
                     }
                 } else {
                     H.res.get("elements").then((elements) => {

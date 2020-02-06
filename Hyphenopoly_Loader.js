@@ -177,7 +177,7 @@
         }
     };
 
-    H.res = new Map([["he", new Map()]]);
+    H.res = new Map([["he", new Map()], ["fw", new Map()]]);
 
     (() => {
         const tester = (() => {
@@ -259,10 +259,22 @@
             H.cf.pf = true;
             // eslint-disable-next-line security/detect-object-injection
             H.cf.langs[lang] = "H9Y";
-            H.res.get("he").set(
-                lang,
-                w.fetch(H.ps.patterndir + filename, {"credentials": "include"})
-            );
+            if (H.res.get("fw").has(filename)) {
+                H.res.get("he").get(H.res.get("fw").get(filename)).c += 1;
+                H.res.get("he").set(
+                    lang,
+                    H.res.get("he").get(H.res.get("fw").get(filename))
+                );
+            } else {
+                H.res.get("he").set(
+                    lang,
+                    {
+                        "c": 1,
+                        "w": w.fetch(H.ps.patterndir + filename, {"credentials": "include"})
+                    }
+                );
+                H.res.get("fw").set(filename, lang);
+            }
         }
 
         /**
