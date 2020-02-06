@@ -25,13 +25,13 @@
                 var test1 = "engine for language 'en-us' loaded, but no elements found.";
                 var test2 = "Element with 'en' found, but 'en.hpb' not loaded. Check language tags!";
                 var ref = e.msg;
-                var result = false;
+                var result = true;
                 if (test1 === ref || test2 === ref) {
                     document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
-                    result = result || true;
+                    result = result && true;
                 } else {
                     document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">failed</span> ";
-                    result = result || false;
+                    result = false;
                 }
                 if (parent != window) {
                     parent.postMessage(JSON.stringify({

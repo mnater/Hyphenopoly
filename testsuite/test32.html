@@ -4,7 +4,7 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 032</title>
         <script>
-            var result = false;
+            var result = true;
             let assertRuns = 0;
             function assert() {
                 const mql = window.matchMedia("(max-width: 600px)");
@@ -21,10 +21,10 @@
                     }
                     if (test === ref) {
                         document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                        result = result || true;
+                        result = result && true;
                     } else {
                         document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                        result = result || false;
+                        result = false;
                     }
                     i += 1;
                 }
