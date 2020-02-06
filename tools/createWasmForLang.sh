@@ -25,7 +25,13 @@ node ./tools/create_imports.js ./lang/$LANG/src/$LANG.hpb > ./lang/$LANG/src/g.t
 echo '(D) copy TypeScript sources'
 cp ./src/hyphenEngine.ts ./lang/$LANG/src/hyphenEngine.ts
 cp ./src/mytransform.js ./lang/$LANG/src/mytransform.js
-cp ./src/tsconfig.json ./lang/$LANG/src/tsconfig.json
+#cp ./src/tsconfig.json ./lang/$LANG/src/tsconfig.json
+echo '{
+    "extends": "../../../node_modules/assemblyscript/std/assembly.json",
+    "include": [
+      "./*.ts"
+    ]
+}' > ./lang/$LANG/src/tsconfig.json
 echo "$LANG\c" > ./lang/$LANG/src/lang.txt
 
 echo '(E) compile WASM-Module'

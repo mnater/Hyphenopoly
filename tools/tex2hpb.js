@@ -173,7 +173,7 @@ const logger = (function createLogger() {
     }
 
     return {
-        "log": log
+        log
     };
 }());
 
@@ -260,7 +260,7 @@ function getPatternsFile() {
     let patternsfile = fs.readFileSync("./" + patternsFileName, "utf8");
     patternsfile = patternsfile.trim();
     // eslint-disable-next-line prefer-named-capture-group
-    patternsfile = patternsfile.replace(/(\d{2})\n/, function repl(ignore, p1) {
+    patternsfile = patternsfile.replace(/(\d{2})\n/, (ignore, p1) => {
         const digits = p1.split("");
         leftmin = parseInt(digits[0], 10);
         rightmin = parseInt(digits[1], 10);
@@ -302,7 +302,7 @@ function createTranslate(characters) {
     translateTable.push(0);
     translateTable[0] += 1;
 
-    lines.forEach(function eachLine(value) {
+    lines.forEach((value) => {
         translateTable[0] += 1;
         if (value.length === 2) {
             translateTable.push(value.charCodeAt(0));
@@ -372,10 +372,10 @@ function createTranslateLookUpTable(translate) {
 function createExceptionPatterns(exceptions) {
     const lines = exceptions.split("\n");
     const ret = [];
-    lines.forEach(function eachLine(value, index) {
+    lines.forEach((value, index) => {
         if (value !== "") {
             // eslint-disable-next-line security/detect-object-injection
-            ret[index] = "_" + value.split("").map(function mapper(c) {
+            ret[index] = "_" + value.split("").map((c) => {
                 if (c === "-") {
                     return "11";
                 }
@@ -403,8 +403,7 @@ function createPatterns(translate, patterns, exceptionsfile) {
     }
     const allPatterns = patterns.split(" ");
     const exceptions = [];
-    // eslint-disable-next-line complexity
-    const translatedPatterns = allPatterns.map(function mapper(pat) {
+    const translatedPatterns = allPatterns.map((pat) => {
         let i = 0;
         let cP1 = 0;
         let cP2 = 0;
@@ -451,7 +450,7 @@ function createPatterns(translate, patterns, exceptionsfile) {
 
     const outPatterns = [];
 
-    Object.keys(groupedPatterns).forEach(function eachPatternLength(k) {
+    Object.keys(groupedPatterns).forEach((k) => {
         groupedPatterns[k].sort();
         let l = 0;
         let j = 0;
@@ -698,7 +697,7 @@ function main() {
         patterns,
         header.byteLength + paddedLicenseBuf + translate.byteLength
     );
-    fs.writeFile(saveFileName + ".hpb", fileBufferui8, function cb(err) {
+    fs.writeFile(saveFileName + ".hpb", fileBufferui8, (err) => {
         if (err) {
             console.log(err);
         } else {

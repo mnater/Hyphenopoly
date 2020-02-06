@@ -173,7 +173,7 @@ export function hyphenate(lm: i32, rm: i32, hc: i32): i32 {
         while (charOffset < wordLength) {
             rowOffset2 = load<u8>(tw + charOffset) << 3;
             link = load<i32>(row + rowOffset2);
-            value = load<i32>(row + rowOffset2, 4)
+            value = load<i32>(row + rowOffset2, 4);
             if (value > 0) {
                 hyphenPointsCount = 0;
                 hyphenPoint = load<u8>(value);
