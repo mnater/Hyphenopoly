@@ -2,7 +2,7 @@
 
 ## Version 4.0.1 (2020-XX-YY)
 ### Changed
-*   Hyphenopoly.unhyphenate now returns `elements` (https://mnater.github.io/Hyphenopoly/Global-Hyphenopoly-Object.html#unhyphenate)
+*   Hyphenopoly.unhyphenate now returns `elements`: [doc](https://mnater.github.io/Hyphenopoly/Global-Hyphenopoly-Object.html#unhyphenate)
 
 ### Fixed
 *   ensure wasm loads only once with fallbacks
