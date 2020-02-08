@@ -12,6 +12,7 @@
                 var i = 1;
                 var test = "";
                 var ref = "";
+                document.getElementById("result").innerHTML = "";
                 while (i <= tests) {
                     test = document.getElementById("test" + i).innerHTML;
                     if (mql.matches) {
@@ -40,13 +41,21 @@
 
             (function selectiveLoad() {
                 let H9YLisLoaded = false;
+                let elements = null;
                 function handleSize(mql) {
                     if (mql.matches) {
                         if (H9YLisLoaded) {
-                           window.Hyphenopoly.events.dispatch(
-                                "contentLoaded",
-                                {"msg": ["contentLoaded"]}
-                            );
+                            window.Hyphenopoly.hyphenators["de"].then((deh) => {
+                                elements.list.get("de").forEach((elo) => {
+                                    deh(elo.element, elo.selector);
+                                });
+                            });
+                            window.Hyphenopoly.hyphenators["en-us"].then((deh) => {
+                                elements.list.get("en-us").forEach((elo) => {
+                                    deh(elo.element, elo.selector);
+                                });
+                                assert();
+                            });
                         } else {
                             window.Hyphenopoly = {
                                 require: {
@@ -76,8 +85,10 @@
                         }
                     } else {
                         if (H9YLisLoaded) {
-                            window.Hyphenopoly.unhyphenate();
-                            assert();
+                            window.Hyphenopoly.unhyphenate().then((els) => {
+                                elements = els;
+                                assert();
+                            });
                         } else {
                             window.onload = function() {
                                 assert();

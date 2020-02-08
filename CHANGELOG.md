@@ -1,5 +1,13 @@
 # Version History
 
+## Version 4.0.1 (2020-XX-YY)
+### Changed
+*   Hyphenopoly.unhyphenate now returns `elements` (https://mnater.github.io/Hyphenopoly/Global-Hyphenopoly-Object.html#unhyphenate)
+
+### Fixed
+*   ensure wasm loads only once with fallbacks
+*   fix issue with hyphenation depending on media queries
+
 ## Version 4.0.0 (2020-02-02)
 With this major update Hyphenopoly NO LONGER SUPPORTS InternetExplorer.
 This step allows the usage of modern JavaScript features which leads to smaller filesizes and thus better performance.

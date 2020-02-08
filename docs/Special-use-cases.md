@@ -138,13 +138,15 @@ var Hyphenopoly = {
 <script>
 (function selectiveLoad() {
     let H9YLisLoaded = false;
+    let elements = null;
     function handleSize(mql) {
         if (mql.matches) { //i.e. if width <= 600px
             if (H9YLisLoaded) {
-               window.Hyphenopoly.events.dispatch(
-                    "contentLoaded",
-                    {"msg": ["contentLoaded"]}
-                );
+                window.Hyphenopoly.hyphenators["en-us"].then((deh) => {
+                    elements.list.get("en-us").forEach((elo) => {
+                        deh(elo.element, elo.selector);
+                    });
+                });
             } else {
                 // Hyphenopoly isn't loaded yet, so load the Loader
                 // with the following settings:
@@ -170,7 +172,9 @@ var Hyphenopoly = {
         } else { //i.e. if width > 600px
             if (H9YLisLoaded) {
                 //remove hyphenation previously applied by Hyphenopoly
-                window.Hyphenopoly.unhyphenate();
+                window.Hyphenopoly.unhyphenate().then((els) => {
+                    elements = els;
+                });
             }
         }
     }

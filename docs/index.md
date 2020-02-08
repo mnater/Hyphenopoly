@@ -14,6 +14,7 @@
     *   [Optional fields in setup](./Setup.md)
         *   [Global Settings](./Setup.md#global-settings)
         *   [Selector Based Settings](./Setup.md#selector-based-settings)
+    *   [unhyphenate](./Global-Hyphenopoly-Object.md#unhyphenate)
 *   [Events](./Events.md)
 *   [Hyphenators](./Hyphenators.md)
 *   [Hyphenation Errors](./Coping-with-hyphenation-errors.md)

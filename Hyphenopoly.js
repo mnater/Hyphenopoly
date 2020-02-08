@@ -662,7 +662,7 @@
         });
 
         H.unhyphenate = () => {
-            H.res.get("elements").then((elements) => {
+            return H.res.get("elements").then((elements) => {
                 elements.each((lang, els) => {
                     els.forEach((elo) => {
                         const n = elo.element.firstChild;
@@ -672,6 +672,7 @@
                         /* eslint-enable security/detect-non-literal-regexp */
                     });
                 });
+                return elements;
             });
         };
 

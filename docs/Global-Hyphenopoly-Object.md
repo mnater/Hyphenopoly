@@ -107,6 +107,12 @@ See [Hyphenators](./Hyphenators.md)
 
 ### Unhyphenate
 To remove all hyphenation previously applied by Hyphenopoly call `Hyphenopoly.unhyphenate();`.
+This method asynchronously returns the elements that have been unhyphenated in the datastructure used internally.
+````javascript
+Hyphenopoly.unhyphenate().then((elements) => {
+    console.log(elements);
+});
+````
 
 ## Putting it all together
 A typical init could look like this:
@@ -130,15 +136,3 @@ const Hyphenopoly = {
 
 ## Internal Fields
 If you `console.dir(Hyphenopoly)` you'll see lots of other data that is internally used by Hyphenopoly_Loader.js and Hyphenopoly.js but isn't meant to be changed by the user.
-
-## Reclaim memory
-Hyphenopoly is quite hungry regarding to memory usage: for each language ~2MB of wasm memory are allocated. If you're done with Hyphenopoly you can set `window.Hyphenopoly = null` and leave it to the garbage collector to free the memory:
-
-````javascript
-handleEvent: {
-    hyphenopolyEnd: function (e) {
-        window.Hyphenopoly = null;
-    }
-}
-````
-See [Events](./Events.md) for more details about the `hyphenopolyEnd`-event.
