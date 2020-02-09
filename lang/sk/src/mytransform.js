@@ -1,4 +1,8 @@
-/* eslint-disable require-jsdoc */
+/* eslint-disable
+    require-jsdoc,
+    no-sync,
+    security/detect-non-literal-fs-filename
+*/
 /* eslint-env node */
 
 "use strict";
@@ -17,8 +21,8 @@ class MyTransform extends Transform {
         const module = binaryen.wrapModule(asModule.ref);
         module.setMemory(memBase, -1, "mem", [
             {
-                offset: module.i32.const(metaData.ho),
-                data: data
+                data,
+                "offset": module.i32.const(metaData.ho)
             }
         ]);
         module.removeExport("memory");
