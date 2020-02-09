@@ -109,7 +109,7 @@ Defaults:
 The only option that Must be set is `require` which takes an array of language-tags.
 
 ### loader
-By default hyphenopoly.module.js loads pattern files and hyphenEnginge by using nodes "fs"-module.
+By default hyphenopoly.module.js loads pattern files and hyphenEngine by using nodes "fs"-module.
 This can be changed to the "https"-module by setting the `loader` to "https":
 ````javascript
 const hyphenator = hyphenopoly.config({
@@ -118,7 +118,7 @@ const hyphenator = hyphenopoly.config({
 });
 
 ````
-This is useful if the module is transformed to a script used in a webbrowser (e.g. by using [browserify](http://browserify.org)).
+This is useful if the module is transformed to a script used in a web browser (e.g. by using [browserify](http://browserify.org)).
 
 ### other options
 For documentation about the other options see the `Hyphenopoly.js`-documentation:

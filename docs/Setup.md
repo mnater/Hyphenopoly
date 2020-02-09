@@ -165,7 +165,7 @@ If the word does not contain a hyphen, it will not be hyphenated by Hyphenopoly.
 type: string ("all" | "element" | "text")
 default: "all"
 ````
-Define if and how elements are made unvisible while being hyphenated.
+Define if and how elements are made invisible while being hyphenated.
 ````html
 <script>
 var Hyphenopoly = {
@@ -224,7 +224,7 @@ var Hyphenopoly = {
 </script>
 ````
 The pattern files work with _precomposed_ characters. So an `Å` (LATIN CAPITAL LETTER A WITH RING ABOVE) must not be composed of `A` (LATIN CAPITAL LETTER A) and ` ̊` (COMBINING RING ABOVE) to be recognizable by hyphenation-engine.
-If the text contains _composed_ characters they must be normalised to _precomposed_ characters. If `normalize` is activated and the user agent supports `String.prototype.normalize()` this can happen automatically.
+If the text contains _composed_ characters they must be normalized to _precomposed_ characters. If `normalize` is activated and the user agent supports `String.prototype.normalize()` this can happen automatically.
 Since this comes with a performance penalty it is deactivated by default and it's recommended to use _precomposed_ characters in HTML.
 
 ### safeCopy
@@ -245,7 +245,7 @@ var Hyphenopoly = {
 };
 </script>
 ````
-To prevent soft hyphens from beeing copied to the clipboard, Hyphenopoly.js registers a `onCopy`-Event on hyphenated elements. When text is copied to the clipboard, this event fires and soft hyphens are removed.
+To prevent soft hyphens from being copied to the clipboard, Hyphenopoly.js registers a `onCopy`-Event on hyphenated elements. When text is copied to the clipboard, this event fires and soft hyphens are removed.
 _It does NOT remove other `hyphen`-characters!_
 This feature is on by default, but it's a hack – disable it if you don't like it.
 
@@ -268,7 +268,7 @@ var Hyphenopoly = {
 };
 </script>
 ````
-To prevent a _Flash Of Unhyphenated Content (FOUHC)_ Hyphenopoly_Loader.js hides text to be hyphenated until hyphenation is done. If something goes wrong (e.g. a ressource didn't load correctly) this timeout saves us from an empty page. The timeout is cleared when hyphenation succeeds.
+To prevent a _Flash Of Unhyphenated Content (FOUHC)_ Hyphenopoly_Loader.js hides text to be hyphenated until hyphenation is done. If something goes wrong (e.g. a resource didn't load correctly) this timeout saves us from an empty page. The timeout is cleared when hyphenation succeeds.
 If the timeout kicks in, the `onTimeOut`event is fired.
 
 See [hide](#hide) about different ways of hiding.

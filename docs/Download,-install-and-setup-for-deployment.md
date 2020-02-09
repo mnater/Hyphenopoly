@@ -3,7 +3,7 @@
 ## General Notes
 
 ### Minifying
-While the .wasm files are already compact by design, the .js files are not minified. I highly recommend to use one of the es6-savy JavaScript minifier tools.
+While the .wasm files are already compact by design, the .js files are not minified. I highly recommend to use one of the es6-capable JavaScript minifier tools.
 
 If you [installed Hyphenopoly with npm](#using-npmjs) run `npm run minify` to create a directory called `min` that contains a full set of minified files (and the test suite) minified with `terser`.
 

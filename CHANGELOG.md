@@ -10,7 +10,7 @@
 
 ## Version 4.0.0 (2020-02-02)
 With this major update Hyphenopoly NO LONGER SUPPORTS InternetExplorer.
-This step allows the usage of modern JavaScript features which leads to smaller filesizes and thus better performance.
+This step allows the usage of modern JavaScript features which leads to smaller file sizes and thus better performance.
 
 ### Changed
 *   No fallback to asm.js
@@ -41,7 +41,7 @@ Bugfix release, because I had to unpublish from npm
 ## Version 3.2.0 (2019-08-29)
 ### Fixed
 *   Fixed issue with SSL Certificates and FireFox 60.x ESR (issue #85)
-*   Fixed "a potential security vulnerability" in github-pages dependencies
+*   Fixed "a potential security vulnerability" in GitHub-pages dependencies
 *   Fixed issue with Firefox 68, where feature detection in Hyphenopoly_Loader fails
 *   bump devDependencies
 
@@ -58,7 +58,7 @@ Bugfix release, because I had to unpublish from npm
 *   bump devDependencies
 
 ### Changed
-*   doc: uild github page from docs folder
+*   doc: build GitHub page from docs folder
 *   tools: move eslint config from package.json to .eslintrc
 *   tools: remove manual replacement of mutable globals when compiling to wasm
 
@@ -103,7 +103,7 @@ Bugfix release, because I had to unpublish from npm
 ## Version 2.8.0 (Feb 28, 2019)
 *   the error event now accepts a `lvl` field ("info"/"warn"/"error") and logs accordingly (issue #56)
 *   add list of supported languages in hyphenopoly.module.js (issue #57)
-*   improve loading of ressources (issue #58)
+*   improve loading of resources (issue #58)
 
 ## Version 2.7.0 (Feb 01, 2019)
 *   implement sync mode for node module (issue #43)
@@ -116,7 +116,7 @@ Bugfix release, because I had to unpublish from npm
 ## Version 2.6.1 (Jan 09, 2018)
 *   dontHyphenateClass is configurable (issue #48)
 *   fixed issue with StringDecoder in older node versions (issue #45)
-*   small refactorings for smaller codesize
+*   small refactoring for smaller code size
 *   fixed a StateError in IE 11
 
 ## Version 2.6.0 (Dec 01, 2018)
@@ -136,14 +136,14 @@ Bugfix release, because I had to unpublish from npm
 *   hyphenopoly.module.js is now [easy to use with browserify](https://github.com/mnater/Hyphenopoly/wiki/browserify)
 
 ## Version 2.4.0 (Sept 01, 2018)
-*   Implement fallback mechanism for language subtags where no patterns are available (e.g. en-au -> en-gb) [#29](https://github.com/mnater/Hyphenopoly/issues/29)
+*   Implement fallback mechanism for language sub-tags where no patterns are available (e.g. en-au -> en-gb) [#29](https://github.com/mnater/Hyphenopoly/issues/29)
 *   updated patterns for Thai [#25](https://github.com/hyphenation/tex-hyphen/pull/25)
 
 ## Version 2.3.0 (Juli 26, 2018)
 *   Don't use template strings [#28](https://github.com/mnater/Hyphenopoly/issues/28)
 *   run feature test for wasm support only if necessary
 *   define node >=8.3.0 as requirement (for util.TextDecoder)
-*   small refactorings
+*   small refactoring
 
 ## Version 2.2.0 (June 26, 2018)
 *   provide example.js for RunKit
@@ -151,11 +151,11 @@ Bugfix release, because I had to unpublish from npm
 *   [6f9e539](https://github.com/mnater/Hyphenopoly/commit/6f9e539a5dab2d1eff5bdeb0c7857c6fda9eb41e)
 *   bugfix: [#24](https://github.com/mnater/Hyphenopoly/issues/24): [aeefe6e](https://github.com/mnater/Hyphenopoly/commit/aeefe6e3a59e8356abc99ca490acabf6c3374d7b)
 
-## Version 2.1.0 (Mai 27, 2018)
+## Version 2.1.0 (May 27, 2018)
 *   Configure Travis-CI
-*   bugfixes
+*   bug fixes
 
-## Version 2.0.0 (Mai 27, 2018)
+## Version 2.0.0 (May 27, 2018)
 *   Provide [node module](https://github.com/mnater/Hyphenopoly/wiki/Node-Module)
 *   default file locations better reflect usual installations [#19](https://github.com/mnater/Hyphenopoly/issues/19)
 *   Add ability to store results of feature tests (optional) [#22](https://github.com/mnater/Hyphenopoly/issues/22)
@@ -164,8 +164,8 @@ Bugfix release, because I had to unpublish from npm
 *   fix string normalization (a3229f730f79ccdd3054cbac257b2345f5c8e11a)
 *   Better tooling: minify, eslint, testing (mocha), compiling [devDependencies](https://github.com/mnater/Hyphenopoly/wiki/Usage-of-devDependencies)
 
-## Version 1.0.1 (Mai 13, 2018)
+## Version 1.0.1 (May 13, 2018)
 Prevent browsers to force layout on feature test in some cases.
 
-## Version 1.0.0 (Mai 12, 2018)
+## Version 1.0.0 (May 12, 2018)
 First release

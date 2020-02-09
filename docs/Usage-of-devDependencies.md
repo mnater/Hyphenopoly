@@ -16,7 +16,7 @@ This will create a directory called `Hyphenopoly` in your current working direct
 
 Use this to create pull-requests or to fork the repository.
 
-### Donwload tagged release
+### Download tagged release
 
 While cloning gives you the most recent status, downloading a tagged release gives you a more thoughtfully tested (but never error free) version of Hyphenopoly.
 

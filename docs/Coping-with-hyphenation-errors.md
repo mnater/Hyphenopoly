@@ -52,7 +52,7 @@ __pro:__
 -   easy to do
 
 __contra:__
--   needs to be repeated for every occurence of the word
+-   needs to be repeated for every occurrence of the word
 -   has no effect in the long term (others will not benefit)
 
 ### Define hyphenation exceptions.
@@ -75,7 +75,7 @@ In the example above Hyphenopoly.js will never hyphenate the word "desert" (exce
 
 __pro:__
 -   one place for all exceptions
--   exceptions apply to all occurences of the words
+-   exceptions apply to all occurrences of the words
 
 __contra:__
 -   needs carefulness

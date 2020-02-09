@@ -1,7 +1,7 @@
 # Hyphenators
-While the main functionality of Hyphenopoly is to just hyphenate your HTML with no further ado, it is sometimes usefull to have a function at hand that hyphenates text.
+While the main functionality of Hyphenopoly is to just hyphenate your HTML with no further ado, it is sometimes useful to have a function at hand that hyphenates text.
 
-Possible usecases are:
+Possible use cases are:
 *   dynamically loaded text
 *   hyphenating text provided by the user (e.g. in a preview window of a blogging software)
 *   …
@@ -70,7 +70,7 @@ In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for
 In the example a `string` is handed over to the `hyphenator` which returns a hyphenated string according to the settings for the `selector`. If no `selector` is defined it defaults to `".hyphenate"`.
 
 ## Use `Hyphenopoly.hyphenators` for DOM-Elements
-When handing over a HTMLELEMENT instead of a string `hyphenators` directly hyphenate the contents of a HTMLElement and return nothing (`undefined`).
+When handing over a `HTMLELEMENT` instead of a string, `hyphenators` directly hyphenate the contents of a HTMLElement and return nothing (`undefined`).
 
 ````html
 <html>

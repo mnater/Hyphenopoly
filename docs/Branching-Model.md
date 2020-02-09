@@ -25,7 +25,7 @@ Merges to `master` must always cause a new release.
 The public `develop` branch reflects the state of the latest stable development state. The code here is tested but waiting for more changes to accumulate, before a new release is triggered.
 
 ### release
-The `release` branch is a temporary preparation branch. It is always branched from the `develop` branch, when enough changes piled up. This is the last stage where version numbers are updated, final tests are made and changelog is finalised before it is merged to master.
+The `release` branch is a temporary preparation branch. It is always branched from the `develop` branch, when enough changes piled up. This is the last stage where version numbers are updated, final tests are made and change-log is finalized before it is merged to master.
 
 `release`branches are named `release-x.y.z`. In most cases they are not pushed to GitHub.
 
