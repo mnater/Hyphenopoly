@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
-
+/* globals Hyphenopoly:readonly */
 ((w, d, H, o) => {
     "use strict";
 

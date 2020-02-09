@@ -7,6 +7,7 @@
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
 
+/* globals Hyphenopoly:readonly */
 ((w) => {
     "use strict";
     const SOFTHYPHEN = String.fromCharCode(173);
