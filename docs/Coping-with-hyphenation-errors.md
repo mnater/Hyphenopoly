@@ -19,12 +19,14 @@ Automatic hyphenation can not be error free! Because ...
     ````
 *   ... the patterns differ in quality. Some are very new and reflect the current state of the language others are older. Some are based on a very large list of words others are crafted by hand (which is not necessarily bad).
 
+*   ... patterns are made for a specific set of characters (the alphabet of the respective language). So e.g.
+`en-us` patterns will not be able to correctly hyphenate a word that contains a character outside of the range `[a-z]` (Hyphenopoly doesn't even try to hyphenate in this case but rather leaves the word unchanged).
+
 In any case automatic hyphenation needs proofreading and may need some intervention.
 
 ## Proofread
 Use a visible hyphen character to display all hyphen opportunities:
 ````javascript
-<script>
 var Hyphenopoly = {
     require: [...],
     setup: {
@@ -35,7 +37,6 @@ var Hyphenopoly = {
         }
     }
 };
-</script>
 ````
 See also [Setup#hyphen](./Setup.md#hyphen)
 
@@ -46,7 +47,7 @@ There are three levels of fixing possibilities:
 3. [Improve patterns](#help-to-improve-the-patterns)
 
 ### Fix hyphenation in the text
-Words containing a soft hyphen (\&shy;) will not be hyphenated by Hyphenopoly.js. Therefor you can simply add soft hyphens manually to 'overwrite' automatic hyphenation.
+Words containing a soft hyphen (&amp;shy;) will not be hyphenated by Hyphenopoly.js. Therefor you can simply add soft hyphens manually to 'overwrite' automatic hyphenation.
 
 __pro:__
 -   easy to do
@@ -59,7 +60,6 @@ __contra:__
 Hyphenopoly.js has an [API for hyphenation exceptions](https://github.com/mnater/Hyphenopoly/wiki/Setup#exceptions):
 
 ````javascript
-<script>
 var Hyphenopoly = {
     require: {...},
     setup: {
@@ -69,7 +69,6 @@ var Hyphenopoly = {
         selectors: {...}
     }
 };
-</script>
 ````
 In the example above Hyphenopoly.js will never hyphenate the word "desert" (exceptions are not case sensitive) and hyphenate the words "dictionary", "dictionaries" and "blogosphere" at the positions marked with a hyphen-minus.
 
@@ -92,4 +91,5 @@ __contra:__
 -   fixing patterns often takes a long time (not all patterns are actively maintained)
 -   fixing the patterns often requires extended knowledge
 
-As an intermediate step to improved patterns, patterns also have the ability to include exceptions. Follow this guide ([todo](todo)) to improve the patterns Hyphenopoly.js uses.
+As an intermediate step to improved patterns, Hyphenopoly has the ability to include exceptions in the wasm-file. Feel free to [open an issue](https://github.com/mnater/Hyphenopoly/issues) if you have a good list
+of exceptions for a language.
