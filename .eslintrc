@@ -1,4 +1,5 @@
 {
+  "root": true,
   "parserOptions": {
     "ecmaVersion": 2020
   },
@@ -117,5 +118,22 @@
       }
     ]
   },
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "parser": "@typescript-eslint/parser",
+      "plugins": ["@typescript-eslint"],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "rules": {
+        "require-jsdoc": 0,
+        "no-bitwise": 0,
+        "complexity": 0
+      }
+    }
+  ],
   "reportUnusedDisableDirectives": true
 }
