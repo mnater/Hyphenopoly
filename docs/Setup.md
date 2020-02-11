@@ -327,7 +327,7 @@ var Hyphenopoly = {
 };
 </script>
 ````
-Can be set to something visible for testing and documentation.
+Can be set to something visible for testing and documentation. Characters that have a special meaning in RegularExpressions (`.\+*?[^]$(){}=!<>|:-`) are not allowed.
 
 ### leftmin and rightmin
 ````

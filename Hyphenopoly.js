@@ -10,7 +10,7 @@
 /* globals Hyphenopoly:readonly */
 ((w) => {
     "use strict";
-    const SOFTHYPHEN = String.fromCharCode(173);
+    const SOFTHYPHEN = "\u00AD";
 
     /**
      * Create Object without standard Object-prototype
@@ -69,10 +69,10 @@
                 div.appendChild(docFrag);
                 const selectedHTML = div.innerHTML;
                 const selectedText = sel.toString();
-                /* eslint-disable security/detect-non-literal-regexp */
-                e.clipboardData.setData("text/plain", selectedText.replace(new RegExp(SOFTHYPHEN, "g"), ""));
-                e.clipboardData.setData("text/html", selectedHTML.replace(new RegExp(SOFTHYPHEN, "g"), ""));
-                /* eslint-enable security/detect-non-literal-regexp */
+                // eslint-disable-next-line security/detect-non-literal-regexp
+                const re = new RegExp(SOFTHYPHEN, "g");
+                e.clipboardData.setData("text/plain", selectedText.replace(re, ""));
+                e.clipboardData.setData("text/html", selectedHTML.replace(re, ""));
             },
             true
         );
@@ -201,7 +201,6 @@
                     });
                 } else if (name !== "tearDown" && name !== "polyfill") {
                     H.events.get("error").resolve({
-                        "lvl": "warn",
                         "msg": `unknown Event "${name}" discarded`
                     });
                 }
@@ -209,16 +208,7 @@
         }
         H.events.get("error").then((e) => {
             if (e.runDefault) {
-                switch (e.lvl) {
-                case "info":
-                    w.console.info(e.msg);
-                    break;
-                case "warn":
-                    w.console.warn(e.msg);
-                    break;
-                default:
-                    w.console.error(e.msg);
-                }
+                w.console.warn(e.msg);
             }
         });
     })(Hyphenopoly);
@@ -406,7 +396,6 @@
                     }
                 } else if (!H.cf.langs[eLang]) {
                     H.events.get("error").resolve({
-                        "lvl": "warn",
                         "msg": `Element with '${eLang}' found, but '${eLang}.hpb' not loaded. Check language tags!`
                     });
                 }
@@ -447,7 +436,7 @@
              * @returns {string} The hyphenated compound word
              */
             function hyphenateCompound(word) {
-                const zeroWidthSpace = String.fromCharCode(8203);
+                const zeroWidthSpace = "\u200B";
                 let parts = null;
                 let wordHyphenator = null;
                 if (selSettings.compound === "auto" ||
@@ -491,25 +480,23 @@
              */
             function hyphenator(word) {
                 let hw = lo.cache.get(sel).get(word);
-                if (!selSettings.mixedCase && isMixedCase(word)) {
-                    hw = word;
-                }
                 if (!hw) {
-                    if (lo.exceptions.has(word)) {
-                        hw = lo.exceptions.get(word).replace(
+                    if (lo.exc.has(word)) {
+                        hw = lo.exc.get(word).replace(
                             /-/g,
                             selSettings.hyphen
                         );
+                    } else if (!selSettings.mixedCase && isMixedCase(word)) {
+                        hw = word;
                     } else if (word.indexOf("-") === -1) {
                         if (word.length > 61) {
                             H.events.get("error").resolve({
-                                "lvl": "warn",
                                 "msg": "found word longer than 61 characters"
                             });
                             hw = word;
                         } else {
                         /* eslint-disable security/detect-object-injection */
-                            hw = lo.hyphenateFunction(
+                            hw = lo.hyphenate(
                                 word,
                                 hyphen.charCodeAt(0),
                                 selSettings.leftminPerLang[lang],
@@ -554,15 +541,12 @@
                 /* eslint-disable security/detect-object-injection */
                 const selSettings = C[sel];
                 /* eslint-enable security/detect-object-injection */
-                let h = selSettings.hyphen;
-                if (".\\+*?[^]$(){}=!<>|:-".indexOf(selSettings.hyphen) !== -1) {
-                    h = "\\" + selSettings.hyphen;
-                }
                 if (selSettings.orphanControl === 3 && leadingWhiteSpace === " ") {
-                    leadingWhiteSpace = String.fromCharCode(160);
+                    // \u00A0 = no-break space (nbsp)
+                    leadingWhiteSpace = "\u00A0";
                 }
                 /* eslint-disable security/detect-non-literal-regexp */
-                return leadingWhiteSpace + lastWord.replace(new RegExp(h, "g"), "") + trailingWhiteSpace;
+                return leadingWhiteSpace + lastWord.replace(new RegExp(selSettings.hyphen, "g"), "") + trailingWhiteSpace;
                 /* eslint-enable security/detect-non-literal-regexp */
             }
             orphanControllerPool.set(sel, controlOrphans);
@@ -582,8 +566,6 @@
             const selSettings = C[sel];
             /* eslint-enable security/detect-object-injection */
             const minWordLength = selSettings.minWordLength;
-            const normalize = C.normalize &&
-                Boolean(String.prototype.normalize);
             const poolKey = lang + "-" + sel;
             const wordHyphenator = (wordHyphenatorPool.has(poolKey))
                 ? wordHyphenatorPool.get(poolKey)
@@ -591,7 +573,7 @@
             const orphanController = (orphanControllerPool.has(sel))
                 ? orphanControllerPool.get(sel)
                 : createOrphanController(sel);
-            const re = lo.genRegExps.get(sel);
+            const re = lo.re.get(sel);
 
             /**
              * Hyphenate text according to setting in sel
@@ -600,7 +582,7 @@
              */
             function hyphenateText(text) {
                 let tn = null;
-                if (normalize) {
+                if (C.normalize) {
                     tn = text.normalize("NFC").replace(re, wordHyphenator);
                 } else {
                     tn = text.replace(re, wordHyphenator);
@@ -667,9 +649,8 @@
                 elements.each((lang, els) => {
                     els.forEach((elo) => {
                         const n = elo.element.firstChild;
-                        const h = C[elo.selector].hyphen;
                         /* eslint-disable security/detect-non-literal-regexp */
-                        n.data = n.data.replace(new RegExp(h, "g"), "");
+                        n.data = n.data.replace(new RegExp(C[elo.selector].hyphen, "g"), "");
                         /* eslint-enable security/detect-non-literal-regexp */
                     });
                 });
@@ -690,7 +671,6 @@
                 });
             } else {
                 H.events.get("error").resolve({
-                    "lvl": "warn",
                     "msg": `engine for language '${lang}' loaded, but no elements found.`
                 });
             }
@@ -708,20 +688,6 @@
                     }
                 }
             });
-        }
-
-        /**
-         * Convert exceptions to object
-         * @param {string} exc comma separated list of exceptions
-         * @returns {Object} Map of exceptions
-         */
-        function convertExceptions(exc) {
-            const r = new Map();
-            exc.split(", ").forEach((e) => {
-                const key = e.replace(/-/g, "");
-                r.set(key, e);
-            });
-            return r;
         }
 
         /**
@@ -757,7 +723,7 @@
         ) {
             alphabet = alphabet.replace(/-/g, "");
             const lo = createLangObj(lang);
-            if (!lo.engineReady) {
+            if (!lo.ready) {
                 lo.cache = new Map();
                 /* eslint-disable security/detect-object-injection */
                 if (C.exceptions.global) {
@@ -768,14 +734,16 @@
                     }
                 }
                 if (C.exceptions[lang]) {
-                    lo.exceptions = convertExceptions(C.exceptions[lang]);
+                    lo.exc = new Map(C.exceptions[lang].split(", ").map((e) => {
+                        return [e.replace(/-/g, ""), e];
+                    }));
                     delete C.exceptions[lang];
                 } else {
-                    lo.exceptions = new Map();
+                    lo.exc = new Map();
                 }
                 /* eslint-enable security/detect-object-injection */
-                lo.genRegExps = new Map();
-                lo.hyphenateFunction = hyphenateFunction;
+                lo.re = new Map();
+                lo.hyphenate = hyphenateFunction;
                 C.selectors.forEach((sel) => {
                     /* eslint-disable security/detect-object-injection */
                     const selSettings = C[sel];
@@ -817,10 +785,10 @@
                      * Word delimiters are not taken in account.
                      */
                     /* eslint-disable security/detect-non-literal-regexp */
-                    lo.genRegExps.set(sel, new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${selSettings.minWordLength},}`, "gi"));
+                    lo.re.set(sel, new RegExp(`[${alphabet}\u200C-]{${selSettings.minWordLength},}`, "gi"));
                     /* eslint-enable security/detect-non-literal-regexp */
                 });
-                lo.engineReady = true;
+                lo.ready = true;
                 // eslint-disable-next-line security/detect-object-injection
                 H.hyphenators[lang].resolve(H.createHyphenator(lang));
             }
@@ -923,12 +891,11 @@
                     /* eslint-disable security/detect-object-injection */
                     H.hyphenators[lang].catch((e) => {
                         H.events.get("error").resolve({
-                            "lvl": "warn",
                             "msg": e.msg
                         });
                     });
                     H.hyphenators[lang].reject({
-                        "lvl": "warn",
+                        "lvl": 1,
                         "msg": `1 File ${lang}.wasm can't be loaded from ${H.ps.patterndir}`
                     });
                     /* eslint-enable security/detect-object-injection */
@@ -946,7 +913,7 @@
                 elements.each((lang, values) => {
                     if (H.languages &&
                         H.languages.has(lang) &&
-                        H.languages.get(lang).engineReady
+                        H.languages.get(lang).ready
                     ) {
                         hyphenateLangElements(lang, values);
                     }
