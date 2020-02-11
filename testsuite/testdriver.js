@@ -44,7 +44,8 @@
         {"exec": true, "path": "test37.html"},
         {"exec": true, "path": "test38.html"},
         {"exec": true, "path": "test39.html"},
-        {"exec": true, "path": "test40.html"}
+        {"exec": true, "path": "test40.html"},
+        {"exec": true, "path": "test41.html"}
     ];
     var testframe = document.getElementById("testframe");
     var currentTest = 1;
@@ -90,7 +91,7 @@
         if (tests[index]) {
             currentTest = index;
             if (tests[index].exec) {
-                window.setTimeout(function defer() {
+                window.setTimeout(() => {
                     testframe.src = tests[index].path;
                 }, 0);
             } else {
@@ -105,7 +106,7 @@
 
     window.addEventListener(
         "message",
-        function onMessage(e) {
+        (e) => {
             var msg = JSON.parse(e.data);
             addTestResult(tests[msg.index].path, msg.desc, msg.result);
             if (msg.result === "failed") {
