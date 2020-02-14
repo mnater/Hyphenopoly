@@ -62,9 +62,10 @@
     (() => {
         const maindir = d.currentScript.src.replace(scriptName, "");
         const patterndir = maindir + "patterns/";
-        if (H.ps) {
-            H.ps.maindir = H.ps.maindir || maindir;
-            H.ps.patterndir = H.ps.patterndir || patterndir;
+        H.ps = empty();
+        if (H.paths) {
+            H.ps.maindir = H.paths.maindir || maindir;
+            H.ps.patterndir = H.paths.patterndir || patterndir;
         } else {
             H.ps = {
                 maindir,
