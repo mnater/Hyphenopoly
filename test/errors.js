@@ -53,15 +53,6 @@ t.test("incomplete setup (forget require)", async function (t) {
     t.end();
 });
 
-t.test("make hyphenEngine fail", async function (t) {
-    const laHyphenator = await H9Y.config({"require": ["la"]});
-    t.test("hyphenate one word", function (t) {
-        t.equal(laHyphenator("Helvetii"), "Helvetii");
-        t.end();
-    });
-    t.end();
-});
-
 t.test("fail when word is to long", async function (t) {
     const nlHyphenator = await H9Y.config({"require": ["nl"]});
     t.test("hyphenate one word", function (t) {

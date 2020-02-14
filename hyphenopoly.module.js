@@ -255,7 +255,7 @@ function prepareLanguagesObj(
             lo.exceptions = new Map();
         }
         /* eslint-disable security/detect-non-literal-regexp */
-        lo.genRegExp = new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${H.c.minWordLength},}`, "gi");
+        lo.genRegExp = new RegExp(`[${alphabet}\u200C-]{${H.c.minWordLength},}`, "gi");
         /* eslint-enable security/detect-non-literal-regexp */
         (() => {
             H.c.leftminPerLang[lang] = Math.max(
@@ -373,7 +373,7 @@ function createWordHyphenator(lo, lang) {
      * @returns {string} The hyphenated compound word
      */
     function hyphenateCompound(word) {
-        const zeroWidthSpace = String.fromCharCode(8203);
+        const zeroWidthSpace = "\u200B";
         let parts = null;
         let wordHyphenator = null;
         if (H.c.compound === "auto" ||
@@ -472,7 +472,8 @@ const orphanController = (() => {
             h = `\\${H.c.hyphen}`;
         }
         if (H.c.orphanControl === 3 && leadingWhiteSpace === " ") {
-            leadingWhiteSpace = String.fromCharCode(160);
+            // \u00A0 = no-break space (nbsp)
+            leadingWhiteSpace = "\u00A0";
         }
         /* eslint-disable security/detect-non-literal-regexp */
         return leadingWhiteSpace + lastWord.replace(new RegExp(h, "g"), "") + trailingWhiteSpace;
@@ -604,7 +605,7 @@ H.config = ((userConfig) => {
     const defaults = Object.create(null, {
         "compound": setProp("hyphen", 2),
         "exceptions": setProp(empty(), 2),
-        "hyphen": setProp(String.fromCharCode(173), 2),
+        "hyphen": setProp("\u00AD", 2),
         "leftmin": setProp(0, 3),
         "leftminPerLang": setProp(empty(), 2),
         "loader": setProp("fs", 2),
