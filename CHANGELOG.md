@@ -3,8 +3,10 @@
 ## Version 4.0.1 (2020-XX-YY)
 ### Changed
 *   Hyphenopoly.unhyphenate now returns `elements`: [doc](https://mnater.github.io/Hyphenopoly/Global-Hyphenopoly-Object.html#unhyphenate)
+*   \w is no longer part of the regex that finds words -> only words with characters from the alphabet (defined by patterns in the wasm module) are hyphenated
 
 ### Fixed
+*   fix ability to set paths
 *   ensure wasm loads only once with fallbacks
 *   fix issue with hyphenation depending on media queries
 

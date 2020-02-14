@@ -412,7 +412,7 @@
                     processElements(n, getLang(n, true), sel, false);
                 });
             });
-            H.res.set("elements", Promise.resolve(elements));
+            H.res.set("els", Promise.resolve(elements));
         }
 
         const wordHyphenatorPool = new Map();
@@ -618,7 +618,7 @@
                         n.data = hyphenateText(n.data);
                     }
                 });
-                H.res.get("elements").then((elements) => {
+                H.res.get("els").then((elements) => {
                     elements.counter[0] -= 1;
                 });
                 if (H.events.has("afterElementHyphenation")) {
@@ -645,7 +645,7 @@
         });
 
         H.unhyphenate = () => {
-            return H.res.get("elements").then((elements) => {
+            return H.res.get("els").then((elements) => {
                 elements.each((lang, els) => {
                     els.forEach((elo) => {
                         const n = elo.element.firstChild;
@@ -674,7 +674,7 @@
                     "msg": `engine for language '${lang}' loaded, but no elements found.`
                 });
             }
-            H.res.get("elements").then((elements) => {
+            H.res.get("els").then((elements) => {
                 if (elements.counter[0] === 0) {
                     w.clearTimeout(C.timeOutHandler);
                     if (C.hide !== 0) {
@@ -795,7 +795,7 @@
             if (H.events.has("engineReady")) {
                 H.events.get("engineReady").resolve(lang);
             }
-            Promise.all([lo, H.res.get("elements")]).then((v) => {
+            Promise.all([lo, H.res.get("els")]).then((v) => {
                 hyphenateLangElements(lang, v[1].list.get(lang));
             });
         }
@@ -885,7 +885,7 @@
                             });
                     }
                 } else {
-                    H.res.get("elements").then((elements) => {
+                    H.res.get("els").then((elements) => {
                         elements.rem(lang);
                     });
                     /* eslint-disable security/detect-object-injection */
@@ -895,8 +895,7 @@
                         });
                     });
                     H.hyphenators[lang].reject({
-                        "lvl": 1,
-                        "msg": `1 File ${lang}.wasm can't be loaded from ${H.ps.patterndir}`
+                        "msg": `1 File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
                     });
                     /* eslint-enable security/detect-object-injection */
                 }
@@ -909,7 +908,7 @@
                 mainLanguage = C.defaultLanguage;
             }
             collectElements();
-            H.res.get("elements").then((elements) => {
+            H.res.get("els").then((elements) => {
                 elements.each((lang, values) => {
                     if (H.languages &&
                         H.languages.has(lang) &&

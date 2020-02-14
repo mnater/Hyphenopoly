@@ -55,19 +55,18 @@
     })();
 
     /**
-     * Set H.ps (paths) and some H.setup fields to defaults or
+     * Set H.paths and some H.setup fields to defaults or
      * overwrite with user settings.
      * These are iifes to keep complexity low.
      */
     (() => {
         const maindir = d.currentScript.src.replace(scriptName, "");
         const patterndir = maindir + "patterns/";
-        H.ps = empty();
         if (H.paths) {
-            H.ps.maindir = H.paths.maindir || maindir;
-            H.ps.patterndir = H.paths.patterndir || patterndir;
+            H.paths.maindir = H.paths.maindir || maindir;
+            H.paths.patterndir = H.paths.patterndir || patterndir;
         } else {
-            H.ps = {
+            H.paths = {
                 maindir,
                 patterndir
             };
@@ -271,7 +270,7 @@
                     lang,
                     {
                         "c": 1,
-                        "w": w.fetch(H.ps.patterndir + filename, {"credentials": "include"})
+                        "w": w.fetch(H.paths.patterndir + filename, {"credentials": "include"})
                     }
                 );
                 H.res.get("fw").set(filename, lang);
@@ -352,7 +351,7 @@
             });
             // Load main script
             const script = d[shortcuts.ce]("script");
-            script.src = H.ps.maindir + "Hyphenopoly.js";
+            script.src = H.paths.maindir + "Hyphenopoly.js";
             d.head[shortcuts.ac](script);
             H.hyphenators = empty();
             eachKey(H.cf.langs, (lang) => {
