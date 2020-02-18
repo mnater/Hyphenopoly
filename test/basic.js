@@ -33,6 +33,17 @@ t.test("run config with one language", async function (t) {
     t.end();
 });
 
+t.test("try to hyphenate a word outside alphabet", async function (t) {
+    const deHyphenator = await H9Y.config({"require": ["de"]});
+    // eslint-disable-next-line prefer-regex-literals
+    H9Y.languages.get("de").genRegExp = new RegExp("[abcdefghijklmnopqrstuvwxyzåäöüßſ‌-]{6,}", "gi");
+    t.test("hyphenate ångström", function (t) {
+        t.equal(deHyphenator("ångström"), "ångström", deHyphenator("ångström"));
+        t.end();
+    });
+    t.end();
+});
+
 t.test("disable Webassembly.Globals", async function (t) {
     const wag = WebAssembly.Global;
     WebAssembly.Global = null;
