@@ -803,13 +803,13 @@
         const decode = (() => {
             if (w.TextDecoder) {
                 const utf16ledecoder = new TextDecoder("utf-16le");
-                return function decoder(ui16) {
+                return ((ui16) => {
                     return utf16ledecoder.decode(ui16);
-                };
+                });
             }
-            return function decoder(ui16) {
+            return ((ui16) => {
                 return String.fromCharCode.apply(null, ui16);
-            };
+            });
         })();
 
         /**
