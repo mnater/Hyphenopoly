@@ -801,10 +801,15 @@
         }
 
         const decode = (() => {
-            const utf16ledecoder = new TextDecoder("utf-16le");
-            return ((ui16) => {
-                return utf16ledecoder.decode(ui16);
-            });
+            if (w.TextDecoder) {
+                const utf16ledecoder = new TextDecoder("utf-16le");
+                return function decoder(ui16) {
+                    return utf16ledecoder.decode(ui16);
+                };
+            }
+            return function decoder(ui16) {
+                return String.fromCharCode.apply(null, ui16);
+            };
         })();
 
         /**
@@ -819,12 +824,10 @@
             wordStore[0] = 95;
             return ((word, hyphencc, leftmin, rightmin) => {
                 let i = 0;
-                let cc = word.charCodeAt(i);
-                while (cc) {
+                for (const c of word) {
                     i += 1;
                     // eslint-disable-next-line security/detect-object-injection
-                    wordStore[i] = cc;
-                    cc = word.charCodeAt(i);
+                    wordStore[i] = c.charCodeAt(0);
                 }
                 wordStore[i + 1] = 95;
                 wordStore[i + 2] = 0;
