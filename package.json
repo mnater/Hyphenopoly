@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -33,7 +33,7 @@
   ],
   "main": "hyphenopoly.module.js",
   "engines": {
-    "node": ">=8.3.0"
+    "node": ">=10.0.0"
   },
   "repository": {
     "type": "git",
@@ -41,7 +41,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "assemblyscript": "^0.9.0",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
+    "assemblyscript": "^0.9.2",
     "eslint": "^6.8.0",
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^7.0.1",
@@ -62,7 +64,7 @@
     "createAllWasm": "sh ./tools/createAllWasm.sh",
     "test": "tap test/*.js --coverage",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
-    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js && remark *.md && remark */*.md",
+    "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js src/*.ts && remark -q *.md && remark -q */*.md",
     "prepare": "sh ./tools/minify.sh",
     "doc": "cd ./docs/ && bundle exec jekyll serve -l -o"
   },

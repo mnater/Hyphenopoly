@@ -14,7 +14,7 @@ require: {
 }
 ````
 Hyphenopoly_Loader.js feature tests the browser for CSS-hyphenation support of the required languages using the long word.
-If the feature test indicates that the browser doesn't support CSS-hyphenation for at least one language, all necessary ressources will be loaded and Hyphenopoly.js gets executed.
+If the feature test indicates that the browser doesn't support CSS-hyphenation for at least one language, all necessary resources will be loaded and Hyphenopoly.js gets executed.
 
 Use this to test support for every language used on the current page. If e.g. the language of the page is `lang="de-DE"` you must require `de-de` (case doesn't matter). For languages that aren't in the patterns directory a fallback must be defined (see below).
 
@@ -66,9 +66,9 @@ results and retrieve these stored results for other pages in the same browsing s
 The test results are stored in sessionStorage to assure that the tests are rerun when
 the browser occasionally gets updated.
 
-Because the law in some contries require a user opt-in or opt-out or whatever if you store
+Because the law in some countries require a user opt-in or opt-out or whatever if you store
 data on the client, `cacheFeatureTests` is deactivated by default and has to be activated
-explicitely by hand in the [Hyphenopoly global object](./Global-Hyphenopoly-Object.md):
+explicitly by hand in the [Hyphenopoly global object](./Global-Hyphenopoly-Object.md):
 ````javascript
 const Hyphenopoly = {
     "require": {...},
@@ -82,7 +82,7 @@ By default Hyphenopoly.js hyphenates elements with the classname `.hyphenate` an
 
 #### selectors
 
-With selectors elements can be selected very precicely without the need of adding classes to the HTML. The selectors-object is a list of key-value-pairs where the key is a selector and the value is an object of settings specific to the selected elements.
+With selectors elements can be selected very precisely without the need of adding classes to the HTML. The selectors-object is a list of key-value-pairs where the key is a selector and the value is an object of settings specific to the selected elements.
 
 ````javascript
 setup: {
@@ -107,6 +107,12 @@ See [Hyphenators](./Hyphenators.md)
 
 ### Unhyphenate
 To remove all hyphenation previously applied by Hyphenopoly call `Hyphenopoly.unhyphenate();`.
+This method asynchronously returns the elements that have been unhyphenated in the data structure used internally.
+````javascript
+Hyphenopoly.unhyphenate().then((elements) => {
+    console.log(elements);
+});
+````
 
 ## Putting it all together
 A typical init could look like this:
@@ -130,15 +136,3 @@ const Hyphenopoly = {
 
 ## Internal Fields
 If you `console.dir(Hyphenopoly)` you'll see lots of other data that is internally used by Hyphenopoly_Loader.js and Hyphenopoly.js but isn't meant to be changed by the user.
-
-## Reclaim memory
-Hyphenopoly is quite hungry regarding to memory usage: for each language ~2MB of wasm memory are allocated. If you're done with Hyphenopoly you can set `window.Hyphenopoly = null` and leave it to the garbage collector to free the memory:
-
-````javascript
-handleEvent: {
-    hyphenopolyEnd: function (e) {
-        window.Hyphenopoly = null;
-    }
-}
-````
-See [Events](./Events.md) for more details about the `hyphenopolyEnd`-event.

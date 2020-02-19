@@ -1,5 +1,6 @@
 /* eslint-env node */
 /* eslint global-require: 0, func-names: 0, no-shadow: 0 */
+/* eslint-disable prefer-arrow-callback */
 "use strict";
 const t = require("tap");
 
@@ -27,6 +28,17 @@ t.test("run config with one language", async function (t) {
     });
     t.test("hyphenate two words", function (t) {
         t.equal(deHyphenator("Silbentrennung Algorithmus"), "Sil\u00ADben\u00ADtren\u00ADnung Al\u00ADgo\u00ADrith\u00ADmus", deHyphenator("Silbentrennung Algorithmus"));
+        t.end();
+    });
+    t.end();
+});
+
+t.test("try to hyphenate a word outside alphabet", async function (t) {
+    const deHyphenator = await H9Y.config({"require": ["de"]});
+    // eslint-disable-next-line prefer-regex-literals
+    H9Y.languages.get("de").genRegExp = new RegExp("[abcdefghijklmnopqrstuvwxyzåäöüßſ‌-]{6,}", "gi");
+    t.test("hyphenate ångström", function (t) {
+        t.equal(deHyphenator("ångström"), "ångström", deHyphenator("ångström"));
         t.end();
     });
     t.end();

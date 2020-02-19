@@ -1,5 +1,6 @@
 /* eslint-env node */
 /* eslint global-require: 0, func-names: 0, no-shadow: 0 */
+/* eslint-disable prefer-arrow-callback */
 "use strict";
 const t = require("tap");
 
@@ -24,7 +25,7 @@ t.test("set Event", async function (t) {
              * @param {Object} e Event
              * @returns {undefined}
              */
-            "error": function (e) {
+            error(e) {
                 e.preventDefault();
             }
         },
@@ -42,7 +43,7 @@ t.test("set unknown event", async function (t) {
              * @param {Object} e Event
              * @returns {undefined}
              */
-            "fantasy": function (e) {
+            fantasy(e) {
                 e.preventDefault();
             }
         },
@@ -60,7 +61,7 @@ t.test("try to overwrite noncancellable event", async function (t) {
              * @param {Object} e Event
              * @returns {undefined}
              */
-            "engineLoaded": function (e) {
+            engineLoaded(e) {
                 e.preventDefault();
             }
         },

@@ -26,16 +26,16 @@
                 var i = 1;
                 var test = "";
                 var ref = "";
-                var result = false;
+                var result = true;
                 while (i <= tests) {
                     test = document.getElementById("test" + i).innerHTML;
                     ref = document.getElementById("ref" + i).innerHTML;
                     if (test === ref) {
                         document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                        result = result || true;
+                        result = result && true;
                     } else {
                         document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                        result = result || false;
+                        result = false;
                     }
                     i += 1;
                 }
@@ -79,7 +79,7 @@
         <div id="result"></div>
         <hr>
         <p id="test1" class="test hyphenate" lang="la">Qua de causa Helvetii quoque reliquos Gallos virtute praecedunt, quod fere cotidianis proeliis cum Germanis contendunt, cum aut suis finibus eos prohibent aut ipsi in eorum finibus bellum gerunt.</p>
-        <p id="ref1" class="ref" lang="la">Qua de causa Helvetii quo•que re•li•quos Gal•los virtute prae•ce•dunt, quod fere co•ti•dia•nis proe•li•is cum Ger•ma•nis con•ten•dunt, cum aut suis fi•ni•bus eos pro•hi•bent aut ipsi in eorum fi•ni•bus bel•lum ge•runt.</p>
+        <p id="ref1" class="ref" lang="la">Qua de causa Hel•ve•tii quo•que re•li•quos Gal•los vir•tu•te prae•ce•dunt, quod fere co•ti•dia•nis proe•liis cum Ger•ma•nis con•ten•dunt, cum aut suis fi•ni•bus eos pro•hi•bent aut ipsi in eorum fi•ni•bus bel•lum ge•runt.</p>
 
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>

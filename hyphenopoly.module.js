@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 4.0.0 - hyphenation for node
+ * @license Hyphenopoly.module.js 4.1.0 - hyphenation for node
  * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -18,20 +18,20 @@ let loader = require("fs");
 
 const {StringDecoder} = require("string_decoder");
 
-const decode = (function makeDecoder() {
+const decode = (() => {
     const utf16ledecoder = new StringDecoder("utf-16le");
-    return function dec(ui16) {
+    return (ui16) => {
         return utf16ledecoder.write(ui16);
     };
-}());
+})();
 
 /**
  * Create Object without standard Object-prototype
  * @returns {Object} empty object
  */
-function empty() {
+const empty = () => {
     return Object.create(null);
-}
+};
 
 /**
  * Set value and properties of object member
@@ -45,7 +45,7 @@ function empty() {
  * @param {number} props bitfield
  * @returns {Object} Property object
  */
-function setProp(val, props) {
+const setProp = (val, props) => {
     /* eslint-disable no-bitwise, sort-keys */
     return {
         "configurable": (props & 4) > 0,
@@ -54,7 +54,7 @@ function setProp(val, props) {
         "value": val
     };
     /* eslint-enable no-bitwise, sort-keys */
-}
+};
 
 const H = empty();
 H.binaries = new Map();
@@ -149,12 +149,12 @@ function readFile(file, cb, sync) {
         loader.readFile(file, cb);
         /* eslint-enable security/detect-non-literal-fs-filename */
     } else {
-        loader.get(file, function onData(res) {
+        loader.get(file, (res) => {
             const rawData = [];
-            res.on("data", function onChunk(chunk) {
+            res.on("data", (chunk) => {
                 rawData.push(chunk);
             });
-            res.on("end", function onEnd() {
+            res.on("end", () => {
                 cb(null, Buffer.concat(rawData));
             });
         });
@@ -175,7 +175,7 @@ function loadHyphenEngine(lang) {
     } else {
         readFile(
             `${H.c.paths.patterndir}${lang}.wasm`,
-            function cb(err, data) {
+            (err, data) => {
                 if (err) {
                     H.events.dispatch("error", {
                         "key": lang,
@@ -198,7 +198,7 @@ function loadHyphenEngine(lang) {
  */
 function convertExceptions(exc) {
     const r = new Map();
-    exc.split(", ").forEach(function eachExc(e) {
+    exc.split(", ").forEach((e) => {
         const key = e.replace(/-/g, "");
         r.set(key, e);
     });
@@ -255,9 +255,9 @@ function prepareLanguagesObj(
             lo.exceptions = new Map();
         }
         /* eslint-disable security/detect-non-literal-regexp */
-        lo.genRegExp = new RegExp(`[\\w${alphabet}${String.fromCharCode(8204)}-]{${H.c.minWordLength},}`, "gi");
+        lo.genRegExp = new RegExp(`[${alphabet}\u200C-]{${H.c.minWordLength},}`, "gi");
         /* eslint-enable security/detect-non-literal-regexp */
-        (function setLRmin() {
+        (() => {
             H.c.leftminPerLang[lang] = Math.max(
                 patternLeftmin,
                 H.c.leftmin,
@@ -268,7 +268,7 @@ function prepareLanguagesObj(
                 H.c.rightmin,
                 Number(H.c.rightminPerLang[lang]) || 0
             );
-        }());
+        })();
         /* eslint-enable security/detect-object-injection */
         lo.hyphenateFunction = hyphenateFunction;
         lo.engineReady = true;
@@ -298,7 +298,7 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
      * @returns {String} the hyphenated word
      */
     wordStore[0] = 95;
-    return function enclHyphenate(word, hyphencc, leftmin, rightmin) {
+    return ((word, hyphencc, leftmin, rightmin) => {
         let i = 0;
         let cc = word.charCodeAt(i);
         while (cc) {
@@ -313,7 +313,7 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
             word = decode(hydWordStore.subarray(1, hydWordStore[0] + 1));
         }
         return word;
-    };
+    });
 }
 
 /**
@@ -373,13 +373,13 @@ function createWordHyphenator(lo, lang) {
      * @returns {string} The hyphenated compound word
      */
     function hyphenateCompound(word) {
-        const zeroWidthSpace = String.fromCharCode(8203);
+        const zeroWidthSpace = "\u200B";
         let parts = null;
         let wordHyphenator = null;
         if (H.c.compound === "auto" ||
             H.c.compound === "all") {
             wordHyphenator = createWordHyphenator(lo, lang);
-            parts = word.split("-").map(function h7eParts(p) {
+            parts = word.split("-").map((p) => {
                 if (p.length >= H.c.minWordLength) {
                     return wordHyphenator(p);
                 }
@@ -402,9 +402,9 @@ function createWordHyphenator(lo, lang) {
      * @returns {boolean} true if s is mixed case
      */
     function isMixedCase(s) {
-        return Array.prototype.map.call(s, function mapper(c) {
+        return Array.prototype.map.call(s, (c) => {
             return (c === c.toLowerCase());
-        }).some(function checker(v, i, a) {
+        }).some((v, i, a) => {
             return (v !== a[0]);
         });
     }
@@ -452,7 +452,7 @@ function createWordHyphenator(lo, lang) {
     return hyphenator;
 }
 
-const orphanController = (function createOrphanController() {
+const orphanController = (() => {
     /**
      * Function template
      * @param {string} ignore unused result of replace
@@ -472,14 +472,15 @@ const orphanController = (function createOrphanController() {
             h = `\\${H.c.hyphen}`;
         }
         if (H.c.orphanControl === 3 && leadingWhiteSpace === " ") {
-            leadingWhiteSpace = String.fromCharCode(160);
+            // \u00A0 = no-break space (nbsp)
+            leadingWhiteSpace = "\u00A0";
         }
         /* eslint-disable security/detect-non-literal-regexp */
         return leadingWhiteSpace + lastWord.replace(new RegExp(h, "g"), "") + trailingWhiteSpace;
         /* eslint-enable security/detect-non-literal-regexp */
     }
     return controlOrphans;
-}());
+})();
 
 /**
  * Encloses hyphenateTextFunction
@@ -498,7 +499,7 @@ function createTextHyphenator(lang) {
      * @param {string} lang The language of the text
      * @returns {string} Hyphenated text
      */
-    return function hyphenateText(text) {
+    return ((text) => {
         if (H.c.normalize) {
             text = text.normalize("NFC");
         }
@@ -511,10 +512,10 @@ function createTextHyphenator(lang) {
             );
         }
         return tn;
-    };
+    });
 }
 
-(function setupEvents() {
+(() => {
     // Events known to the system
     const definedEvents = new Map();
 
@@ -527,7 +528,7 @@ function createTextHyphenator(lang) {
      */
     function define(name, defFunc, cancellable) {
         definedEvents.set(name, {
-            "cancellable": cancellable,
+            cancellable,
             "default": defFunc,
             "register": []
         });
@@ -535,7 +536,7 @@ function createTextHyphenator(lang) {
 
     define(
         "error",
-        function def(e) {
+        (e) => {
             // eslint-disable-next-line no-console
             console.error(e.msg);
         },
@@ -544,7 +545,7 @@ function createTextHyphenator(lang) {
 
     define(
         "engineLoaded",
-        function def(e) {
+        (e) => {
             instantiateWasmEngine(e.msg);
         },
         false
@@ -564,12 +565,12 @@ function createTextHyphenator(lang) {
      */
     function dispatch(name, data) {
         data.defaultPrevented = false;
-        data.preventDefault = function preventDefault() {
+        data.preventDefault = (() => {
             if (definedEvents.get(name).cancellable) {
                 data.defaultPrevented = true;
             }
-        };
-        definedEvents.get(name).register.forEach(function call(currentHandler) {
+        });
+        definedEvents.get(name).register.forEach((currentHandler) => {
             currentHandler(data);
         });
         if (!data.defaultPrevented && definedEvents.get(name).default) {
@@ -598,13 +599,13 @@ function createTextHyphenator(lang) {
     H.events.dispatch = dispatch;
     H.events.define = define;
     H.events.addListener = addListener;
-}());
+})();
 
-H.config = function config(userConfig) {
+H.config = ((userConfig) => {
     const defaults = Object.create(null, {
         "compound": setProp("hyphen", 2),
         "exceptions": setProp(empty(), 2),
-        "hyphen": setProp(String.fromCharCode(173), 2),
+        "hyphen": setProp("\u00AD", 2),
         "leftmin": setProp(0, 3),
         "leftminPerLang": setProp(empty(), 2),
         "loader": setProp("fs", 2),
@@ -622,7 +623,7 @@ H.config = function config(userConfig) {
         "sync": setProp(false, 2)
     });
     const settings = Object.create(defaults);
-    Object.keys(userConfig).forEach(function each(key) {
+    Object.keys(userConfig).forEach((key) => {
         Object.defineProperty(
             settings,
             key,
@@ -637,7 +638,7 @@ H.config = function config(userConfig) {
         loader = require("https");
     }
     if (H.c.handleEvent) {
-        Object.keys(H.c.handleEvent).forEach(function add(name) {
+        Object.keys(H.c.handleEvent).forEach((name) => {
             /* eslint-disable security/detect-object-injection */
             H.events.addListener(name, H.c.handleEvent[name]);
             /* eslint-enable security/detect-object-injection */
@@ -650,21 +651,21 @@ H.config = function config(userConfig) {
             {"msg": "No language has been required. Setup config according to documenation."}
         );
     }
-    H.c.require.forEach(function each(lang) {
+    H.c.require.forEach((lang) => {
         if (H.c.sync) {
-            H.events.addListener("engineReady", function handler(e) {
+            H.events.addListener("engineReady", (e) => {
                 if (e.msg === lang) {
                     result.set(lang, createTextHyphenator(lang));
                 }
             });
         } else {
-            const prom = new Promise(function pro(resolve, reject) {
-                H.events.addListener("engineReady", function handler(e) {
+            const prom = new Promise((resolve, reject) => {
+                H.events.addListener("engineReady", (e) => {
                     if (e.msg === lang) {
                         resolve(createTextHyphenator(lang));
                     }
                 });
-                H.events.addListener("error", function handler(e) {
+                H.events.addListener("error", (e) => {
                     e.preventDefault();
                     if (e.key === lang || e.key === "hyphenEngine") {
                         reject(e.msg);
@@ -678,6 +679,6 @@ H.config = function config(userConfig) {
     return (result.size === 1)
         ? result.get(H.c.require[0])
         : result;
-};
+});
 
 module.exports = H;

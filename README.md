@@ -80,7 +80,7 @@ Hyphenator_Loader.js will feature test the client (aka browser, aka user agent) 
 If you want to force the usage of Hyphenopoly.js for a language (e.g. for testing purposes) write `"FORCEHYPHENOPOLY"` instead of the long word.
 
 ### Second script block – load and run Hyphenopoly_Loader.js
-Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary Webassembly modules. Hyphenopoly.js – once loaded – will hyphenate the elements according to the settings and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and unhides the document and writes a message to the console.
+Hyphenopoly_Loader.js tests if the browser supports CSS hyphenation for the language(s) given in `Hyphenopoly.require`. If one of the given languages isn't supported it automatically hides the documents contents and loads Hyphenopoly.js and the necessary WebAssembly modules. Hyphenopoly.js – once loaded – will hyphenate the elements according to the settings and unhide the document when it's done. If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and unhides the document and writes a message to the console.
 If the browser supports all required languages the script deletes the `Hyphenopoly`-object and terminates without further ado.
 
 ### enable CSS-hyphenation
@@ -122,7 +122,7 @@ hyphenate_de("Silbentrennung verbessert den Blocksatz.");
 ````
 
 ## Support this project
-[![paypal](https://www.paypal.com/en_US/i/btn/btn_donateCC_LG_global.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SYNZKB8Z2FRQY)
+[![PayPal](https://www.paypal.com/en_US/i/btn/btn_donateCC_LG_global.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SYNZKB8Z2FRQY)
 
 <a href="https://opencollective.com/hyphenopoly/donate" target="_blank">
   <img src="https://opencollective.com/hyphenopoly/donate/button@2x.png?color=blue" width=300 />
@@ -134,7 +134,7 @@ The algorithm used for hyphenation was developed by Franklin M. Liang for TeX. I
 1.  Load a set of precomputed language specific patterns. The patterns are stored in a structure called a trie, which is very efficient for this task.
 2.  Collect all patterns that are a substring of the word to be hyphenated.
 3.  Combine the numerical values between characters: higher values overwrite lower values.
-4.  Odd values are hyphenation points (except if the hyphenation point is left from leftmin and right from rightmin), replace them with a soft hyphen and drop the other values.
+4.  Odd values are hyphenation points (except if the hyphenation point is left from `leftmin` and right from `rightmin`), replace them with a soft hyphen and drop the other values.
 5.  Repeat 2. - 4. for all words longer than minWordLength
 
 Example:
@@ -154,6 +154,6 @@ h0y3p0h0e2n5a4t2i0o2n
 Hy-phen-ation
 ````
 
-The patterns are precomputed and available for many languages on CTAN. Hyphenopoly.js uses a proprietary binary format (including pattern licence, metadata and the patterns). Patterns are computed from a large list of hyphenated words by a program called patgen. They aim to find some hyphenation points – not all – because it's better to miss a hyphenation point then to have some false hyphenation points. Most patterns are really good but none is error free.
+The patterns are precomputed and available for many languages on CTAN. Hyphenopoly.js uses a proprietary binary format (including pattern license, metadata and the patterns). Patterns are computed from a large list of hyphenated words by a program called `patgen`. They aim to find some hyphenation points – not all – because it's better to miss a hyphenation point then to have some false hyphenation points. Most patterns are really good but none is error free.
 
 These pattern vary in size. This is mostly due to the different linguistic characteristics of the languages.

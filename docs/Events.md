@@ -26,7 +26,7 @@ const Hyphenopoly = {
 }
 ````
 
-Internally events in Hyphenopoly are implemented as Promises that fullfill with a certain value.
+Internally events in Hyphenopoly are implemented as Promises that fulfill with a certain value.
 
 ## afterElementHyphenation-Event
 Fired after an element has been hyphenated.

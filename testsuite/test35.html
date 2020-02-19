@@ -25,11 +25,11 @@
             function assert() {
                 var test = document.getElementById("test1").innerHTML;;
                 var ref = document.getElementById("ref1").innerHTML;;
-                var result = false;
+                var result = true;
                     if (test === ref) {
-                        result = result || true;
+                        result = result && true;
                     } else {
-                        result = result || false;
+                        result = false;
                     }
                 result = result && !window.Hyphenopoly;
                 if (result) {

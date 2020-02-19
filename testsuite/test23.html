@@ -4,7 +4,7 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 023</title>
         <script>
-        var reloaded = !!sessionStorage.getItem("Hyphenopoly_Loader");
+        var reloaded = !!sessionStorage.getItem("Hyphenopoly_Loader.js");
         var Hyphenopoly = {
             cacheFeatureTests: true,
             require: {
@@ -35,7 +35,7 @@
             var i = 1;
             var test = "";
             var ref = "";
-            var result = false;
+            var result = true;
             while (i <= tests) {
                 test = document.getElementById("test" + i).innerHTML;
                 ref = document.getElementById("ref" + i).innerHTML;
@@ -43,10 +43,10 @@
                     document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
                         return (i < 10) ? "0" + i : i; 
                     }(i)) + "</span> ";
-                    result = result || true;
+                    result = result && true;
                 } else {
                     document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + i + "</span> ";
-                    result = result || false;
+                    result = false;
                 }
                 i += 1;
             }

@@ -1,24 +1,26 @@
 /**
- * @license Hyphenopoly_Loader 4.0.0 - client side hyphenation
+ * @license Hyphenopoly_Loader 4.1.0 - client side hyphenation
  * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
-
+/* globals Hyphenopoly:readonly */
 ((w, d, H, o) => {
     "use strict";
 
     const store = sessionStorage;
-    const storeID = "Hyphenopoly_Loader";
+    const scriptName = "Hyphenopoly_Loader.js";
     const lcRequire = new Map();
 
     /**
      * Create Object without standard Object-prototype
      * @returns {Object} empty object
      */
-    const empty = () => o.create(null);
+    const empty = () => {
+        return o.create(null);
+    };
 
     const shortcuts = {
         "ac": "appendChild",
@@ -32,7 +34,9 @@
      * @param {function} fn the function to execute
      * @returns {undefined}
      */
-    const eachKey = (obj, fn) => o.keys(obj).forEach(fn);
+    const eachKey = (obj, fn) => {
+        return o.keys(obj).forEach(fn);
+    };
 
     /**
      * Set H.cf (Hyphenopoly.clientFeatures) either by reading out previously
@@ -40,8 +44,8 @@
      * This is in an iife to keep complexity low.
      */
     (() => {
-        if (H.cacheFeatureTests && store.getItem(storeID)) {
-            H.cf = JSON.parse(store.getItem(storeID));
+        if (H.cacheFeatureTests && store.getItem(scriptName)) {
+            H.cf = JSON.parse(store.getItem(scriptName));
         } else {
             H.cf = {
                 "langs": empty(),
@@ -56,7 +60,7 @@
      * These are iifes to keep complexity low.
      */
     (() => {
-        const maindir = d.currentScript.src.replace(/Hyphenopoly_Loader.js/i, "");
+        const maindir = d.currentScript.src.replace(scriptName, "");
         const patterndir = maindir + "patterns/";
         if (H.paths) {
             H.paths.maindir = H.paths.maindir || maindir;
@@ -81,6 +85,7 @@
                 "timeout": 1000
             };
         }
+
         // Change mode string to mode int
         H.setup.hide = (() => {
             switch (H.setup.hide) {
@@ -135,8 +140,8 @@
     };
 
     /**
-     * Define function H.toggle.
-     * This function hides (state = 0) or unhides (state = 1)
+     * Define function H.hide.
+     * This function hides (state = 1) or unhides (state = 0)
      * the whole document (mode == 1) or
      * each selected element (mode == 2) or
      * text of each selected element (mode == 3) or
@@ -144,9 +149,9 @@
      * @param {integer} state - State
      * @param {integer} mode  - Mode
      */
-    H.hiding = (state, mode) => {
+    H.hide = (state, mode) => {
         const sid = "H9Y_Styles";
-        if (state === 1) {
+        if (state === 0) {
             const stylesNode = d.getElementById(sid);
             if (stylesNode) {
                 stylesNode.parentNode.removeChild(stylesNode);
@@ -172,14 +177,13 @@
         }
     };
 
-    H.res = new Map();
-    H.res.set("he", new Map());
+    H.res = new Map([["he", new Map()], ["fw", new Map()]]);
 
     (() => {
         const tester = (() => {
             let fakeBody = null;
             const ha = "hyphens:auto";
-            const css = `visibility:hidden;-moz-${ha};-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
+            const css = `visibility:hidden;-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
 
             return {
 
@@ -237,13 +241,11 @@
          * @param {Object} elm - the element
          * @returns {Boolean} result of the check
          */
-        function checkCSSHyphensSupport(elm) {
-            const a = "auto";
-            const h = elm.style.hyphens ||
-                elm.style.webkitHyphens ||
-                elm.style.msHyphens ||
-                elm.style["-moz-hyphens"];
-            return (h === a);
+        function checkCSSHyphensSupport(elmStyle) {
+            const h = elmStyle.hyphens ||
+                elmStyle.webkitHyphens ||
+                elmStyle.msHyphens;
+            return (h === "auto");
         }
 
         /**
@@ -257,10 +259,22 @@
             H.cf.pf = true;
             // eslint-disable-next-line security/detect-object-injection
             H.cf.langs[lang] = "H9Y";
-            H.res.get("he").set(
-                lang,
-                w.fetch(H.paths.patterndir + filename, {"credentials": "include"})
-            );
+            if (H.res.get("fw").has(filename)) {
+                H.res.get("he").get(H.res.get("fw").get(filename)).c += 1;
+                H.res.get("he").set(
+                    lang,
+                    H.res.get("he").get(H.res.get("fw").get(filename))
+                );
+            } else {
+                H.res.get("he").set(
+                    lang,
+                    {
+                        "c": 1,
+                        "w": w.fetch(H.paths.patterndir + filename, {"credentials": "include"})
+                    }
+                );
+                H.res.get("fw").set(filename, lang);
+            }
         }
 
         /**
@@ -297,7 +311,7 @@
         if (testContainer !== null) {
             const nl = testContainer.querySelectorAll("div");
             nl.forEach((n) => {
-                if (checkCSSHyphensSupport(n) && n.offsetHeight > 12) {
+                if (checkCSSHyphensSupport(n.style) && n.offsetHeight > 12) {
                     H.cf.langs[n.lang] = "CSS";
                 } else {
                     loadhyphenEngine(n.lang);
@@ -321,32 +335,29 @@
                 }
             }));
             if (H.setup.hide === 1) {
-                H.hiding(0, 1);
+                H.hide(1, 1);
             }
             if (H.setup.hide !== 0) {
                 H.setup.timeOutHandler = w.setTimeout(() => {
-                    H.hiding(1, null);
+                    H.hide(0, null);
                     // eslint-disable-next-line no-console
-                    console.error(`Hyphenopoly timed out after ${H.setup.timeout}ms`);
+                    console.error(`${scriptName} timed out after ${H.setup.timeout}ms`);
                 }, H.setup.timeout);
             }
             H.res.get("DOM").then(() => {
                 if (H.setup.hide > 1) {
-                    H.hiding(0, H.setup.hide);
+                    H.hide(1, H.setup.hide);
                 }
             });
             // Load main script
             const script = d[shortcuts.ce]("script");
             script.src = H.paths.maindir + "Hyphenopoly.js";
             d.head[shortcuts.ac](script);
-
+            H.hyphenators = empty();
             eachKey(H.cf.langs, (lang) => {
                 /* eslint-disable security/detect-object-injection */
                 if (H.cf.langs[lang] === "H9Y") {
-                    H.hyphenators = H.hyphenators || empty();
-                    if (!H.hyphenators[lang]) {
-                        H.hyphenators[lang] = H.defProm();
-                    }
+                    H.hyphenators[lang] = H.defProm();
                 }
                 /* eslint-enable security/detect-object-injection */
             });
@@ -356,7 +367,7 @@
             tearDown();
         }
         if (H.cacheFeatureTests) {
-            store.setItem(storeID, JSON.stringify(H.cf));
+            store.setItem(scriptName, JSON.stringify(H.cf));
         }
     })();
 })(window, document, Hyphenopoly, Object);

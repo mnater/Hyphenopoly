@@ -1,7 +1,7 @@
 # Special use cases and how-to's
 
 1.  [Browserify hyphenopoly.module.js](#browserify-hyphenopolymodulejs)
-2.  [Webpack](#webpack)
+2.  [WebPack](#webpack)
 3.  [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
 4.  [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
 
@@ -64,7 +64,7 @@ This will generate the script-file `bundle.js`. Usage of a minifying tool (e.g. 
 
 _Note:_ Make sure the directories referenced in `paths` are available.
 
-## Webpack
+## WebPack
 __Note: A webpacked hyphenopoly.module.js is by far larger then the Hyphenopoly_Loader.js and Hyphenopoly.js scripts which are optimized for usage in browsers.__
 
 Like `browserify` `webpack` will not shim "fs". Thus we have to tell `webpack` to shim the "fs" module with an empty object and configure `hyphenopoly` to use the "http"-loader.
@@ -94,7 +94,7 @@ const hyphenator = hyphenopoly.config({
 ````
 
 ## Hyphenate depending on media queries
-In CSS hyphenation can be restricted to special media-queries. If hyphenation on a website must be dependent of e.g. the width of the window and only active on small screens, you'd do somethink like this:
+In CSS hyphenation can be restricted to special media-queries. If hyphenation on a website must be dependent of e.g. the width of the window and only active on small screens, you'd do something like this:
 ````css
 @media (max-width: 600px) {
     .hyphenate {
@@ -138,13 +138,15 @@ var Hyphenopoly = {
 <script>
 (function selectiveLoad() {
     let H9YLisLoaded = false;
+    let elements = null;
     function handleSize(mql) {
         if (mql.matches) { //i.e. if width <= 600px
             if (H9YLisLoaded) {
-               window.Hyphenopoly.events.dispatch(
-                    "contentLoaded",
-                    {"msg": ["contentLoaded"]}
-                );
+                window.Hyphenopoly.hyphenators["en-us"].then((deh) => {
+                    elements.list.get("en-us").forEach((elo) => {
+                        deh(elo.element, elo.selector);
+                    });
+                });
             } else {
                 // Hyphenopoly isn't loaded yet, so load the Loader
                 // with the following settings:
@@ -170,7 +172,9 @@ var Hyphenopoly = {
         } else { //i.e. if width > 600px
             if (H9YLisLoaded) {
                 //remove hyphenation previously applied by Hyphenopoly
-                window.Hyphenopoly.unhyphenate();
+                window.Hyphenopoly.unhyphenate().then((els) => {
+                    elements = els;
+                });
             }
         }
     }
