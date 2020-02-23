@@ -179,195 +179,180 @@
 
     H.res = new Map([["he", new Map()], ["fw", new Map()]]);
 
-    (() => {
-        const tester = (() => {
-            let fakeBody = null;
-            const ha = "hyphens:auto";
-            const css = `visibility:hidden;-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
+    const tester = (() => {
+        let fakeBody = null;
+        const ha = "hyphens:auto";
+        const css = `visibility:hidden;-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
+        return {
 
-            return {
-
-                /**
-                 * Append fakeBody with tests to target (document)
-                 * @param {Object} target Where to append fakeBody
-                 * @returns {Object|null} The body element or null, if no tests
-                 */
-                "ap": (target) => {
-                    if (fakeBody) {
-                        target[shortcuts.ac](fakeBody);
-                        return fakeBody;
-                    }
-                    return null;
-                },
-
-                /**
-                 * Remove fakeBody
-                 * @returns {undefined}
-                 */
-                "cl": () => {
-                    if (fakeBody) {
-                        fakeBody.parentNode.removeChild(fakeBody);
-                    }
-                },
-
-                /**
-                 * Create and append div with CSS-hyphenated word
-                 * @param {string} lang Language
-                 * @returns {undefined}
-                 */
-                "cr": (lang) => {
-                    /* eslint-disable security/detect-object-injection */
-                    if (H.cf.langs[lang]) {
-                        return;
-                    }
-                    /* eslint-enable security/detect-object-injection */
-                    fakeBody = fakeBody || d[shortcuts.ce]("body");
-                    const testDiv = d[shortcuts.ce]("div");
-                    testDiv.lang = lang;
-                    testDiv.style.cssText = css;
-                    testDiv[shortcuts.ac](
-                        d[shortcuts.ct](
-                            lcRequire.get(lang).get("wo").
-                                toLowerCase()
-                        )
-                    );
-                    fakeBody[shortcuts.ac](testDiv);
+            /**
+             * Append fakeBody with tests to target (document)
+             * @param {Object} target Where to append fakeBody
+             * @returns {Object|null} The body element or null, if no tests
+             */
+            "ap": (target) => {
+                if (fakeBody) {
+                    target[shortcuts.ac](fakeBody);
+                    return fakeBody;
                 }
-            };
-        })();
+                return null;
+            },
 
-        /**
-         * Checks if hyphens (ev.prefixed) is set to auto for the element.
-         * @param {Object} elm - the element
-         * @returns {Boolean} result of the check
-         */
-        function checkCSSHyphensSupport(elmStyle) {
-            const h = elmStyle.hyphens ||
-                elmStyle.webkitHyphens ||
-                elmStyle.msHyphens;
-            return (h === "auto");
-        }
-
-        /**
-         * Load hyphenEngines
-         *
-         * @param {string} lang The language
-         * @returns {undefined}
-         */
-        function loadhyphenEngine(lang) {
-            const filename = lcRequire.get(lang).get("fn") + ".wasm";
-            H.cf.pf = true;
-            // eslint-disable-next-line security/detect-object-injection
-            H.cf.langs[lang] = "H9Y";
-            if (H.res.get("fw").has(filename)) {
-                H.res.get("he").get(H.res.get("fw").get(filename)).c += 1;
-                H.res.get("he").set(
-                    lang,
-                    H.res.get("he").get(H.res.get("fw").get(filename))
-                );
-            } else {
-                H.res.get("he").set(
-                    lang,
-                    {
-                        "c": 1,
-                        "w": w.fetch(H.paths.patterndir + filename, {"credentials": "include"})
-                    }
-                );
-                H.res.get("fw").set(filename, lang);
-            }
-        }
-
-        /**
-         * Tear Down Hyphenopoly
-         */
-        function tearDown() {
-            if (H.handleEvent && H.handleEvent.tearDown) {
-                H.handleEvent.tearDown();
-            }
-            w.Hyphenopoly = null;
-        }
-
-        /**
-         * Polyfill event
-         */
-        function polyfill() {
-            if (H.handleEvent && H.handleEvent.polyfill) {
-                H.handleEvent.polyfill();
-            }
-        }
-
-        lcRequire.forEach((value, lang) => {
-            if (value.get("wo") === "FORCEHYPHENOPOLY" ||
-                // eslint-disable-next-line security/detect-object-injection
-                (H.cf.langs[lang] && H.cf.langs[lang] === "H9Y")
-            ) {
-                loadhyphenEngine(lang);
-            } else {
-                tester.cr(lang);
-            }
-        });
-
-        const testContainer = tester.ap(d.documentElement);
-        if (testContainer !== null) {
-            const nl = testContainer.querySelectorAll("div");
-            nl.forEach((n) => {
-                if (checkCSSHyphensSupport(n.style) && n.offsetHeight > 12) {
-                    H.cf.langs[n.lang] = "CSS";
-                } else {
-                    loadhyphenEngine(n.lang);
+            /**
+             * Remove fakeBody
+             * @returns {undefined}
+             */
+            "cl": () => {
+                if (fakeBody) {
+                    fakeBody.parentNode.removeChild(fakeBody);
                 }
-            });
-            tester.cl();
-        }
-        if (H.cf.pf) {
-            H.res.set("DOM", new Promise((res) => {
-                if (d.readyState === "loading") {
-                    d.addEventListener(
-                        "DOMContentLoaded",
-                        res,
-                        {
-                            "once": true,
-                            "passive": true
-                        }
-                    );
-                } else {
-                    res();
-                }
-            }));
-            if (H.setup.hide === 1) {
-                H.hide(1, 1);
-            }
-            if (H.setup.hide !== 0) {
-                H.setup.timeOutHandler = w.setTimeout(() => {
-                    H.hide(0, null);
-                    // eslint-disable-next-line no-console
-                    console.error(`${scriptName} timed out after ${H.setup.timeout}ms`);
-                }, H.setup.timeout);
-            }
-            H.res.get("DOM").then(() => {
-                if (H.setup.hide > 1) {
-                    H.hide(1, H.setup.hide);
-                }
-            });
-            // Load main script
-            const script = d[shortcuts.ce]("script");
-            script.src = H.paths.maindir + "Hyphenopoly.js";
-            d.head[shortcuts.ac](script);
-            H.hyphenators = empty();
-            eachKey(H.cf.langs, (lang) => {
+            },
+
+            /**
+             * Create and append div with CSS-hyphenated word
+             * @param {string} lang Language
+             * @returns {undefined}
+             */
+            "cr": (lang) => {
                 /* eslint-disable security/detect-object-injection */
-                if (H.cf.langs[lang] === "H9Y") {
-                    H.hyphenators[lang] = H.defProm();
+                if (H.cf.langs[lang]) {
+                    return;
                 }
                 /* eslint-enable security/detect-object-injection */
-            });
-
-            polyfill();
-        } else {
-            tearDown();
-        }
-        if (H.cacheFeatureTests) {
-            store.setItem(scriptName, JSON.stringify(H.cf));
-        }
+                fakeBody = fakeBody || d[shortcuts.ce]("body");
+                const testDiv = d[shortcuts.ce]("div");
+                testDiv.lang = lang;
+                testDiv.style.cssText = css;
+                testDiv[shortcuts.ac](
+                    d[shortcuts.ct](
+                        lcRequire.get(lang).get("wo").
+                            toLowerCase()
+                    )
+                );
+                fakeBody[shortcuts.ac](testDiv);
+            }
+        };
     })();
+
+    /**
+     * Checks if hyphens (ev.prefixed) is set to auto for the element.
+     * @param {Object} elm - the element
+     * @returns {Boolean} result of the check
+     */
+    function checkCSSHyphensSupport(elmStyle) {
+        const h = elmStyle.hyphens ||
+            elmStyle.webkitHyphens ||
+            elmStyle.msHyphens;
+        return (h === "auto");
+    }
+
+    /**
+     * Load hyphenEngines
+     *
+     * @param {string} lang The language
+     * @returns {undefined}
+     */
+    function loadhyphenEngine(lang) {
+        const filename = lcRequire.get(lang).get("fn") + ".wasm";
+        H.cf.pf = true;
+        // eslint-disable-next-line security/detect-object-injection
+        H.cf.langs[lang] = "H9Y";
+        if (H.res.get("fw").has(filename)) {
+            H.res.get("he").get(H.res.get("fw").get(filename)).c += 1;
+            H.res.get("he").set(
+                lang,
+                H.res.get("he").get(H.res.get("fw").get(filename))
+            );
+        } else {
+            H.res.get("he").set(
+                lang,
+                {
+                    "c": 1,
+                    "w": w.fetch(H.paths.patterndir + filename, {"credentials": "include"})
+                }
+            );
+            H.res.get("fw").set(filename, lang);
+        }
+    }
+    lcRequire.forEach((value, lang) => {
+        if (value.get("wo") === "FORCEHYPHENOPOLY" ||
+            // eslint-disable-next-line security/detect-object-injection
+            (H.cf.langs[lang] && H.cf.langs[lang] === "H9Y")
+        ) {
+            loadhyphenEngine(lang);
+        } else {
+            tester.cr(lang);
+        }
+    });
+    const testContainer = tester.ap(d.documentElement);
+    if (testContainer !== null) {
+        const nl = testContainer.querySelectorAll("div");
+        nl.forEach((n) => {
+            if (checkCSSHyphensSupport(n.style) && n.offsetHeight > 12) {
+                H.cf.langs[n.lang] = "CSS";
+            } else {
+                loadhyphenEngine(n.lang);
+            }
+        });
+        tester.cl();
+    }
+    const he = H.handleEvent;
+    if (H.cf.pf) {
+        H.res.set("DOM", new Promise((res) => {
+            if (d.readyState === "loading") {
+                d.addEventListener(
+                    "DOMContentLoaded",
+                    res,
+                    {
+                        "once": true,
+                        "passive": true
+                    }
+                );
+            } else {
+                res();
+            }
+        }));
+        if (H.setup.hide === 1) {
+            H.hide(1, 1);
+        }
+        if (H.setup.hide !== 0) {
+            H.setup.timeOutHandler = w.setTimeout(() => {
+                H.hide(0, null);
+                // eslint-disable-next-line no-console
+                console.error(`${scriptName} timed out after ${H.setup.timeout}ms`);
+            }, H.setup.timeout);
+        }
+        H.res.get("DOM").then(() => {
+            if (H.setup.hide > 1) {
+                H.hide(1, H.setup.hide);
+            }
+        });
+        // Load main script
+        const script = d[shortcuts.ce]("script");
+        script.src = H.paths.maindir + "Hyphenopoly.js";
+        d.head[shortcuts.ac](script);
+        H.hyphenators = empty();
+        eachKey(H.cf.langs, (lang) => {
+            /* eslint-disable security/detect-object-injection */
+            if (H.cf.langs[lang] === "H9Y") {
+                H.hyphenators[lang] = H.defProm();
+            }
+            /* eslint-enable security/detect-object-injection */
+        });
+        (() => {
+            if (he && he.polyfill) {
+                he.polyfill();
+            }
+        })();
+    } else {
+        (() => {
+            if (he && he.tearDown) {
+                he.tearDown();
+            }
+            w.Hyphenopoly = null;
+        })();
+    }
+    if (H.cacheFeatureTests) {
+        store.setItem(scriptName, JSON.stringify(H.cf));
+    }
 })(window, document, Hyphenopoly, Object);
