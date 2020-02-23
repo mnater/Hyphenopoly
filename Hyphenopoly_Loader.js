@@ -101,8 +101,8 @@
     (() => {
         eachKey(H.require, (k) => {
             /* eslint-disable security/detect-object-injection */
-            const fn = (H.fallbacks && H.fallbacks[k])
-                ? H.fallbacks[k]
+            const fn = (H.fallbacks)
+                ? H.fallbacks[k] || k
                 : k;
             lcRequire.set(k.toLowerCase(), new Map(
                 [["fn", fn], ["wo", H.require[k]]]
@@ -149,7 +149,7 @@
                 stylesNode.parentNode.removeChild(stylesNode);
             }
         } else {
-            const vis = " {visibility: hidden !important}\n";
+            const vis = "{visibility:hidden!important}";
             const sc = d[shortcuts.ce]("style");
             let myStyle = "";
             sc.id = sid;
@@ -160,7 +160,7 @@
                     if (mode === 2) {
                         myStyle += sel + vis;
                     } else {
-                        myStyle += sel + " {color: transparent !important}\n";
+                        myStyle += sel + "{color:transparent!important}";
                     }
                 });
             }
