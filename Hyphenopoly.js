@@ -898,7 +898,7 @@
                         });
                     });
                     H.hyphenators[lang].reject({
-                        "msg": `1 File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
+                        "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
                     });
                     /* eslint-enable security/detect-object-injection */
                 }
