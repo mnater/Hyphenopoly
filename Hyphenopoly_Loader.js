@@ -88,16 +88,8 @@
 
         // Change mode string to mode int
         H.setup.hide = (() => {
-            switch (H.setup.hide) {
-            case "all":
-                return 1;
-            case "element":
-                return 2;
-            case "text":
-                return 3;
-            default:
-                return 0;
-            }
+            const tr = new Map([["all", 1], ["element", 2], ["text", 3]]);
+            return tr.get(H.setup.hide) || 0;
         })();
     })();
 
