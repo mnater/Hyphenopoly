@@ -146,7 +146,7 @@
         if (state === 0) {
             const stylesNode = d.getElementById(sid);
             if (stylesNode) {
-                stylesNode.parentNode.removeChild(stylesNode);
+                stylesNode.remove();
             }
         } else {
             const vis = "{visibility:hidden!important}";
@@ -182,9 +182,9 @@
              * @param {Object} target Where to append fakeBody
              * @returns {Object|null} The body element or null, if no tests
              */
-            "ap": (target) => {
+            "ap": () => {
                 if (fakeBody) {
-                    target[shortcuts.ac](fakeBody);
+                    d.documentElement[shortcuts.ac](fakeBody);
                     return fakeBody;
                 }
                 return null;
@@ -196,7 +196,7 @@
              */
             "cl": () => {
                 if (fakeBody) {
-                    fakeBody.parentNode.removeChild(fakeBody);
+                    fakeBody.remove();
                 }
             },
 
@@ -276,7 +276,7 @@
             tester.cr(lang);
         }
     });
-    const testContainer = tester.ap(d.documentElement);
+    const testContainer = tester.ap();
     if (testContainer !== null) {
         const nl = testContainer.querySelectorAll("div");
         nl.forEach((n) => {
