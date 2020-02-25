@@ -169,8 +169,6 @@
         }
     };
 
-    H.res = new Map([["he", new Map()], ["fw", new Map()]]);
-
     const tester = (() => {
         let fakeBody = null;
         const ha = "hyphens:auto";
@@ -238,9 +236,17 @@
         return (h === "auto");
     }
 
+    H.res = new Map([["he", new Map()]]);
+    const fw = new Map();
+
     /**
      * Load hyphenEngines
      *
+     * Make sure each .wasm is loaded exactly once, even for fallbacks
+     * fw: fetched wasm (maps filename to language)
+     * he: hyphenEngines (maps lang to wasm and counter)
+     * c (counter) is needed in Hyphenopoly.js to decide
+     * if wasm needs to be cloned
      * @param {string} lang The language
      * @returns {undefined}
      */
@@ -249,12 +255,10 @@
         H.cf.pf = true;
         // eslint-disable-next-line security/detect-object-injection
         H.cf.langs[lang] = "H9Y";
-        if (H.res.get("fw").has(filename)) {
-            H.res.get("he").get(H.res.get("fw").get(filename)).c += 1;
-            H.res.get("he").set(
-                lang,
-                H.res.get("he").get(H.res.get("fw").get(filename))
-            );
+        if (fw.has(filename)) {
+            const hyphenEngineWrapper = H.res.get("he").get(fw.get(filename));
+            hyphenEngineWrapper.c += 1;
+            H.res.get("he").set(lang, hyphenEngineWrapper);
         } else {
             H.res.get("he").set(
                 lang,
@@ -263,14 +267,12 @@
                     "w": w.fetch(H.paths.patterndir + filename, {"credentials": "include"})
                 }
             );
-            H.res.get("fw").set(filename, lang);
+            fw.set(filename, lang);
         }
     }
     lcRequire.forEach((value, lang) => {
-        if (value.get("wo") === "FORCEHYPHENOPOLY" ||
-            // eslint-disable-next-line security/detect-object-injection
-            (H.cf.langs[lang] && H.cf.langs[lang] === "H9Y")
-        ) {
+        // eslint-disable-next-line security/detect-object-injection
+        if (value.get("wo") === "FORCEHYPHENOPOLY" || H.cf.langs[lang] === "H9Y") {
             loadhyphenEngine(lang);
         } else {
             tester.cr(lang);
