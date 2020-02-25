@@ -676,7 +676,7 @@
             }
             H.res.get("els").then((elements) => {
                 if (elements.counter[0] === 0) {
-                    w.clearTimeout(C.timeOutHandler);
+                    w.clearTimeout(H.timeOutHandler);
                     if (C.hide !== 0) {
                         H.hide(0, null);
                     }

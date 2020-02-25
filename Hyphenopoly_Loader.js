@@ -279,7 +279,7 @@
         }
     });
     const testContainer = tester.ap();
-    if (testContainer !== null) {
+    if (testContainer) {
         const nl = testContainer.querySelectorAll("div");
         nl.forEach((n) => {
             if (checkCSSHyphensSupport(n.style) && n.offsetHeight > 12) {
@@ -310,10 +310,10 @@
             H.hide(1, 1);
         }
         if (H.setup.hide !== 0) {
-            H.setup.timeOutHandler = w.setTimeout(() => {
+            H.timeOutHandler = w.setTimeout(() => {
                 H.hide(0, null);
                 // eslint-disable-next-line no-console
-                console.error(`${scriptName} timed out after ${H.setup.timeout}ms`);
+                console.info(scriptName + " timed out.");
             }, H.setup.timeout);
         }
         H.res.get("DOM").then(() => {
