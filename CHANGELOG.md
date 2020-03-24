@@ -4,6 +4,9 @@
 ### Changed
 *   Hyphenators now hyphenate content of childNodes, too (#issue96)
 
+### Fixed
+*   Don't try to hyphenate whitespace-only text nodes
+
 ## Version 4.1.0 (2020-02-19)
 ### Changed
 *   Hyphenopoly.unhyphenate now returns `elements`: [doc](https://mnater.github.io/Hyphenopoly/Global-Hyphenopoly-Object.html#unhyphenate)

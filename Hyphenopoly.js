@@ -617,6 +617,7 @@
                 el.childNodes.forEach((n) => {
                     if (
                         n.nodeType === 3 &&
+                        (/\S/).test(n.data) &&
                         n.data.length >= minWordLength
                     ) {
                         n.data = hyphenateText(n.data);
