@@ -69,8 +69,7 @@
                 div.appendChild(docFrag);
                 const selectedHTML = div.innerHTML;
                 const selectedText = sel.toString();
-                // eslint-disable-next-line security/detect-non-literal-regexp
-                const re = new RegExp(SOFTHYPHEN, "g");
+                const re = RegExp(SOFTHYPHEN, "g");
                 e.clipboardData.setData("text/plain", selectedText.replace(re, ""));
                 e.clipboardData.setData("text/html", selectedHTML.replace(re, ""));
             },
@@ -550,7 +549,7 @@
                     leadingWhiteSpace = "\u00A0";
                 }
                 /* eslint-disable security/detect-non-literal-regexp */
-                return leadingWhiteSpace + lastWord.replace(new RegExp(selSettings.hyphen, "g"), "") + trailingWhiteSpace;
+                return leadingWhiteSpace + lastWord.replace(RegExp(selSettings.hyphen, "g"), "") + trailingWhiteSpace;
                 /* eslint-enable security/detect-non-literal-regexp */
             }
             orphanControllerPool.set(sel, controlOrphans);
@@ -664,7 +663,7 @@
                     els.forEach((elo) => {
                         const n = elo.element.firstChild;
                         /* eslint-disable security/detect-non-literal-regexp */
-                        n.data = n.data.replace(new RegExp(C[elo.selector].hyphen, "g"), "");
+                        n.data = n.data.replace(RegExp(C[elo.selector].hyphen, "g"), "");
                         /* eslint-enable security/detect-non-literal-regexp */
                     });
                 });
@@ -799,7 +798,7 @@
                      * Word delimiters are not taken in account.
                      */
                     /* eslint-disable security/detect-non-literal-regexp */
-                    lo.re.set(sel, new RegExp(`[${alphabet}\u200C-]{${selSettings.minWordLength},}`, "gi"));
+                    lo.re.set(sel, RegExp(`[${alphabet}\u200C-]{${selSettings.minWordLength},}`, "gi"));
                     /* eslint-enable security/detect-non-literal-regexp */
                 });
                 lo.ready = true;
