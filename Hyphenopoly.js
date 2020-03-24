@@ -345,7 +345,7 @@
          * and add them to elements.
          * @returns {undefined}
          */
-        function collectElements() {
+        function collectElements(parent = null, selector = null) {
             const elements = makeElementCollection();
 
             const dontHyphenateSelector = (() => {
@@ -407,12 +407,16 @@
                     }
                 });
             }
-            C.selectors.forEach((sel) => {
-                w.document.querySelectorAll(sel).forEach((n) => {
-                    processElements(n, getLang(n, true), sel, false);
+            if (parent === null) {
+                C.selectors.forEach((sel) => {
+                    w.document.querySelectorAll(sel).forEach((n) => {
+                        processElements(n, getLang(n, true), sel, false);
+                    });
                 });
-            });
-            H.res.set("els", Promise.resolve(elements));
+            } else {
+                processElements(parent, getLang(parent, true), selector, true);
+            }
+            return elements;
         }
 
         const wordHyphenatorPool = new Map();
@@ -640,6 +644,15 @@
 
         H.createHyphenator = ((lang) => {
             return ((entity, sel = ".hyphenate") => {
+                if (entity instanceof HTMLElement) {
+                    const elements = collectElements(entity, sel);
+                    elements.each((l, els) => {
+                        els.forEach((elo) => {
+                            hyphenate(l, elo.selector, elo.element);
+                        });
+                    });
+                    return null;
+                }
                 return hyphenate(lang, sel, entity);
             });
         });
@@ -910,7 +923,7 @@
             if (!mainLanguage && C.defaultLanguage !== "") {
                 mainLanguage = C.defaultLanguage;
             }
-            collectElements();
+            H.res.set("els", Promise.resolve(collectElements()));
             H.res.get("els").then((elements) => {
                 elements.each((lang, values) => {
                     if (H.languages &&

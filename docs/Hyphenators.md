@@ -70,7 +70,7 @@ In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for
 In the example a `string` is handed over to the `hyphenator` which returns a hyphenated string according to the settings for the `selector`. If no `selector` is defined it defaults to `".hyphenate"`.
 
 ## Use `Hyphenopoly.hyphenators` for DOM-Elements
-When handing over a `HTMLELEMENT` instead of a string, `hyphenators` directly hyphenate the contents of a HTMLElement and return nothing (`undefined`).
+When handing over a `HTMLELEMENT` instead of a string, `hyphenators` directly hyphenate the contents of a HTMLElement (including its children) and return nothing (`null`).
 
 ````html
 <html>

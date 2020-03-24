@@ -1,5 +1,9 @@
 # Version History
 
+## Version 4.2.0 (2020-03-XX)
+### Changed
+*   Hyphenators now hyphenate content of childNodes, too (#issue96)
+
 ## Version 4.1.0 (2020-02-19)
 ### Changed
 *   Hyphenopoly.unhyphenate now returns `elements`: [doc](https://mnater.github.io/Hyphenopoly/Global-Hyphenopoly-Object.html#unhyphenate)
