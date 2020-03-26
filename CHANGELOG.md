@@ -3,6 +3,7 @@
 ## Version 4.2.0 (2020-03-XX)
 ### Changed
 *   Hyphenators now hyphenate content of childNodes, too (#issue96)
+*   Update patterns for Spanish
 
 ### Fixed
 *   Don't try to hyphenate whitespace-only text nodes
