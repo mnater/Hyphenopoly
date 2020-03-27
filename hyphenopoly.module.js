@@ -101,6 +101,7 @@ H.supportedLanguages = [
     "la",
     "lt",
     "lv",
+    "mk",
     "ml",
     "mn-cyrl",
     "mr",
