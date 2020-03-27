@@ -1,5 +1,18 @@
 # Version History
 
+## Version 4.2.0 (2020-03-27)
+### Added
+*   Added support for Macedonian
+
+### Changed
+*   RequestCredentials are now configurable. See [doc](https://mnater.github.io/Hyphenopoly/Setup.html#corscredentials) (issue #98)
+*   Hyphenators now hyphenate content of childNodes, too (#issue96)
+*   Update patterns for Spanish
+
+### Fixed
+*   Don't try to hyphenate whitespace-only text nodes
+*   bump devDependencies
+
 ## Version 4.1.0 (2020-02-19)
 ### Changed
 *   Hyphenopoly.unhyphenate now returns `elements`: [doc](https://mnater.github.io/Hyphenopoly/Global-Hyphenopoly-Object.html#unhyphenate)

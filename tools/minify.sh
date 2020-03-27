@@ -10,8 +10,8 @@ echo $H9YOSIZE
 
 mkdir -p min
 
-terser Hyphenopoly_Loader.js -o min/Hyphenopoly_Loader.js --comments -c -m --warn
-terser Hyphenopoly.js -o min/Hyphenopoly.js --comments -c -m --warn
+terser Hyphenopoly_Loader.js -o min/Hyphenopoly_Loader.js --comments -c unsafe -m --warn
+terser Hyphenopoly.js -o min/Hyphenopoly.js --comments -c passes=3,unsafe -m --warn
 
 echo 'new sizes:'
 wc -c min/Hyphenopoly_Loader.js

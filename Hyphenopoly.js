@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly 4.1.0 - client side hyphenation for webbrowsers
+ * @license Hyphenopoly 4.2.0 - client side hyphenation for webbrowsers
  * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -69,8 +69,7 @@
                 div.appendChild(docFrag);
                 const selectedHTML = div.innerHTML;
                 const selectedText = sel.toString();
-                // eslint-disable-next-line security/detect-non-literal-regexp
-                const re = new RegExp(SOFTHYPHEN, "g");
+                const re = RegExp(SOFTHYPHEN, "g");
                 e.clipboardData.setData("text/plain", selectedText.replace(re, ""));
                 e.clipboardData.setData("text/html", selectedHTML.replace(re, ""));
             },
@@ -345,7 +344,7 @@
          * and add them to elements.
          * @returns {undefined}
          */
-        function collectElements() {
+        function collectElements(parent = null, selector = null) {
             const elements = makeElementCollection();
 
             const dontHyphenateSelector = (() => {
@@ -407,12 +406,16 @@
                     }
                 });
             }
-            C.selectors.forEach((sel) => {
-                w.document.querySelectorAll(sel).forEach((n) => {
-                    processElements(n, getLang(n, true), sel, false);
+            if (parent === null) {
+                C.selectors.forEach((sel) => {
+                    w.document.querySelectorAll(sel).forEach((n) => {
+                        processElements(n, getLang(n, true), sel, false);
+                    });
                 });
-            });
-            H.res.set("els", Promise.resolve(elements));
+            } else {
+                processElements(parent, getLang(parent, true), selector, true);
+            }
+            return elements;
         }
 
         const wordHyphenatorPool = new Map();
@@ -545,9 +548,7 @@
                     // \u00A0 = no-break space (nbsp)
                     leadingWhiteSpace = "\u00A0";
                 }
-                /* eslint-disable security/detect-non-literal-regexp */
-                return leadingWhiteSpace + lastWord.replace(new RegExp(selSettings.hyphen, "g"), "") + trailingWhiteSpace;
-                /* eslint-enable security/detect-non-literal-regexp */
+                return leadingWhiteSpace + lastWord.replace(RegExp(selSettings.hyphen, "g"), "") + trailingWhiteSpace;
             }
             orphanControllerPool.set(sel, controlOrphans);
             return controlOrphans;
@@ -613,6 +614,7 @@
                 el.childNodes.forEach((n) => {
                     if (
                         n.nodeType === 3 &&
+                        (/\S/).test(n.data) &&
                         n.data.length >= minWordLength
                     ) {
                         n.data = hyphenateText(n.data);
@@ -640,6 +642,15 @@
 
         H.createHyphenator = ((lang) => {
             return ((entity, sel = ".hyphenate") => {
+                if (entity instanceof HTMLElement) {
+                    const elements = collectElements(entity, sel);
+                    elements.each((l, els) => {
+                        els.forEach((elo) => {
+                            hyphenate(l, elo.selector, elo.element);
+                        });
+                    });
+                    return null;
+                }
                 return hyphenate(lang, sel, entity);
             });
         });
@@ -649,9 +660,7 @@
                 elements.each((lang, els) => {
                     els.forEach((elo) => {
                         const n = elo.element.firstChild;
-                        /* eslint-disable security/detect-non-literal-regexp */
-                        n.data = n.data.replace(new RegExp(C[elo.selector].hyphen, "g"), "");
-                        /* eslint-enable security/detect-non-literal-regexp */
+                        n.data = n.data.replace(RegExp(C[elo.selector].hyphen, "g"), "");
                     });
                 });
                 return elements;
@@ -676,7 +685,7 @@
             }
             H.res.get("els").then((elements) => {
                 if (elements.counter[0] === 0) {
-                    w.clearTimeout(C.timeOutHandler);
+                    w.clearTimeout(H.timeOutHandler);
                     if (C.hide !== 0) {
                         H.hide(0, null);
                     }
@@ -784,9 +793,7 @@
                      * that follow a character that is not in the `alphabet`.
                      * Word delimiters are not taken in account.
                      */
-                    /* eslint-disable security/detect-non-literal-regexp */
-                    lo.re.set(sel, new RegExp(`[${alphabet}\u200C-]{${selSettings.minWordLength},}`, "gi"));
-                    /* eslint-enable security/detect-non-literal-regexp */
+                    lo.re.set(sel, RegExp(`[${alphabet}\u200C-]{${selSettings.minWordLength},}`, "gi"));
                 });
                 lo.ready = true;
                 // eslint-disable-next-line security/detect-object-injection
@@ -898,7 +905,7 @@
                         });
                     });
                     H.hyphenators[lang].reject({
-                        "msg": `1 File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
+                        "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
                     });
                     /* eslint-enable security/detect-object-injection */
                 }
@@ -910,7 +917,7 @@
             if (!mainLanguage && C.defaultLanguage !== "") {
                 mainLanguage = C.defaultLanguage;
             }
-            collectElements();
+            H.res.set("els", Promise.resolve(collectElements()));
             H.res.get("els").then((elements) => {
                 elements.each((lang, values) => {
                     if (H.languages &&

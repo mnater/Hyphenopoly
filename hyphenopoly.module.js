@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 4.1.0 - hyphenation for node
+ * @license Hyphenopoly.module.js 4.2.0 - hyphenation for node
  * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -101,6 +101,7 @@ H.supportedLanguages = [
     "la",
     "lt",
     "lv",
+    "mk",
     "ml",
     "mn-cyrl",
     "mr",

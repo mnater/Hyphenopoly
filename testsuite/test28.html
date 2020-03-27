@@ -35,13 +35,13 @@
             elCount += 1;
             switch (hide_mode) {
             case "all":
-                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === "html {visibility: hidden !important}\n");
+                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === "html{visibility:hidden!important}");
                 break;
             case "element":
-                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === ".hyphenate1 {visibility: hidden !important}\n.hyphenate2 {visibility: hidden !important}\n");
+                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === ".hyphenate1{visibility:hidden!important}.hyphenate2{visibility:hidden!important}");
                 break;
             case "text":
-                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === ".hyphenate1 {color: transparent !important}\n.hyphenate2 {color: transparent !important}\n");
+                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === ".hyphenate1{color:transparent!important}.hyphenate2{color:transparent!important}");
                 break;
             default:
                 testresult = testresult && (document.getElementById("H9Y_Styles") === null);

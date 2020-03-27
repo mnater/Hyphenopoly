@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 042</title>
+        <script>
+            const Hyphenopoly = {
+                require: {
+                    "de": "FORCEHYPHENOPOLY",
+                    "en-us": "FORCEHYPHENOPOLY"
+                },
+                setup: {
+                    selectors: {
+                        ".hyphenate": {
+                            hyphen: "•"
+                        },
+                        ".usePipe": {
+                            hyphen: "|"
+                        }
+                    }
+                },
+                handleEvent: {
+                    hyphenopolyEnd: function (e) {
+                        /*async function hyphenate_de(text) {
+                            document.getElementById("test2").innerText = (await Hyphenopoly.hyphenators.de)(text);
+                            assert();
+                        }*/
+                        function hyphenate_de(text) {
+                            Hyphenopoly.hyphenators.de.then(function (dehyph) {
+                                dehyph(document.getElementById("test2"), ".usePipe");
+                                dehyph(document.getElementById("test3"), ".usePipe");
+                                dehyph(document.getElementById("test4"), ".usePipe");
+                                dehyph(document.getElementById("test5"), ".usePipe");
+                                dehyph(document.getElementById("test6"), ".usePipe");
+                                assertAll();
+                            });
+                        }
+                        hyphenate_de("Silbentrennung verbessert den Blocksatz.");
+                    }
+                }
+            };
+            function assertAll() {
+                var tests = 6;
+                var i = 1;
+                var test = "";
+                var ref = "";
+                var result = true;
+                while (i <= tests) {
+                    test = document.getElementById("test" + i).innerHTML;
+                    ref = document.getElementById("ref" + i).innerHTML;
+                    if (test === ref) {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
+                    result = result && true;
+                } else {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
+                    result = false;
+                }
+                    i += 1;
+                }
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 42,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
+            }
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test41.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test43.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 042</h1>
+        <p id="desc">Use hyphenators to hyphenate element tree.</p>
+        <div id="result">R: </div>
+        <h2>1: Hyphenate automatically</h2>
+        <p id="test1" class="test hyphenate" lang="de">Silbentrennungsalgorithmus</p>
+        <p id="ref1" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus</p>
+        <h2>2: Hyphenator with one child (lang tag)</h2>
+        <p id="test2" class="test" lang="de">Silbentrennung <span>verbessert</span> den Blocksatz.</p>
+        <p id="ref2" class="ref" lang="de">Sil|ben|tren|nung <span>ver|bes|sert</span> den Block|satz.</p>
+        <h2>3: Hyphenator with one child (other lang)</h2>
+        <p id="test3" class="test" lang="de">Silbentrennung <span lang="en-us">enhances</span> den Blocksatz.</p>
+        <p id="ref3" class="ref" lang="de">Sil|ben|tren|nung <span lang="en-us">en|hances</span> den Block|satz.</p>
+        <h2>4: Hyphenator with one child (mainlang)</h2>
+        <p id="test4" class="test">Hyphenation <span>enhances</span> justification.</p>
+        <p id="ref4" class="ref">Hy|phen|ation <span>en|hances</span> jus|ti|fi|ca|tion.</p>
+        <h2>5: Formatted HTML</h2>
+        <div id="test5" class="test">
+            <div>
+            Hyphenation <span>enhances</span> justification.
+            </div>
+        </div>
+        <div id="ref5" class="ref">
+            <div>
+            Hy|phen|ation <span>en|hances</span> jus|ti|fi|ca|tion.
+            </div>
+        </div>
+        <h2>6: Rehyphenate with hyphenator</h2>
+        <p id="test6" class="test hyphenate" lang="de">Computertypographie</p>
+        <p id="ref6" class="ref" lang="de">Com•pu•ter•ty•po•gra•phie</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
+    </body>
+</html>
