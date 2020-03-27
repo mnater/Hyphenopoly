@@ -1,5 +1,8 @@
 # Version History
 
+## Version 4.3.0 (2020-XX-YY)
+
+
 ## Version 4.2.0 (2020-03-27)
 ### Added
 *   Added support for Macedonian
