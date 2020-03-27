@@ -75,11 +75,13 @@
 
     (() => {
         if (H.setup) {
+            H.setup.CORScredentials = H.setup.CORScredentials || "include";
             H.setup.hide = H.setup.hide || "all";
             H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
             H.setup.timeout = H.setup.timeout || 1000;
         } else {
             H.setup = {
+                "CORScredentials": "include",
                 "hide": "all",
                 "selectors": {".hyphenate": {}},
                 "timeout": 1000
@@ -264,7 +266,7 @@
                 lang,
                 {
                     "c": 1,
-                    "w": w.fetch(H.paths.patterndir + filename, {"credentials": "include"})
+                    "w": w.fetch(H.paths.patterndir + filename, {"credentials": H.setup.CORScredentials})
                 }
             );
             fw.set(filename, lang);

@@ -5,6 +5,7 @@
 *   Added support for Macedonian
 
 ### Changed
+*   RequestCredentials are now configurable. See [doc](https://mnater.github.io/Hyphenopoly/Setup.html#corscredentials) (issue #98)
 *   Hyphenators now hyphenate content of childNodes, too (#issue96)
 *   Update patterns for Spanish
 

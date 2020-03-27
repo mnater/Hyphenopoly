@@ -1,6 +1,7 @@
 # optional fields in `setup`
 These page documents the optional fields in `setup`:
 *   [Global Settings](#global-settings)
+    *   [CORScredentials](#corscredentials)
     *   [defaultLanguage](#defaultlanguage)
     *   [dontHyphenate](#donthyphenate)
     *   [dontHyphenateClass](#donthyphenateclass)
@@ -21,6 +22,25 @@ These page documents the optional fields in `setup`:
 
 ## Global Settings
 These settings apply to Hyphenopoly in general.
+
+### CORScredentials
+````
+type: String
+default: "include"
+````
+Set the [RequestCredentials](https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials) for fetching `*.wasm` files.
+````html
+<script>
+var Hyphenopoly = {
+    require: {...},
+    paths: {...},
+    setup: {
+        CORScredentials: "omit",
+        selectors: {...}
+    }
+};
+</script>
+````
 
 ### defaultLanguage
 ````
