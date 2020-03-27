@@ -548,9 +548,7 @@
                     // \u00A0 = no-break space (nbsp)
                     leadingWhiteSpace = "\u00A0";
                 }
-                /* eslint-disable security/detect-non-literal-regexp */
                 return leadingWhiteSpace + lastWord.replace(RegExp(selSettings.hyphen, "g"), "") + trailingWhiteSpace;
-                /* eslint-enable security/detect-non-literal-regexp */
             }
             orphanControllerPool.set(sel, controlOrphans);
             return controlOrphans;
@@ -662,9 +660,7 @@
                 elements.each((lang, els) => {
                     els.forEach((elo) => {
                         const n = elo.element.firstChild;
-                        /* eslint-disable security/detect-non-literal-regexp */
                         n.data = n.data.replace(RegExp(C[elo.selector].hyphen, "g"), "");
-                        /* eslint-enable security/detect-non-literal-regexp */
                     });
                 });
                 return elements;
@@ -797,9 +793,7 @@
                      * that follow a character that is not in the `alphabet`.
                      * Word delimiters are not taken in account.
                      */
-                    /* eslint-disable security/detect-non-literal-regexp */
                     lo.re.set(sel, RegExp(`[${alphabet}\u200C-]{${selSettings.minWordLength},}`, "gi"));
-                    /* eslint-enable security/detect-non-literal-regexp */
                 });
                 lo.ready = true;
                 // eslint-disable-next-line security/detect-object-injection
