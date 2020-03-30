@@ -172,6 +172,8 @@ window.Hyphenopoly = Hyphenopoly; // Make Hyphenopoly object global
 const hyphenopoly_loader = require("hyphenopoly/Hyphenopoly_Loader");
 ```
 
+A demo can be found at _/examples/webpack_. [Live preview.](../examples/webpack/dist/index.html)
+
 ## Hyphenate depending on media queries
 
 In CSS hyphenation can be restricted to special media-queries. If hyphenation on a website must be dependent of e.g. the width of the window and only active on small screens, you'd do something like this:
