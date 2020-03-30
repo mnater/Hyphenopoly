@@ -46,7 +46,7 @@ const hyphenator = hyphenopoly.config({
     patterndir: "./node_modules/hyphenopoly/patterns/"
   },
   hyphen: "•",
-  loader: "http"
+  loader: "https"
 });
 
 async function hyphenate_en(text) {
@@ -107,9 +107,9 @@ const hyphenator = hyphenopoly.config({
 
 ## Webpack, using Hyphenopoly_Loader.js {#webpack-hyphenopoly-loader}
 
-If you’re working in a browser environment you can add the required files, such as Hyphenopoly.js and the essential patterns, by copying them with the copy-webpack-plugin into your distribution folder.
-webpack.config.js
+If you’re working in a browser environment you can add the required files, such as Hyphenopoly.js and the essential patterns, by copying them with the [copy-webpack-plugin](https://www.npmjs.com/package/copy-webpack-plugin) into your distribution folder.
 
+webpack.config.js
 ```javascript
 module.exports = {
   entry: {
@@ -153,8 +153,8 @@ module.exports = {
 ```
 
 Then, inside the vendor_head.js create the proper Hyphenopoly object describing the directories where the files are copied and finally import Hyphenopoly_Loader.js.
-vendor_head.js
 
+vendor_head.js
 ```javascript
 var Hyphenopoly = {
   require: {
