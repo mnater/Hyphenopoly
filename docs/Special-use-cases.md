@@ -172,7 +172,7 @@ window.Hyphenopoly = Hyphenopoly; // Make Hyphenopoly object global
 const hyphenopoly_loader = require("hyphenopoly/Hyphenopoly_Loader");
 ```
 
-A demo can be found at _/examples/webpack_. [Live preview.](../examples/webpack/dist/index.html)
+A demo can be found at _/examples/webpack_. [Live preview.](./dist/index.html)
 
 ## Hyphenate depending on media queries
 
