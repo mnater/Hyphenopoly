@@ -109,7 +109,7 @@ const hyphenator = hyphenopoly.config({
 
 If you’re working in a browser environment you can add the required files, such as Hyphenopoly.js and the essential patterns, by copying them with the [copy-webpack-plugin](https://www.npmjs.com/package/copy-webpack-plugin) into your distribution folder.
 
-webpack.config.js
+_webpack.config.js_
 ```javascript
 module.exports = {
   entry: {
@@ -154,7 +154,7 @@ module.exports = {
 
 Then, inside the vendor_head.js create the proper Hyphenopoly object describing the directories where the files are copied and finally import Hyphenopoly_Loader.js.
 
-vendor_head.js
+_vendor_head.js_
 ```javascript
 var Hyphenopoly = {
   require: {
