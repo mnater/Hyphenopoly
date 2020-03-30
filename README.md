@@ -157,3 +157,26 @@ Hy-phen-ation
 The patterns are precomputed and available for many languages on CTAN. Hyphenopoly.js uses a proprietary binary format (including pattern license, metadata and the patterns). Patterns are computed from a large list of hyphenated words by a program called `patgen`. They aim to find some hyphenation points – not all – because it's better to miss a hyphenation point then to have some false hyphenation points. Most patterns are really good but none is error free.
 
 These pattern vary in size. This is mostly due to the different linguistic characteristics of the languages.
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="http://thomasbroadley.com"><img src="https://avatars0.githubusercontent.com/u/8731922?v=4" width="100px;" alt=""/><br /><sub><b>Thomas Broadley</b></sub></a><br /><a href="https://github.com/mnater/Hyphenopoly/commits?author=tbroadley" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://kailueke.gitlab.io/"><img src="https://avatars0.githubusercontent.com/u/1189130?v=4" width="100px;" alt=""/><br /><sub><b>Kai Lüke</b></sub></a><br /><a href="https://github.com/mnater/Hyphenopoly/commits?author=pothos" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.data-factory.net/"><img src="https://avatars2.githubusercontent.com/u/998558?v=4" width="100px;" alt=""/><br /><sub><b>Sebastian Blank</b></sub></a><br /><a href="#example-blankse" title="Examples">💡</a></td>
+    <td align="center"><a href="https://www.ghsvs.de"><img src="https://avatars2.githubusercontent.com/u/20780646?v=4" width="100px;" alt=""/><br /><sub><b>ReLater</b></sub></a><br /><a href="#maintenance-ReLater" title="Maintenance">🚧</a></td>
+    <td align="center"><a href="https://github.com/julian-zatloukal"><img src="https://avatars3.githubusercontent.com/u/58230917?v=4" width="100px;" alt=""/><br /><sub><b>julian-zatloukal</b></sub></a><br /><a href="https://github.com/mnater/Hyphenopoly/commits?author=julian-zatloukal" title="Documentation">📖</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
