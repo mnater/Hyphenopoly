@@ -1,8 +1,8 @@
 # Special use cases and how-to's
 
 1.  [Browserify hyphenopoly.module.js](#browserify-hyphenopolymodulejs)
-2.  [Webpack, using Hyphenopoly for node.js](#webpack-node-js)
-3.  [Webpack, using Hyphenopoly for browsers](#webpack-browsers)
+2.  [Webpack, using hyphenopoly.module.js](#webpack-hyphenopoly-module)
+3.  [Webpack, using Hyphenopoly_Loader.js](#webpack-hyphenopoly-loader)
 4.  [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
 5.  [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
 
@@ -73,7 +73,7 @@ This will generate the script-file `bundle.js`. Usage of a minifying tool (e.g. 
 
 _Note:_ Make sure the directories referenced in `paths` are available.
 
-## Webpack, using Hyphenopoly for node.js {#webpack-node-js}
+## Webpack, using hyphenopoly.module.js {#webpack-hyphenopoly-module}
 
 **Note: A webpacked hyphenopoly.module.js is by far larger then the Hyphenopoly_Loader.js and Hyphenopoly.js scripts which are optimized for usage in browsers.**
 
@@ -105,7 +105,7 @@ const hyphenator = hyphenopoly.config({
 });
 ```
 
-## Webpack, using Hyphenopoly for browsers {#webpack-browsers}
+## Webpack, using Hyphenopoly_Loader.js {#webpack-hyphenopoly-loader}
 
 If you’re working in a browser environment you can add the required files, such as Hyphenopoly.js and the essential patterns, by copying them with the copy-webpack-plugin into your distribution folder.
 webpack.config.js
