@@ -29,7 +29,8 @@
     "min/Hyphenopoly.js",
     "min/patterns/",
     "examples/example.js",
-    "examples/example.html"
+    "examples/example.html",
+    "!.DS_Store"
   ],
   "main": "hyphenopoly.module.js",
   "engines": {
