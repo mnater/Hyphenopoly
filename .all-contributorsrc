@@ -1,0 +1,60 @@
+{
+  "projectName": "Hyphenopoly",
+  "projectOwner": "mnater",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "eslint",
+  "contributors": [
+    {
+      "login": "tbroadley",
+      "name": "Thomas Broadley",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/8731922?v=4",
+      "profile": "http://thomasbroadley.com",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "pothos",
+      "name": "Kai Lüke",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1189130?v=4",
+      "profile": "https://kailueke.gitlab.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "blankse",
+      "name": "Sebastian Blank",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/998558?v=4",
+      "profile": "http://www.data-factory.net/",
+      "contributions": [
+        "example"
+      ]
+    },
+    {
+      "login": "ReLater",
+      "name": "ReLater",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/20780646?v=4",
+      "profile": "https://www.ghsvs.de",
+      "contributions": [
+        "maintenance"
+      ]
+    },
+    {
+      "login": "julian-zatloukal",
+      "name": "julian-zatloukal",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/58230917?v=4",
+      "profile": "https://github.com/julian-zatloukal",
+      "contributions": [
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
