@@ -28,8 +28,8 @@
     "min/Hyphenopoly_Loader.js",
     "min/Hyphenopoly.js",
     "min/patterns/",
-    "example.js",
-    "example.html"
+    "examples/example.js",
+    "examples/example.html"
   ],
   "main": "hyphenopoly.module.js",
   "engines": {
@@ -69,5 +69,5 @@
     "prepare": "sh ./tools/minify.sh",
     "doc": "cd ./docs/ && bundle exec jekyll serve -l -o"
   },
-  "runkitExampleFilename": "example.js"
+  "runkitExampleFilename": "examples/example.js"
 }
