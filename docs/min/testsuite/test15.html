@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 015</title>
+        <script>
+            var Hyphenopoly = {
+                require: {
+                    "de": "FORCEHYPHENOPOLY"
+                },
+                setup: {
+                    selectors: {
+                        ".hyphenate": {
+                            hyphen: "•"
+                        }
+                    }
+                },
+                handleEvent: {
+                    hyphenopolyEnd: function (e) {
+                        assert();
+                    },
+                    beforeElementHyphenation: function (e) {
+                        e.el.firstChild.data = e.lang + ": " + e.el.firstChild.data;
+                    },
+                    afterElementHyphenation: function (e) {
+                        e.el.firstChild.data = e.el.firstChild.data.split("").reverse().join("");
+                    }
+                }
+            };
+
+            function assert() {
+                var tests = 1;
+                var i = 1;
+                var test = "";
+                var ref = "";
+                var result = true;
+                while (i <= tests) {
+                    test = document.getElementById("test" + i).innerHTML;
+                    ref = document.getElementById("ref" + i).innerHTML;
+                    if (test === ref) {
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                            return (i < 10) ? "0" + i : i; 
+                        }(i)) + "</span> ";
+                        result = result && true;
+                    } else {
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
+                            return (i < 10) ? "0" + i : i; 
+                        }(i)) + "</span> ";
+                        result = false;
+                    }
+                    i += 1;
+                }
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 15,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
+            }
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test14.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test16.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 015</h1>
+        <p id="desc">Check before-/onAfterElementHyphenation</p>
+        <div id="result"></div>
+        <hr>
+        <p id="test1" class="test hyphenate" lang="de">Silbentrennungsalgorithmus</p>
+        <p id="ref1" class="ref" lang="de">sum•htir•og•la•sgnun•nert•neb•liS :ed</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
+    </body>
+</html>

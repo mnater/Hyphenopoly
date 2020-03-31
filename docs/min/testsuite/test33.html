@@ -2,18 +2,20 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 043</title>
+        <title>Test 033</title>
         <script>
         var Hyphenopoly = {
             require: {
-                "en-us": "FORCEHYPHENOPOLY"
+                "en-us": "FORCEHYPHENOPOLY",
+                "en-au": "FORCEHYPHENOPOLY",
+                "en-gb": "FORCEHYPHENOPOLY"
             },
-            paths: {
-                maindir: "https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/4.2.1/",
-                patterndir: "https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/4.2.1/patterns/"
+            fallbacks: {
+                "en-au": "en-us",
+                "en-gb": "en-us"
             },
             setup: {
-                "CORScredentials": "omit"
+                safeCopy: false
             },
             handleEvent: {
                 hyphenopolyEnd: function (e) {
@@ -22,7 +24,7 @@
             }
         };
         function assert() {
-            var tests = 1;
+            var tests = 3;
             var i = 1;
             var test = "";
             var ref = "";
@@ -49,13 +51,13 @@
             if (parent != window) {
                 parent.postMessage(JSON.stringify({
                     desc: document.getElementById("desc").innerHTML,
-                    index: 43,
+                    index: 33,
                     result: (result ? "passed" : "failed")
                 }), window.location.href);
             }
         }
         </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/4.2.0/Hyphenopoly_Loader.min.js"></script>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;
@@ -79,15 +81,22 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test42.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test44.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test32.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test34.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 043</h1>
-        <p id="desc">Load Hyphenopoly from CDNJS.</p>
+        <h1>Test 033</h1>
+        <p id="desc">Make sure en-us.hpb isn't loaded twice (see network tab).</p>
         <div id="result"></div>
         <hr>
-        <h2>1: en-us</h2>
-        <p id="test1" class="test hyphenate" lang="en-us">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
-        <p id="ref1" class="ref" lang="en-us">A hy&shy;phen&shy;ation al&shy;go&shy;rithm is a set of rules that de&shy;cides at which points a word can be bro&shy;ken over two lines with a hy&shy;phen.</p>
+        <h2>1: en-au</h2>
+        <p id="test1" class="test hyphenate" lang="en-au">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref1" class="ref" lang="en-au">A hy&shy;phen&shy;ation al&shy;go&shy;rithm is a set of rules that de&shy;cides at which points a word can be bro&shy;ken over two lines with a hy&shy;phen.</p>
+        <h2>2: en</h2>
+        <p id="test2" class="test hyphenate" lang="en-us">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref2" class="ref" lang="en-us">A hy&shy;phen&shy;ation al&shy;go&shy;rithm is a set of rules that de&shy;cides at which points a word can be bro&shy;ken over two lines with a hy&shy;phen.</p>
+        <h2>3: en-gb</h2>
+        <p id="test3" class="test hyphenate" lang="en-gb">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref3" class="ref" lang="en-gb">A hy&shy;phen&shy;ation al&shy;go&shy;rithm is a set of rules that de&shy;cides at which points a word can be bro&shy;ken over two lines with a hy&shy;phen.</p>
+
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 

@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -28,8 +28,9 @@
     "min/Hyphenopoly_Loader.js",
     "min/Hyphenopoly.js",
     "min/patterns/",
-    "example.js",
-    "example.html"
+    "examples/example.js",
+    "examples/example.html",
+    "!.DS_Store"
   ],
   "main": "hyphenopoly.module.js",
   "engines": {
@@ -41,16 +42,16 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.25.0",
-    "@typescript-eslint/parser": "^2.25.0",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
     "all-contributors-cli": "^6.14.0",
     "assemblyscript": "^0.9.4",
     "eslint": "^6.8.0",
     "eslint-plugin-security": "^1.4.0",
-    "remark-cli": "^7.0.1",
-    "remark-preset-lint-recommended": "^3.0.4",
+    "remark-cli": "^8.0.0",
+    "remark-preset-lint-recommended": "^4.0.0",
     "tap": "^14.10.7",
-    "terser": "^4.6.7"
+    "terser": "^4.6.10"
   },
   "remarkConfig": {
     "plugins": [
@@ -67,7 +68,8 @@
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js src/*.ts && remark -q *.md && remark -q */*.md",
     "prepare": "sh ./tools/minify.sh",
+    "beforeRelease": "npm run prepare && cp -R ./min ./docs/ && cp ./examples/example.html ./docs/min/",
     "doc": "cd ./docs/ && bundle exec jekyll serve -l -o"
   },
-  "runkitExampleFilename": "example.js"
+  "runkitExampleFilename": "examples/example.js"
 }

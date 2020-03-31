@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 017</title>
+        <script>
+            var Hyphenopoly = {
+                require: {
+                    "en-us": "FORCEHYPHENOPOLY"
+                },
+                setup: {
+                    selectors: {
+                        ".hyphenate": {}
+                    }
+                },
+                handleEvent: {
+                    error: function (e) {
+                        e.preventDefault();
+                        assert(e);
+                    }
+                }
+            };
+
+            function assert(e) {
+                var test1 = "engine for language 'en-us' loaded, but no elements found.";
+                var test2 = "Element with 'en' found, but 'en.hpb' not loaded. Check language tags!";
+                var ref = e.msg;
+                var result = true;
+                if (test1 === ref || test2 === ref) {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
+                    result = result && true;
+                } else {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">failed</span> ";
+                    result = false;
+                }
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 17,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
+            }
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test16.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test18.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 017</h1>
+        <p id="desc">Error if no element found.</p>
+        <div id="result"></div>
+        <hr>
+        <p id="test1" class="test hyphenate" lang="en">engine for language 'en-us' loaded, but no elements found.</p>
+        <p id="ref1" class="ref" lang="en">engine for language 'en-us' loaded, but no elements found.</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
+    </body>
+</html>
