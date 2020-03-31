@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 009</title>
+        <script>
+        var Hyphenopoly = {
+            require: {
+                "en-us": "FORCEHYPHENOPOLY"
+            },
+            setup: {
+                selectors: {
+                    ".class1": {
+                        hyphen: "·"
+                    },
+                    ".class2": {
+                        hyphen: "|",
+                        compound: "auto"
+                    }
+                }
+            },
+            handleEvent: {
+                beforeElementHyphenation: function (e) {
+                    if (e.el.className.indexOf("class1") !== -1) {
+                        e.el.style.opacity = "0";
+                    }
+                },
+                afterElementHyphenation: function (e) {
+                    if (e.el.className.indexOf("class1") !== -1) {
+                        window.setTimeout(function () {
+                            e.el.style.opacity = "1";
+                            e.el.style.transition = "opacity 1000ms ease";
+                        }, 0);
+                    }
+                },
+                hyphenopolyEnd: function (e) {
+                    assert();
+                }
+            }
+        };
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
+        function assert() {
+            var tests = 2;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = true;
+            while (i <= tests) {
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                    result = result && true;
+                } else {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                    result = false;
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 9,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        if (!Hyphenopoly) {
+            document.addEventListener("DOMContentLoaded", function() {
+                assert();
+            });
+        }
+        </script>
+        
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+            #result {
+                height: 100px;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test8.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test10.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 009</h1>
+        <p id="desc">Ease</p>
+        <div id="result"></div>
+        <hr>
+        <h2>1: class1</h2>
+        <p id="test1" class="test class1" lang="en-us">hyphenation algorithm</p>
+        <p id="ref1" class="ref" lang="en-us">hy·phen·ation al·go·rithm</p>
+        <h2>2: class2</h2>
+        <p id="test2" class="test class2" lang="en-us">hyphenation algorithm</p>
+        <p id="ref2" class="ref" lang="en-us">hy|phen|ation al|go|rithm</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+    </body>
+</html>

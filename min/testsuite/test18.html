@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 018</title>
+        <script>
+        function assert() {
+            const r = !Hyphenopoly
+                ? "passed"
+                : "failed";
+            if (r === "passed") {
+                document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">passed</p>";
+            } else {
+                document.getElementById("result").innerHTML = "<p style=\"background-color: #ffd6d6\">failed</p>";
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 18,
+                    result: r,
+                }), window.location.href);
+            }
+        }
+        var Hyphenopoly = {
+            require: {
+                "en-us": "supercalifragilisticexpialidocious"
+            },
+            handleEvent: {
+                tearDown: function () {
+                    window.onload = assert;
+                }
+            }
+        };
+        window.setTimeout(assert, 1000);
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
+
+        </script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+                text-align: justify;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test17.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test19.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 018</h1>
+        <p id="desc">Check tearDown-Event (Chrome on Windows will fail because it doesn't tearDown...)</p>
+        <div id="result"></div>
+        <hr>
+        <div id="test1" class="test hyphenate" lang="en-us">hyphenation</div>
+
+<hr>
+</body>
+</html>

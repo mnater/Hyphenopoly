@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Hyphenopoly.js &ndash; Testsuite</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            body {
+                width:80%;
+                margin-left:10%;
+                margin-right:10%;
+                font: normal 11px Verdana;
+                line-height: 18px;
+            }
+            #template {
+                display: none;
+            }
+            #testframe {
+                visibility: hidden;
+            }
+            .passed {
+                color: green;
+                background-color: lime;
+            }
+            .failed {
+                color: maroon;
+                background-color: red;
+            }
+            .obsolete {
+                color: black;
+                background-color: silver;
+            }
+            .visual {
+                color: olive;
+                background-color: yellow;
+            }
+            .omitted {
+                color: grey;
+                background-color: black;
+            }
+            .testname {
+                display: inline-block;
+                width: 6em;
+            }
+            .result {
+                display: inline-block;
+                width: 5em;
+            }
+            ul {
+                list-style-type: none;
+                padding-left: 0px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>The Hyphenopoly Testsuite</h1>
+        <ul id="template">
+            <li>
+                <span class="testname"><a href="@file@">@file@</a></span>
+                <span class="result @result@">[@result@]</span>
+                <span class="desc">@desc@</span>
+            </li>
+        </ul>
+        <ul id="testresults">
+        </ul>
+        <iframe id="testframe" src=""></iframe>
+        <script src="testdriver.js"></script>
+  </body>
+</html>

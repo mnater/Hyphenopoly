@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 007</title>
+        <script>
+        var Hyphenopoly = {
+            require: {
+                "en-us": "FORCEHYPHENOPOLY"
+            },
+            setup: {
+                selectors: {
+                    ".class1": {
+                        compound: "all"
+                    },
+                    ".class2": {
+                        compound: "auto"
+                    },
+                    ".class3": {
+                        compound: "hyphen"
+                    }
+                }
+            },
+            handleEvent: {
+                hyphenopolyEnd: function (e) {
+                    assert();
+                }
+            }
+        };
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
+        function assert() {
+            var tests = 3;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = true;
+            while (i <= tests) {
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
+                    result = result && true;
+                } else {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + i + "</span> ";
+                    result = false;
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 7,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        </script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+                width: 2em;
+                margin: 0.5em;
+                border: 1px solid blue;
+            }
+            .ref {
+                background-color: #FEEFC0;
+                width: 2em;
+                margin: 0.5em;
+                border: 1px solid yellow;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test6.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test8.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 007</h1>
+        <p id="desc">Hyphenate compound words differently.</p>
+        <div id="result"></div>
+        <hr>
+        <h2>1: compound: all</h2>
+        <p id="test1" class="test class1" lang="en-us">hyphenation-two</p>
+        <p id="ref1" class="ref" lang="en-us">hy&shy;phen&shy;ation-&#8203;two</p>
+        <h2>2: compound: auto</h2>
+        <p id="test2" class="test class2" lang="en-us">hyphenation-two</p>
+        <p id="ref2" class="ref" lang="en-us">hy&shy;phen&shy;ation-two</p>
+        <h2>3: compound: hyphen</h2>
+        <p id="test3" class="test class3" lang="en-us">hyphenation-two</p>
+        <p id="ref3" class="ref" lang="en-us">hyphenation-&#8203;two</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+    </body>
+</html>

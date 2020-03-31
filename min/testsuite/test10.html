@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 010</title>
+        <script>
+        var Hyphenopoly = {
+            require: {
+                "de": "FORCEHYPHENOPOLY"
+            },
+            setup: {
+                hide: "element",
+                selectors: {
+                    ".class1": {
+                        hyphen: "·"
+                    },
+                    ".class2": {
+                        hyphen: String.fromCharCode(173)
+                    }
+                }
+            },
+            handleEvent: {
+                hyphenopolyEnd: function (e) {
+                    assert();
+                }
+            }
+        };
+        function assert() {
+            var tests = 2;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = true;
+            while (i <= tests) {
+                test = document.getElementById("test" + i).textContent;
+                ref = document.getElementById("ref" + i).textContent;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                    result = result && true;
+                } else {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                    result = false;
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 10,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("pastebin").addEventListener("keyup", function(e) {
+                this.value += "\n" + Array.prototype.map.call(this.value, function (x) {
+                    return x.charCodeAt(0)
+                });
+            }, true);
+        });
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .italic {
+                font-style: italic;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;&nbsp;<a href="test9.html">&larr;&nbsp;Prev</a>&nbsp;&nbsp;<a href="test11.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 010</h1>
+        <p id="desc">Check copy hack</p>
+        <div id="result"></div>
+        <hr>
+        <h2>1: class1/class2</h2>
+        <p id="test1" class="test class1" lang="de">Silbentrennung: <span class="class2 italic">Die Worttrennung, auch Silbentrennung genannt, bezeichnet in der Orthographie die Art und Weise, wie die Wörter insbesondere am Zeilenende getrennt werden können.</span></p>
+        <p id="ref1" class="ref" lang="de">Sil·ben·tren·nung: <span class="italic">Die Wort&shy;tren&shy;nung, auch Sil&shy;ben&shy;tren&shy;nung ge&shy;nannt, be&shy;zeich&shy;net in der Or&shy;tho&shy;gra&shy;phie die Art und Weise, wie die Wör&shy;ter ins&shy;be&shy;son&shy;de&shy;re am Zei&shy;len&shy;en&shy;de ge&shy;trennt wer&shy;den kön&shy;nen.</span></p>
+        <h2>2: class1 with link</h2>
+        <p id="test2" class="test class2" lang="de">Silbentrennung: <a href="https://github.com/mnater/Hyphenopoly">Hyphenopoly</a></p>
+        <p id="ref2" class="ref" lang="de">Sil&shy;ben&shy;tren&shy;nung: <a href="https://github.com/mnater/Hyphenopoly">Hy&shy;phen&shy;o&shy;po&shy;ly</a></p>
+        <hr>
+        <textarea id="pastebin" placeholder="paste here" cols="40"></textarea>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+    </body>
+</html>

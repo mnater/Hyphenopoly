@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 006</title>
+        <script>
+        var Hyphenopoly = {
+            require: {
+                "hy": "FORCEHYPHENOPOLY",
+                "be": "FORCEHYPHENOPOLY",
+                "ru": "FORCEHYPHENOPOLY",
+                "sr-cyrl": "FORCEHYPHENOPOLY",
+                "uk": "FORCEHYPHENOPOLY",
+                "ka": "FORCEHYPHENOPOLY",
+                "mk": "FORCEHYPHENOPOLY"
+            },
+            setup: {
+                selectors: {
+                    ".hyphenate": {
+                        hyphen: "|",
+                        minWordLength: 4
+                    }
+                }
+            },
+            handleEvent: {
+                hyphenopolyEnd: function (e) {
+                    assert();
+                }
+            }
+        };
+        function assert() {
+            var tests = 7;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = true;
+            while (i <= tests) {
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
+                    result = result && true;
+                } else {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + i + "</span> ";
+                    result = false;
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 6,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test5.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test7.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 006</h1>
+        <p id="desc">Hyphenate a paragraph for each supported language in non-latin script.</p>
+        <div id="result"></div>
+        <hr>
+        <h2>1: hy</h2>
+        <p id="test1" class="test hyphenate" lang="hy">Հայերենն ունի վեց ձայնավոր, մեկ կիսաձայն և երեսուն բաղաձայն հնչյուններ</p>
+        <p id="ref1" class="ref" lang="hy">Հա|յե|րենն ունի վեց ձայնա|վոր, մեկ կի|սա|ձայն և ե|րե|սուն բա|ղա|ձայն հնչյուններ</p>
+        <h2>2: be</h2>
+        <p id="test2" class="test hyphenate" lang="be">БЕЛАРУ́СКАЯ МО́ВА, мова беларусаў, уваходзіць у сям’ю індаеўрапейскіх моў, яе славянскай групы і ўсходнеславянскіх моваў падгрупы, на якой размаўляюць у Беларусі і па ўсім свеце, галоўным чынам у Расіі, Украіне, Польшчы.</p>
+        <p id="ref2" class="ref" lang="be">БЕ|ЛА|РУ́СКАЯ МО́ВА, мо|ва бе|ла|ру|саў, ува|хо|дзіць у сям’ю ін|да|еў|ра|пей|с|кіх моў, яе сла|вя|н|с|кай гру|пы і ўс|хо|д|не|с|ла|вя|н|с|кіх мо|ваў пад|гру|пы, на якой раз|маў|ля|юць у Бе|ла|ру|сі і па ўсім све|це, га|лоў|ным чы|нам у Ра|сіі, Ук|ра|і|не, Поль|ш|чы.</p>
+        <h2>3: ru</h2>
+        <p id="test3" class="test hyphenate" lang="ru">Типогра́фика — графическое оформление печатного текста посредством набора и вёрстки с использованием норм и правил, специфических для данного языка.</p>
+        <p id="ref3" class="ref" lang="ru">Ти|по|гра́фи|ка — гра|фи|че|ское оформ|ле|ние пе|чат|но|го тек|ста по|сред|ством на|бо|ра и вёрст|ки с ис|поль|зо|ва|ни|ем норм и пра|вил, спе|ци|фи|че|ских для дан|но|го язы|ка.</p>
+        <h2>4: sr-cyrl</h2>
+        <p id="test4" class="test hyphenate" lang="sr-cyrl">Штампарија се примарно бави израдом штампаних пословних образаца који имају разноврсну примену. Наше пословне обрасце користи велики број задовољних клијената из разних делатности. Такође, се бавимо и дигиталном штампом.</p>
+        <p id="ref4" class="ref" lang="sr-cyrl">Шта|мпа|ри|ја се при|мар|но ба|ви из|ра|дом шта|мпа|них по|слов|них обра|за|ца ко|ји има|ју раз|но|вр|сну при|ме|ну. На|ше по|слов|не об|ра|сце ко|ри|сти ве|ли|ки број за|до|вољ|них кли|је|на|та из раз|них де|лат|но|сти. Та|ко|ђе, се ба|ви|мо и ди|ги|та|лном шта|мпом.</p>
+        <h2>5: uk</h2>
+        <p id="test5" class="test hyphenate" lang="uk">Українська мова належить до індоєвропейської мовної родини, слов'янської групи і разом з російською та білоруською до східнослов'янської підгрупи.</p>
+        <p id="ref5" class="ref" lang="uk">Укра|їн|ська мо|ва на|ле|жить до ін|до|єв|ро|пей|ської мов|ної ро|ди|ни, слов'|ян|ської гру|пи і ра|зом з ро|сій|ською та бі|ло|ру|ською до схі|дно|слов'|ян|ської під|гру|пи.</p>
+        <h2>6: ka</h2>
+        <p id="test6" class="test hyphenate" lang="ka">შეგროვება გრაფიკული დიზაინერი, ხატები, ფონტები და დიდაქტიკური და გრამატიკა წიგნების ნივთები</p>
+        <p id="ref6" class="ref" lang="ka">შეგ|რო|ვე|ბა გ|რა|ფი|კუ|ლი დი|ზა|ი|ნე|რი, ხა|ტე|ბი, ფონ|ტე|ბი და დი|დაქ|ტი|კუ|რი და გ|რა|მა|ტი|კა წიგ|ნე|ბის ნივ|თე|ბი</p>
+        <h2>7: mk</h2>
+        <p id="test7" class="test hyphenate" lang="mk">Македонскиот е службен и национален јазик во Македонија, а воедно е и официјално признат како регионален службен јазик во Горица и Пустец во Албанија каде што живее бројно македонско население, но и во Србија како официјален во општините Јабука и Пландиште, Романија и Косово.</p>
+        <p id="ref7" class="ref" lang="mk">Ма|ке|дон|ски|от е служ|бен и на|ци|о|на|лен ја|зик во Ма|ке|до|ни|ја, а во|ед|но е и офи|ци|јал|но приз|нат ка|ко ре|ги|о|на|лен служ|бен ја|зик во Го|ри|ца и Пус|тец во Ал|ба|ни|ја ка|де што жи|вее број|но ма|ке|дон|ско на|се|ле|ние, но и во Срби|ја ка|ко офи|ци|ја|лен во оп|шти|ни|те Ја|бу|ка и План|диш|те, Ро|ма|ни|ја и Ко|со|во.</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+        
+    </body>
+</html>

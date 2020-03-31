@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 029</title>
+        <script>
+        var Hyphenopoly = {
+            require: {
+                "en-us": "FORCEHYPHENOPOLY",
+                "en-au": "FORCEHYPHENOPOLY",
+                "de": "FORCEHYPHENOPOLY",
+                "de-ch": "FORCEHYPHENOPOLY"
+            },
+            fallbacks: {
+                "en-au": "en-gb",
+                "de-ch": "de"
+            },
+            setup: {
+                hide: "all",
+                selectors: {
+                    ".hyphenate": {
+                        hyphen: "|"
+                    }
+                }
+            },
+            handleEvent: {
+                hyphenopolyEnd: function (e) {
+                    assert();
+                }
+            }
+        };
+
+        function assert() {
+            var tests = 6;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = true;
+            while (i <= tests) {
+                test = document.getElementById("test" + i).innerHTML;
+                ref = document.getElementById("ref" + i).innerHTML;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
+                    result = result && true;
+                } else {
+                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
+                        return (i < 10) ? "0" + i : i; 
+                    }(i)) + "</span> ";
+                    result = false;
+                }
+                i += 1;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 29,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test28.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test30.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 029</h1>
+        <p id="desc">Check case-insensitiveness of lang attributes and fallbacks.</p>
+        <div id="result">R: </div>
+        <hr>
+        <h2>1: en-us</h2>
+        <p id="test1" class="test hyphenate" lang="en-us">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref1" class="ref" lang="en-us">A hy|phen|ation al|go|rithm is a set of rules that de|cides at which points a word can be bro|ken over two lines with a hy|phen.</p>
+
+        <h2>2: en-US</h2>
+        <p id="test2" class="test hyphenate" lang="en-US">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref2" class="ref" lang="en-US">A hy|phen|ation al|go|rithm is a set of rules that de|cides at which points a word can be bro|ken over two lines with a hy|phen.</p>
+
+        <h2>3: en-au (fallback to en-gb)</h2>
+        <p id="test3" class="test hyphenate" lang="en-au">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref3" class="ref" lang="en-au">A hy|phen|a|tion al|gorithm is a set of rules that de|cides at which points a word can be broken over two lines with a hy|phen.</p>
+
+        <h2>4: en-AU (fallback to en-gb)</h2>
+        <p id="test4" class="test hyphenate" lang="en-AU">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref4" class="ref" lang="en-AU">A hy|phen|a|tion al|gorithm is a set of rules that de|cides at which points a word can be broken over two lines with a hy|phen.</p>
+
+        <h2>5: de</h2>
+        <p id="test5" class="test hyphenate" lang="de">Die Worttrennung, auch Silbentrennung genannt, bezeichnet in der Orthographie die Art und Weise, wie die Wörter insbesondere am Zeilenende getrennt werden können.</p>
+        <p id="ref5" class="ref" lang="de">Die Wort|tren|nung, auch Sil|ben|tren|nung ge|nannt, be|zeich|net in der Or|tho|gra|phie die Art und Weise, wie die Wör|ter ins|be|son|de|re am Zei|len|en|de ge|trennt wer|den kön|nen.</p>
+
+        <h2>6: de-CH (fallback to de)</h2>
+        <p id="test6" class="test hyphenate" lang="de-CH">Die Worttrennung, auch Silbentrennung genannt, bezeichnet in der Orthographie die Art und Weise, wie die Wörter insbesondere am Zeilenende getrennt werden können.</p>
+        <p id="ref6" class="ref" lang="de-CH">Die Wort|tren|nung, auch Sil|ben|tren|nung ge|nannt, be|zeich|net in der Or|tho|gra|phie die Art und Weise, wie die Wör|ter ins|be|son|de|re am Zei|len|en|de ge|trennt wer|den kön|nen.</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+    </body>
+</html>
