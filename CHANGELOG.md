@@ -1,6 +1,10 @@
 # Version History
 
-## Version 4.3.0 (2020-XX-YY)
+## Version 4.2.1 (2020-03-31)
+### Fixed
+*   Enhance documentation (serve minified hyphenopoly in [https://mnater.github.io/Hyphenopoly/min/](https://mnater.github.io/Hyphenopoly/min/) and move examples to examples directory) (issue #104)
+*   exclude .DS_Store from npm package
+*   bumpDevDependencies
 
 
 ## Version 4.2.0 (2020-03-27)

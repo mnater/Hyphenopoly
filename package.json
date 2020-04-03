@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "4.3.0",
+  "version": "4.2.1",
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -68,7 +68,7 @@
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js src/*.ts && remark -q *.md && remark -q */*.md",
     "prepare": "sh ./tools/minify.sh",
-    "beforeRelease": "npm run prepare && cp -R ./min ./docs/min/ && cp ./examples/example.html ./docs/min/",
+    "beforeRelease": "npm run prepare && cp -R ./min ./docs/ && cp ./examples/example.html ./docs/min/",
     "doc": "cd ./docs/ && bundle exec jekyll serve -l -o"
   },
   "runkitExampleFilename": "examples/example.js"
