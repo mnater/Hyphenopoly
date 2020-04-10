@@ -33,6 +33,22 @@ t.test("run config with one language", async function (t) {
     t.end();
 });
 
+t.test("substitue characters", async function (t) {
+    const deHyphenator = await H9Y.config({
+        "require": ["de"],
+        "substitute": {
+            "de": {
+                "å": "a"
+            }
+        }
+    });
+    t.test("hyphenate ångström", function (t) {
+        t.equal(deHyphenator("ångström"), "ångst\u00ADröm", deHyphenator("ångström"));
+        t.end();
+    });
+    t.end();
+});
+
 t.test("try to hyphenate a word outside alphabet", async function (t) {
     const deHyphenator = await H9Y.config({"require": ["de"]});
     t.test("hyphenate ångström", function (t) {

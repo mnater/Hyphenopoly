@@ -37,10 +37,13 @@ function nodeBuffer2typedArray(buf) {
  * |         +        |
  * |      values:     |
  * |256 chars * 1Byte |
- * -------------------- <- 768 Bytes
+ * |         +        |
+ * |      substi:     |
+ * |256 chars * 1Byte |
+ * -------------------- <- 1024 Bytes
  * |     alphabet     |
  * |256 chars * 2Bytes|
- * -------------------- <- valueStoreOffset (vs) = 1280
+ * -------------------- <- valueStoreOffset (vs) = 1536
  * |    valueStore    |
  * |      1 Byte      |
  * |* valueStoreLength|
@@ -88,7 +91,7 @@ function calculateBaseData(hpbBuf) {
     hpbBuf = nodeBuffer2typedArray(hpbBuf);
     const hpbMetaData = new Uint32Array(hpbBuf).subarray(0, 8);
     const valueStoreLength = hpbMetaData[7];
-    const valueStoreOffset = 1280;
+    const valueStoreOffset = 1536;
     const patternTrieOffset = valueStoreOffset + valueStoreLength +
         (4 - ((valueStoreOffset + valueStoreLength) % 4));
     const wordOffset = patternTrieOffset + (hpbMetaData[6] * 4);

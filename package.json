@@ -63,7 +63,7 @@
     "preinstall3rdparty": "rm -fR third-party",
     "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen",
     "postinstall3rdparty": "cd ./third-party/binaryen/ && cmake . && make",
-    "createWasmForLang": "sh ./tools/createWasmForLang.sh mk",
+    "createWasmForLang": "sh ./tools/createWasmForLang.sh en-us",
     "createAllWasm": "sh ./tools/createAllWasm.sh",
     "test": "tap test/*.js --no-esm",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",

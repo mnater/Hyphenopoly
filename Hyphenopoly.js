@@ -99,6 +99,7 @@
             "keepAlive": setProp(true, 2),
             "normalize": setProp(false, 2),
             "safeCopy": setProp(true, 2),
+            "substitutions": setProp(empty(), 2),
             "timeout": setProp(1000, 2)
         });
 
@@ -852,10 +853,34 @@
          */
         function instantiateWasmEngine(heProm, lang) {
             const wa = window.WebAssembly;
+
+            // eslint-disable-next-line require-jsdoc
+            function registerSubstitutions(alphalen, exp) {
+                /* eslint-disable security/detect-object-injection */
+                if (H.c.substitute && H.c.substitute[lang]) {
+                    const subst = H.c.substitute[lang];
+                    eachKey(subst, (sChar) => {
+                        const sCharU = sChar.toUpperCase();
+                        let sCharUcc = 0;
+                        if (sCharU !== sChar) {
+                            sCharUcc = sCharU.charCodeAt(0);
+                        }
+                        alphalen = exp.subst(
+                            sChar.charCodeAt(0),
+                            sCharUcc,
+                            subst[sChar].charCodeAt(0)
+                        );
+                    });
+                }
+                return alphalen;
+                /* eslint-enable security/detect-object-injection */
+            }
+
             // eslint-disable-next-line require-jsdoc
             function handleWasm(res) {
                 const exp = res.instance.exports;
-                const alphalen = exp.conv();
+                let alphalen = exp.conv();
+                alphalen = registerSubstitutions(alphalen, exp);
                 const baseData = {
                     /* eslint-disable multiline-ternary */
                     "buf": exp.mem.buffer,
@@ -871,7 +896,7 @@
                         baseData,
                         exp.hyphenate
                     ),
-                    decode(new Uint16Array(exp.mem.buffer, 770, alphalen - 1)),
+                    decode(new Uint16Array(exp.mem.buffer, 1026, alphalen - 1)),
                     baseData.lm,
                     baseData.rm
                 );

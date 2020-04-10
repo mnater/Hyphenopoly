@@ -323,6 +323,28 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
  */
 function instantiateWasmEngine(lang) {
     // eslint-disable-next-line require-jsdoc
+    function registerSubstitutions(alphalen, exp) {
+        /* eslint-disable security/detect-object-injection */
+        if (H.c.substitute && H.c.substitute[lang]) {
+            const subst = H.c.substitute[lang];
+            Object.keys(subst).forEach((sChar) => {
+                const sCharU = sChar.toUpperCase();
+                let sCharUcc = 0;
+                if (sCharU !== sChar) {
+                    sCharUcc = sCharU.charCodeAt(0);
+                }
+                alphalen = exp.subst(
+                    sChar.charCodeAt(0),
+                    sCharUcc,
+                    subst[sChar].charCodeAt(0)
+                );
+            });
+        }
+        return alphalen;
+        /* eslint-enable security/detect-object-injection */
+    }
+
+    // eslint-disable-next-line require-jsdoc
     function handleWasm(inst) {
         const exp = inst.exports;
         const baseData = {
@@ -334,14 +356,15 @@ function instantiateWasmEngine(lang) {
             "wo": (WebAssembly.Global) ? exp.uwo.value : exp.uwo
             /* eslint-enable multiline-ternary */
         };
-        const alphalen = exp.conv();
+        let alphalen = exp.conv();
+        alphalen = registerSubstitutions(alphalen, exp);
         prepareLanguagesObj(
             lang,
             encloseHyphenateFunction(
                 baseData,
                 exp.hyphenate
             ),
-            decode(new Uint16Array(exp.mem.buffer, 770, alphalen - 1)),
+            decode(new Uint16Array(exp.mem.buffer, 1026, alphalen - 1)),
             baseData.lm,
             baseData.rm
         );
@@ -630,6 +653,7 @@ H.config = ((userConfig) => {
         "require": setProp([], 2),
         "rightmin": setProp(0, 3),
         "rightminPerLang": setProp(empty(), 2),
+        "substitute": setProp(empty(), 2),
         "sync": setProp(false, 2)
     });
     const settings = Object.create(defaults);
