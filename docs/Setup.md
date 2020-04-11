@@ -10,6 +10,7 @@ These page documents the optional fields in `setup`:
     *   [keepAlive](#keepalive)
     *   [normalize](#normalize)
     *   [safeCopy](#safecopy)
+    *   [substitute](#substitute)
     *   [timeout](#timeout)
 *   [Selector Based Settings](#selector-based-settings)
     *   [compound](#compound)
@@ -268,6 +269,34 @@ var Hyphenopoly = {
 To prevent soft hyphens from being copied to the clipboard, Hyphenopoly.js registers a `onCopy`-Event on hyphenated elements. When text is copied to the clipboard, this event fires and soft hyphens are removed.
 _It does NOT remove other `hyphen`-characters!_
 This feature is on by default, but it's a hack – disable it if you don't like it.
+
+### substitute
+````
+type: Object
+default: undefined
+````
+Substitute characters
+````html
+<script>
+var Hyphenopoly = {
+    require: {...},
+    paths: {...},
+    setup: {
+        substitute: {
+            "en-us": {
+                "é": "e" //substitute "é" with "e" in "en-us"
+            }
+        },
+        selectors: {...}
+    }
+};
+</script>
+````
+If a word contains a letter that is not part of the alphabet defined in the sample file, this word is not hyphenated by default. This is the case for example with "communiqué". The letter "é" is not in the English alphabet, so the word cannot be hyphenated.
+These problems can be solved with letter substitutions. If you want to use the letter "e" instead of the letter "é" for the hyphenation process, you can specify this accordingly (see example).
+"communiqué" is then separated (com-mu-niqué).
+
+The substitute object must contain language-codes as keys. The values are objects theirselves, with the characters to be substituted as keys and the substituting characters as values (both lowercase only – Hyphenopoly handles all the letter casing, if necessary).
 
 ### timeout
 ````
