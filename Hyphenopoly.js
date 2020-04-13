@@ -640,7 +640,11 @@
             return r;
         }
 
-        H.createHyphenator = ((lang) => {
+        /**
+         * Creates a language-specific text hyphenator
+         * @param {String} lang - The language this hyphenator hyphenates
+         */
+        function createHyphenator(lang) {
             return ((entity, sel = ".hyphenate") => {
                 if (entity instanceof HTMLElement) {
                     const elements = collectElements(entity, sel);
@@ -653,7 +657,7 @@
                 }
                 return hyphenate(lang, sel, entity);
             });
-        });
+        }
 
         H.unhyphenate = () => {
             return H.res.get("els").then((elements) => {
@@ -797,7 +801,7 @@
                 });
                 lo.ready = true;
                 // eslint-disable-next-line security/detect-object-injection
-                H.hyphenators[lang].resolve(H.createHyphenator(lang));
+                H.hyphenators[lang].resolve(createHyphenator(lang));
             }
             if (H.events.has("engineReady")) {
                 H.events.get("engineReady").resolve(lang);
