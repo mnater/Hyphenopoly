@@ -227,8 +227,11 @@
             H.events.delete(name);
             H.events.set(name, H.defProm());
             H.events.get(name).then((v) => {
-                // eslint-disable-next-line security/detect-object-injection
-                H.handleEvent[name](v);
+                /* eslint-disable security/detect-object-injection */
+                if (H.handleEvent[name]) {
+                    H.handleEvent[name](v);
+                }
+                /* eslint-enable security/detect-object-injection */
             });
         }
 
@@ -641,21 +644,33 @@
         }
 
         /**
-         * Creates a language-specific text hyphenator
+         * Creates a language-specific string hyphenator
          * @param {String} lang - The language this hyphenator hyphenates
          */
-        function createHyphenator(lang) {
+        function createStringHyphenator(lang) {
             return ((entity, sel = ".hyphenate") => {
-                if (entity instanceof HTMLElement) {
-                    const elements = collectElements(entity, sel);
-                    elements.each((l, els) => {
-                        els.forEach((elo) => {
-                            hyphenate(l, elo.selector, elo.element);
-                        });
-                    });
-                    return null;
+                if (typeof entity === "string") {
+                    return hyphenate(lang, sel, entity);
                 }
-                return hyphenate(lang, sel, entity);
+                H.events.get("error").resolve({
+                    "msg": "language-specific hyphenators only hyphenate strings."
+                });
+                return null;
+            });
+        }
+
+        /**
+         * Creates a polyglot HTML hyphenator
+         */
+        function createDOMHyphenator() {
+            return ((entity, sel = ".hyphenate") => {
+                const elements = collectElements(entity, sel);
+                elements.each((l, els) => {
+                    els.forEach((elo) => {
+                        hyphenate(l, elo.selector, elo.element);
+                    });
+                });
+                return null;
             });
         }
 
@@ -801,7 +816,7 @@
                 });
                 lo.ready = true;
                 // eslint-disable-next-line security/detect-object-injection
-                H.hyphenators[lang].resolve(createHyphenator(lang));
+                H.hyphenators[lang].resolve(createStringHyphenator(lang));
             }
             if (H.events.has("engineReady")) {
                 H.events.get("engineReady").resolve(lang);
@@ -936,6 +951,19 @@
 
         H.res.get("he").forEach((heProm, lang) => {
             instantiateWasmEngine(heProm, lang);
+        });
+
+        Promise.all(
+            // Check all entries except "HTML"
+            Object.entries(H.hyphenators).
+                reduce((accumulator, value) => {
+                    if (value[0] !== "HTML") {
+                        return accumulator.concat(value[1]);
+                    }
+                    return accumulator;
+                }, [])
+        ).then(() => {
+            H.hyphenators.HTML.resolve(createDOMHyphenator());
         });
     })(Hyphenopoly);
 })(window);

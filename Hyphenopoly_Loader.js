@@ -335,6 +335,7 @@
             }
             /* eslint-enable security/detect-object-injection */
         });
+        H.hyphenators.HTML = H.defProm();
         (() => {
             if (he && he.polyfill) {
                 he.polyfill();

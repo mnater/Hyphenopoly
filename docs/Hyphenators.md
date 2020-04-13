@@ -6,12 +6,16 @@ Possible use cases are:
 *   hyphenating text provided by the user (e.g. in a preview window of a blogging software)
 *   …
 
-For this use cases Hyphenopoly.js exposes `hyphenators` – language specific functions that hyphenates a string or a DOM-Object.
+For this use cases Hyphenopoly.js exposes `hyphenators` – functions that hyphenate strings or DOM-Objects.
+
+There are two types of `hyphenators`:
+*   language specific `hyphenators` that can only hyphenate `strings`
+*   a polyglot `HTML`-hyphenator that can hyphenate DOM-objects of type `HTMLElement`
 
 ## Create and access `Hyphenopoly.hyphenators`
-`hyphenators` are language specific functions that hyphenate their input.
 
 Hyphenopoly_Loader.js creates a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) for a `hyphenator` for each language it loads (i.e. languages the UA doesn't support or languages you "FORCEHYPHENOPOLY"-ied).
+Additionally it creates a Promise for a `HTML`-hyphenator, that is able to hyphenate HTMLEntities of all loaded languages.
 
 ````html
 <script>
@@ -24,16 +28,16 @@ Hyphenopoly_Loader.js creates a [Promise](https://developer.mozilla.org/en-US/do
 </script>
 <script src="./Hyphenopoly_Loader.js"></script>
 <script>
-    console.log(Hyphenopoly.hyphenators); //{en-us: Promise}
+    console.log(Hyphenopoly.hyphenators); //{en-us: Promise, HTML: Promise}
 </script>
 ````
 
-In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for `en-us`. Since the UA seems to support CSS3-hyphens for German, `Hyphenopoly.hyphenators` only contain a Promise for a `en-us`-hyphenator.
+In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for `en-us`. Since the UA seems to support CSS3-hyphens for German, `Hyphenopoly.hyphenators` only contain a Promise for a `en-us`-hyphenator and a Promise for the `HTML`-hyphenator.
 
-## Use `Hyphenopoly.hyphenators` for Strings
+## Use `Hyphenopoly.hyphenators[<lang>]` for Strings
 `hyphenators` are Promises. They are resolved as soon as everything necessary is loaded and ready (or rejected when something goes wrong). `hyphenators` resolve to a language specific function (a `hyphenator`) that hyphenates its input according to the settings for selectors (default: `.hyphenate`):
 
-`function hyphenator({string|DOM-Element}, [Optional: selector=".hyphenate"]) => {string|undefined}`
+`function hyphenator({string}, [Optional: selector=".hyphenate"]) => {string|undefined}`
 
 ````html
 <script>
@@ -69,8 +73,8 @@ In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for
 
 In the example a `string` is handed over to the `hyphenator` which returns a hyphenated string according to the settings for the `selector`. If no `selector` is defined it defaults to `".hyphenate"`.
 
-## Use `Hyphenopoly.hyphenators` for DOM-Elements
-When handing over a `HTMLELEMENT` instead of a string, `hyphenators` directly hyphenate the contents of a HTMLElement (including its children) and return nothing (`null`).
+## Use `Hyphenopoly.hyphenators.HTML` for DOM-Elements
+Objects of type `HTMLElement` can be hyphenated with the `HTML`-hyphenator (`Hyphenopoly.hyphenators.HTML`). The `HTML`-hyphenator hyphenates the handed over `HTMLElement` and all it's `childElements` if their language is one of the loaded languages directly and returns `null`.
 
 ````html
 <html>
@@ -92,25 +96,35 @@ When handing over a `HTMLELEMENT` instead of a string, `hyphenators` directly hy
 </script>
 <script src="./Hyphenopoly_Loader.js"></script>
 <script>
-    Hyphenopoly.hyphenators["en-us"].then((hyphenator_en) => {
+    Hyphenopoly.hyphenators["HTML"].then((hyphenator_en) => {
         hyphenator_en(document.getElementById("hyphenateme"));
     });
 </script>
 </head>
 <body>
-    <div id="hyphenateme">Supercalifragilisticexpialidocious</div>
+    <div id="hyphenateme">
+      <span lang="en-us">hyphenation</span>
+      <span lang="de">Silbentrennung</span>
+    </div>
 <!--becomes -->
-<!--<div id="hyphenateme">Su•per•cal•ifrag•ilis•tic•ex•pi•ali•do•cious</div>-->
+<!--
+    <div id="hyphenateme">
+      <span lang="en-us">hy•phen•ation</span>
+      <span lang="de">Silbentrennung</span>
+    </div>
+-->
 </body>
 </html>
 ````
+
+In the example above we assume that the browser supports hyphention for German. So the `HTML`-hyphenator only hyphenates Englisch elements.
 
 ## Further notes and compatibility
 Instead of using `.then` on the Promises we could also use `async/await`:
 
 ````javascript
 async function runHyphenator(id) {
-    (await Hyphenopoly.hyphenators["en-us"])(document.getElementById(id));
+    (await Hyphenopoly.hyphenators["HTML"])(document.getElementById(id));
 }
 runHyphenator("hyphenateme");
 ````
@@ -194,7 +208,7 @@ class Toggle extends React.Component {
     const el = this.el;
     //if hyphenation is handled by CSS, Hyphenopoly is undefined
     if (window.Hyphenopoly) {
-      window.Hyphenopoly.hyphenators["en-us"].then(
+      window.Hyphenopoly.hyphenators["HTML"].then(
         function (enHyphenator) {
           enHyphenator(el);
         }
