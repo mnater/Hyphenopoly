@@ -649,13 +649,12 @@
          */
         function createStringHyphenator(lang) {
             return ((entity, sel = ".hyphenate") => {
-                if (typeof entity === "string") {
-                    return hyphenate(lang, sel, entity);
+                if (typeof entity !== "string") {
+                    H.events.get("error").resolve({
+                        "msg": "This use of hyphenators is deprecated. See https://mnater.github.io/Hyphenopoly/Hyphenators.html"
+                    });
                 }
-                H.events.get("error").resolve({
-                    "msg": "language-specific hyphenators only hyphenate strings."
-                });
-                return null;
+                return hyphenate(lang, sel, entity);
             });
         }
 

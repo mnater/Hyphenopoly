@@ -25,6 +25,9 @@
                             document.getElementById("test2").innerText = (await Hyphenopoly.hyphenators.de)(text);
                             assert();
                         }*/
+                        Hyphenopoly.hyphenators.de.then(function (dehyphenator) {
+                            dehyphenator(document.getElementById("test7"), ".usePipe");
+                        });
                         Hyphenopoly.hyphenators.HTML.then(function (hyphenateHTML) {
                             hyphenateHTML(document.getElementById("test2"), ".usePipe");
                             hyphenateHTML(document.getElementById("test3"), ".usePipe");
@@ -123,6 +126,9 @@
         <h2>6: Rehyphenate with hyphenator</h2>
         <p id="test6" class="test hyphenate" lang="de">Computertypographie</p>
         <p id="ref6" class="ref" lang="de">Com•pu•ter•ty•po•gra•phie</p>
+        <h2>7: use H.hyphenators.de on HTMLElement</h2>
+        <p id="test7" class="test hyphenate" lang="de">Computertypographie</p>
+        <p id="ref7" class="ref" lang="de">Com•pu•ter•ty•po•gra•phie</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 
