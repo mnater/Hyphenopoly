@@ -5,6 +5,8 @@ export const hwo: i32 = hw;
 export const lmi: i32 = lm;
 export const rmi: i32 = rm;
 
+let alphabetCount: i32 = 0;
+
 /**
  * Maps BMP-charCode (16bit) to 8bit adresses
  *
@@ -46,7 +48,6 @@ function createTranslateMap(): i32 {
     let first: i32 = 0;
     let second: i32 = 0;
     let secondInt: i32 = 0;
-    let alphabetCount: i32 = 0;
     i = to + 2;
     while (i < po) {
         first = load<u16>(i);
@@ -69,9 +70,23 @@ function createTranslateMap(): i32 {
             pushToTranslateMap(first, secondInt);
         }
         // Add to alphabet
-        store<u16>(alphabetCount, first, 768);
+        store<u16>(alphabetCount, first, 1024);
         alphabetCount += 2;
         i += 4;
+    }
+    return alphabetCount >> 1;
+}
+
+export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
+    const replccInt: i32 = pullFromTranslateMap(replcc);
+    if (replccInt !== 255) {
+        pushToTranslateMap(ccl, replccInt);
+        if (ccu !== 0) {
+            pushToTranslateMap(ccu, replccInt);
+        }
+        // Add to alphabet
+        store<u16>(alphabetCount, ccl, 1024);
+        alphabetCount += 2;
     }
     return alphabetCount >> 1;
 }

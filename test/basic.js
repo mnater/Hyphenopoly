@@ -33,10 +33,57 @@ t.test("run config with one language", async function (t) {
     t.end();
 });
 
+t.test("substitue characters", async function (t) {
+    const deHyphenator = await H9Y.config({
+        "require": ["de"],
+        "substitute": {
+            "de": {
+                "å": "a"
+            }
+        }
+    });
+    t.test("hyphenate ångström", function (t) {
+        t.equal(deHyphenator("ångström"), "ångst\u00ADröm", deHyphenator("ångström"));
+        t.end();
+    });
+    t.end();
+});
+
+t.test("substitue characters unicase", async function (t) {
+    const deHyphenator = await H9Y.config({
+        "require": ["en-us"],
+        "substitute": {
+            "en-us": {
+                "0": "o",
+                "1": "l",
+                "3": "e",
+                "4": "a",
+                "5": "s",
+                "7": "t",
+                "8": "b"
+            }
+        }
+    });
+    t.test("hyphenate 1337speak", function (t) {
+        t.equal(deHyphenator("48501u73"), "48\u00AD501u73", deHyphenator("48501u73"));
+        t.end();
+    });
+    t.end();
+});
+
 t.test("try to hyphenate a word outside alphabet", async function (t) {
     const deHyphenator = await H9Y.config({"require": ["de"]});
+    t.test("hyphenate ångström", function (t) {
+        t.equal(deHyphenator("ångström"), "ångström", deHyphenator("ångström"));
+        t.end();
+    });
+    t.end();
+});
+
+t.test("force .wasm.hyphenate to return 0", async function (t) {
+    const deHyphenator = await H9Y.config({"require": ["de"]});
     // eslint-disable-next-line prefer-regex-literals
-    H9Y.languages.get("de").genRegExp = new RegExp("[abcdefghijklmnopqrstuvwxyzåäöüßſ‌-]{6,}", "gi");
+    H9Y.languages.get("de").reNotAlphabet = RegExp("[^abcdefghijklmnopqrstuvwxyzåäöüßſ‌-]", "gi");
     t.test("hyphenate ångström", function (t) {
         t.equal(deHyphenator("ångström"), "ångström", deHyphenator("ångström"));
         t.end();
