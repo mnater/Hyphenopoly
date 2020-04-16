@@ -1,5 +1,18 @@
 # Version History
 
+## Version 4.3.0 (2020-04-17)
+### Fixed
+*   Hyphenators handle subtags with different lang consistently (issue #108)
+*   Better word matching RegEx (issue #109)
+*   Emit multiple errors (instead of just one) (issue #112)
+*   bumpDevDependencies
+
+### Added
+*   API to define character substitutions: [https://mnater.github.io/Hyphenopoly/Setup.html#substitute](doc) (issue #109)
+
+### Changed
+*   Words with foreign characters are not hyphenated anymore (issue #109)
+
 ## Version 4.2.1 (2020-03-31)
 ### Fixed
 *   Enhance documentation (serve minified hyphenopoly in [https://mnater.github.io/Hyphenopoly/min/](https://mnater.github.io/Hyphenopoly/min/) and move examples to examples directory) (issue #104)

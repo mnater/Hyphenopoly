@@ -25,7 +25,7 @@
         {"exec": true, "path": "test18.html"},
         {"exec": true, "path": "test19.html"},
         {"exec": true, "path": "test20.html"},
-        {"exec": true, "path": "test21.html"},
+        {"exec": false, "path": "test21.html"},
         {"exec": true, "path": "test22.html"},
         {"exec": true, "path": "test23.html"},
         {"exec": true, "path": "test24.html"},
@@ -47,7 +47,9 @@
         {"exec": true, "path": "test40.html"},
         {"exec": true, "path": "test41.html"},
         {"exec": true, "path": "test42.html"},
-        {"exec": true, "path": "test43.html"}
+        {"exec": true, "path": "test43.html"},
+        {"exec": true, "path": "test44.html"},
+        {"exec": true, "path": "test45.html"}
     ];
     var testframe = document.getElementById("testframe");
     var currentTest = 1;
