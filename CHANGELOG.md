@@ -19,7 +19,6 @@
 *   exclude .DS_Store from npm package
 *   bumpDevDependencies
 
-
 ## Version 4.2.0 (2020-03-27)
 ### Added
 *   Added support for Macedonian
