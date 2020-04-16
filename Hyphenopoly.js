@@ -21,16 +21,6 @@
     }
 
     /**
-     * Shorthand for Object.keys(obj).forEach(() => {})
-     * @param {Object} obj the object to iterate
-     * @param {function} fn the function to execute
-     * @returns {undefined}
-     */
-    function eachKey(obj, fn) {
-        Object.keys(obj).forEach(fn);
-    }
-
-    /**
      * Set value and properties of object member
      * Argument <props> is a bit pattern:
      * 1. bit: configurable
@@ -52,6 +42,51 @@
         };
         /* eslint-enable no-bitwise, sort-keys */
     };
+
+    /**
+     * Event
+     */
+    const event = ((H) => {
+        /* eslint-disable array-element-newline */
+        const knownEvents = new Map([
+            ["afterElementHyphenation", []],
+            ["beforeElementHyphenation", []],
+            ["engineReady", []],
+            [
+                "error", [
+                    (e) => {
+                        if (e.runDefault) {
+                            w.console.warn(e.msg);
+                        }
+                    }
+                ]
+            ],
+            ["hyphenopolyEnd", []],
+            ["hyphenopolyStart", []]
+        ]);
+
+        knownEvents.forEach((eventFunc, eventName) => {
+            if (
+                H.handleEvent &&
+                Object.prototype.hasOwnProperty.call(H.handleEvent, eventName)
+            ) {
+                // eslint-disable-next-line security/detect-object-injection
+                knownEvents.get(eventName).unshift(H.handleEvent[eventName]);
+            }
+        });
+        /* eslint-enable array-element-newline */
+        return {
+            "fire": ((eventName, eventData) => {
+                eventData.runDefault = true;
+                eventData.preventDefault = () => {
+                    eventData.runDefault = false;
+                };
+                knownEvents.get(eventName).forEach((eventFn) => {
+                    eventFn(eventData);
+                });
+            })
+        };
+    })(Hyphenopoly);
 
     /**
      * Register copy event on element
@@ -165,76 +200,16 @@
         H.c = settings;
     })(Hyphenopoly);
 
-    /**
-     * Register Events.
-     * This is a IIFE to keep complexity low.
-     */
-    ((H) => {
-        H.events = new Map();
-
-        /* eslint-disable array-element-newline */
-        const knownEvents = new Set([
-            "afterElementHyphenation",
-            "beforeElementHyphenation",
-            "engineReady",
-            "error",
-            "hyphenopolyEnd",
-            "hyphenopolyStart"
-        ]);
-        /* eslint-enable array-element-newline */
-        H.events.set("error", H.defProm());
-        H.events.get("error").then((e) => {
-            e.runDefault = true;
-            e.preventDefault = () => {
-                e.runDefault = false;
-            };
-        });
-        if (H.handleEvent) {
-            eachKey(H.handleEvent, (name) => {
-                if (knownEvents.has(name)) {
-                    if (!H.events.has(name)) {
-                        H.events.set(name, H.defProm());
-                    }
-                    H.events.get(name).then((v) => {
-                    // eslint-disable-next-line security/detect-object-injection
-                        H.handleEvent[name](v);
-                    });
-                } else if (name !== "tearDown" && name !== "polyfill") {
-                    H.events.get("error").resolve({
-                        "msg": `unknown Event "${name}" discarded`
-                    });
-                }
-            });
-        }
-        H.events.get("error").then((e) => {
-            if (e.runDefault) {
-                w.console.warn(e.msg);
-            }
-        });
-    })(Hyphenopoly);
-
     ((H) => {
         const C = H.c;
         let mainLanguage = null;
-        if (H.events.has("hyphenopolyStart")) {
-            H.events.get("hyphenopolyStart").resolve("hyphenopolyStart");
-        }
 
-        /**
-         * Reinitialize event promise with a pending promise.
-         * @param {string} name - Name of the event
-         */
-        function reinitEventPromise(name) {
-            H.events.delete(name);
-            H.events.set(name, H.defProm());
-            H.events.get(name).then((v) => {
-                /* eslint-disable security/detect-object-injection */
-                if (H.handleEvent[name]) {
-                    H.handleEvent[name](v);
-                }
-                /* eslint-enable security/detect-object-injection */
-            });
-        }
+        event.fire(
+            "hyphenopolyStart",
+            {
+                "msg": "hyphenopolyStart"
+            }
+        );
 
         /**
          * Factory for elements
@@ -280,9 +255,12 @@
                     list.delete(lang);
                     counter[0] -= langCount;
                     if (counter[0] === 0) {
-                        if (H.events.has("hyphenopolyEnd")) {
-                            H.events.get("hyphenopolyEnd").resolve("hyphenopolyEnd");
-                        }
+                        event.fire(
+                            "hyphenopolyEnd",
+                            {
+                                "msg": "hyphenopolyEnd"
+                            }
+                        );
                         if (!C.keepAlive) {
                             window.Hyphenopoly = null;
                         }
@@ -398,9 +376,12 @@
                         registerOnCopy(el);
                     }
                 } else if (!H.cf.langs[eLang]) {
-                    H.events.get("error").resolve({
-                        "msg": `Element with '${eLang}' found, but '${eLang}.hpb' not loaded. Check language tags!`
-                    });
+                    event.fire(
+                        "error",
+                        {
+                            "msg": `Element with '${eLang}' found, but '${eLang}.hpb' not loaded. Check language tags!`
+                        }
+                    );
                 }
                 /* eslint-enable security/detect-object-injection */
                 el.childNodes.forEach((n) => {
@@ -497,9 +478,12 @@
                         hw = word;
                     } else if (word.indexOf("-") === -1) {
                         if (word.length > 61) {
-                            H.events.get("error").resolve({
-                                "msg": "found word longer than 61 characters"
-                            });
+                            event.fire(
+                                "error",
+                                {
+                                    "msg": "found word longer than 61 characters"
+                                }
+                            );
                             hw = word;
                         } else if (lo.reNotAlphabet.test(word)) {
                             hw = word;
@@ -617,13 +601,13 @@
              * @returns {undefined}
              */
             function hyphenateElement(el) {
-                if (H.events.has("beforeElementHyphenation")) {
-                    H.events.get("beforeElementHyphenation").resolve({
+                event.fire(
+                    "beforeElementHyphenation",
+                    {
                         el,
                         lang
-                    });
-                    reinitEventPromise("beforeElementHyphenation");
-                }
+                    }
+                );
                 el.childNodes.forEach((n) => {
                     if (
                         n.nodeType === 3 &&
@@ -636,13 +620,13 @@
                 H.res.get("els").then((elements) => {
                     elements.counter[0] -= 1;
                 });
-                if (H.events.has("afterElementHyphenation")) {
-                    H.events.get("afterElementHyphenation").resolve({
+                event.fire(
+                    "afterElementHyphenation",
+                    {
                         el,
                         lang
-                    });
-                    reinitEventPromise("afterElementHyphenation");
-                }
+                    }
+                );
             }
             let r = null;
             if (typeof entity === "string") {
@@ -707,9 +691,12 @@
                     hyphenate(lang, elo.selector, elo.element);
                 });
             } else {
-                H.events.get("error").resolve({
-                    "msg": `engine for language '${lang}' loaded, but no elements found.`
-                });
+                event.fire(
+                    "error",
+                    {
+                        "msg": `engine for language '${lang}' loaded, but no elements found.`
+                    }
+                );
             }
             H.res.get("els").then((elements) => {
                 if (elements.counter[0] === 0) {
@@ -717,9 +704,12 @@
                     if (C.hide !== 0) {
                         H.hide(0, null);
                     }
-                    if (H.events.has("hyphenopolyEnd")) {
-                        H.events.get("hyphenopolyEnd").resolve("hyphenopolyEnd");
-                    }
+                    event.fire(
+                        "hyphenopolyEnd",
+                        {
+                            "msg": "hyphenopolyEnd"
+                        }
+                    );
                     if (!C.keepAlive) {
                         window.Hyphenopoly = null;
                     }
@@ -818,9 +808,12 @@
                 // eslint-disable-next-line security/detect-object-injection
                 H.hyphenators[lang].resolve(createStringHyphenator(lang));
             }
-            if (H.events.has("engineReady")) {
-                H.events.get("engineReady").resolve(lang);
-            }
+            event.fire(
+                "engineReady",
+                {
+                    lang
+                }
+            );
             Promise.all([lo, H.res.get("els")]).then((v) => {
                 hyphenateLangElements(lang, v[1].list.get(lang));
             });
@@ -943,9 +936,12 @@
                     });
                     /* eslint-disable security/detect-object-injection */
                     H.hyphenators[lang].catch((e) => {
-                        H.events.get("error").resolve({
-                            "msg": e.msg
-                        });
+                        event.fire(
+                            "error",
+                            {
+                                "msg": e.msg
+                            }
+                        );
                     });
                     H.hyphenators[lang].reject({
                         "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
