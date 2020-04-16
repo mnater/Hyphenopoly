@@ -25,17 +25,17 @@
                             document.getElementById("test2").innerText = (await Hyphenopoly.hyphenators.de)(text);
                             assert();
                         }*/
-                        function hyphenate_de(text) {
-                            Hyphenopoly.hyphenators.de.then(function (dehyph) {
-                                dehyph(document.getElementById("test2"), ".usePipe");
-                                dehyph(document.getElementById("test3"), ".usePipe");
-                                dehyph(document.getElementById("test4"), ".usePipe");
-                                dehyph(document.getElementById("test5"), ".usePipe");
-                                dehyph(document.getElementById("test6"), ".usePipe");
-                                assertAll();
-                            });
-                        }
-                        hyphenate_de("Silbentrennung verbessert den Blocksatz.");
+                        Hyphenopoly.hyphenators.de.then(function (dehyphenator) {
+                            dehyphenator(document.getElementById("test7"), ".usePipe");
+                        });
+                        Hyphenopoly.hyphenators.HTML.then(function (hyphenateHTML) {
+                            hyphenateHTML(document.getElementById("test2"), ".usePipe");
+                            hyphenateHTML(document.getElementById("test3"), ".usePipe");
+                            hyphenateHTML(document.getElementById("test4"), ".usePipe");
+                            hyphenateHTML(document.getElementById("test5"), ".usePipe");
+                            hyphenateHTML(document.getElementById("test6"), ".usePipe");
+                            assertAll();
+                        });
                     }
                 }
             };
@@ -101,8 +101,8 @@
         <p id="desc">Use hyphenators to hyphenate element tree.</p>
         <div id="result">R: </div>
         <h2>1: Hyphenate automatically</h2>
-        <p id="test1" class="test hyphenate" lang="de">Silbentrennungsalgorithmus</p>
-        <p id="ref1" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus</p>
+        <p id="test1" class="test hyphenate" lang="de">Silbentrennungsalgorithmus <span lang="en-us">hyphenation</span></p>
+        <p id="ref1" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus <span lang="en-us">hy•phen•ation</span></p>
         <h2>2: Hyphenator with one child (lang tag)</h2>
         <p id="test2" class="test" lang="de">Silbentrennung <span>verbessert</span> den Blocksatz.</p>
         <p id="ref2" class="ref" lang="de">Sil|ben|tren|nung <span>ver|bes|sert</span> den Block|satz.</p>
@@ -126,6 +126,9 @@
         <h2>6: Rehyphenate with hyphenator</h2>
         <p id="test6" class="test hyphenate" lang="de">Computertypographie</p>
         <p id="ref6" class="ref" lang="de">Com•pu•ter•ty•po•gra•phie</p>
+        <h2>7: use H.hyphenators.de on HTMLElement</h2>
+        <p id="test7" class="test hyphenate" lang="de">Computertypographie</p>
+        <p id="ref7" class="ref" lang="de">Com•pu•ter•ty•po•gra•phie</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 
