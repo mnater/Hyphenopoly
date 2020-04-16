@@ -21,6 +21,16 @@
     }
 
     /**
+     * Shorthand for Object.keys(obj).forEach(() => {})
+     * @param {Object} obj the object to iterate
+     * @param {function} fn the function to execute
+     * @returns {undefined}
+     */
+    function eachKey(obj, fn) {
+        Object.keys(obj).forEach(fn);
+    }
+
+    /**
      * Set value and properties of object member
      * Argument <props> is a bit pattern:
      * 1. bit: configurable
@@ -644,9 +654,12 @@
         function createStringHyphenator(lang) {
             return ((entity, sel = ".hyphenate") => {
                 if (typeof entity !== "string") {
-                    H.events.get("error").resolve({
-                        "msg": "This use of hyphenators is deprecated. See https://mnater.github.io/Hyphenopoly/Hyphenators.html"
-                    });
+                    event.fire(
+                        "error",
+                        {
+                            "msg": "This use of hyphenators is deprecated. See https://mnater.github.io/Hyphenopoly/Hyphenators.html"
+                        }
+                    );
                 }
                 return hyphenate(lang, sel, entity);
             });
@@ -935,14 +948,6 @@
                         elements.rem(lang);
                     });
                     /* eslint-disable security/detect-object-injection */
-                    H.hyphenators[lang].catch((e) => {
-                        event.fire(
-                            "error",
-                            {
-                                "msg": e.msg
-                            }
-                        );
-                    });
                     H.hyphenators[lang].reject({
                         "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
                     });
@@ -984,6 +989,11 @@
                 }, [])
         ).then(() => {
             H.hyphenators.HTML.resolve(createDOMHyphenator());
+        }, (e) => {
+            event.fire(
+                "error",
+                e
+            );
         });
     })(Hyphenopoly);
 })(window);

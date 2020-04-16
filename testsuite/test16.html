@@ -6,7 +6,9 @@
         <script>
             var Hyphenopoly = {
                 require: {
-                    "en-us": "FORCEHYPHENOPOLY"
+                    "en-us": "FORCEHYPHENOPOLY",
+                    "de": "FORCEHYPHENOPOLY",
+                    "it": "FORCEHYPHENOPOLY"
                 },
                 setup: {
                     selectors: {
@@ -16,26 +18,25 @@
                     }
                 },
                 handleEvent: {
-                    myFantasyEvent: function (e) {
-                        console.log(e);
-                    },
                     error: function (e) {
-                        e.preventDefault();
+                        //e.preventDefault();
                         assert(e);
                     }
                 }
             };
-
+            let test = true;
+            let count = 0;
             function assert(e) {
-                console.log(e);
-                var test = "unknown Event \"myFantasyEvent\" discarded";
+                count += 1;
+                var test1 = "engine for language 'it' loaded, but no elements found.";
+                var test2 = "engine for language 'de' loaded, but no elements found.";
                 var ref = e.msg;
                 var result = true;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
+                if (test1 === ref || test2 === ref) {
+                    document.getElementById("result").innerHTML += `<span style="background-color: #d6ffd6">${count}</span> `;
                     result = result && true;
                 } else {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">failed</span> ";
+                    document.getElementById("result").innerHTML += `<span style="background-color: #ffd6d6">${count}</span> `;
                     result = false;
                 }
                 if (parent != window) {
@@ -74,11 +75,11 @@
         <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test15.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test17.html">Next&nbsp;&rarr;</a></div>
 
         <h1>Test 016</h1>
-        <p id="desc">Discard unknown Events</p>
+        <p id="desc">Warn about unnecessary loaded patterns.</p>
         <div id="result"></div>
         <hr>
-        <p id="test1" class="test hyphenate" lang="en-us">unknown Event "myFantasyEvent" discarded</p>
-        <p id="ref1" class="ref" lang="en">unknown Event "myFantasyEvent" discarded</p>
+        <p id="test1" class="test hyphenate" lang="en-us">See console.</p>
+        <p id="ref1" class="ref" lang="en">See con•sole.</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 

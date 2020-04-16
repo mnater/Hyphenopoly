@@ -20,7 +20,7 @@
         {"exec": true, "path": "test13.html"},
         {"exec": true, "path": "test14.html"},
         {"exec": true, "path": "test15.html"},
-        {"exec": false, "path": "test16.html"},
+        {"exec": true, "path": "test16.html"},
         {"exec": true, "path": "test17.html"},
         {"exec": true, "path": "test18.html"},
         {"exec": true, "path": "test19.html"},
