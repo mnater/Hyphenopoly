@@ -12,7 +12,6 @@ const HtmlWebpackInjector = require("html-webpack-injector");
 module.exports = {
     "entry": {
         "vendor_head": "./src/vendor_head.js",
-        "vendor_body": "./src/vendor_body.js",
         "main": "./src/index.js"
     },
     "mode": "production",

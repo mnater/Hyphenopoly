@@ -1,4 +1,4 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[3],[function(e,t,s){"use strict";window.Hyphenopoly={require:{es:"anticonstitucionalmente",it:"precipitevolissimevolmente",de:"Silbentrennungsalgorithmus","en-us":"antidisestablishmentarianism"},paths:{patterndir:"./js/hyphenopoly/patterns/",maindir:"./js/hyphenopoly/"}};s(1)},function(e,t){
+(window.webpackJsonp=window.webpackJsonp||[]).push([[2],[function(e,t,s){"use strict";window.Hyphenopoly={require:{es:"anticonstitucionalmente",it:"precipitevolissimevolmente",de:"Silbentrennungsalgorithmus","en-us":"antidisestablishmentarianism"},paths:{patterndir:"./js/hyphenopoly/patterns/",maindir:"./js/hyphenopoly/"}};s(1)},function(e,t){
 /**
  * @license Hyphenopoly_Loader 4.3.0 - client side hyphenation
  * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)

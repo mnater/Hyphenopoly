@@ -3,7 +3,6 @@
 
 "use strict";
 
-// #region Load Hyphenopoly
 const Hyphenopoly = {
     "require": {
         "es": "anticonstitucionalmente",
@@ -21,4 +20,3 @@ const Hyphenopoly = {
 window.Hyphenopoly = Hyphenopoly;
 // eslint-disable-next-line no-unused-vars
 const hyphenopolyLoader = require("hyphenopoly/Hyphenopoly_Loader");
-// #endregion
