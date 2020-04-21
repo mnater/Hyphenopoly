@@ -1,6 +1,7 @@
 /* eslint-env node */
 /* eslint-disable sort-keys */
 
+
 "use strict";
 
 const Hyphenopoly = {
@@ -18,5 +19,4 @@ const Hyphenopoly = {
     }
 };
 window.Hyphenopoly = Hyphenopoly;
-// eslint-disable-next-line no-unused-vars
-const hyphenopolyLoader = require("hyphenopoly/Hyphenopoly_Loader");
+require("hyphenopoly/Hyphenopoly_Loader");
