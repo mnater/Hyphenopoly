@@ -3,7 +3,7 @@ Implementing Hyphenopoly alongside Webpack 4.
 
 ## Build the website
 ````bash
-$ npm install               # Install npm modules
-$ npm run build             # Build files into dist folder
-$ npm run dev               # Opens a Webpack Dev server, avoids CORS errors running locally
+npm install        # Install npm modules
+npm run build      # Build files into dist folder
+npm run dev        # Opens a Webpack Dev server, avoids CORS errors running locally
 ````
