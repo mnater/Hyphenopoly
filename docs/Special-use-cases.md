@@ -117,23 +117,23 @@ module.exports = {
   },
   plugins: [
     new CopyPlugin([
-      {
-        context: "./",
-        from: "node_modules/hyphenopoly/Hyphenopoly.js",
-        to: "./js/hyphenopoly/",
-        force: true,
-        flatten: true
-      },
-      {
-        context: "./",
-        from: "node_modules/hyphenopoly/patterns/{es,it,de,en-us}.wasm", // Required patterns
-        to: "./js/hyphenopoly/patterns/",
-        globOptions: {
-          extglob: true
+        {
+            "context": "./",
+            "from": "node_modules/hyphenopoly/min/Hyphenopoly.js",
+            "to": "./js/hyphenopoly/",
+            "force": true,
+            "flatten": true
         },
-        force: true,
-        flatten: true
-      }
+        {
+            "context": "./",
+            "from": "node_modules/hyphenopoly/min/patterns/{es,it,de,en-us}.wasm",
+            "to": "./js/hyphenopoly/patterns/",
+            "globOptions": {
+                "extglob": true
+            },
+            "force": true,
+            "flatten": true
+        }
     ]),
     new HtmlWebpackPlugin({
       template: "./src/index.html",
@@ -169,7 +169,7 @@ var Hyphenopoly = {
   }
 };
 window.Hyphenopoly = Hyphenopoly; // Make Hyphenopoly object global
-const hyphenopoly_loader = require("hyphenopoly/Hyphenopoly_Loader");
+require("hyphenopoly/Hyphenopoly_Loader");
 ```
 
 A demo can be found at _/examples/webpack_. [Live preview.](./dist/index.html)
