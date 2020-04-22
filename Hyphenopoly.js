@@ -21,16 +21,6 @@
     }
 
     /**
-     * Shorthand for Object.keys(obj).forEach(() => {})
-     * @param {Object} obj the object to iterate
-     * @param {function} fn the function to execute
-     * @returns {undefined}
-     */
-    function eachKey(obj, fn) {
-        Object.keys(obj).forEach(fn);
-    }
-
-    /**
      * Set value and properties of object member
      * Argument <props> is a bit pattern:
      * 1. bit: configurable
@@ -74,15 +64,12 @@
             ["hyphenopolyEnd", []],
             ["hyphenopolyStart", []]
         ]);
-
-        knownEvents.forEach((eventFunc, eventName) => {
-            if (
-                H.handleEvent &&
-                Object.prototype.hasOwnProperty.call(H.handleEvent, eventName)
-            ) {
-                // eslint-disable-next-line security/detect-object-injection
-                knownEvents.get(eventName).unshift(H.handleEvent[eventName]);
+        knownEvents.forEach((eventFuncs, eventName) => {
+            /* eslint-disable security/detect-object-injection */
+            if (H.handleEvent && H.handleEvent[eventName]) {
+                eventFuncs.unshift(H.handleEvent[eventName]);
             }
+            /* eslint-enable security/detect-object-injection */
         });
         /* eslint-enable array-element-newline */
         return {
@@ -670,8 +657,7 @@
          */
         function createDOMHyphenator() {
             return ((entity, sel = ".hyphenate") => {
-                const elements = collectElements(entity, sel);
-                elements.each((l, els) => {
+                collectElements(entity, sel).each((l, els) => {
                     els.forEach((elo) => {
                         hyphenate(l, elo.selector, elo.element);
                     });
@@ -883,12 +869,11 @@
                 /* eslint-disable security/detect-object-injection */
                 if (H.c.substitute && H.c.substitute[lang]) {
                     const subst = H.c.substitute[lang];
-                    eachKey(subst, (sChar) => {
+                    Object.keys(subst).forEach((sChar) => {
                         const sCharU = sChar.toUpperCase();
-                        let sCharUcc = 0;
-                        if (sCharU !== sChar) {
-                            sCharUcc = sCharU.charCodeAt(0);
-                        }
+                        const sCharUcc = (sCharU === sChar)
+                            ? 0
+                            : sCharU.charCodeAt(0);
                         alphalen = exp.subst(
                             sChar.charCodeAt(0),
                             sCharUcc,
