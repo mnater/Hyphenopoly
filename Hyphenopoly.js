@@ -717,18 +717,30 @@
         }
 
         /**
-         * Create lang Object
-         * @param {string} lang The language
-         * @returns {Object} The newly
+         * Convert the exceptions from user input to Map
+         * @param {string} lang – The language for which the Map is created
+         * @return {Map}
          */
-        function createLangObj(lang) {
-            if (!H.languages) {
-                H.languages = new Map();
+        function createExceptionMap(lang) {
+            /* eslint-disable security/detect-object-injection */
+            let exc = null;
+            if (C.exceptions.global) {
+                if (C.exceptions[lang]) {
+                    C.exceptions[lang] += ", " + C.exceptions.global;
+                } else {
+                    C.exceptions[lang] = C.exceptions.global;
+                }
             }
-            if (!H.languages.has(lang)) {
-                H.languages.set(lang, empty());
+            if (C.exceptions[lang]) {
+                exc = new Map(C.exceptions[lang].split(", ").map((e) => {
+                    return [e.replace(/-/g, ""), e];
+                }));
+                delete C.exceptions[lang];
+            } else {
+                exc = new Map();
             }
-            return H.languages.get(lang);
+            return exc;
+            /* eslint-enable security/detect-object-injection */
         }
 
         /**
@@ -747,73 +759,59 @@
             patternLeftmin,
             patternRightmin
         ) {
-            alphabet = alphabet.replace(/-/g, "");
-            const lo = createLangObj(lang);
-            if (!lo.ready) {
-                lo.cache = new Map();
+            C.selectors.forEach((sel) => {
                 /* eslint-disable security/detect-object-injection */
-                if (C.exceptions.global) {
-                    if (C.exceptions[lang]) {
-                        C.exceptions[lang] += ", " + C.exceptions.global;
-                    } else {
-                        C.exceptions[lang] = C.exceptions.global;
-                    }
-                }
-                if (C.exceptions[lang]) {
-                    lo.exc = new Map(C.exceptions[lang].split(", ").map((e) => {
-                        return [e.replace(/-/g, ""), e];
-                    }));
-                    delete C.exceptions[lang];
-                } else {
-                    lo.exc = new Map();
-                }
+                const selSettings = C[sel];
                 /* eslint-enable security/detect-object-injection */
-                lo.alphabet = alphabet;
-                lo.reNotAlphabet = RegExp(`[^${alphabet}]`, "gi");
-                lo.hyphenate = hyphenateFunction;
-                C.selectors.forEach((sel) => {
-                    /* eslint-disable security/detect-object-injection */
-                    const selSettings = C[sel];
-                    /* eslint-enable security/detect-object-injection */
-                    if (selSettings.leftminPerLang === 0) {
-                        Object.defineProperty(
-                            selSettings,
-                            "leftminPerLang",
-                            setProp(empty(), 2)
-                        );
-                    }
-                    if (selSettings.rightminPerLang === 0) {
-                        Object.defineProperty(
-                            selSettings,
-                            "rightminPerLang",
-                            setProp(empty(), 2)
-                        );
-                    }
-                    /* eslint-disable security/detect-object-injection */
-                    selSettings.leftminPerLang[lang] = Math.max(
-                        patternLeftmin,
-                        selSettings.leftmin,
-                        Number(selSettings.leftminPerLang[lang]) || 0
+                if (selSettings.leftminPerLang === 0) {
+                    Object.defineProperty(
+                        selSettings,
+                        "leftminPerLang",
+                        setProp(empty(), 2)
                     );
+                }
+                if (selSettings.rightminPerLang === 0) {
+                    Object.defineProperty(
+                        selSettings,
+                        "rightminPerLang",
+                        setProp(empty(), 2)
+                    );
+                }
+                /* eslint-disable security/detect-object-injection */
+                selSettings.leftminPerLang[lang] = Math.max(
+                    patternLeftmin,
+                    selSettings.leftmin,
+                    Number(selSettings.leftminPerLang[lang]) || 0
+                );
 
-                    selSettings.rightminPerLang[lang] = Math.max(
-                        patternRightmin,
-                        selSettings.rightmin,
-                        Number(selSettings.rightminPerLang[lang]) || 0
-                    );
-                    /* eslint-enable security/detect-object-injection */
-                });
-                lo.ready = true;
-                // eslint-disable-next-line security/detect-object-injection
-                H.hyphenators[lang].resolve(createStringHyphenator(lang));
+                selSettings.rightminPerLang[lang] = Math.max(
+                    patternRightmin,
+                    selSettings.rightmin,
+                    Number(selSettings.rightminPerLang[lang]) || 0
+                );
+                /* eslint-enable security/detect-object-injection */
+            });
+            if (!H.languages) {
+                H.languages = new Map();
             }
+            alphabet = alphabet.replace(/-/g, "");
+            H.languages.set(lang, Object.create(null, {
+                "alphabet": setProp(alphabet, 2),
+                "cache": setProp(new Map(), 2),
+                "exc": setProp(createExceptionMap(lang), 2),
+                "hyphenate": setProp(hyphenateFunction, 2),
+                "ready": setProp(true, 2),
+                "reNotAlphabet": setProp(RegExp(`[^${alphabet}]`, "gi"), 2)
+            }));
+            // eslint-disable-next-line security/detect-object-injection
+            H.hyphenators[lang].resolve(createStringHyphenator(lang));
             event.fire(
                 "engineReady",
                 {
                     lang
                 }
             );
-            Promise.all([lo, H.res.get("els")]).then((v) => {
+            Promise.all([H.languages.get(lang), H.res.get("els")]).then((v) => {
                 hyphenateLangElements(lang, v[1].list.get(lang));
             });
         }
