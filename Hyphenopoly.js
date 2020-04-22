@@ -723,24 +723,25 @@
          */
         function createExceptionMap(lang) {
             /* eslint-disable security/detect-object-injection */
-            let exc = null;
+            let exc = "";
+            if (C.exceptions[lang]) {
+                exc = C.exceptions[lang];
+            }
+            delete C.exceptions[lang];
+            /* eslint-enable security/detect-object-injection */
             if (C.exceptions.global) {
-                if (C.exceptions[lang]) {
-                    C.exceptions[lang] += ", " + C.exceptions.global;
+                if (exc === "") {
+                    exc = C.exceptions.global;
                 } else {
-                    C.exceptions[lang] = C.exceptions.global;
+                    exc += ", " + C.exceptions.global;
                 }
             }
-            if (C.exceptions[lang]) {
-                exc = new Map(C.exceptions[lang].split(", ").map((e) => {
-                    return [e.replace(/-/g, ""), e];
-                }));
-                delete C.exceptions[lang];
-            } else {
-                exc = new Map();
+            if (exc === "") {
+                return new Map();
             }
-            return exc;
-            /* eslint-enable security/detect-object-injection */
+            return new Map(exc.split(", ").map((e) => {
+                return [e.replace(/-/g, ""), e];
+            }));
         }
 
         /**
