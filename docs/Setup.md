@@ -181,6 +181,8 @@ var Hyphenopoly = {
 The exceptions object must contain language-codes as keys (or "global" for all languages). The values must be words separated by `,⎵` (comma, space), where a hyphen-minus marks the hyphenation points.
 If the word does not contain a hyphen, it will not be hyphenated by Hyphenopoly.js
 
+Words that contain a hyphen when unhyphenated should not be entered in the list. Hyphenopoly separates the components of such words individually (see [compound words](#compound)). The individual parts should be entered individually.
+
 ### hide
 ````
 type: string ("all" | "element" | "text")
