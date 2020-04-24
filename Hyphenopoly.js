@@ -306,19 +306,6 @@
         }
 
         /**
-         * Check if node is matched by a given selector
-         * @param {Node} n The Node to check
-         * @param {String} sel Selector(s)
-         * @returns {Boolean} true if matched, false if not matched
-         */
-        function nodeMatchedBy(n, sel) {
-            if (!n.matches) {
-                n.matches = n.msMatchesSelector || n.webkitMatchesSelector;
-            }
-            return n.matches(sel);
-        }
-
-        /**
          * Collect elements that have a selector defined in C.selectors
          * and add them to elements.
          * @returns {undefined}
@@ -382,8 +369,7 @@
                 }
                 /* eslint-enable security/detect-object-injection */
                 el.childNodes.forEach((n) => {
-                    if (n.nodeType === 1 &&
-                        !nodeMatchedBy(n, matchingSelectors)) {
+                    if (n.nodeType === 1 && !n.matches(matchingSelectors)) {
                         processElements(n, eLang, sel, true);
                     }
                 });
