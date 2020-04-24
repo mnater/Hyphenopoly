@@ -798,8 +798,8 @@
                     lang
                 }
             );
-            Promise.all([H.languages.get(lang), H.res.get("els")]).then((v) => {
-                hyphenateLangElements(lang, v[1].list.get(lang));
+            H.res.get("els").then((elements) => {
+                hyphenateLangElements(lang, elements.list.get(lang));
             });
         }
 
