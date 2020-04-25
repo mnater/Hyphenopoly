@@ -666,7 +666,8 @@
          * @param {Array} elArr Array of elements
          * @returns {undefined}
          */
-        function hyphenateLangElements(lang, elArr) {
+        function hyphenateLangElements(lang, elements) {
+            const elArr = elements.list.get(lang);
             if (elArr) {
                 elArr.forEach((elo) => {
                     hyphenate(lang, elo.selector, elo.element);
@@ -679,7 +680,7 @@
                     }
                 );
             }
-            if (H.res.get("els").counter[0] === 0) {
+            if (elements.counter[0] === 0) {
                 w.clearTimeout(H.timeOutHandler);
                 if (C.hide !== 0) {
                     H.hide(0, null);
@@ -792,7 +793,7 @@
                     lang
                 }
             );
-            hyphenateLangElements(lang, H.res.get("els").list.get(lang));
+            hyphenateLangElements(lang, H.res.get("els"));
         }
 
         const decode = (() => {
@@ -921,13 +922,14 @@
             if (!mainLanguage && C.defaultLanguage !== "") {
                 mainLanguage = C.defaultLanguage;
             }
-            H.res.set("els", collectElements());
-            H.res.get("els").each((lang, values) => {
+            const elements = collectElements();
+            H.res.set("els", elements);
+            elements.each((lang) => {
                 if (H.languages &&
                     H.languages.has(lang) &&
                     H.languages.get(lang).ready
                 ) {
-                    hyphenateLangElements(lang, values);
+                    hyphenateLangElements(lang, elements);
                 }
             });
         });
