@@ -937,14 +937,15 @@
         });
 
         Promise.all(
-            // Check all entries except "HTML"
+            // Make sure all lang specific hyphenators and DOM are ready
             Object.entries(H.hyphenators).
                 reduce((accumulator, value) => {
                     if (value[0] !== "HTML") {
                         return accumulator.concat(value[1]);
                     }
                     return accumulator;
-                }, [])
+                }, []).
+                concat(H.res.get("DOM"))
         ).then(() => {
             H.hyphenators.HTML.resolve(createDOMHyphenator());
         }, (e) => {
