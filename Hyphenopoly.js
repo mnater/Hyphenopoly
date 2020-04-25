@@ -600,9 +600,7 @@
                         n.data = hyphenateText(n.data);
                     }
                 });
-                H.res.get("els").then((elements) => {
-                    elements.counter[0] -= 1;
-                });
+                H.res.get("els").counter[0] -= 1;
                 event.fire(
                     "afterElementHyphenation",
                     {
@@ -653,15 +651,13 @@
         }
 
         H.unhyphenate = () => {
-            return H.res.get("els").then((elements) => {
-                elements.each((lang, els) => {
-                    els.forEach((elo) => {
-                        const n = elo.element.firstChild;
-                        n.data = n.data.replace(RegExp(C[elo.selector].hyphen, "g"), "");
-                    });
+            H.res.get("els").each((lang, els) => {
+                els.forEach((elo) => {
+                    const n = elo.element.firstChild;
+                    n.data = n.data.replace(RegExp(C[elo.selector].hyphen, "g"), "");
                 });
-                return elements;
             });
+            return Promise.resolve(H.res.get("els"));
         };
 
         /**
@@ -683,23 +679,21 @@
                     }
                 );
             }
-            H.res.get("els").then((elements) => {
-                if (elements.counter[0] === 0) {
-                    w.clearTimeout(H.timeOutHandler);
-                    if (C.hide !== 0) {
-                        H.hide(0, null);
-                    }
-                    event.fire(
-                        "hyphenopolyEnd",
-                        {
-                            "msg": "hyphenopolyEnd"
-                        }
-                    );
-                    if (!C.keepAlive) {
-                        window.Hyphenopoly = null;
-                    }
+            if (H.res.get("els").counter[0] === 0) {
+                w.clearTimeout(H.timeOutHandler);
+                if (C.hide !== 0) {
+                    H.hide(0, null);
                 }
-            });
+                event.fire(
+                    "hyphenopolyEnd",
+                    {
+                        "msg": "hyphenopolyEnd"
+                    }
+                );
+                if (!C.keepAlive) {
+                    window.Hyphenopoly = null;
+                }
+            }
         }
 
         /**
@@ -798,9 +792,7 @@
                     lang
                 }
             );
-            H.res.get("els").then((elements) => {
-                hyphenateLangElements(lang, elements.list.get(lang));
-            });
+            hyphenateLangElements(lang, H.res.get("els").list.get(lang));
         }
 
         const decode = (() => {
@@ -914,9 +906,7 @@
                             });
                     }
                 } else {
-                    H.res.get("els").then((elements) => {
-                        elements.rem(lang);
-                    });
+                    H.res.get("els").rem(lang);
                     /* eslint-disable security/detect-object-injection */
                     H.hyphenators[lang].reject({
                         "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
@@ -931,16 +921,14 @@
             if (!mainLanguage && C.defaultLanguage !== "") {
                 mainLanguage = C.defaultLanguage;
             }
-            H.res.set("els", Promise.resolve(collectElements()));
-            H.res.get("els").then((elements) => {
-                elements.each((lang, values) => {
-                    if (H.languages &&
-                        H.languages.has(lang) &&
-                        H.languages.get(lang).ready
-                    ) {
-                        hyphenateLangElements(lang, values);
-                    }
-                });
+            H.res.set("els", collectElements());
+            H.res.get("els").each((lang, values) => {
+                if (H.languages &&
+                    H.languages.has(lang) &&
+                    H.languages.get(lang).ready
+                ) {
+                    hyphenateLangElements(lang, values);
+                }
             });
         });
 
