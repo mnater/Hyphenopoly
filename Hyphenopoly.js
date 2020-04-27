@@ -65,13 +65,14 @@
             ["hyphenopolyStart", []]
         ]);
         /* eslint-enable array-element-newline */
-        knownEvents.forEach((eventFuncs, eventName) => {
-            /* eslint-disable security/detect-object-injection */
-            if (H.handleEvent && H.handleEvent[eventName]) {
-                eventFuncs.unshift(H.handleEvent[eventName]);
-            }
-            /* eslint-enable security/detect-object-injection */
-        });
+        if (H.handleEvent) {
+            const userEvents = new Map(Object.entries(H.handleEvent));
+            knownEvents.forEach((eventFuncs, eventName) => {
+                if (userEvents.has(eventName)) {
+                    eventFuncs.unshift(userEvents.get(eventName));
+                }
+            });
+        }
         return {
             "fire": ((eventName, eventData) => {
                 eventData.runDefault = true;
