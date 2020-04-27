@@ -64,6 +64,7 @@
             ["hyphenopolyEnd", []],
             ["hyphenopolyStart", []]
         ]);
+        /* eslint-enable array-element-newline */
         knownEvents.forEach((eventFuncs, eventName) => {
             /* eslint-disable security/detect-object-injection */
             if (H.handleEvent && H.handleEvent[eventName]) {
@@ -71,7 +72,6 @@
             }
             /* eslint-enable security/detect-object-injection */
         });
-        /* eslint-enable array-element-newline */
         return {
             "fire": ((eventName, eventData) => {
                 eventData.runDefault = true;
@@ -117,14 +117,10 @@
         const generalDefaults = Object.create(null, {
             "defaultLanguage": setProp("en-us", 2),
             "dontHyphenate": setProp((() => {
-                const r = empty();
                 const list = "abbr,acronym,audio,br,button,code,img,input,kbd,label,math,option,pre,samp,script,style,sub,sup,svg,textarea,var,video";
-                list.split(",").forEach((value) => {
-                /* eslint-disable security/detect-object-injection */
-                    r[value] = true;
-                /* eslint-enable security/detect-object-injection */
-                });
-                return r;
+                return Object.fromEntries(list.split(",").map((val) => {
+                    return [val, true];
+                }));
             })(), 2),
             "dontHyphenateClass": setProp("donthyphenate", 2),
             "exceptions": setProp(empty(), 2),
