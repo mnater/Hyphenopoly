@@ -39,7 +39,6 @@
      * Event
      */
     const event = ((H) => {
-        /* eslint-disable array-element-newline */
         const knownEvents = new Map([
             ["afterElementHyphenation", []],
             ["beforeElementHyphenation", []],
@@ -56,7 +55,6 @@
             ["hyphenopolyEnd", []],
             ["hyphenopolyStart", []]
         ]);
-        /* eslint-enable array-element-newline */
         if (H.handleEvent) {
             const userEvents = new Map(Object.entries(H.handleEvent));
             knownEvents.forEach((eventFuncs, eventName) => {
@@ -161,8 +159,7 @@
         const settings = createMapWithDefaults(new Map([
             ["defaultLanguage", "en-us"],
             [
-                "dontHyphenate",
-                (() => {
+                "dontHyphenate", (() => {
                     const list = "abbr,acronym,audio,br,button,code,img,input,kbd,label,math,option,pre,samp,script,style,sub,sup,svg,textarea,var,video";
                     return createMapWithDefaults(
                         new Map(list.split(",").map((val) => {
@@ -191,7 +188,6 @@
                  */
                 Object.entries(value).forEach(([sel, selSettings]) => {
                     const selectorSettings = createMapWithDefaults(new Map([
-                        /* eslint-disable array-element-newline */
                         ["compound", "hyphen"],
                         ["hyphen", SOFTHYPHEN],
                         ["leftmin", 0],
@@ -201,7 +197,6 @@
                         ["orphanControl", 1],
                         ["rightmin", 0],
                         ["rightminPerLang", 0]
-                        /* eslint-enable array-element-newline */
                     ]));
                     Object.entries(selSettings).forEach(
                         ([selSetting, setVal]) => {
@@ -611,7 +606,6 @@
                 );
                 if (selSettings.orphanControl !== 1) {
                     tn = tn.replace(
-                        // eslint-disable-next-line prefer-named-capture-group
                         /(\u0020*)(\S+)(\s*)$/,
                         createOrphanController(sel)
                     );
@@ -868,7 +862,11 @@
         function instantiateWasmEngine(heProm, lang) {
             const wa = window.WebAssembly;
 
-            // eslint-disable-next-line require-jsdoc
+            /**
+             * Register character substitutions in the .wasm-hyphenEngine
+             * @param {number} alphalen - The length of the alphabet
+             * @param {object} exp - Export-object of the hyphenEngine
+             */
             function registerSubstitutions(alphalen, exp) {
                 if (C.substitute.has(lang)) {
                     const subst = C.substitute.get(lang);
@@ -887,7 +885,10 @@
                 return alphalen;
             }
 
-            // eslint-disable-next-line require-jsdoc
+            /**
+             * Instantiate the hyphenEngine
+             * @param {object} res - The fetched ressource
+             */
             function handleWasm(res) {
                 const exp = res.instance.exports;
                 let alphalen = exp.conv();

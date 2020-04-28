@@ -85,8 +85,8 @@
     "array-element-newline": [
       1,
       {
-        "multiline": true,
-        "minItems": 12
+        "multiline": false,
+        "minItems": 6
       }
     ],
     "no-magic-numbers": 0,
@@ -117,7 +117,8 @@
       {
         "caseSensitive": false
       }
-    ]
+    ],
+    "prefer-named-capture-group": 0
   },
   "overrides": [
     {
