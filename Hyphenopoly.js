@@ -13,14 +13,6 @@
     const SOFTHYPHEN = "\u00AD";
 
     /**
-     * Create Object without standard Object-prototype
-     * @returns {Object} empty object
-     */
-    function empty() {
-        return Object.create(null);
-    }
-
-    /**
      * Set value and properties of object member
      * Argument <props> is a bit pattern:
      * 1. bit: configurable
@@ -111,24 +103,42 @@
     }
 
     /**
-     * Setup configurations in H.c.
+     * Convert settings from H.setup-Object to Map
      * This is a IIFE to keep complexity low.
      */
     ((H) => {
-        // eslint-disable-next-line require-jsdoc
+        /**
+         * Create a Map with a default Map behind the scenes. This mimics
+         * kind of a prototype chain of an object, but without the object-
+         * injection security risk.
+         *
+         * @param {Map} defaultsMap - A Map with default values
+         * @returns {Proxy} - A Proxy for the Map (dot-notation or get/set)
+         */
         function createMapWithDefaults(defaultsMap) {
             const userMap = new Map();
-            // eslint-disable-next-line require-jsdoc
+
+            /**
+             * The get-trap: get the value from userMap or else from defaults
+             * @param {Sring} key - The key to retrieve the value for
+             * @returns {*}
+             */
             function get(key) {
                 return (userMap.has(key))
                     ? userMap.get(key)
                     : defaultsMap.get(key);
             }
-            // eslint-disable-next-line require-jsdoc
+
+            /**
+             * The set-trap: set the value to userMap and don't touch defaults
+             * @param {Sring} key - The key for the value
+             * @param {*} value - The value
+             * @returns {*}
+             */
             function set(key, value) {
                 userMap.set(key, value);
             }
-            return new Proxy(empty(), {
+            return new Proxy(defaultsMap, {
                 "get": (_target, prop) => {
                     if (prop === "set") {
                         return set;
@@ -169,10 +179,16 @@
             ["substitute", new Map()],
             ["timeout", 1000]
         ]));
-
         Object.entries(H.setup).forEach(([key, value]) => {
-            if (key === "selectors") {
+            switch (key) {
+            case "selectors":
+                // Set settings.selectors to array of selectors
                 settings.set("selectors", Object.keys(value));
+
+                /*
+                 * For each selector add a property to settings with
+                 * selector specific settings
+                 */
                 Object.entries(value).forEach(([sel, selSettings]) => {
                     const selectorSettings = createMapWithDefaults(new Map([
                         /* eslint-disable array-element-newline */
@@ -201,22 +217,22 @@
                     );
                     settings.set(sel, selectorSettings);
                 });
-            } else if (key === "dontHyphenate") {
-                Object.entries(value).forEach(([tagName, doHyphens]) => {
-                    settings.dontHyphenate.set(tagName, doHyphens);
+                break;
+            case "dontHyphenate":
+            case "exceptions":
+                Object.entries(value).forEach(([k, v]) => {
+                    settings.get(key).set(k, v);
                 });
-            } else if (key === "exceptions") {
-                Object.entries(value).forEach(([lang, exc]) => {
-                    settings.exceptions.set(lang, exc);
-                });
-            } else if (key === "substitute") {
+                break;
+            case "substitute":
                 Object.entries(value).forEach(([lang, subst]) => {
                     settings.substitute.set(
                         lang,
                         new Map(Object.entries(subst))
                     );
                 });
-            } else {
+                break;
+            default:
                 settings.set(key, value);
             }
         });
@@ -376,13 +392,14 @@
              */
             function processElements(el, pLang, sel, isChild = false) {
                 const eLang = getElementLanguage(el, pLang);
-                /* eslint-disable security/detect-object-injection */
-                if (H.cf.langs[eLang] === "H9Y") {
+                // eslint-disable-next-line security/detect-object-injection
+                const langDef = H.cf.langs[eLang];
+                if (langDef === "H9Y") {
                     elements.add(el, eLang, sel);
                     if (!isChild && C.safeCopy) {
                         registerOnCopy(el);
                     }
-                } else if (!H.cf.langs[eLang]) {
+                } else if (!langDef) {
                     event.fire(
                         "error",
                         {
@@ -390,7 +407,6 @@
                         }
                     );
                 }
-                /* eslint-enable security/detect-object-injection */
                 el.childNodes.forEach((n) => {
                     if (n.nodeType === 1 && !n.matches(matchingSelectors)) {
                         processElements(n, eLang, sel, true);
