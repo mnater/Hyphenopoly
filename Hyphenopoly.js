@@ -387,8 +387,7 @@
              */
             function processElements(el, pLang, sel, isChild = false) {
                 const eLang = getElementLanguage(el, pLang);
-                // eslint-disable-next-line security/detect-object-injection
-                const langDef = H.cf.langs[eLang];
+                const langDef = H.cf.get("langs").get(eLang);
                 if (langDef === "H9Y") {
                     elements.add(el, eLang, sel);
                     if (!isChild && C.safeCopy) {
