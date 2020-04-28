@@ -547,6 +547,11 @@
          * @returns {function} The function created
          */
         function createOrphanController(sel) {
+            if (orphanControllerPool.has(sel)) {
+                return orphanControllerPool.get(sel);
+            }
+            const selSettings = C.get(sel);
+
             /**
              * Function template
              * @param {string} ignore unused result of replace
@@ -561,7 +566,6 @@
                 lastWord,
                 trailingWhiteSpace
             ) {
-                const selSettings = C.get(sel);
                 if (selSettings.orphanControl === 3 && leadingWhiteSpace === " ") {
                     // \u00A0 = no-break space (nbsp)
                     leadingWhiteSpace = "\u00A0";
@@ -584,9 +588,6 @@
             const selSettings = C.get(sel);
             const minWordLength = selSettings.minWordLength;
             const wordHyphenator = createWordHyphenator(lo, lang, sel);
-            const orphanController = (orphanControllerPool.has(sel))
-                ? orphanControllerPool.get(sel)
-                : createOrphanController(sel);
 
             /*
              * Transpiled RegExp of
@@ -612,7 +613,7 @@
                     tn = tn.replace(
                         // eslint-disable-next-line prefer-named-capture-group
                         /(\u0020*)(\S+)(\s*)$/,
-                        orphanController
+                        createOrphanController(sel)
                     );
                 }
                 return tn;
