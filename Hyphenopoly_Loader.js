@@ -91,15 +91,15 @@
      * This is in an iife to keep complexity low.
      */
     (() => {
-        eachKey(H.require, (k) => {
-            /* eslint-disable security/detect-object-injection */
-            const fn = (H.fallbacks)
-                ? H.fallbacks[k] || k
-                : k;
-            lcRequire.set(k.toLowerCase(), new Map(
-                [["fn", fn], ["wo", H.require[k]]]
+        const require = new Map(o.entries(H.require));
+        const fallbacks = (H.fallbacks)
+            ? new Map(o.entries(H.fallbacks))
+            : new Map();
+        require.forEach((longWord, lang) => {
+            const fn = fallbacks.get(lang) || lang;
+            lcRequire.set(lang.toLowerCase(), new Map(
+                [["fn", fn], ["wo", longWord]]
             ));
-            /* eslint-enable security/detect-object-injection */
         });
     })();
 
