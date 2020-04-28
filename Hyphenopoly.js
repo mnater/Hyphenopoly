@@ -587,7 +587,6 @@
             const lo = H.languages.get(lang);
             const selSettings = C.get(sel);
             const minWordLength = selSettings.minWordLength;
-            const wordHyphenator = createWordHyphenator(lo, lang, sel);
 
             /*
              * Transpiled RegExp of
@@ -603,12 +602,13 @@
              * @returns {string} hyphenated string according to setting of sel
              */
             function hyphenateText(text) {
-                let tn = null;
                 if (C.normalize) {
-                    tn = text.normalize("NFC").replace(reWord, wordHyphenator);
-                } else {
-                    tn = text.replace(reWord, wordHyphenator);
+                    text = text.normalize("NFC");
                 }
+                let tn = text.replace(
+                    reWord,
+                    createWordHyphenator(lo, lang, sel)
+                );
                 if (selSettings.orphanControl !== 1) {
                     tn = tn.replace(
                         // eslint-disable-next-line prefer-named-capture-group
