@@ -28,7 +28,7 @@
 
         window.onload = function () {
             function hyphenate_fur(text) {
-                Hyphenopoly.hyphenators.fur.then(
+                Hyphenopoly.hyphenators.get("fur").then(
                 function (furhyph) {
                     document.getElementById("test1").innerText = furhyph(text);
                     assertAll();

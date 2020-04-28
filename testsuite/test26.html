@@ -25,7 +25,7 @@
                             assert();
                         }*/
                         function hyphenate_de(text) {
-                            Hyphenopoly.hyphenators.de.then(function (dehyph) {
+                            Hyphenopoly.hyphenators.get("de").then(function (dehyph) {
                                 document.getElementById("test2").innerText = dehyph(text, ".usePipe");
                                 assertAll();
                             });

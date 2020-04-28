@@ -25,10 +25,10 @@
                             document.getElementById("test2").innerText = (await Hyphenopoly.hyphenators.de)(text);
                             assert();
                         }*/
-                        Hyphenopoly.hyphenators.de.then(function (dehyphenator) {
+                        Hyphenopoly.hyphenators.get("de").then(function (dehyphenator) {
                             dehyphenator(document.getElementById("test7"), ".usePipe");
                         });
-                        Hyphenopoly.hyphenators.HTML.then(function (hyphenateHTML) {
+                        Hyphenopoly.hyphenators.get("HTML").then(function (hyphenateHTML) {
                             hyphenateHTML(document.getElementById("test2"), ".usePipe");
                             hyphenateHTML(document.getElementById("test3"), ".usePipe");
                             hyphenateHTML(document.getElementById("test4"), ".usePipe");

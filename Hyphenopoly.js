@@ -804,8 +804,7 @@
                 "ready": setProp(true, 2),
                 "reNotAlphabet": setProp(RegExp(`[^${alphabet}]`, "gi"), 2)
             }));
-            // eslint-disable-next-line security/detect-object-injection
-            H.hyphenators[lang].resolve(createStringHyphenator(lang));
+            H.hyphenators.get(lang).resolve(createStringHyphenator(lang));
             event.fire(
                 "engineReady",
                 {
@@ -932,8 +931,7 @@
                     }
                 } else {
                     H.res.get("els").rem(lang);
-                    // eslint-disable-next-line security/detect-object-injection
-                    H.hyphenators[lang].reject({
+                    H.hyphenators.get(lang).reject({
                         "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
                     });
                 }
@@ -963,7 +961,7 @@
 
         Promise.all(
             // Make sure all lang specific hyphenators and DOM are ready
-            o.entries(H.hyphenators).
+            [...H.hyphenators.entries()].
                 reduce((accumulator, value) => {
                     if (value[0] !== "HTML") {
                         return accumulator.concat(value[1]);
@@ -972,7 +970,7 @@
                 }, []).
                 concat(H.res.get("DOM"))
         ).then(() => {
-            H.hyphenators.HTML.resolve(createDOMHyphenator());
+            H.hyphenators.get("HTML").resolve(createDOMHyphenator());
         }, (e) => {
             event.fire(
                 "error",

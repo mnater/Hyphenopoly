@@ -29,7 +29,7 @@
         window.onload = function () {
             function hyphenate_fur(text) {
                 if (window.Promise) {
-                    Hyphenopoly.hyphenators.fur.then(
+                    Hyphenopoly.hyphenators.get("fur").then(
                     function (furhyph) {
                         document.getElementById("test1").innerText = furhyph(text);
                         assertAll();

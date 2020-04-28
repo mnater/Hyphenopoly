@@ -14,14 +14,6 @@
     const scriptName = "Hyphenopoly_Loader.js";
     const lcRequire = new Map();
 
-    /**
-     * Create Object without standard Object-prototype
-     * @returns {Object} empty object
-     */
-    const empty = () => {
-        return o.create(null);
-    };
-
     const shortcuts = {
         "ac": "appendChild",
         "ce": "createElement",
@@ -321,14 +313,13 @@
         const script = d[shortcuts.ce]("script");
         script.src = H.paths.maindir + "Hyphenopoly.js";
         d.head[shortcuts.ac](script);
-        H.hyphenators = empty();
+        H.hyphenators = new Map();
         H.cf.get("langs").forEach((langDef, lang) => {
             if (langDef === "H9Y") {
-                // eslint-disable-next-line security/detect-object-injection
-                H.hyphenators[lang] = H.defProm();
+                H.hyphenators.set(lang, H.defProm());
             }
         });
-        H.hyphenators.HTML = H.defProm();
+        H.hyphenators.set("HTML", H.defProm());
         (() => {
             if (he && he.polyfill) {
                 he.polyfill();
