@@ -8,7 +8,7 @@
  */
 
 /* globals Hyphenopoly:readonly */
-((w) => {
+((w, o) => {
     "use strict";
     const SOFTHYPHEN = "\u00AD";
 
@@ -56,7 +56,7 @@
             ["hyphenopolyStart", []]
         ]);
         if (H.handleEvent) {
-            const userEvents = new Map(Object.entries(H.handleEvent));
+            const userEvents = new Map(o.entries(H.handleEvent));
             knownEvents.forEach((eventFuncs, eventName) => {
                 if (userEvents.has(eventName)) {
                     eventFuncs.unshift(userEvents.get(eventName));
@@ -176,17 +176,17 @@
             ["substitute", new Map()],
             ["timeout", 1000]
         ]));
-        Object.entries(H.setup).forEach(([key, value]) => {
+        o.entries(H.setup).forEach(([key, value]) => {
             switch (key) {
             case "selectors":
                 // Set settings.selectors to array of selectors
-                settings.set("selectors", Object.keys(value));
+                settings.set("selectors", o.keys(value));
 
                 /*
                  * For each selector add a property to settings with
                  * selector specific settings
                  */
-                Object.entries(value).forEach(([sel, selSettings]) => {
+                o.entries(value).forEach(([sel, selSettings]) => {
                     const selectorSettings = createMapWithDefaults(new Map([
                         ["compound", "hyphen"],
                         ["hyphen", SOFTHYPHEN],
@@ -198,12 +198,12 @@
                         ["rightmin", 0],
                         ["rightminPerLang", 0]
                     ]));
-                    Object.entries(selSettings).forEach(
+                    o.entries(selSettings).forEach(
                         ([selSetting, setVal]) => {
                             if (typeof setVal === "object") {
                                 selectorSettings.set(
                                     selSetting,
-                                    new Map(Object.entries(setVal))
+                                    new Map(o.entries(setVal))
                                 );
                             } else {
                                 selectorSettings.set(selSetting, setVal);
@@ -215,15 +215,15 @@
                 break;
             case "dontHyphenate":
             case "exceptions":
-                Object.entries(value).forEach(([k, v]) => {
+                o.entries(value).forEach(([k, v]) => {
                     settings.get(key).set(k, v);
                 });
                 break;
             case "substitute":
-                Object.entries(value).forEach(([lang, subst]) => {
+                o.entries(value).forEach(([lang, subst]) => {
                     settings.substitute.set(
                         lang,
-                        new Map(Object.entries(subst))
+                        new Map(o.entries(subst))
                     );
                 });
                 break;
@@ -352,7 +352,7 @@
 
             const dontHyphenateSelector = (() => {
                 let s = "." + C.dontHyphenateClass;
-                Object.getOwnPropertyNames(C.dontHyphenate).forEach((tag) => {
+                o.getOwnPropertyNames(C.dontHyphenate).forEach((tag) => {
                     if (C.dontHyphenate.get(tag)) {
                         s += "," + tag;
                     }
@@ -797,7 +797,7 @@
                 H.languages = new Map();
             }
             alphabet = alphabet.replace(/-/g, "");
-            H.languages.set(lang, Object.create(null, {
+            H.languages.set(lang, o.create(null, {
                 "alphabet": setProp(alphabet, 2),
                 "cache": setProp(new Map(), 2),
                 "exc": setProp(createExceptionMap(lang), 2),
@@ -964,7 +964,7 @@
 
         Promise.all(
             // Make sure all lang specific hyphenators and DOM are ready
-            Object.entries(H.hyphenators).
+            o.entries(H.hyphenators).
                 reduce((accumulator, value) => {
                     if (value[0] !== "HTML") {
                         return accumulator.concat(value[1]);
@@ -981,4 +981,4 @@
             );
         });
     })(Hyphenopoly);
-})(window);
+})(window, Object);
