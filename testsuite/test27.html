@@ -23,7 +23,7 @@
                         assert();
                     }*/
                     function hyphenate_fur(text) {
-                        Hyphenopoly.hyphenators.get("fur").then(function (furhyph) {
+                        Hyphenopoly.hyphenators.fur.then(function (furhyph) {
                             document.getElementById("test1").innerText = furhyph(text);
                             assertAll();
                         });

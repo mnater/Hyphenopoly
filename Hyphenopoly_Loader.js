@@ -313,13 +313,22 @@
         const script = d[shortcuts.ce]("script");
         script.src = H.paths.maindir + "Hyphenopoly.js";
         d.head[shortcuts.ac](script);
-        H.hyphenators = new Map();
+        H.hy6ors = new Map();
         H.cf.get("langs").forEach((langDef, lang) => {
             if (langDef === "H9Y") {
-                H.hyphenators.set(lang, H.defProm());
+                H.hy6ors.set(lang, H.defProm());
             }
         });
-        H.hyphenators.set("HTML", H.defProm());
+        H.hy6ors.set("HTML", H.defProm());
+        H.hyphenators = new Proxy(H.hy6ors, {
+            "get": (target, key) => {
+                return target.get(key);
+            },
+            "set": () => {
+                // Inhibit setting of hyphenators
+                return true;
+            }
+        });
         (() => {
             if (he && he.polyfill) {
                 he.polyfill();

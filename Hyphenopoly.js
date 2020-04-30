@@ -804,7 +804,7 @@
                 "ready": setProp(true, 2),
                 "reNotAlphabet": setProp(RegExp(`[^${alphabet}]`, "gi"), 2)
             }));
-            H.hyphenators.get(lang).resolve(createStringHyphenator(lang));
+            H.hy6ors.get(lang).resolve(createStringHyphenator(lang));
             event.fire(
                 "engineReady",
                 {
@@ -931,7 +931,7 @@
                     }
                 } else {
                     H.res.get("els").rem(lang);
-                    H.hyphenators.get(lang).reject({
+                    H.hy6ors.get(lang).reject({
                         "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
                     });
                 }
@@ -961,7 +961,7 @@
 
         Promise.all(
             // Make sure all lang specific hyphenators and DOM are ready
-            [...H.hyphenators.entries()].
+            [...H.hy6ors.entries()].
                 reduce((accumulator, value) => {
                     if (value[0] !== "HTML") {
                         return accumulator.concat(value[1]);
@@ -970,7 +970,7 @@
                 }, []).
                 concat(H.res.get("DOM"))
         ).then(() => {
-            H.hyphenators.get("HTML").resolve(createDOMHyphenator());
+            H.hy6ors.get("HTML").resolve(createDOMHyphenator());
         }, (e) => {
             event.fire(
                 "error",

@@ -28,7 +28,7 @@
         window.onload = function () {
             if (window.Promise) {
                 function hyphenate_en(text) {
-                    Hyphenopoly.hyphenators.get("en").then(
+                    Hyphenopoly.hyphenators.en.then(
                     function (enhyph) {
                         document.getElementById("test1").innerText = enhyph(text);
                         assertAll();
@@ -37,7 +37,7 @@
                     });
                 }
                 function hyphenate_de(text) {
-                    Hyphenopoly.hyphenators.get("de").then(
+                    Hyphenopoly.hyphenators.de.then(
                     function (dehyph) {
                         document.getElementById("test2").innerText = dehyph(text);
                         assertAll();
