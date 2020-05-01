@@ -163,48 +163,6 @@ function readFile(file, cb, sync) {
     return null;
 }
 
-/**
- * Read a hpb file, dispatch "hpbLoaded" on success
- * @param {string} lang - The language
- * @returns {undefined}
- */
-function loadHyphenEngine(lang) {
-    if (H.c.sync) {
-        const data = readFile(`${H.c.paths.patterndir}${lang}.wasm`, null, true);
-        H.binaries.set(lang, new Uint8Array(data).buffer);
-        H.events.dispatch("engineLoaded", {"msg": lang});
-    } else {
-        readFile(
-            `${H.c.paths.patterndir}${lang}.wasm`,
-            (err, data) => {
-                if (err) {
-                    H.events.dispatch("error", {
-                        "key": lang,
-                        "msg": `${H.c.paths.patterndir}${lang}.wasm not found.`
-                    });
-                } else {
-                    H.binaries.set(lang, new Uint8Array(data).buffer);
-                    H.events.dispatch("engineLoaded", {"msg": lang});
-                }
-            },
-            false
-        );
-    }
-}
-
-/**
- * Convert exceptions to Map
- * @param {string} exc comma separated list of exceptions
- * @returns {Object} Map of exceptions
- */
-function convertExceptions(exc) {
-    const r = new Map();
-    exc.split(", ").forEach((e) => {
-        const key = e.replace(/-/g, "");
-        r.set(key, e);
-    });
-    return r;
-}
 
 /**
  * Create lang Object
@@ -219,6 +177,20 @@ function createLangObj(lang) {
         H.languages.set(lang, empty());
     }
     return H.languages.get(lang);
+}
+
+/**
+ * Convert exceptions to Map
+ * @param {string} exc comma separated list of exceptions
+ * @returns {Object} Map of exceptions
+ */
+function convertExceptions(exc) {
+    const r = new Map();
+    exc.split(", ").forEach((e) => {
+        const key = e.replace(/-/g, "");
+        r.set(key, e);
+    });
+    return r;
 }
 
 /**
@@ -378,6 +350,35 @@ function instantiateWasmEngine(lang) {
         WebAssembly.instantiate(H.binaries.get(lang)).then((res) => {
             handleWasm(res.instance);
         });
+    }
+}
+
+/**
+ * Read a hpb file, dispatch "hpbLoaded" on success
+ * @param {string} lang - The language
+ * @returns {undefined}
+ */
+function loadHyphenEngine(lang) {
+    if (H.c.sync) {
+        const data = readFile(`${H.c.paths.patterndir}${lang}.wasm`, null, true);
+        H.binaries.set(lang, new Uint8Array(data).buffer);
+        instantiateWasmEngine(lang);
+    } else {
+        readFile(
+            `${H.c.paths.patterndir}${lang}.wasm`,
+            (err, data) => {
+                if (err) {
+                    H.events.dispatch("error", {
+                        "key": lang,
+                        "msg": `${H.c.paths.patterndir}${lang}.wasm not found.`
+                    });
+                } else {
+                    H.binaries.set(lang, new Uint8Array(data).buffer);
+                    instantiateWasmEngine(lang);
+                }
+            },
+            false
+        );
     }
 }
 
@@ -576,14 +577,6 @@ function createTextHyphenator(lang) {
     );
 
     define(
-        "engineLoaded",
-        (e) => {
-            instantiateWasmEngine(e.msg);
-        },
-        false
-    );
-
-    define(
         "engineReady",
         null,
         false
@@ -598,9 +591,7 @@ function createTextHyphenator(lang) {
     function dispatch(name, data) {
         data.defaultPrevented = false;
         data.preventDefault = (() => {
-            if (definedEvents.get(name).cancellable) {
-                data.defaultPrevented = true;
-            }
+            data.defaultPrevented = true;
         });
         definedEvents.get(name).register.forEach((currentHandler) => {
             currentHandler(data);
