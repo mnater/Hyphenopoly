@@ -268,7 +268,11 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
  * @returns {undefined}
  */
 function instantiateWasmEngine(lang) {
-    // eslint-disable-next-line require-jsdoc
+    /**
+     * Register character substitutions in the .wasm-hyphenEngine
+     * @param {number} alphalen - The length of the alphabet
+     * @param {object} exp - Export-object of the hyphenEngine
+     */
     function registerSubstitutions(alphalen, exp) {
         if (H.c.substitute.has(lang)) {
             const subst = H.c.substitute.get(lang);
@@ -287,7 +291,10 @@ function instantiateWasmEngine(lang) {
         return alphalen;
     }
 
-    // eslint-disable-next-line require-jsdoc
+    /**
+     * Instantiate the hyphenEngine
+     * @param {object} res - The fetched ressource
+     */
     function handleWasm(inst) {
         const exp = inst.exports;
         const baseData = {
@@ -687,10 +694,8 @@ H.config = ((userConfig) => {
         loader = require("https");
     }
     if (H.c.handleEvent) {
-        Object.keys(H.c.handleEvent).forEach((name) => {
-            /* eslint-disable security/detect-object-injection */
-            H.events.addListener(name, H.c.handleEvent[name]);
-            /* eslint-enable security/detect-object-injection */
+        Object.entries(H.c.handleEvent).forEach(([name, fn]) => {
+            H.events.addListener(name, fn);
         });
     }
     const result = new Map();
