@@ -216,7 +216,7 @@ function prepareLanguagesObj(
                 Number(H.c.rightminPerLang.get(lang)) || 0
             ));
         })();
-        lo.hyphenateFunction = hyphenateFunction;
+        lo.hyphenate = hyphenateFunction;
         lo.engineReady = true;
     }
     H.events.dispatch("engineReady", {"msg": lang});
@@ -369,6 +369,30 @@ const wordHyphenatorPool = new Map();
  * @returns {function} The hyphenate function
  */
 function createWordHyphenator(lo, lang) {
+    if (wordHyphenatorPool.has(lang)) {
+        return wordHyphenatorPool.get(lang);
+    }
+
+    /**
+     * HyphenateFunction for non-compound words
+     * @param {string} word The word
+     * @returns {string} The hyphenated word
+     */
+    function hyphenateNormal(word) {
+        if (word.length > 61) {
+            H.events.dispatch("error", {"msg": "found word longer than 61 characters"});
+        }
+        if (!lo.reNotAlphabet.test(word)) {
+            return lo.hyphenate(
+                word,
+                H.c.hyphen.charCodeAt(0),
+                H.c.leftminPerLang.get(lang),
+                H.c.rightminPerLang.get(lang)
+            );
+        }
+        return word;
+    }
+
     /**
      * HyphenateFunction for compound words
      * @param {string} word The word
@@ -411,7 +435,6 @@ function createWordHyphenator(lo, lang) {
         });
     }
 
-    /* eslint-disable complexity */
     /**
      * HyphenateFunction for words (compound or not)
      * @param {string} word The word
@@ -419,29 +442,16 @@ function createWordHyphenator(lo, lang) {
      */
     function hyphenator(word) {
         let hw = lo.cache.get(word);
-        if (!H.c.mixedCase && isMixedCase(word)) {
-            hw = word;
-        }
         if (!hw) {
             if (lo.exceptions.has(word)) {
                 hw = lo.exceptions.get(word).replace(
                     /-/g,
                     H.c.hyphen
                 );
+            } else if (!H.c.mixedCase && isMixedCase(word)) {
+                hw = word;
             } else if (word.indexOf("-") === -1) {
-                if (word.length > 61) {
-                    H.events.dispatch("error", {"msg": "found word longer than 61 characters"});
-                    hw = word;
-                } else if (lo.reNotAlphabet.test(word)) {
-                    hw = word;
-                } else {
-                    hw = lo.hyphenateFunction(
-                        word,
-                        H.c.hyphen.charCodeAt(0),
-                        H.c.leftminPerLang.get(lang),
-                        H.c.rightminPerLang.get(lang)
-                    );
-                }
+                hw = hyphenateNormal(word);
             } else {
                 hw = hyphenateCompound(word);
             }
@@ -449,7 +459,6 @@ function createWordHyphenator(lo, lang) {
         }
         return hw;
     }
-    /* eslint-enable complexity */
     wordHyphenatorPool.set(lang, hyphenator);
     return hyphenator;
 }
