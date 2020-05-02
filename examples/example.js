@@ -3,7 +3,7 @@ const hyphenopoly = require("hyphenopoly");
 
 
 // For local node:
-// const hyphenopoly = require("./hyphenopoly.module.js");
+// const hyphenopoly = require("../hyphenopoly.module.js");
 
 const hyphenator = hyphenopoly.config({
     "exceptions": {
