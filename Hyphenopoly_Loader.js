@@ -14,14 +14,6 @@
     const scriptName = "Hyphenopoly_Loader.js";
     const lcRequire = new Map();
 
-    /**
-     * Create Object without standard Object-prototype
-     * @returns {Object} empty object
-     */
-    const empty = () => {
-        return o.create(null);
-    };
-
     const shortcuts = {
         "ac": "appendChild",
         "ce": "createElement",
@@ -45,12 +37,10 @@
      */
     (() => {
         if (H.cacheFeatureTests && store.getItem(scriptName)) {
-            H.cf = JSON.parse(store.getItem(scriptName));
+            H.cf = new Map(JSON.parse(store.getItem(scriptName)));
+            H.cf.set("langs", new Map(H.cf.get("langs")));
         } else {
-            H.cf = {
-                "langs": empty(),
-                "pf": false
-            };
+            H.cf = new Map([["langs", new Map()], ["pf", false]]);
         }
     })();
 
@@ -101,15 +91,15 @@
      * This is in an iife to keep complexity low.
      */
     (() => {
-        eachKey(H.require, (k) => {
-            /* eslint-disable security/detect-object-injection */
-            const fn = (H.fallbacks)
-                ? H.fallbacks[k] || k
-                : k;
-            lcRequire.set(k.toLowerCase(), new Map(
-                [["fn", fn], ["wo", H.require[k]]]
+        const require = new Map(o.entries(H.require));
+        const fallbacks = (H.fallbacks)
+            ? new Map(o.entries(H.fallbacks))
+            : new Map();
+        require.forEach((longWord, lang) => {
+            const fn = fallbacks.get(lang) || lang;
+            lcRequire.set(lang.toLowerCase(), new Map(
+                [["fn", fn], ["wo", longWord]]
             ));
-            /* eslint-enable security/detect-object-injection */
         });
     })();
 
@@ -206,11 +196,9 @@
              * @returns {undefined}
              */
             "cr": (lang) => {
-                /* eslint-disable security/detect-object-injection */
-                if (H.cf.langs[lang]) {
+                if (H.cf.get("langs").get(lang)) {
                     return;
                 }
-                /* eslint-enable security/detect-object-injection */
                 fakeBody = fakeBody || d[shortcuts.ce]("body");
                 const testDiv = d[shortcuts.ce]("div");
                 testDiv.lang = lang;
@@ -254,9 +242,8 @@
      */
     function loadhyphenEngine(lang) {
         const filename = lcRequire.get(lang).get("fn") + ".wasm";
-        H.cf.pf = true;
-        // eslint-disable-next-line security/detect-object-injection
-        H.cf.langs[lang] = "H9Y";
+        H.cf.set("pf", true);
+        H.cf.get("langs").set(lang, "H9Y");
         if (fw.has(filename)) {
             const hyphenEngineWrapper = H.res.get("he").get(fw.get(filename));
             hyphenEngineWrapper.c += 1;
@@ -273,8 +260,7 @@
         }
     }
     lcRequire.forEach((value, lang) => {
-        // eslint-disable-next-line security/detect-object-injection
-        if (value.get("wo") === "FORCEHYPHENOPOLY" || H.cf.langs[lang] === "H9Y") {
+        if (value.get("wo") === "FORCEHYPHENOPOLY" || H.cf.get("langs").get(lang) === "H9Y") {
             loadhyphenEngine(lang);
         } else {
             tester.cr(lang);
@@ -285,7 +271,7 @@
         const nl = testContainer.querySelectorAll("div");
         nl.forEach((n) => {
             if (checkCSSHyphensSupport(n.style) && n.offsetHeight > 12) {
-                H.cf.langs[n.lang] = "CSS";
+                H.cf.get("langs").set(n.lang, "CSS");
             } else {
                 loadhyphenEngine(n.lang);
             }
@@ -293,7 +279,7 @@
         tester.cl();
     }
     const he = H.handleEvent;
-    if (H.cf.pf) {
+    if (H.cf.get("pf")) {
         H.res.set("DOM", new Promise((res) => {
             if (d.readyState === "loading") {
                 d.addEventListener(
@@ -327,15 +313,22 @@
         const script = d[shortcuts.ce]("script");
         script.src = H.paths.maindir + "Hyphenopoly.js";
         d.head[shortcuts.ac](script);
-        H.hyphenators = empty();
-        eachKey(H.cf.langs, (lang) => {
-            /* eslint-disable security/detect-object-injection */
-            if (H.cf.langs[lang] === "H9Y") {
-                H.hyphenators[lang] = H.defProm();
+        H.hy6ors = new Map();
+        H.cf.get("langs").forEach((langDef, lang) => {
+            if (langDef === "H9Y") {
+                H.hy6ors.set(lang, H.defProm());
             }
-            /* eslint-enable security/detect-object-injection */
         });
-        H.hyphenators.HTML = H.defProm();
+        H.hy6ors.set("HTML", H.defProm());
+        H.hyphenators = new Proxy(H.hy6ors, {
+            "get": (target, key) => {
+                return target.get(key);
+            },
+            "set": () => {
+                // Inhibit setting of hyphenators
+                return true;
+            }
+        });
         (() => {
             if (he && he.polyfill) {
                 he.polyfill();
@@ -349,7 +342,12 @@
             w.Hyphenopoly = null;
         })();
     }
-    if (H.cacheFeatureTests) {
-        store.setItem(scriptName, JSON.stringify(H.cf));
-    }
+    (() => {
+        if (H.cacheFeatureTests) {
+            const langs = [...H.cf.get("langs").entries()];
+            store.setItem(scriptName, JSON.stringify(
+                [["langs", langs], ["pf", H.cf.get("pf")]]
+            ));
+        }
+    })();
 })(window, document, Hyphenopoly, Object);
