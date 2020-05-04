@@ -4,8 +4,8 @@
 Hyphenopoly.js is a __JavaScript-polyfill for hyphenation in HTML__: it hyphenates text if the user agent does not support CSS-hyphenation at all or not for the required languages and it is a __Node.js-module__.
 
 The package consists of the following parts:
--   _Hyphenopoly_Loader.js_ (~12KB unpacked, ~2KB minified and compressed): feature-checks the client and loads other resources if necessary.
--   _Hyphenopoly.js_ (~37KB unpacked, ~4KB minified and compressed): does the whole DOM-foo and wraps wasm.
+-   _Hyphenopoly_Loader.js_ (~11KB unpacked, ~2KB minified and compressed): feature-checks the client and loads other resources if necessary.
+-   _Hyphenopoly.js_ (~38KB unpacked, ~5KB minified and compressed): does the whole DOM-foo and wraps wasm.
 -   _wasm-Modules_ (sizes differ! e.g. en-us.wasm: ~24KB uncompressed, ~15KB compressed): core hyphenation functions and hyphenation patterns in a space saving binary format (including pattern license).
 -   _hyphenopoly.module.js_: the node module
 

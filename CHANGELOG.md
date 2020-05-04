@@ -1,5 +1,13 @@
 # Version History
 
+## Version 4.4.0 (2020-05-04)
+### Changed
+*   convert objects to maps (no API changes)
+
+### Fixed
+*   bumb devDependencies
+*   simplify webpack example
+
 ## Version 4.3.0 (2020-04-17)
 ### Fixed
 *   Hyphenators handle subtags with different lang consistently (issue #108)
