@@ -87,11 +87,12 @@
         const fallbacks = (H.fallbacks)
             ? new Map(o.entries(H.fallbacks))
             : new Map();
-        require.forEach((longWord, lang) => {
+        require.forEach((wo, lang) => {
             const fn = fallbacks.get(lang) || lang;
-            lcRequire.set(lang.toLowerCase(), new Map(
-                [["fn", fn], ["wo", longWord]]
-            ));
+            lcRequire.set(lang.toLowerCase(), {
+                fn,
+                wo
+            });
         });
     })();
 
@@ -197,7 +198,7 @@
                 testDiv.style.cssText = css;
                 testDiv[shortcuts.ac](
                     d[shortcuts.ct](
-                        lcRequire.get(lang).get("wo").
+                        lcRequire.get(lang).wo.
                             toLowerCase()
                     )
                 );
@@ -235,7 +236,7 @@
      * @returns {undefined}
      */
     function loadhyphenEngine(lang) {
-        const filename = lcRequire.get(lang).get("fn") + ".wasm";
+        const filename = lcRequire.get(lang).fn + ".wasm";
         H.cf.pf = true;
         H.cf.langs.set(lang, "H9Y");
         if (fw.has(filename)) {
@@ -254,7 +255,7 @@
         }
     }
     lcRequire.forEach((value, lang) => {
-        if (value.get("wo") === "FORCEHYPHENOPOLY" || H.cf.langs.get(lang) === "H9Y") {
+        if (value.wo === "FORCEHYPHENOPOLY" || H.cf.langs.get(lang) === "H9Y") {
             loadhyphenEngine(lang);
         } else {
             tester.cr(lang);
