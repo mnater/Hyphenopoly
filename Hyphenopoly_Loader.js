@@ -197,10 +197,7 @@
                 testDiv.lang = lang;
                 testDiv.style.cssText = css;
                 testDiv[shortcuts.ac](
-                    d[shortcuts.ct](
-                        lcRequire.get(lang).wo.
-                            toLowerCase()
-                    )
+                    d[shortcuts.ct](lcRequire.get(lang).wo.toLowerCase())
                 );
                 fakeBody[shortcuts.ac](testDiv);
             }

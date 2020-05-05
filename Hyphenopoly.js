@@ -302,21 +302,9 @@
                 }
             }
 
-            /**
-             * Execute fn for each element
-             * @param {function} fn The function to execute
-             * @returns {undefined}
-             */
-            function each(fn) {
-                list.forEach((val, key) => {
-                    fn(key, val);
-                });
-            }
-
             return {
                 add,
                 counter,
-                each,
                 list,
                 rem
             };
@@ -675,7 +663,7 @@
          */
         function createDOMHyphenator() {
             return ((entity, sel = ".hyphenate") => {
-                collectElements(entity, sel).each((l, els) => {
+                collectElements(entity, sel).list.forEach((els, l) => {
                     els.forEach((elo) => {
                         hyphenate(l, elo.selector, elo.element);
                     });
@@ -685,7 +673,7 @@
         }
 
         H.unhyphenate = () => {
-            H.res.els.each((lang, els) => {
+            H.res.els.list.forEach((els) => {
                 els.forEach((elo) => {
                     const n = elo.element.firstChild;
                     n.data = n.data.replace(RegExp(C[elo.selector].hyphen, "g"), "");
@@ -945,7 +933,7 @@
             }
             const elements = collectElements();
             H.res.els = elements;
-            elements.each((lang) => {
+            elements.list.forEach((ignore, lang) => {
                 if (H.languages &&
                     H.languages.has(lang) &&
                     H.languages.get(lang).ready
