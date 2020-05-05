@@ -185,7 +185,7 @@
              * @returns {undefined}
              */
             "cr": (lang) => {
-                if (H.cf.get("langs").get(lang)) {
+                if (H.cf.get("langs").has(lang)) {
                     return;
                 }
                 fakeBody = fakeBody || d[shortcuts.ce]("body");
@@ -215,7 +215,9 @@
         return (h === "auto");
     }
 
-    H.res = new Map([["he", new Map()]]);
+    H.res = {
+        "he": new Map()
+    };
     const fw = new Map();
 
     /**
@@ -234,11 +236,11 @@
         H.cf.set("pf", true);
         H.cf.get("langs").set(lang, "H9Y");
         if (fw.has(filename)) {
-            const hyphenEngineWrapper = H.res.get("he").get(fw.get(filename));
+            const hyphenEngineWrapper = H.res.he.get(fw.get(filename));
             hyphenEngineWrapper.c += 1;
-            H.res.get("he").set(lang, hyphenEngineWrapper);
+            H.res.he.set(lang, hyphenEngineWrapper);
         } else {
-            H.res.get("he").set(
+            H.res.he.set(
                 lang,
                 {
                     "c": 1,
@@ -269,7 +271,7 @@
     }
     const he = H.handleEvent;
     if (H.cf.get("pf")) {
-        H.res.set("DOM", new Promise((res) => {
+        H.res.DOM = new Promise((res) => {
             if (d.readyState === "loading") {
                 d.addEventListener(
                     "DOMContentLoaded",
@@ -282,7 +284,7 @@
             } else {
                 res();
             }
-        }));
+        });
         if (H.setup.hide === 0) {
             H.hide(1, 0);
         }
@@ -293,7 +295,7 @@
                 console.info(scriptName + " timed out.");
             }, H.setup.timeout);
         }
-        H.res.get("DOM").then(() => {
+        H.res.DOM.then(() => {
             if (H.setup.hide > 0) {
                 H.hide(1, H.setup.hide);
             }

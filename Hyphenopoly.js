@@ -634,7 +634,7 @@
                         n.data = hyphenateText(n.data);
                     }
                 });
-                H.res.get("els").counter[0] -= 1;
+                H.res.els.counter[0] -= 1;
                 event.fire(
                     "afterElementHyphenation",
                     {
@@ -685,13 +685,13 @@
         }
 
         H.unhyphenate = () => {
-            H.res.get("els").each((lang, els) => {
+            H.res.els.each((lang, els) => {
                 els.forEach((elo) => {
                     const n = elo.element.firstChild;
                     n.data = n.data.replace(RegExp(C[elo.selector].hyphen, "g"), "");
                 });
             });
-            return Promise.resolve(H.res.get("els"));
+            return Promise.resolve(H.res.els);
         };
 
         /**
@@ -811,7 +811,7 @@
                     lang
                 }
             );
-            hyphenateLangElements(lang, H.res.get("els"));
+            hyphenateLangElements(lang, H.res.els);
         }
 
         const decode = (() => {
@@ -930,7 +930,7 @@
                             });
                     }
                 } else {
-                    H.res.get("els").rem(lang);
+                    H.res.els.rem(lang);
                     H.hy6ors.get(lang).reject({
                         "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
                     });
@@ -938,13 +938,13 @@
             });
         }
 
-        H.res.get("DOM").then(() => {
+        H.res.DOM.then(() => {
             mainLanguage = getLang(w.document.documentElement, false);
             if (!mainLanguage && C.defaultLanguage !== "") {
                 mainLanguage = C.defaultLanguage;
             }
             const elements = collectElements();
-            H.res.set("els", elements);
+            H.res.els = elements;
             elements.each((lang) => {
                 if (H.languages &&
                     H.languages.has(lang) &&
@@ -955,7 +955,7 @@
             });
         });
 
-        H.res.get("he").forEach((heProm, lang) => {
+        H.res.he.forEach((heProm, lang) => {
             instantiateWasmEngine(heProm, lang);
         });
 
@@ -968,7 +968,7 @@
                     }
                     return accumulator;
                 }, []).
-                concat(H.res.get("DOM"))
+                concat(H.res.DOM)
         ).then(() => {
             H.hy6ors.get("HTML").resolve(createDOMHyphenator());
         }, (e) => {
