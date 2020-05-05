@@ -70,8 +70,7 @@
 
         // Change mode string to mode int
         H.setup.hide = (() => {
-            const tr = new Map([["all", 1], ["element", 2], ["text", 3]]);
-            return tr.get(H.setup.hide) || 0;
+            return ["all", "element", "text"].indexOf(H.setup.hide);
         })();
     })();
 
@@ -116,9 +115,9 @@
     /**
      * Define function H.hide.
      * This function hides (state = 1) or unhides (state = 0)
-     * the whole document (mode == 1) or
-     * each selected element (mode == 2) or
-     * text of each selected element (mode == 3) or
+     * the whole document (mode == 0) or
+     * each selected element (mode == 1) or
+     * text of each selected element (mode == 2) or
      * nothing (mode == 0)
      * @param {integer} state - State
      * @param {integer} mode  - Mode
@@ -135,11 +134,11 @@
             const sc = d[shortcuts.ce]("style");
             let myStyle = "";
             sc.id = sid;
-            if (mode === 1) {
+            if (mode === 0) {
                 myStyle = "html" + vis;
             } else {
                 o.keys(H.setup.selectors).forEach((sel) => {
-                    if (mode === 2) {
+                    if (mode === 1) {
                         myStyle += sel + vis;
                     } else {
                         myStyle += sel + "{color:transparent!important}";
@@ -284,10 +283,10 @@
                 res();
             }
         }));
-        if (H.setup.hide === 1) {
-            H.hide(1, 1);
+        if (H.setup.hide === 0) {
+            H.hide(1, 0);
         }
-        if (H.setup.hide !== 0) {
+        if (H.setup.hide !== -1) {
             H.timeOutHandler = w.setTimeout(() => {
                 H.hide(0, null);
                 // eslint-disable-next-line no-console
@@ -295,7 +294,7 @@
             }, H.setup.timeout);
         }
         H.res.get("DOM").then(() => {
-            if (H.setup.hide > 1) {
+            if (H.setup.hide > 0) {
                 H.hide(1, H.setup.hide);
             }
         });

@@ -716,7 +716,7 @@
             }
             if (elements.counter[0] === 0) {
                 w.clearTimeout(H.timeOutHandler);
-                if (C.hide !== 0) {
+                if (C.hide !== -1) {
                     H.hide(0, null);
                 }
                 event.fire(
