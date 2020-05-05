@@ -414,7 +414,7 @@
                     });
                 });
             } else {
-                processElements(parent, getLang(parent, true), selector, true);
+                processElements(parent, getLang(parent, true), selector);
             }
             return elements;
         }
