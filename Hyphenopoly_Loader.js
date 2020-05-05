@@ -21,16 +21,6 @@
     };
 
     /**
-     * Shorthand for Object.keys(obj).forEach(function () {})
-     * @param {Object} obj the object to iterate
-     * @param {function} fn the function to execute
-     * @returns {undefined}
-     */
-    const eachKey = (obj, fn) => {
-        return o.keys(obj).forEach(fn);
-    };
-
-    /**
      * Set H.cf (Hyphenopoly.clientFeatures) either by reading out previously
      * computed settings from sessionStorage or creating an template object.
      * This is in an iife to keep complexity low.
@@ -148,7 +138,7 @@
             if (mode === 1) {
                 myStyle = "html" + vis;
             } else {
-                eachKey(H.setup.selectors, (sel) => {
+                o.keys(H.setup.selectors).forEach((sel) => {
                     if (mode === 2) {
                         myStyle += sel + vis;
                     } else {
