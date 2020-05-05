@@ -22,15 +22,18 @@
 
     /**
      * Set H.cf (Hyphenopoly.clientFeatures) either by reading out previously
-     * computed settings from sessionStorage or creating an template object.
+     * computed settings from sessionStorage or creating a template object.
      * This is in an iife to keep complexity low.
      */
     (() => {
         if (H.cacheFeatureTests && store.getItem(scriptName)) {
-            H.cf = new Map(JSON.parse(store.getItem(scriptName)));
-            H.cf.set("langs", new Map(H.cf.get("langs")));
+            H.cf = JSON.parse(store.getItem(scriptName));
+            H.cf.langs = new Map(H.cf.langs);
         } else {
-            H.cf = new Map([["langs", new Map()], ["pf", false]]);
+            H.cf = {
+                "langs": new Map(),
+                "pf": false
+            };
         }
     })();
 
@@ -185,7 +188,7 @@
              * @returns {undefined}
              */
             "cr": (lang) => {
-                if (H.cf.get("langs").has(lang)) {
+                if (H.cf.langs.has(lang)) {
                     return;
                 }
                 fakeBody = fakeBody || d[shortcuts.ce]("body");
@@ -233,8 +236,8 @@
      */
     function loadhyphenEngine(lang) {
         const filename = lcRequire.get(lang).get("fn") + ".wasm";
-        H.cf.set("pf", true);
-        H.cf.get("langs").set(lang, "H9Y");
+        H.cf.pf = true;
+        H.cf.langs.set(lang, "H9Y");
         if (fw.has(filename)) {
             const hyphenEngineWrapper = H.res.he.get(fw.get(filename));
             hyphenEngineWrapper.c += 1;
@@ -251,7 +254,7 @@
         }
     }
     lcRequire.forEach((value, lang) => {
-        if (value.get("wo") === "FORCEHYPHENOPOLY" || H.cf.get("langs").get(lang) === "H9Y") {
+        if (value.get("wo") === "FORCEHYPHENOPOLY" || H.cf.langs.get(lang) === "H9Y") {
             loadhyphenEngine(lang);
         } else {
             tester.cr(lang);
@@ -262,7 +265,7 @@
         const nl = testContainer.querySelectorAll("div");
         nl.forEach((n) => {
             if (checkCSSHyphensSupport(n.style) && n.offsetHeight > 12) {
-                H.cf.get("langs").set(n.lang, "CSS");
+                H.cf.langs.set(n.lang, "CSS");
             } else {
                 loadhyphenEngine(n.lang);
             }
@@ -270,7 +273,7 @@
         tester.cl();
     }
     const he = H.handleEvent;
-    if (H.cf.get("pf")) {
+    if (H.cf.pf) {
         H.res.DOM = new Promise((res) => {
             if (d.readyState === "loading") {
                 d.addEventListener(
@@ -305,7 +308,7 @@
         script.src = H.paths.maindir + "Hyphenopoly.js";
         d.head[shortcuts.ac](script);
         H.hy6ors = new Map();
-        H.cf.get("langs").forEach((langDef, lang) => {
+        H.cf.langs.forEach((langDef, lang) => {
             if (langDef === "H9Y") {
                 H.hy6ors.set(lang, H.defProm());
             }
@@ -335,9 +338,12 @@
     }
     (() => {
         if (H.cacheFeatureTests) {
-            const langs = [...H.cf.get("langs").entries()];
+            const langs = [...H.cf.langs.entries()];
             store.setItem(scriptName, JSON.stringify(
-                [["langs", langs], ["pf", H.cf.get("pf")]]
+                {
+                    langs,
+                    "pf": H.cf.pf
+                }
             ));
         }
     })();

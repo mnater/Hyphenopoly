@@ -24,7 +24,7 @@
             var lang = "";
             while (i <= tests) {
                 lang = document.getElementById("test" + i).lang;
-                if (Hyphenopoly.cf.get("langs").get(lang) === "CSS") {
+                if (Hyphenopoly.cf.langs.get(lang) === "CSS") {
                     document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
                     result = result && true;
                 } else {
