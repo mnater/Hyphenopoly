@@ -83,14 +83,12 @@
      * This is in an iife to keep complexity low.
      */
     (() => {
-        const require = new Map(o.entries(H.require));
         const fallbacks = (H.fallbacks)
             ? new Map(o.entries(H.fallbacks))
             : new Map();
-        require.forEach((wo, lang) => {
-            const fn = fallbacks.get(lang) || lang;
+        o.entries(H.require).forEach(([lang, wo]) => {
             lcRequire.set(lang.toLowerCase(), {
-                fn,
+                "fn": fallbacks.get(lang) || lang,
                 wo
             });
         });
@@ -157,7 +155,6 @@
     const tester = (() => {
         let fakeBody = null;
         const ha = "hyphens:auto";
-        const css = `visibility:hidden;-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
         return {
 
             /**
@@ -195,7 +192,7 @@
                 fakeBody = fakeBody || d[shortcuts.ce]("body");
                 const testDiv = d[shortcuts.ce]("div");
                 testDiv.lang = lang;
-                testDiv.style.cssText = css;
+                testDiv.style.cssText = `visibility:hidden;-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
                 testDiv[shortcuts.ac](
                     d[shortcuts.ct](lcRequire.get(lang).wo.toLowerCase())
                 );
@@ -260,8 +257,7 @@
     });
     const testContainer = tester.ap();
     if (testContainer) {
-        const nl = testContainer.querySelectorAll("div");
-        nl.forEach((n) => {
+        testContainer.querySelectorAll("div").forEach((n) => {
             if (checkCSSHyphensSupport(n.style) && n.offsetHeight > 12) {
                 H.cf.langs.set(n.lang, "CSS");
             } else {
@@ -336,10 +332,9 @@
     }
     (() => {
         if (H.cacheFeatureTests) {
-            const langs = [...H.cf.langs.entries()];
             store.setItem(scriptName, JSON.stringify(
                 {
-                    langs,
+                    "langs": [...H.cf.langs.entries()],
                     "pf": H.cf.pf
                 }
             ));
