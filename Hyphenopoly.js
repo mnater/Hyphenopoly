@@ -818,16 +818,12 @@
         function encloseHyphenateFunction(baseData, hyphenateFunc) {
             const wordStore = new Uint16Array(baseData.buf, baseData.wo, 64);
             const hydWrdStore = new Uint16Array(baseData.buf, baseData.hw, 128);
-            wordStore[0] = 95;
             return ((word, hyphencc, leftmin, rightmin) => {
-                let i = 0;
-                for (const c of word) {
-                    i += 1;
-                    // eslint-disable-next-line security/detect-object-injection
-                    wordStore[i] = c.charCodeAt(0);
-                }
-                wordStore[i + 1] = 95;
-                wordStore[i + 2] = 0;
+                wordStore.set([95].concat(
+                    [...word].map((c) => {
+                        return c.charCodeAt(0);
+                    }), 95, 0
+                ));
                 if (hyphenateFunc(leftmin, rightmin, hyphencc) === 1) {
                     word = decode(hydWrdStore.subarray(1, hydWrdStore[0] + 1));
                 }
