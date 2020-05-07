@@ -434,8 +434,7 @@
                             "msg": "found word longer than 61 characters"
                         }
                     );
-                }
-                if (!lo.reNotAlphabet.test(word)) {
+                } else if (!lo.reNotAlphabet.test(word)) {
                     return lo.hyphenate(
                         word,
                         selSettings.hyphen.charCodeAt(0),
