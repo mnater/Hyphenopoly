@@ -87,14 +87,10 @@
             (e) => {
                 e.preventDefault();
                 const sel = w.getSelection();
-                const docFrag = sel.getRangeAt(0).cloneContents();
                 const div = document.createElement("div");
-                div.appendChild(docFrag);
-                const selectedHTML = div.innerHTML;
-                const selectedText = sel.toString();
-                const re = RegExp(SOFTHYPHEN, "g");
-                e.clipboardData.setData("text/plain", selectedText.replace(re, ""));
-                e.clipboardData.setData("text/html", selectedHTML.replace(re, ""));
+                div.appendChild(sel.getRangeAt(0).cloneContents());
+                e.clipboardData.setData("text/plain", sel.toString().replace(RegExp(SOFTHYPHEN, "g"), ""));
+                e.clipboardData.setData("text/html", div.innerHTML.replace(RegExp(SOFTHYPHEN, "g"), ""));
             },
             true
         );
@@ -423,7 +419,6 @@
             }
 
             const selSettings = C.get(sel);
-            const hyphen = selSettings.hyphen;
             lo.cache.set(sel, new Map());
 
             /**
@@ -443,7 +438,7 @@
                 if (!lo.reNotAlphabet.test(word)) {
                     return lo.hyphenate(
                         word,
-                        hyphen.charCodeAt(0),
+                        selSettings.hyphen.charCodeAt(0),
                         selSettings.leftminPerLang.get(lang),
                         selSettings.rightminPerLang.get(lang)
                     );
