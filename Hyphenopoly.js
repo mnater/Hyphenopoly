@@ -13,29 +13,6 @@
     const SOFTHYPHEN = "\u00AD";
 
     /**
-     * Set value and properties of object member
-     * Argument <props> is a bit pattern:
-     * 1. bit: configurable
-     * 2. bit: enumerable
-     * 3. bit writable
-     * e.g. 011(2) = 3(10) => configurable: f, enumerable: t, writable: t
-     * or   010(2) = 2(10) => configurable: f, enumerable: t, writable: f
-     * @param {any} val The value
-     * @param {number} props bitfield
-     * @returns {Object} Property object
-     */
-    const setProp = (val, props) => {
-        /* eslint-disable no-bitwise, sort-keys */
-        return {
-            "configurable": (props & 4) > 0,
-            "enumerable": (props & 2) > 0,
-            "writable": (props & 1) > 0,
-            "value": val
-        };
-        /* eslint-enable no-bitwise, sort-keys */
-    };
-
-    /**
      * Event
      */
     const event = ((H) => {
@@ -778,14 +755,14 @@
                 H.languages = new Map();
             }
             alphabet = alphabet.replace(/-/g, "");
-            H.languages.set(lang, o.create(null, {
-                "alphabet": setProp(alphabet, 2),
-                "cache": setProp(new Map(), 2),
-                "exc": setProp(createExceptionMap(lang), 2),
-                "hyphenate": setProp(hyphenateFunction, 2),
-                "ready": setProp(true, 2),
-                "reNotAlphabet": setProp(RegExp(`[^${alphabet}]`, "gi"), 2)
-            }));
+            H.languages.set(lang, {
+                alphabet,
+                "cache": new Map(),
+                "exc": createExceptionMap(lang),
+                "hyphenate": hyphenateFunction,
+                "ready": true,
+                "reNotAlphabet": RegExp(`[^${alphabet}]`, "gi")
+            });
             H.hy6ors.get(lang).resolve(createStringHyphenator(lang));
             event.fire(
                 "engineReady",
