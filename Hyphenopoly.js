@@ -480,7 +480,7 @@
              * @returns {boolean} true if s is mixed case
              */
             function isMixedCase(s) {
-                return Array.prototype.map.call(s, (c) => {
+                return [...s].map((c) => {
                     return (c === c.toLowerCase());
                 }).some((v, i, a) => {
                     return (v !== a[0]);
