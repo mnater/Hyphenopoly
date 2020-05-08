@@ -114,6 +114,8 @@
         return promise;
     };
 
+    let stylesNode = null;
+
     /**
      * Define function H.hide.
      * This function hides (state = 1) or unhides (state = 0)
@@ -125,17 +127,15 @@
      * @param {integer} mode  - Mode
      */
     H.hide = (state, mode) => {
-        const sid = "H9Y_Styles";
         if (state === 0) {
-            const stylesNode = d.getElementById(sid);
             if (stylesNode) {
                 stylesNode.remove();
             }
         } else {
             const vis = "{visibility:hidden!important}";
-            const sc = d[shortcuts.ce]("style");
+            stylesNode = d[shortcuts.ce]("style");
+            stylesNode.id = "H9Y_Styles";
             let myStyle = "";
-            sc.id = sid;
             if (mode === 0) {
                 myStyle = "html" + vis;
             } else {
@@ -147,8 +147,8 @@
                     }
                 });
             }
-            sc[shortcuts.ac](d[shortcuts.ct](myStyle));
-            d.head[shortcuts.ac](sc);
+            stylesNode[shortcuts.ac](d[shortcuts.ct](myStyle));
+            d.head[shortcuts.ac](stylesNode);
         }
     };
 
