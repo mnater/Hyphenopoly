@@ -4,6 +4,7 @@ const h = require("./calculateBaseData.js");
 
 const fs = require("fs");
 
+// eslint-disable-next-line security/detect-non-literal-fs-filename
 const data = fs.readFileSync(process.argv[2]);
 const baseData = h.calculateBaseData(data);
 
