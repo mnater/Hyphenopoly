@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 /* eslint-disable security/detect-non-literal-fs-filename */
-/* eslint-disable no-console, no-sync */
+/* eslint-disable no-console */
 /* eslint-env node */
 /*
  * Convert TeX-patterns to hpb: tex2hpb – Version 1.0
@@ -259,7 +259,6 @@ function getPatternsFile() {
     logger.log(`read patterns file: ${patternsFileName} (${fs.statSync(patternsFileName).size} Bytes)`);
     let patternsfile = fs.readFileSync("./" + patternsFileName, "utf8");
     patternsfile = patternsfile.trim();
-    // eslint-disable-next-line prefer-named-capture-group
     patternsfile = patternsfile.replace(/(\d{2})\n/, (ignore, p1) => {
         const digits = p1.split("");
         leftmin = parseInt(digits[0], 10);

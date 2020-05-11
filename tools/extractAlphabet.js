@@ -1,5 +1,5 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
-/* eslint-disable no-console, no-sync */
+/* eslint-disable no-console */
 /* eslint-env node */
 
 "use strict";

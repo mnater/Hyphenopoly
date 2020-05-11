@@ -121,7 +121,6 @@ function readFile(file, cb, sync) {
     if (H.c.loader === "fs") {
         /* eslint-disable security/detect-non-literal-fs-filename */
         if (sync) {
-            // eslint-disable-next-line no-sync
             return loader.readFileSync(file);
         }
         loader.readFile(file, cb);
@@ -699,7 +698,6 @@ H.config = ((userConfig) => {
     });
     H.c = settings;
     if (H.c.loader === "https") {
-        // eslint-disable-next-line global-require
         loader = require("https");
     }
     if (H.c.handleEvent) {
