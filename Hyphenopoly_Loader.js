@@ -43,7 +43,7 @@
      * These are iifes to keep complexity low.
      */
     (() => {
-        const maindir = d.currentScript.src.replace(scriptName, "");
+        const maindir = d.currentScript.src.slice(0, -(scriptName.length));
         const patterndir = maindir + "patterns/";
         if (H.paths) {
             H.paths.maindir = H.paths.maindir || maindir;
@@ -122,7 +122,7 @@
      * the whole document (mode == 0) or
      * each selected element (mode == 1) or
      * text of each selected element (mode == 2) or
-     * nothing (mode == 0)
+     * nothing (mode == -1)
      * @param {integer} state - State
      * @param {integer} mode  - Mode
      */
@@ -154,7 +154,6 @@
 
     const tester = (() => {
         let fakeBody = null;
-        const ha = "hyphens:auto";
         return {
 
             /**
@@ -191,6 +190,7 @@
                 }
                 fakeBody = fakeBody || d[shortcuts.ce]("body");
                 const testDiv = d[shortcuts.ce]("div");
+                const ha = "hyphens:auto";
                 testDiv.lang = lang;
                 testDiv.style.cssText = `visibility:hidden;-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
                 testDiv[shortcuts.ac](
