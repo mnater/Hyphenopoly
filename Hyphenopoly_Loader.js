@@ -21,26 +21,19 @@
     };
 
     /**
-     * Shorthand for Object.keys(obj).forEach(function () {})
-     * @param {Object} obj the object to iterate
-     * @param {function} fn the function to execute
-     * @returns {undefined}
-     */
-    const eachKey = (obj, fn) => {
-        return o.keys(obj).forEach(fn);
-    };
-
-    /**
      * Set H.cf (Hyphenopoly.clientFeatures) either by reading out previously
-     * computed settings from sessionStorage or creating an template object.
+     * computed settings from sessionStorage or creating a template object.
      * This is in an iife to keep complexity low.
      */
     (() => {
         if (H.cacheFeatureTests && store.getItem(scriptName)) {
-            H.cf = new Map(JSON.parse(store.getItem(scriptName)));
-            H.cf.set("langs", new Map(H.cf.get("langs")));
+            H.cf = JSON.parse(store.getItem(scriptName));
+            H.cf.langs = new Map(H.cf.langs);
         } else {
-            H.cf = new Map([["langs", new Map()], ["pf", false]]);
+            H.cf = {
+                "langs": new Map(),
+                "pf": false
+            };
         }
     })();
 
@@ -50,7 +43,7 @@
      * These are iifes to keep complexity low.
      */
     (() => {
-        const maindir = d.currentScript.src.replace(scriptName, "");
+        const maindir = d.currentScript.src.slice(0, -(scriptName.length));
         const patterndir = maindir + "patterns/";
         if (H.paths) {
             H.paths.maindir = H.paths.maindir || maindir;
@@ -80,8 +73,7 @@
 
         // Change mode string to mode int
         H.setup.hide = (() => {
-            const tr = new Map([["all", 1], ["element", 2], ["text", 3]]);
-            return tr.get(H.setup.hide) || 0;
+            return ["all", "element", "text"].indexOf(H.setup.hide);
         })();
     })();
 
@@ -91,15 +83,14 @@
      * This is in an iife to keep complexity low.
      */
     (() => {
-        const require = new Map(o.entries(H.require));
         const fallbacks = (H.fallbacks)
             ? new Map(o.entries(H.fallbacks))
             : new Map();
-        require.forEach((longWord, lang) => {
-            const fn = fallbacks.get(lang) || lang;
-            lcRequire.set(lang.toLowerCase(), new Map(
-                [["fn", fn], ["wo", longWord]]
-            ));
+        o.entries(H.require).forEach(([lang, wo]) => {
+            lcRequire.set(lang.toLowerCase(), {
+                "fn": fallbacks.get(lang) || lang,
+                wo
+            });
         });
     })();
 
@@ -123,48 +114,46 @@
         return promise;
     };
 
+    let stylesNode = null;
+
     /**
      * Define function H.hide.
      * This function hides (state = 1) or unhides (state = 0)
-     * the whole document (mode == 1) or
-     * each selected element (mode == 2) or
-     * text of each selected element (mode == 3) or
-     * nothing (mode == 0)
+     * the whole document (mode == 0) or
+     * each selected element (mode == 1) or
+     * text of each selected element (mode == 2) or
+     * nothing (mode == -1)
      * @param {integer} state - State
      * @param {integer} mode  - Mode
      */
     H.hide = (state, mode) => {
-        const sid = "H9Y_Styles";
         if (state === 0) {
-            const stylesNode = d.getElementById(sid);
             if (stylesNode) {
                 stylesNode.remove();
             }
         } else {
             const vis = "{visibility:hidden!important}";
-            const sc = d[shortcuts.ce]("style");
+            stylesNode = d[shortcuts.ce]("style");
+            stylesNode.id = "H9Y_Styles";
             let myStyle = "";
-            sc.id = sid;
-            if (mode === 1) {
+            if (mode === 0) {
                 myStyle = "html" + vis;
             } else {
-                eachKey(H.setup.selectors, (sel) => {
-                    if (mode === 2) {
+                o.keys(H.setup.selectors).forEach((sel) => {
+                    if (mode === 1) {
                         myStyle += sel + vis;
                     } else {
                         myStyle += sel + "{color:transparent!important}";
                     }
                 });
             }
-            sc[shortcuts.ac](d[shortcuts.ct](myStyle));
-            d.head[shortcuts.ac](sc);
+            stylesNode[shortcuts.ac](d[shortcuts.ct](myStyle));
+            d.head[shortcuts.ac](stylesNode);
         }
     };
 
     const tester = (() => {
         let fakeBody = null;
-        const ha = "hyphens:auto";
-        const css = `visibility:hidden;-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
         return {
 
             /**
@@ -196,18 +185,16 @@
              * @returns {undefined}
              */
             "cr": (lang) => {
-                if (H.cf.get("langs").get(lang)) {
+                if (H.cf.langs.has(lang)) {
                     return;
                 }
                 fakeBody = fakeBody || d[shortcuts.ce]("body");
                 const testDiv = d[shortcuts.ce]("div");
+                const ha = "hyphens:auto";
                 testDiv.lang = lang;
-                testDiv.style.cssText = css;
+                testDiv.style.cssText = `visibility:hidden;-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
                 testDiv[shortcuts.ac](
-                    d[shortcuts.ct](
-                        lcRequire.get(lang).get("wo").
-                            toLowerCase()
-                    )
+                    d[shortcuts.ct](lcRequire.get(lang).wo.toLowerCase())
                 );
                 fakeBody[shortcuts.ac](testDiv);
             }
@@ -226,7 +213,9 @@
         return (h === "auto");
     }
 
-    H.res = new Map([["he", new Map()]]);
+    H.res = {
+        "he": new Map()
+    };
     const fw = new Map();
 
     /**
@@ -241,15 +230,15 @@
      * @returns {undefined}
      */
     function loadhyphenEngine(lang) {
-        const filename = lcRequire.get(lang).get("fn") + ".wasm";
-        H.cf.set("pf", true);
-        H.cf.get("langs").set(lang, "H9Y");
+        const filename = lcRequire.get(lang).fn + ".wasm";
+        H.cf.pf = true;
+        H.cf.langs.set(lang, "H9Y");
         if (fw.has(filename)) {
-            const hyphenEngineWrapper = H.res.get("he").get(fw.get(filename));
+            const hyphenEngineWrapper = H.res.he.get(fw.get(filename));
             hyphenEngineWrapper.c += 1;
-            H.res.get("he").set(lang, hyphenEngineWrapper);
+            H.res.he.set(lang, hyphenEngineWrapper);
         } else {
-            H.res.get("he").set(
+            H.res.he.set(
                 lang,
                 {
                     "c": 1,
@@ -260,7 +249,7 @@
         }
     }
     lcRequire.forEach((value, lang) => {
-        if (value.get("wo") === "FORCEHYPHENOPOLY" || H.cf.get("langs").get(lang) === "H9Y") {
+        if (value.wo === "FORCEHYPHENOPOLY" || H.cf.langs.get(lang) === "H9Y") {
             loadhyphenEngine(lang);
         } else {
             tester.cr(lang);
@@ -268,10 +257,9 @@
     });
     const testContainer = tester.ap();
     if (testContainer) {
-        const nl = testContainer.querySelectorAll("div");
-        nl.forEach((n) => {
+        testContainer.querySelectorAll("div").forEach((n) => {
             if (checkCSSHyphensSupport(n.style) && n.offsetHeight > 12) {
-                H.cf.get("langs").set(n.lang, "CSS");
+                H.cf.langs.set(n.lang, "CSS");
             } else {
                 loadhyphenEngine(n.lang);
             }
@@ -279,8 +267,8 @@
         tester.cl();
     }
     const he = H.handleEvent;
-    if (H.cf.get("pf")) {
-        H.res.set("DOM", new Promise((res) => {
+    if (H.cf.pf) {
+        H.res.DOM = new Promise((res) => {
             if (d.readyState === "loading") {
                 d.addEventListener(
                     "DOMContentLoaded",
@@ -293,19 +281,19 @@
             } else {
                 res();
             }
-        }));
-        if (H.setup.hide === 1) {
-            H.hide(1, 1);
+        });
+        if (H.setup.hide === 0) {
+            H.hide(1, 0);
         }
-        if (H.setup.hide !== 0) {
+        if (H.setup.hide !== -1) {
             H.timeOutHandler = w.setTimeout(() => {
                 H.hide(0, null);
                 // eslint-disable-next-line no-console
                 console.info(scriptName + " timed out.");
             }, H.setup.timeout);
         }
-        H.res.get("DOM").then(() => {
-            if (H.setup.hide > 1) {
+        H.res.DOM.then(() => {
+            if (H.setup.hide > 0) {
                 H.hide(1, H.setup.hide);
             }
         });
@@ -314,7 +302,7 @@
         script.src = H.paths.maindir + "Hyphenopoly.js";
         d.head[shortcuts.ac](script);
         H.hy6ors = new Map();
-        H.cf.get("langs").forEach((langDef, lang) => {
+        H.cf.langs.forEach((langDef, lang) => {
             if (langDef === "H9Y") {
                 H.hy6ors.set(lang, H.defProm());
             }
@@ -344,9 +332,11 @@
     }
     (() => {
         if (H.cacheFeatureTests) {
-            const langs = [...H.cf.get("langs").entries()];
             store.setItem(scriptName, JSON.stringify(
-                [["langs", langs], ["pf", H.cf.get("pf")]]
+                {
+                    "langs": [...H.cf.langs.entries()],
+                    "pf": H.cf.pf
+                }
             ));
         }
     })();

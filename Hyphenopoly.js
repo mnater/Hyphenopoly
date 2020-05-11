@@ -13,29 +13,6 @@
     const SOFTHYPHEN = "\u00AD";
 
     /**
-     * Set value and properties of object member
-     * Argument <props> is a bit pattern:
-     * 1. bit: configurable
-     * 2. bit: enumerable
-     * 3. bit writable
-     * e.g. 011(2) = 3(10) => configurable: f, enumerable: t, writable: t
-     * or   010(2) = 2(10) => configurable: f, enumerable: t, writable: f
-     * @param {any} val The value
-     * @param {number} props bitfield
-     * @returns {Object} Property object
-     */
-    const setProp = (val, props) => {
-        /* eslint-disable no-bitwise, sort-keys */
-        return {
-            "configurable": (props & 4) > 0,
-            "enumerable": (props & 2) > 0,
-            "writable": (props & 1) > 0,
-            "value": val
-        };
-        /* eslint-enable no-bitwise, sort-keys */
-    };
-
-    /**
      * Event
      */
     const event = ((H) => {
@@ -87,14 +64,10 @@
             (e) => {
                 e.preventDefault();
                 const sel = w.getSelection();
-                const docFrag = sel.getRangeAt(0).cloneContents();
                 const div = document.createElement("div");
-                div.appendChild(docFrag);
-                const selectedHTML = div.innerHTML;
-                const selectedText = sel.toString();
-                const re = RegExp(SOFTHYPHEN, "g");
-                e.clipboardData.setData("text/plain", selectedText.replace(re, ""));
-                e.clipboardData.setData("text/html", selectedHTML.replace(re, ""));
+                div.appendChild(sel.getRangeAt(0).cloneContents());
+                e.clipboardData.setData("text/plain", sel.toString().replace(RegExp(SOFTHYPHEN, "g"), ""));
+                e.clipboardData.setData("text/html", div.innerHTML.replace(RegExp(SOFTHYPHEN, "g"), ""));
             },
             true
         );
@@ -302,21 +275,9 @@
                 }
             }
 
-            /**
-             * Execute fn for each element
-             * @param {function} fn The function to execute
-             * @returns {undefined}
-             */
-            function each(fn) {
-                list.forEach((val, key) => {
-                    fn(key, val);
-                });
-            }
-
             return {
                 add,
                 counter,
-                each,
                 list,
                 rem
             };
@@ -387,7 +348,7 @@
              */
             function processElements(el, pLang, sel, isChild = false) {
                 const eLang = getElementLanguage(el, pLang);
-                const langDef = H.cf.get("langs").get(eLang);
+                const langDef = H.cf.langs.get(eLang);
                 if (langDef === "H9Y") {
                     elements.add(el, eLang, sel);
                     if (!isChild && C.safeCopy) {
@@ -435,7 +396,6 @@
             }
 
             const selSettings = C.get(sel);
-            const hyphen = selSettings.hyphen;
             lo.cache.set(sel, new Map());
 
             /**
@@ -451,11 +411,10 @@
                             "msg": "found word longer than 61 characters"
                         }
                     );
-                }
-                if (!lo.reNotAlphabet.test(word)) {
+                } else if (!lo.reNotAlphabet.test(word)) {
                     return lo.hyphenate(
                         word,
-                        hyphen.charCodeAt(0),
+                        selSettings.hyphen.charCodeAt(0),
                         selSettings.leftminPerLang.get(lang),
                         selSettings.rightminPerLang.get(lang)
                     );
@@ -498,7 +457,7 @@
              * @returns {boolean} true if s is mixed case
              */
             function isMixedCase(s) {
-                return Array.prototype.map.call(s, (c) => {
+                return [...s].map((c) => {
                     return (c === c.toLowerCase());
                 }).some((v, i, a) => {
                     return (v !== a[0]);
@@ -634,7 +593,7 @@
                         n.data = hyphenateText(n.data);
                     }
                 });
-                H.res.get("els").counter[0] -= 1;
+                H.res.els.counter[0] -= 1;
                 event.fire(
                     "afterElementHyphenation",
                     {
@@ -675,7 +634,7 @@
          */
         function createDOMHyphenator() {
             return ((entity, sel = ".hyphenate") => {
-                collectElements(entity, sel).each((l, els) => {
+                collectElements(entity, sel).list.forEach((els, l) => {
                     els.forEach((elo) => {
                         hyphenate(l, elo.selector, elo.element);
                     });
@@ -685,13 +644,13 @@
         }
 
         H.unhyphenate = () => {
-            H.res.get("els").each((lang, els) => {
+            H.res.els.list.forEach((els) => {
                 els.forEach((elo) => {
                     const n = elo.element.firstChild;
                     n.data = n.data.replace(RegExp(C[elo.selector].hyphen, "g"), "");
                 });
             });
-            return Promise.resolve(H.res.get("els"));
+            return Promise.resolve(H.res.els);
         };
 
         /**
@@ -716,7 +675,7 @@
             }
             if (elements.counter[0] === 0) {
                 w.clearTimeout(H.timeOutHandler);
-                if (C.hide !== 0) {
+                if (C.hide !== -1) {
                     H.hide(0, null);
                 }
                 event.fire(
@@ -796,14 +755,14 @@
                 H.languages = new Map();
             }
             alphabet = alphabet.replace(/-/g, "");
-            H.languages.set(lang, o.create(null, {
-                "alphabet": setProp(alphabet, 2),
-                "cache": setProp(new Map(), 2),
-                "exc": setProp(createExceptionMap(lang), 2),
-                "hyphenate": setProp(hyphenateFunction, 2),
-                "ready": setProp(true, 2),
-                "reNotAlphabet": setProp(RegExp(`[^${alphabet}]`, "gi"), 2)
-            }));
+            H.languages.set(lang, {
+                alphabet,
+                "cache": new Map(),
+                "exc": createExceptionMap(lang),
+                "hyphenate": hyphenateFunction,
+                "ready": true,
+                "reNotAlphabet": RegExp(`[^${alphabet}]`, "gi")
+            });
             H.hy6ors.get(lang).resolve(createStringHyphenator(lang));
             event.fire(
                 "engineReady",
@@ -811,7 +770,7 @@
                     lang
                 }
             );
-            hyphenateLangElements(lang, H.res.get("els"));
+            hyphenateLangElements(lang, H.res.els);
         }
 
         const decode = (() => {
@@ -835,16 +794,12 @@
         function encloseHyphenateFunction(baseData, hyphenateFunc) {
             const wordStore = new Uint16Array(baseData.buf, baseData.wo, 64);
             const hydWrdStore = new Uint16Array(baseData.buf, baseData.hw, 128);
-            wordStore[0] = 95;
             return ((word, hyphencc, leftmin, rightmin) => {
-                let i = 0;
-                for (const c of word) {
-                    i += 1;
-                    // eslint-disable-next-line security/detect-object-injection
-                    wordStore[i] = c.charCodeAt(0);
-                }
-                wordStore[i + 1] = 95;
-                wordStore[i + 2] = 0;
+                wordStore.set([95].concat(
+                    [...word].map((c) => {
+                        return c.charCodeAt(0);
+                    }), 95, 0
+                ));
                 if (hyphenateFunc(leftmin, rightmin, hyphencc) === 1) {
                     word = decode(hydWrdStore.subarray(1, hydWrdStore[0] + 1));
                 }
@@ -930,7 +885,7 @@
                             });
                     }
                 } else {
-                    H.res.get("els").rem(lang);
+                    H.res.els.rem(lang);
                     H.hy6ors.get(lang).reject({
                         "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
                     });
@@ -938,14 +893,14 @@
             });
         }
 
-        H.res.get("DOM").then(() => {
+        H.res.DOM.then(() => {
             mainLanguage = getLang(w.document.documentElement, false);
             if (!mainLanguage && C.defaultLanguage !== "") {
                 mainLanguage = C.defaultLanguage;
             }
             const elements = collectElements();
-            H.res.set("els", elements);
-            elements.each((lang) => {
+            H.res.els = elements;
+            elements.list.forEach((ignore, lang) => {
                 if (H.languages &&
                     H.languages.has(lang) &&
                     H.languages.get(lang).ready
@@ -955,7 +910,7 @@
             });
         });
 
-        H.res.get("he").forEach((heProm, lang) => {
+        H.res.he.forEach((heProm, lang) => {
             instantiateWasmEngine(heProm, lang);
         });
 
@@ -968,7 +923,7 @@
                     }
                     return accumulator;
                 }, []).
-                concat(H.res.get("DOM"))
+                concat(H.res.DOM)
         ).then(() => {
             H.hy6ors.get("HTML").resolve(createDOMHyphenator());
         }, (e) => {
