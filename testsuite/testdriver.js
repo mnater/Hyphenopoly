@@ -41,7 +41,7 @@
         {"exec": true, "path": "test34.html"},
         {"exec": true, "path": "test35.html"},
         {"exec": true, "path": "test36.html"},
-        {"exec": true, "path": "test37.html"},
+        {"exec": false, "path": "test37.html"},
         {"exec": true, "path": "test38.html"},
         {"exec": true, "path": "test39.html"},
         {"exec": true, "path": "test40.html"},

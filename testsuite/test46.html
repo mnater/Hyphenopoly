@@ -5,6 +5,7 @@
         <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
         <title>Test 046</title>
         <script>
+        var asserted = false;
         var Hyphenopoly = {
             require: {
                 "en-us": "FORCEHYPHENOPOLY"
@@ -19,24 +20,29 @@
                 },
             handleEvent: {
                 error: function (e) {
-                    document.getElementById("errorlog").innerHTML = e.msg;
-                    assert(e.msg);
+                    document.getElementById("errorlog").innerHTML = e.message;
+                    if (!asserted) {
+                        assert(e.message);
+                    }
                 },
                 hyphenopolyEnd: function () {
-                    assert();
+                    if (!asserted) {
+                        assert();
+                    }
                 }
             }
         };
 
         function assert(msg) {
+            asserted = true;
             var test = "";
             var ref = "";
             var lang = "";
-            var result = true;
+            var result = false;
             if (msg) {
                 if (
-                    msg === "CompileError: WebAssembly.instantiateStreaming(): Wasm code generation disallowed by embedder" ||
-                    msg === "EvalError: Refused to create a WebAssembly object because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline'\"."
+                    msg.indexOf("WebAssembly.instantiateStreaming()") === 0 ||
+                    msg.indexOf("Refused to create a WebAssembly object") === 0
                  ) {
                     result = true;
                  }
@@ -47,10 +53,8 @@
             }
             if (result) {
                 document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\"> passed</p>";
-                result = result && true;
             } else {
                 document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\"> failed</p>";
-                result = false;
             }
             if (parent != window) {
                 parent.postMessage(JSON.stringify({
