@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+        <title>Test 046</title>
+        <script>
+        var Hyphenopoly = {
+            require: {
+                "en-us": "FORCEHYPHENOPOLY"
+            },
+            setup: {
+                    timeout: 100,
+                    selectors: {
+                        ".hyphenate": {
+                            hyphen: "•"
+                        }
+                    }
+                },
+            handleEvent: {
+                error: function (e) {
+                    document.getElementById("errorlog").innerHTML = e.msg;
+                    assert(e.msg);
+                },
+                hyphenopolyEnd: function () {
+                    assert();
+                }
+            }
+        };
+
+        function assert(msg) {
+            var test = "";
+            var ref = "";
+            var lang = "";
+            var result = true;
+            if (msg) {
+                if (
+                    msg === "CompileError: WebAssembly.instantiateStreaming(): Wasm code generation disallowed by embedder" ||
+                    msg === "EvalError: Refused to create a WebAssembly object because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline'\"."
+                 ) {
+                    result = true;
+                 }
+            } else {
+                test = document.getElementById("test").innerHTML;
+                ref = document.getElementById("ref").innerHTML;
+                result = (test === ref);
+            }
+            if (result) {
+                document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\"> passed</p>";
+                result = result && true;
+            } else {
+                document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\"> failed</p>";
+                result = false;
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 46,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
+        </script>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+            #errorlog {
+                color: rgb(132, 167, 250)
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test45.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test47.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 046</h1>
+        <p id="desc">Check CSP handling</p>
+        <div id="result"></div>
+        <hr>
+        <h2>CSP Error (in webkit and chrome, but not in FF)</h2>
+        <div id="errorlog">no error</div>
+        <p id="test" class="test hyphenate" lang="en-us">hyphenation</p>
+        <p id="ref" class="ref" lang="en-us">hy•phen•ation</p>
+
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
+    </body>
+</html>

@@ -876,20 +876,21 @@
                         wa.instantiateStreaming &&
                         (response.headers.get("Content-Type") === "application/wasm")
                     ) {
-                        wa.instantiateStreaming(r2).then(handleWasm);
-                    } else {
-                        r2.arrayBuffer().
-                            then((ab) => {
-                                window.WebAssembly.instantiate(ab).
-                                    then(handleWasm);
-                            });
+                        return wa.instantiateStreaming(r2);
                     }
-                } else {
-                    H.res.els.rem(lang);
-                    H.hy6ors.get(lang).reject({
-                        "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
+                    return r2.arrayBuffer().then((ab) => {
+                        return wa.instantiate(ab);
                     });
                 }
+                H.res.els.rem(lang);
+                H.hy6ors.get(lang).reject({
+                    "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
+                });
+                return Promise.reject(new Error("wasm instantiation failed"));
+            }).then(handleWasm, (e) => {
+                event.fire("error", {
+                    "msg": e
+                });
             });
         }
 
