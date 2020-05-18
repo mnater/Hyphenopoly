@@ -24,7 +24,7 @@
                 "error", [
                     (e) => {
                         if (e.runDefault) {
-                            w.console.warn(e.msg);
+                            w.console.warn(e);
                         }
                     }
                 ]
@@ -357,9 +357,7 @@
                 } else if (!langDef) {
                     event.fire(
                         "error",
-                        {
-                            "msg": `Element with '${eLang}' found, but '${eLang}.hpb' not loaded. Check language tags!`
-                        }
+                        Error(`Element with '${eLang}' found, but '${eLang}.hpb' not loaded. Check language tags!`)
                     );
                 }
                 el.childNodes.forEach((n) => {
@@ -407,9 +405,7 @@
                 if (word.length > 61) {
                     event.fire(
                         "error",
-                        {
-                            "msg": "found word longer than 61 characters"
-                        }
+                        Error("Found word longer than 61 characters")
                     );
                 } else if (!lo.reNotAlphabet.test(word)) {
                     return lo.hyphenate(
@@ -620,9 +616,7 @@
                 if (typeof entity !== "string") {
                     event.fire(
                         "error",
-                        {
-                            "msg": "This use of hyphenators is deprecated. See https://mnater.github.io/Hyphenopoly/Hyphenators.html"
-                        }
+                        Error("This use of hyphenators is deprecated. See https://mnater.github.io/Hyphenopoly/Hyphenators.html")
                     );
                 }
                 return hyphenate(lang, sel, entity);
@@ -668,9 +662,7 @@
             } else {
                 event.fire(
                     "error",
-                    {
-                        "msg": `engine for language '${lang}' loaded, but no elements found.`
-                    }
+                    Error(`Engine for language '${lang}' loaded, but no elements found.`)
                 );
             }
             if (elements.counter[0] === 0) {
@@ -770,7 +762,9 @@
                     lang
                 }
             );
-            hyphenateLangElements(lang, H.res.els);
+            if (H.res.els) {
+                hyphenateLangElements(lang, H.res.els);
+            }
         }
 
         const decode = (() => {
@@ -876,20 +870,16 @@
                         wa.instantiateStreaming &&
                         (response.headers.get("Content-Type") === "application/wasm")
                     ) {
-                        wa.instantiateStreaming(r2).then(handleWasm);
-                    } else {
-                        r2.arrayBuffer().
-                            then((ab) => {
-                                window.WebAssembly.instantiate(ab).
-                                    then(handleWasm);
-                            });
+                        return wa.instantiateStreaming(r2);
                     }
-                } else {
-                    H.res.els.rem(lang);
-                    H.hy6ors.get(lang).reject({
-                        "msg": `File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`
+                    return r2.arrayBuffer().then((ab) => {
+                        return wa.instantiate(ab);
                     });
                 }
+                return Promise.reject(Error(`File ${lang}.wasm can't be loaded from ${H.paths.patterndir}`));
+            }).then(handleWasm, (e) => {
+                event.fire("error", e);
+                H.res.els.rem(lang);
             });
         }
 
@@ -927,10 +917,7 @@
         ).then(() => {
             H.hy6ors.get("HTML").resolve(createDOMHyphenator());
         }, (e) => {
-            event.fire(
-                "error",
-                e
-            );
+            event.fire("error", e);
         });
     })(Hyphenopoly);
 })(window, Object);
