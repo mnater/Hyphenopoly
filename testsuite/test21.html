@@ -25,9 +25,9 @@
                     console.log(e);
                 },
                 error: function (e) {
-                    e.preventDefault();
-                    msgs += "Listener 1: " + e.msg;
-                    console.warn("Listener 1: " + e.msg)
+                    //e.preventDefault();
+                    msgs += "Listener 1: " + e.message;
+                    console.warn("Listener 1: " + e.message)
                 }
             }
         };

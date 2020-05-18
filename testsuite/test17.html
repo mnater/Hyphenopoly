@@ -22,9 +22,9 @@
             };
 
             function assert(e) {
-                var test1 = "engine for language 'en-us' loaded, but no elements found.";
+                var test1 = "Engine for language 'en-us' loaded, but no elements found.";
                 var test2 = "Element with 'en' found, but 'en.hpb' not loaded. Check language tags!";
-                var ref = e.msg;
+                var ref = e.message;
                 var result = true;
                 if (test1 === ref || test2 === ref) {
                     document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
