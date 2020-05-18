@@ -762,7 +762,9 @@
                     lang
                 }
             );
-            hyphenateLangElements(lang, H.res.els);
+            if (H.res.els) {
+                hyphenateLangElements(lang, H.res.els);
+            }
         }
 
         const decode = (() => {

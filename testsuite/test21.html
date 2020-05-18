@@ -4,54 +4,59 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 021</title>
         <script>
-        var msgs = "";
+        window.PagedConfig = {
+            auto: false
+        };
         var Hyphenopoly = {
             require: {
-                "de": "FORCEHYPHENOPOLY",
-                "en-us": "FORCEHYPHENOPOLY"
-            },
-            setup: {
-                selectors: {
-                    ".hyphenate": {
-                        hyphen: "•"
-                    }
-                }
+                "en-us": "supercalifragilisticexpialidocious",
+                "hy": "ձայնավորձայնավոր"
             },
             handleEvent: {
                 hyphenopolyEnd: function (e) {
-                    assert(msgs);
-                },
-                fantasyEvent: function (e) {
-                    console.log(e);
-                },
-                error: function (e) {
-                    //e.preventDefault();
-                    msgs += "Listener 1: " + e.message;
-                    console.warn("Listener 1: " + e.message)
+                    // Run Paged.js after Hyphenopoly
+                    window.PagedPolyfill.preview();
+
+                    assert();
                 }
             }
         };
-        function assert(e) {
-                var ref = "Listener 1: unknown Event \"fantasyEvent\" discarded";
-                var test = e;
-                var result = true;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
+        function assert() {
+            var tests = 2;
+            var i = 1;
+            var test = "";
+            var ref = "";
+            var result = true;
+            var lang = "";
+            while (i <= tests) {
+                lang = document.getElementById("test" + i).lang;
+                if (Hyphenopoly.cf.langs.get(lang) === "CSS") {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
                     result = result && true;
                 } else {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">failed</span> ";
-                    result = false;
+                    test = document.getElementById("test" + i).innerHTML;
+                    ref = document.getElementById("ref" + i).innerHTML;
+                    if (test === ref) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        result = result && true;
+                    } else {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        result = false;
+                    }
                 }
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 21,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
+                i += 1;
             }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 21,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
+        <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
         <style type="text/css">
             body {
                 width:50%;
@@ -78,16 +83,16 @@
         <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test20.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test22.html">Next&nbsp;&rarr;</a></div>
 
         <h1>Test 021</h1>
-        <p id="desc">Discard unknown events (watch console!)</p>
+        <p id="desc">Load external script (paged.js) to defer DCL.</p>
         <div id="result"></div>
         <hr>
         <h2>1: en-us</h2>
-        <p id="test1" class="test hyphenate" lang="en-us">hyphenation algorithm</p>
-        <p id="ref1" class="ref" lang="en-us">hy•phen•ation al•go•rithm</p>
+        <p id="test1" class="test hyphenate" lang="en-us">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref1" class="ref" lang="en-us">A hy&shy;phen&shy;ation al&shy;go&shy;rithm is a set of rules that de&shy;cides at which points a word can be bro&shy;ken over two lines with a hy&shy;phen.</p>
 
-        <h2>2: de</h2>
-        <p id="test2" class="test hyphenate" lang="de">Silbentrennungsalgorithmus</p>
-        <p id="ref2" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus</p>
+        <h2>2: hy (Armenian)</h2>
+        <p id="test2" class="test hyphenate" lang="hy">Հայերենն ունի վեց ձայնավոր, մեկ կիսաձայն և երեսուն բաղաձայն հնչյուններ</p>
+        <p id="ref2" class="ref" lang="hy">Հա&shy;յե&shy;րենն ունի վեց ձայնա&shy;վոր, մեկ կի&shy;սա&shy;ձայն և ե&shy;րե&shy;սուն բա&shy;ղա&shy;ձայն հնչյուններ</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 
