@@ -59,9 +59,9 @@ Fields: msg (language code)
 Fired when an error occurs.
 
 ````
-Default-action: `window.console.error(e.msg);`
+Default-action: `window.console.warn(e);`
 cancellable: true
-Fields: `msg` (error message)
+Fields: e (Error)
 ````
 
 To silent errors prevent default of this event:

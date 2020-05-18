@@ -28,9 +28,9 @@
             let count = 0;
             function assert(e) {
                 count += 1;
-                var test1 = "engine for language 'it' loaded, but no elements found.";
-                var test2 = "engine for language 'de' loaded, but no elements found.";
-                var ref = e.msg;
+                var test1 = "Engine for language 'it' loaded, but no elements found.";
+                var test2 = "Engine for language 'de' loaded, but no elements found.";
+                var ref = e.message;
                 var result = true;
                 if (test1 === ref || test2 === ref) {
                     document.getElementById("result").innerHTML += `<span style="background-color: #d6ffd6">${count}</span> `;
