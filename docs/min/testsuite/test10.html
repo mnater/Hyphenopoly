@@ -10,6 +10,7 @@
             },
             setup: {
                 hide: "element",
+                safeCopy: true,
                 selectors: {
                     ".class1": {
                         hyphen: "·"
@@ -21,12 +22,15 @@
             },
             handleEvent: {
                 hyphenopolyEnd: function (e) {
-                    assert();
+                    Hyphenopoly.hyphenators.HTML.then(function (hyphenateHTML) {
+                        hyphenateHTML(document.getElementById("test3"), ".class2");
+                        assert();
+                    });
                 }
             }
         };
         function assert() {
-            var tests = 2;
+            var tests = 3;
             var i = 1;
             var test = "";
             var ref = "";
@@ -92,6 +96,9 @@
         <h2>2: class1 with link</h2>
         <p id="test2" class="test class2" lang="de">Silbentrennung: <a href="https://github.com/mnater/Hyphenopoly">Hyphenopoly</a></p>
         <p id="ref2" class="ref" lang="de">Sil&shy;ben&shy;tren&shy;nung: <a href="https://github.com/mnater/Hyphenopoly">Hy&shy;phen&shy;o&shy;po&shy;ly</a></p>
+        <h2>3: class1 manually with hyphenator</h2>
+        <p id="test3" class="test" lang="de">Silbentrennung <span>verbessert</span> den Blocksatz.</p>
+        <p id="ref3" class="ref" lang="de">Sil&shy;ben&shy;tren&shy;nung <span>ver&shy;bes&shy;sert</span> den Block&shy;satz.</p>
         <hr>
         <textarea id="pastebin" placeholder="paste here" cols="40"></textarea>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
