@@ -1,6 +1,5 @@
 /* eslint-disable
     require-jsdoc,
-    no-sync,
     security/detect-non-literal-fs-filename
 */
 /* eslint-env node */
