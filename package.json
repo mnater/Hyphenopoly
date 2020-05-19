@@ -42,8 +42,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.33.0",
-    "@typescript-eslint/parser": "^2.33.0",
+    "@typescript-eslint/eslint-plugin": "^2.34.0",
+    "@typescript-eslint/parser": "^2.34.0",
     "all-contributors-cli": "^6.14.2",
     "assemblyscript": "^0.10.0",
     "characterset": "^1.3.0",
@@ -52,7 +52,7 @@
     "remark-cli": "^8.0.0",
     "remark-preset-lint-recommended": "^4.0.0",
     "tap": "^14.10.7",
-    "terser": "^4.6.13"
+    "terser": "^4.7.0"
   },
   "remarkConfig": {
     "plugins": [
