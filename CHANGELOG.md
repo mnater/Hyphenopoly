@@ -1,5 +1,16 @@
 # Version History
 
+## Version 4.5.0 (2020-05-21)
+### Changed
+*   improve error handling (issue #122) - Error-Object returned on error
+
+### Fixed
+*   check if elements are collected (issue #125)
+*   enable safeCopy for hyphenators (issue #117)
+*   reduce code size
+*   bumb devDependencies
+
+
 ## Version 4.4.0 (2020-05-04)
 ### Changed
 *   convert objects to maps (no API changes)

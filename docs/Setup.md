@@ -500,6 +500,6 @@ var Hyphenopoly = {
 </script>
 ````
 There are three stages:
-1. allow orphans
-2. don't hyphenate the last word of an element
-3. don't hyphenate the last word of an element and replace the space before with a no-breaking space
+1.  allow orphans
+2.  don't hyphenate the last word of an element
+3.  don't hyphenate the last word of an element and replace the space before with a no-breaking space
