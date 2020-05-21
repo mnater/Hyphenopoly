@@ -42,9 +42,9 @@ See also [Setup#hyphen](./Setup.md#hyphen)
 
 ## Fix hyphenation
 There are three levels of fixing possibilities:
-1. [Directly in the text](#fix-hyphenation-in-the-text)
-2. [Defining hyphenation exceptions for Hyphenopoly](#define-hyphenation-exceptions)
-3. [Improve patterns](#help-to-improve-the-patterns)
+1.  [Directly in the text](#fix-hyphenation-in-the-text)
+2.  [Defining hyphenation exceptions for Hyphenopoly](#define-hyphenation-exceptions)
+3.  [Improve patterns](#help-to-improve-the-patterns)
 
 ### Fix hyphenation in the text
 Words containing a soft hyphen (&amp;shy;) will not be hyphenated by Hyphenopoly.js. Therefor you can simply add soft hyphens manually to 'overwrite' automatic hyphenation.
