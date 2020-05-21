@@ -1,6 +1,6 @@
 # Version History
 
-## Version 4.5.0 (2020-05-18)
+## Version 4.5.0 (2020-05-21)
 ### Changed
 *   improve error handling (issue #122) - Error-Object returned on error
 
