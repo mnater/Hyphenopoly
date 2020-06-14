@@ -145,6 +145,7 @@
             ["exceptions", new Map()],
             ["keepAlive", true],
             ["normalize", false],
+            ["processShadows", false],
             ["safeCopy", true],
             ["substitute", new Map()],
             ["timeout", 1000]
@@ -366,12 +367,27 @@
                     }
                 });
             }
-            if (parent === null) {
+
+            /**
+             * Searches the DOM for each sel
+             * @param {object} root The DOM root
+             */
+            function getElems(root) {
                 C.selectors.forEach((sel) => {
-                    w.document.querySelectorAll(sel).forEach((n) => {
+                    root.querySelectorAll(sel).forEach((n) => {
                         processElements(n, getLang(n, true), sel, false);
                     });
                 });
+            }
+            if (parent === null) {
+                if (C.processShadows) {
+                    w.document.querySelectorAll("*").forEach((m) => {
+                        if (m.shadowRoot) {
+                            getElems(m.shadowRoot);
+                        }
+                    });
+                }
+                getElems(w.document);
             } else {
                 processElements(parent, getLang(parent, true), selector);
             }
