@@ -9,6 +9,7 @@ These page documents the optional fields in `setup`:
     *   [hide](#hide)
     *   [keepAlive](#keepalive)
     *   [normalize](#normalize)
+    *   [processShadows](#processshadows)
     *   [safeCopy](#safecopy)
     *   [substitute](#substitute)
     *   [timeout](#timeout)
@@ -249,6 +250,26 @@ var Hyphenopoly = {
 The pattern files work with _precomposed_ characters. So an `Å` (LATIN CAPITAL LETTER A WITH RING ABOVE) must not be composed of `A` (LATIN CAPITAL LETTER A) and ` ̊` (COMBINING RING ABOVE) to be recognizable by hyphenation-engine.
 If the text contains _composed_ characters they must be normalized to _precomposed_ characters. If `normalize` is activated and the user agent supports `String.prototype.normalize()` this can happen automatically.
 Since this comes with a performance penalty it is deactivated by default and it's recommended to use _precomposed_ characters in HTML.
+
+### processShadows
+````
+type: boolean
+default: false
+````
+Configure if Hyphenopoly searches for given selectors in (open) shadowDOMs.
+````html
+<script>
+var Hyphenopoly = {
+    require: {...},
+    paths: {...},
+    setup: {
+        processShadows: true,
+        selectors: {...}
+    }
+};
+</script>
+````
+By default Hyphenopoly only searches for the given [selectors](./Global-Hyphenopoly-Object.md#selectors) in `window.document`. With this option set to true, Hyphenopoly also searches for the given selectors in Web Components (if accessible, i.e. `open`).
 
 ### safeCopy
 ````
