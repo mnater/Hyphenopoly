@@ -4,84 +4,49 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 037</title>
         <script>
-        var mode = window.location.search.substring(1);
-        var path = "../";
-        if (mode === "fail") {
-            path = "../foobar/"
-        }
-        var Hyphenopoly = {
-            require: {
-                "fur": "probabilmentri"
-            },
-            paths: {
-                maindir: path
-            },
-            setup: {
-                selectors: {
-                    ".hyphenate": {
-                        hyphen: "|",
-                        minWordLength: 4
+            var Hyphenopoly = {
+                require: {
+                    "de": "FORCEHYPHENOPOLY"
+                },
+                setup: {
+                    selectors: {
+                        ".hyphenate": {
+                            hyphen: "•"
+                        }
+                    }
+                },
+                handleEvent: {
+                    hyphenopolyEnd: function (e) {
+                        assert();
                     }
                 }
-            }
-        };
-
-        window.onload = function () {
-            function hyphenate_fur(text) {
-                Hyphenopoly.hyphenators.fur.then(
-                function (furhyph) {
-                    document.getElementById("test1").innerText = furhyph(text);
-                    assertAll();
-                }).catch(function(e) {
-                    assertError(e);
-                });
-            }
-            hyphenate_fur("Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont. Cualchi volte al ven clamât Ladin orientâl, parcè che al à diviers ponts in comun cul ladin, ma si è svilupât in un altri mût cul passâ dal timp, sot de influence des lenghis ator dal Friûl");
-        };
-
-        function assertError(e) {
-            var result = false;
-            if (e.indexOf("File hyphenEngine.wasm can't be loaded from ../foobar/") !== -1) {
-                result = true;
-            }
-            if (result) {
-                document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + 1 + " passed</p>";
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 37,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
-        function assertAll() {
-            var tests = 1;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = false;
+            };
+            function assert() {
+                var tests = 4;
+                var i = 1;
+                var test = "";
+                var ref = "";
+                var result = true;
+                while (i <= tests) {
+                    test = document.getElementById("test" + i).innerHTML;
+                    ref = document.getElementById("ref" + i).innerHTML;
+                    if (test === ref) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        result = result && true;
+                    } else {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        result = false;
+                    }
+                    i += 1;
                 }
-                i += 1;
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 37,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
             }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 37,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-            window.location = "test37.html?fail";
-        }
         </script>
         <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
@@ -93,25 +58,40 @@
 
             .test {
                 background-color: #D8E2F9;
-                hyphens: auto;
             }
             .ref {
                 background-color: #FEEFC0;
             }
 
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
         </style>
     </head>
     <body>
         <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test36.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test38.html">Next&nbsp;&rarr;</a></div>
 
         <h1>Test 037</h1>
-        <p id="desc">Reject hyphenator-promise if engine can't be loaded.</p>
+        <p id="desc">Don't hyphenate words containing non printable chars.</p>
         <div id="result"></div>
         <hr>
-        <h2>fur</h2>
-        <p id="test1" lang="fur" class="test hyphenate"></p>
-        <p id="ref1" lang="fur" class="ref">Il fur|lan e je une len|ghe ro|man|ze de fa|mee des len|ghis re|ti|chis, che e je fe|ve|la|de so|re|dut in|tal Friûl, ma an|cje vie pal mont. Cual|chi vol|te al ven cla|mât La|din orien|tâl, parcè che al à di|viers ponts in co|mun cul la|din, ma si è svi|lu|pât in un al|tri mût cul pa|ssâ dal timp, sot de in|fluen|ce des len|ghis ator dal Friûl</p>
+        <h2>SOFT HYPHEN (00AD)</h2>
+        <p id="test1" class="test hyphenate" lang="de">Trenn­zeichen</p>
+        <p id="ref1" class="ref" lang="de">Trenn­zeichen</p>
+        <h2>ZERO WIDTH SPACE (200B)</h2>
+        <p id="test2" class="test hyphenate" lang="de">Leer​zeichen</p>
+        <p id="ref2" class="ref" lang="de">Leer​zeichen</p>
+        <h2>ZERO WIDTH NON-JOINER (200C)</h2>
+        <p id="test3" class="test hyphenate" lang="de">Bin‌dehemmer</p>
+        <p id="ref3" class="ref" lang="de">Bin‌dehemmer</p>
+        <h2>ZERO WIDTH JOINER (200D)</h2>
+        <p id="test4" class="test hyphenate" lang="de">brei‍tenloser</p>
+        <p id="ref4" class="ref" lang="de">brei‍tenloser</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
     </body>
 </html>
