@@ -96,8 +96,8 @@ Objects of type `HTMLElement` can be hyphenated with the `HTML`-hyphenator (`Hyp
 </script>
 <script src="./Hyphenopoly_Loader.js"></script>
 <script>
-    Hyphenopoly.hyphenators["HTML"].then((hyphenator_en) => {
-        hyphenator_en(document.getElementById("hyphenateme"));
+    Hyphenopoly.hyphenators.HTML.then((hyn) => {
+        hyn(document.getElementById("hyphenateme"));
     });
 </script>
 </head>
@@ -124,7 +124,7 @@ Instead of using `.then` on the Promises we could also use `async/await`:
 
 ````javascript
 async function runHyphenator(id) {
-    (await Hyphenopoly.hyphenators["HTML"])(document.getElementById(id));
+    (await Hyphenopoly.hyphenatorsHTML)(document.getElementById(id));
 }
 runHyphenator("hyphenateme");
 ````
