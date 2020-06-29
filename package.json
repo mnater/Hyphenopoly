@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "4.5.0",
+  "version": "4.6.0",
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",
@@ -42,17 +42,17 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^3.2.0",
-    "@typescript-eslint/parser": "^3.2.0",
-    "all-contributors-cli": "^6.16.0",
-    "assemblyscript": "^0.12.0",
+    "@typescript-eslint/eslint-plugin": "^3.5.0",
+    "@typescript-eslint/parser": "^3.5.0",
+    "all-contributors-cli": "^6.16.1",
+    "assemblyscript": "^0.12.5",
     "characterset": "^1.3.0",
-    "eslint": "^7.2.0",
+    "eslint": "^7.3.1",
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^8.0.0",
     "remark-preset-lint-recommended": "^4.0.0",
     "tap": "^14.10.7",
-    "terser": "^4.7.0"
+    "terser": "^4.8.0"
   },
   "remarkConfig": {
     "plugins": [

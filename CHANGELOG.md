@@ -1,5 +1,13 @@
 # Version History
 
+## Version 4.6.0 (2020-06-29)
+### Added
+*   support for hyphenating in shadowDOM (#131)
+
+### Fixed
+*   treatment of words with format chars (#132)
+*   bump devDependencies
+
 ## Version 4.5.0 (2020-05-21)
 ### Changed
 *   improve error handling (issue #122) - Error-Object returned on error
@@ -8,7 +16,7 @@
 *   check if elements are collected (issue #125)
 *   enable safeCopy for hyphenators (issue #117)
 *   reduce code size
-*   bumb devDependencies
+*   bump devDependencies
 
 
 ## Version 4.4.0 (2020-05-04)
