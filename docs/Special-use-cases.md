@@ -5,6 +5,7 @@
 3.  [Webpack, using Hyphenopoly_Loader.js](#webpack-hyphenopoly-loader)
 4.  [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
 5.  [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
+6.  [Words containing special format characters](#format-chars)
 
 **Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators.md#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.**
 
@@ -280,3 +281,12 @@ we'll define a `selectiveLoad` IIFE:
 By default `Hyphenopoly_Loader.js` hides the whole document to prevent a "Flash of unhyphenated content" (FOUHC) until hyphenation has finished. If `focus()` is called while the document is hidden the focus will not change.
 
 To prevent this behavior experiment with [different settings for hiding](./Setup.md#hide). Using "element" or "text" should work in most cases.
+
+## Format chars
+
+Hyphenopoly does NOT hyphenate words that contain one of the following special format characters:
+
+*   SOFT HYPHEN (\u00AD)
+*   ZERO WIDTH SPACE (\u200B)
+*   ZERO WIDTH NON-JOINER (\u200C)
+*   ZERO WIDTH JOINER (\u200D)

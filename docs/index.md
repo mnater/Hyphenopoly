@@ -28,6 +28,7 @@
 *   [Webpack, using Hyphenopoly_Loader.js](./Special-use-cases.md#webpack-hyphenopoly-loader)
 *   [Hyphenate depending on media queries](./Special-use-cases.md#hyphenate-depending-on-media-queries)
 *   [Set .focus() while Hyphenopoly is running](./Special-use-cases.md#set-focus-while-hyphenopoly-is-running)
+*   [Words containing special format characters](./Special-use-cases.md#format-chars)
 
 ## Develop
 *   [Dev Tools (devDeps)](./Usage-of-devDependencies.md)
