@@ -72,9 +72,7 @@
         }
 
         // Change mode string to mode int
-        H.setup.hide = (() => {
-            return ["all", "element", "text"].indexOf(H.setup.hide);
-        })();
+        H.setup.hide = ["all", "element", "text"].indexOf(H.setup.hide);
     })();
 
     /**
@@ -157,8 +155,7 @@
         return {
 
             /**
-             * Append fakeBody with tests to target (document)
-             * @param {Object} target Where to append fakeBody
+             * Append fakeBody with tests to document
              * @returns {Object|null} The body element or null, if no tests
              */
             "ap": () => {
