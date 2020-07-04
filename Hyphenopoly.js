@@ -358,7 +358,7 @@
                 } else if (!langDef) {
                     event.fire(
                         "error",
-                        Error(`Element with '${eLang}' found, but '${eLang}.hpb' not loaded. Check language tags!`)
+                        Error(`Element with '${eLang}' found, but '${eLang}.wasm' not loaded. Check language tags!`)
                     );
                 }
                 el.childNodes.forEach((n) => {
