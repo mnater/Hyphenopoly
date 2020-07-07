@@ -22,7 +22,7 @@ To force the usage of Hyphenopoly.js (e.g. for testing or if you prefer to use y
 
 ## Optional Fields
 ### paths
-By default Hyphenopoly looks in `../Hyphenopoly/patterns/` for .hpb-files and in `../Hyphenopoly/` for other resources.
+By default Hyphenopoly looks in `../Hyphenopoly/patterns/` for .wasm-files and in `../Hyphenopoly/` for other resources.
 
 These paths can be reconfigured:
 The `paths` field must be an object with two key-value-pairs:

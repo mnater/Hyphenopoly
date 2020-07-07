@@ -331,7 +331,7 @@ function instantiateWasmEngine(lang) {
 }
 
 /**
- * Read a hpb file, dispatch "hpbLoaded" on success
+ * Read a .wasm file and call instantiateWasmEngine on success
  * @param {string} lang - The language
  * @returns {undefined}
  */
