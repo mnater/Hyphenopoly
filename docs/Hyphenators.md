@@ -179,7 +179,6 @@ runHyphenator("hyphenateme");
 </html>
 ````
 
-
 3.  Define a `React.Component` that triggers Hyphenopoly (if necessary) on `componentDidUpdate`.
 
 `hyphenateText.js`:

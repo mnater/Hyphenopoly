@@ -18,7 +18,6 @@
 *   reduce code size
 *   bump devDependencies
 
-
 ## Version 4.4.0 (2020-05-04)
 ### Changed
 *   convert objects to maps (no API changes)
