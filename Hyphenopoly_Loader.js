@@ -10,9 +10,35 @@
 ((w, d, H, o) => {
     "use strict";
 
+    /**
+     * Shortcut for new Map
+     * @param {any} init - initialiser for new Map
+     * @returns {Map}
+     */
+    const mp = (init) => {
+        return new Map(init);
+    };
+
+    /**
+     * Sets default properties for an Object
+     * @param {object} obj - The object to set defaults to
+     * @param {object} defaults - The defaults to set
+     * @returns {object}
+     */
+    const setDefaults = (obj, defaults) => {
+        if (obj) {
+            o.entries(defaults).forEach(([k, v]) => {
+                // eslint-disable-next-line security/detect-object-injection
+                obj[k] = obj[k] || v;
+            });
+            return obj;
+        }
+        return defaults;
+    };
+
     const store = sessionStorage;
     const scriptName = "Hyphenopoly_Loader.js";
-    const lcRequire = new Map();
+    const lcRequire = mp();
 
     const shortcuts = {
         "ac": "appendChild",
@@ -28,51 +54,36 @@
     (() => {
         if (H.cacheFeatureTests && store.getItem(scriptName)) {
             H.cf = JSON.parse(store.getItem(scriptName));
-            H.cf.langs = new Map(H.cf.langs);
+            H.cf.langs = mp(H.cf.langs);
         } else {
             H.cf = {
-                "langs": new Map(),
+                "langs": mp(),
                 "pf": false
             };
         }
     })();
 
     /**
-     * Set H.paths and some H.setup fields to defaults or
+     * Set H.paths and some H.s (setup) fields to defaults or
      * overwrite with user settings.
-     * These are iifes to keep complexity low.
+     * These is an iife to keep complexity low.
      */
     (() => {
         const maindir = d.currentScript.src.slice(0, -(scriptName.length));
         const patterndir = maindir + "patterns/";
-        if (H.paths) {
-            H.paths.maindir = H.paths.maindir || maindir;
-            H.paths.patterndir = H.paths.patterndir || patterndir;
-        } else {
-            H.paths = {
-                maindir,
-                patterndir
-            };
-        }
-    })();
+        H.paths = setDefaults(H.paths, {
+            maindir,
+            patterndir
+        });
 
-    (() => {
-        if (H.setup) {
-            H.setup.CORScredentials = H.setup.CORScredentials || "include";
-            H.setup.hide = H.setup.hide || "all";
-            H.setup.selectors = H.setup.selectors || {".hyphenate": {}};
-            H.setup.timeout = H.setup.timeout || 1000;
-        } else {
-            H.setup = {
-                "CORScredentials": "include",
-                "hide": "all",
-                "selectors": {".hyphenate": {}},
-                "timeout": 1000
-            };
-        }
-
+        H.s = setDefaults(H.setup, {
+            "CORScredentials": "include",
+            "hide": "all",
+            "selectors": {".hyphenate": {}},
+            "timeout": 1000
+        });
         // Change mode string to mode int
-        H.setup.hide = ["all", "element", "text"].indexOf(H.setup.hide);
+        H.s.hide = ["all", "element", "text"].indexOf(H.s.hide);
     })();
 
     /**
@@ -81,9 +92,7 @@
      * This is in an iife to keep complexity low.
      */
     (() => {
-        const fallbacks = (H.fallbacks)
-            ? new Map(o.entries(H.fallbacks))
-            : new Map();
+        const fallbacks = mp(o.entries(H.fallbacks || {}));
         o.entries(H.require).forEach(([lang, wo]) => {
             lcRequire.set(lang.toLowerCase(), {
                 "fn": fallbacks.get(lang) || lang,
@@ -99,7 +108,7 @@
      * this-one-weird-trick/
      * @return {promise}
      */
-    H.defProm = () => {
+    const defProm = () => {
         let res = null;
         let rej = null;
         const promise = new Promise((resolve, reject) => {
@@ -132,12 +141,11 @@
         } else {
             const vis = "{visibility:hidden!important}";
             stylesNode = d[shortcuts.ce]("style");
-            stylesNode.id = "H9Y_Styles";
             let myStyle = "";
             if (mode === 0) {
                 myStyle = "html" + vis;
             } else {
-                o.keys(H.setup.selectors).forEach((sel) => {
+                o.keys(H.s.selectors).forEach((sel) => {
                     if (mode === 1) {
                         myStyle += sel + vis;
                     } else {
@@ -203,17 +211,17 @@
      * @param {Object} elm - the element
      * @returns {Boolean} result of the check
      */
-    function checkCSSHyphensSupport(elmStyle) {
+    const checkCSSHyphensSupport = (elmStyle) => {
         const h = elmStyle.hyphens ||
             elmStyle.webkitHyphens ||
             elmStyle.msHyphens;
         return (h === "auto");
-    }
+    };
 
     H.res = {
-        "he": new Map()
+        "he": mp()
     };
-    const fw = new Map();
+    const fw = mp();
 
     /**
      * Load hyphenEngines
@@ -226,25 +234,24 @@
      * @param {string} lang The language
      * @returns {undefined}
      */
-    function loadhyphenEngine(lang) {
+    const loadhyphenEngine = (lang) => {
         const filename = lcRequire.get(lang).fn + ".wasm";
         H.cf.pf = true;
         H.cf.langs.set(lang, "H9Y");
         if (fw.has(filename)) {
             const hyphenEngineWrapper = H.res.he.get(fw.get(filename));
-            hyphenEngineWrapper.c += 1;
+            hyphenEngineWrapper.c = true;
             H.res.he.set(lang, hyphenEngineWrapper);
         } else {
             H.res.he.set(
                 lang,
                 {
-                    "c": 1,
-                    "w": w.fetch(H.paths.patterndir + filename, {"credentials": H.setup.CORScredentials})
+                    "w": w.fetch(H.paths.patterndir + filename, {"credentials": H.s.CORScredentials})
                 }
             );
             fw.set(filename, lang);
         }
-    }
+    };
     lcRequire.forEach((value, lang) => {
         if (value.wo === "FORCEHYPHENOPOLY" || H.cf.langs.get(lang) === "H9Y") {
             loadhyphenEngine(lang);
@@ -279,32 +286,33 @@
                 res();
             }
         });
-        if (H.setup.hide === 0) {
+        const hide = H.s.hide;
+        if (hide === 0) {
             H.hide(1, 0);
         }
-        if (H.setup.hide !== -1) {
+        if (hide !== -1) {
             H.timeOutHandler = w.setTimeout(() => {
                 H.hide(0, null);
                 // eslint-disable-next-line no-console
                 console.info(scriptName + " timed out.");
-            }, H.setup.timeout);
+            }, H.s.timeout);
         }
         H.res.DOM.then(() => {
-            if (H.setup.hide > 0) {
-                H.hide(1, H.setup.hide);
+            if (hide > 0) {
+                H.hide(1, hide);
             }
         });
         // Load main script
         const script = d[shortcuts.ce]("script");
         script.src = H.paths.maindir + "Hyphenopoly.js";
         d.head[shortcuts.ac](script);
-        H.hy6ors = new Map();
+        H.hy6ors = mp();
         H.cf.langs.forEach((langDef, lang) => {
             if (langDef === "H9Y") {
-                H.hy6ors.set(lang, H.defProm());
+                H.hy6ors.set(lang, defProm());
             }
         });
-        H.hy6ors.set("HTML", H.defProm());
+        H.hy6ors.set("HTML", defProm());
         H.hyphenators = new Proxy(H.hy6ors, {
             "get": (target, key) => {
                 return target.get(key);

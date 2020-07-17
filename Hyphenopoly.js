@@ -150,7 +150,7 @@
             ["substitute", new Map()],
             ["timeout", 1000]
         ]));
-        o.entries(H.setup).forEach(([key, value]) => {
+        o.entries(H.s).forEach(([key, value]) => {
             switch (key) {
             case "selectors":
                 // Set settings.selectors to array of selectors
@@ -879,7 +879,7 @@
             heProm.w.then((response) => {
                 if (response.ok) {
                     let r2 = response;
-                    if (heProm.c > 1) {
+                    if (heProm.c) {
                         r2 = response.clone();
                     }
                     if (
