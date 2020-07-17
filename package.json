@@ -45,11 +45,11 @@
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "all-contributors-cli": "^6.16.1",
-    "assemblyscript": "^0.13.8",
+    "assemblyscript": "^0.14.0",
     "characterset": "^1.3.0",
     "eslint": "^7.4.0",
     "eslint-plugin-security": "^1.4.0",
-    "remark-cli": "^8.0.0",
+    "remark-cli": "^8.0.1",
     "remark-preset-lint-recommended": "^4.0.1",
     "tap": "^14.10.7",
     "terser": "^4.8.0"
