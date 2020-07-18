@@ -44,3 +44,7 @@ WASMNAME=$DIST_PATH$LANG.wasm
 
 echo '(G) clean-up'
 rm $WASMUNOPT
+
+echo "(H) install $LANG"
+cd ../../../
+cp ./lang/$LANG/$LANG.wasm ./patterns/$LANG.wasm

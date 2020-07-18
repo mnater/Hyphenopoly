@@ -13,11 +13,9 @@ prefix='hyph-'
 mkdir -p ./patterns/
 
 for filename in ${path_in}*.chr.txt; do {
-    #filename='en-us.chr.txt'
     echo $filename
     base=$(basename "$filename" .chr.txt)
     lang=${base#$prefix}
     sh ./tools/createWasmForLang.sh $lang
-    cp ./lang/$lang/$lang.wasm ./patterns/$lang.wasm
 }
 done
