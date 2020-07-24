@@ -38,12 +38,12 @@ t.test("substitue characters", async function (t) {
         "require": ["de"],
         "substitute": {
             "de": {
-                "å": "a"
+                "é": "e"
             }
         }
     });
-    t.test("hyphenate ångström", function (t) {
-        t.equal(deHyphenator("ångström"), "ångst\u00ADröm", deHyphenator("ångström"));
+    t.test("hyphenate Béchamel", function (t) {
+        t.equal(deHyphenator("Béchamel"), "Bé\u00ADcha\u00ADmel", deHyphenator("Béchamel"));
         t.end();
     });
     t.end();
