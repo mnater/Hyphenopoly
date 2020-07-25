@@ -75,7 +75,7 @@ function getLRMFromMeta(meta) {
     return lrm;
 }
 
-function createChrFile(patternlist, lrm) {
+function createChrFile(patternlist) {
     /**
      * Collect and sort all lowerCase Characters
      * @param {String} patterns - The patterns
@@ -110,7 +110,7 @@ function createChrFile(patternlist, lrm) {
 
     const lcSet = collectLowerCase(patternlist);
     const mcSet = addUpperCase(lcSet);
-    let result = lrm;
+    let result = "";
     for (const line of mcSet) {
         result += line + "\n";
     }
@@ -146,8 +146,7 @@ function getLicFromMeta(meta) {
         meta.licence.forEach((v) => {
             if (v.name) {
                 text += v.name + " ";
-            }
-            if (v.text) {
+            } else if (v.text) {
                 text += v.text;
             }
         });
@@ -169,9 +168,9 @@ function createLicFile(meta) {
     fs.writeFileSync(outDir + `${langName}.lic.txt`, licText);
 }
 
-function createPatFile(patlist) {
+function createPatFile(patlist, lrm) {
     // eslint-disable-next-line security/detect-non-literal-fs-filename
-    fs.writeFileSync(outDir + `${langName}.pat.txt`, patlist);
+    fs.writeFileSync(outDir + `${langName}.pat.txt`, lrm + patlist);
 }
 // Main
 
@@ -181,7 +180,7 @@ const metaData = getMetaFromHeader(texHeader);
 const texPatterns = getPatternsFromFile(texContent);
 const texExceptions = getExceptionsFromFile(texContent);
 
-createChrFile(texPatterns, getLRMFromMeta(metaData));
+createChrFile(texPatterns);
 createHypFile(texExceptions);
 createLicFile(metaData);
-createPatFile(texPatterns);
+createPatFile(texPatterns, getLRMFromMeta(metaData));
