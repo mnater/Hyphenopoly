@@ -37,7 +37,10 @@ function getPatternsFromFile(patternfile) {
     const patternBlock = patternfile.substring(patternStart, patternEnd);
     const pattern = patternBlock.
         replace(/\\patterns{.*\n/g, "").
-        replace(/% .*\n/gi, "").
+        replace(/%.*\n/gi, "").
+        replace(/ /g, "\n").
+        // eslint-disable-next-line security/detect-unsafe-regex
+        replace(/^(?:[\t ]*(?:\r?\n|\r))+/gm, "").
         trim();
     return pattern;
 }
@@ -144,12 +147,19 @@ function getLicFromMeta(meta) {
             if (v.name) {
                 text += v.name + " ";
             }
+            if (v.text) {
+                text += v.text;
+            }
         });
         text += "\n";
-    } else {
+    } else if (meta.licence.name) {
         text += "licence: " + meta.licence.name + "\n";
+    } else {
+        text += "licence: " + meta.licence.text + "\n";
     }
-    text += "source: " + meta.source;
+    if (meta.source) {
+        text += "source: " + meta.source;
+    }
     return text;
 }
 
