@@ -50,10 +50,11 @@
     "eslint": "^7.5.0",
     "eslint-plugin-security": "^1.4.0",
     "remark-cli": "^8.0.1",
-    "remark-preset-lint-recommended": "^4.0.1",
     "remark-lint-no-consecutive-blank-lines": "^2.0.1",
+    "remark-preset-lint-recommended": "^4.0.1",
     "tap": "^14.10.7",
-    "terser": "^4.8.0"
+    "terser": "^4.8.0",
+    "yaml": "^1.10.0"
   },
   "remarkConfig": {
     "plugins": [
