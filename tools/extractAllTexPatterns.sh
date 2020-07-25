@@ -7,9 +7,9 @@
 #
 # sh createWasmForLang.sh language
 
-path_in='../texPatternsNew/'
+path_in='../texPatternsNew'
 mkdir $path_in/converted/
-for filename in ${path_in}*.tex; do {
+for filename in ${path_in}/*.tex; do {
     #echo $filename
     base=$(basename "$filename")
     echo $base
