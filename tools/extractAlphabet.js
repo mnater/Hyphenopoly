@@ -24,7 +24,7 @@ function collectLowerCase(patterns) {
     const lowerCaseSet = new Set();
     patterns.split("").forEach((char) => {
         const charCode = char.charCodeAt(0);
-        if (charCode > 96) {
+        if (charCode > 96 || charCode === 39) {
             lowerCaseSet.add(char);
         }
     });
