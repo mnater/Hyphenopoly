@@ -32,7 +32,7 @@ function getTeXFile(file) {
 }
 
 function getPatternsFromFile(patternfile) {
-    const patternStart = patternfile.indexOf("\\patterns");
+    const patternStart = patternfile.search(/^\\patterns{/m);
     const patternEnd = patternfile.indexOf("}", patternStart);
     const patternBlock = patternfile.substring(patternStart, patternEnd);
     const pattern = patternBlock.
