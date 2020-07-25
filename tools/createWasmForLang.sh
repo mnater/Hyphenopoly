@@ -8,7 +8,7 @@
 # sh createWasmForLang.sh language
 
 LANG=$1
-TEXPATTERNS='./texPatterns/'
+TEXPATTERNS='./texPatternsNew/converted/'
 FILENAME="hyph-$LANG"
 WASMUNOPT=$LANG.unopt.wasm
 
