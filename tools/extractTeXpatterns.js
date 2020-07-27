@@ -126,8 +126,11 @@ function getExceptionsFromFile(patternfile) {
     const excEnd = patternfile.indexOf("}", excStart);
     const excBlock = patternfile.substring(excStart, excEnd);
     const exc = excBlock.
-        replace(/\\hyphenation{\n/g, "").
-        replace(/% .*\n/gi, "").
+        replace(/\\hyphenation{.*\n/g, "").
+        replace(/%.*\n/gi, "").
+        replace(/ /g, "\n").
+        // eslint-disable-next-line security/detect-unsafe-regex
+        replace(/^(?:[\t ]*(?:\r?\n|\r))+/gm, "").
         trim();
     return exc;
 }
