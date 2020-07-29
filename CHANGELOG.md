@@ -1,5 +1,9 @@
 # Version History
 
+## Version 4.6.1 (2020-07-XX)
+### Fixed
+*   retrieving maindir now works correctly if the filename is mangled (#135)
+
 ## Version 4.6.0 (2020-06-29)
 ### Added
 *   support for hyphenating in shadowDOM (#131)
