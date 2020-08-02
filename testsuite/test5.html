@@ -6,33 +6,50 @@
         <script>
         var Hyphenopoly = {
             require: {
-                "cs": "FORCEHYPHENOPOLY",
-                "da": "FORCEHYPHENOPOLY",
-                "en-us": "FORCEHYPHENOPOLY",
-                "en-gb": "FORCEHYPHENOPOLY",
-                "de": "FORCEHYPHENOPOLY",
-                "fr": "FORCEHYPHENOPOLY",
-                "nl": "FORCEHYPHENOPOLY",
-                "es": "FORCEHYPHENOPOLY",
-                "sv": "FORCEHYPHENOPOLY",
-                "it": "FORCEHYPHENOPOLY",
-                "fi": "FORCEHYPHENOPOLY",
-                "pl": "FORCEHYPHENOPOLY",
-                "pt": "FORCEHYPHENOPOLY",
-                "hu": "FORCEHYPHENOPOLY",
-                "tr": "FORCEHYPHENOPOLY",
-                "lt": "FORCEHYPHENOPOLY",
-                "sl": "FORCEHYPHENOPOLY",
-                "la": "FORCEHYPHENOPOLY",
-                "nb-no": "FORCEHYPHENOPOLY",
-                "lv": "FORCEHYPHENOPOLY",
+                "af": "FORCEHYPHENOPOLY",
                 "ca": "FORCEHYPHENOPOLY",
-                "sk": "FORCEHYPHENOPOLY",
+                "cs": "FORCEHYPHENOPOLY",
+                "cy": "FORCEHYPHENOPOLY",
+                "da": "FORCEHYPHENOPOLY",
+                "de": "FORCEHYPHENOPOLY",
+                "en-gb": "FORCEHYPHENOPOLY",
+                "en-us": "FORCEHYPHENOPOLY",
                 "eo": "FORCEHYPHENOPOLY",
-                "sr-latn": "FORCEHYPHENOPOLY",
-                "ro": "FORCEHYPHENOPOLY",
+                "es": "FORCEHYPHENOPOLY",
                 "et": "FORCEHYPHENOPOLY",
-                "ga": "FORCEHYPHENOPOLY"
+                "eu": "FORCEHYPHENOPOLY",
+                "fi": "FORCEHYPHENOPOLY",
+                "fr": "FORCEHYPHENOPOLY",
+                "fur": "FORCEHYPHENOPOLY",
+                "ga": "FORCEHYPHENOPOLY",
+                "hr": "FORCEHYPHENOPOLY",
+                "hsb": "FORCEHYPHENOPOLY",
+                "hu": "FORCEHYPHENOPOLY",
+                "ia": "FORCEHYPHENOPOLY",
+                "id": "FORCEHYPHENOPOLY",
+                "is": "FORCEHYPHENOPOLY",
+                "it": "FORCEHYPHENOPOLY",
+                "kmr": "FORCEHYPHENOPOLY",
+                "la": "FORCEHYPHENOPOLY",
+                "lt": "FORCEHYPHENOPOLY",
+                "lv": "FORCEHYPHENOPOLY",
+                "nb-no": "FORCEHYPHENOPOLY",
+                "nl": "FORCEHYPHENOPOLY",
+                "oc": "FORCEHYPHENOPOLY",
+                "pi": "FORCEHYPHENOPOLY", 
+                "pl": "FORCEHYPHENOPOLY",
+                "pms": "FORCEHYPHENOPOLY",
+                "pt": "FORCEHYPHENOPOLY",
+                "rm": "FORCEHYPHENOPOLY",
+                "ro": "FORCEHYPHENOPOLY",
+                "sk": "FORCEHYPHENOPOLY",
+                "sl": "FORCEHYPHENOPOLY",
+                "sr-latn": "FORCEHYPHENOPOLY",
+                "sv": "FORCEHYPHENOPOLY",
+                "tk": "FORCEHYPHENOPOLY",
+                "tr": "FORCEHYPHENOPOLY",
+                "zh-latn-pinyin": "FORCEHYPHENOPOLY"
+
             },
             fallbacks: {
                 "sr-latn": "sh-latn"
@@ -53,7 +70,7 @@
         };
 
         function assert() {
-            var tests = 27;
+            var tests = 41;
             var i = 1;
             var test = "";
             var ref = "";
@@ -214,6 +231,67 @@
         <h2>27: ga</h2>
         <p id="test27" class="test hyphenate" lang="ga">Dearadh foirmeacha na litreacha le húsáid mar chló-aghaidheanna, agus roghnú na gcló-aghaidheanna i gcomhair cáipéisí clóchurtha.</p>
         <p id="ref27" class="ref" lang="ga">Dear|adh foirm|eacha na lit|reacha le húsáid mar chló-aghaidh|eanna, agus roghnú na gcló-aghaidh|eanna i gcomh|air cáip|éisí cló|chur|tha.</p>
+
+        <h2>28: af</h2>
+        <p id="test28" class="test hyphenate" lang="af">Afrikaans is tipologies beskou 'n Indo-Europese, Wes-Germaandse, Nederfrankiese taal, wat aan die suidpunt van Afrika onder invloed van verskeie ander tale en taalgroepe ontstaan het.</p>
+        <p id="ref28" class="ref" lang="af">A|fri|kaans is ti|po|lo|gies be|skou 'n Indo-Eu|ro|pe|se, Wes-Ger|maand|se, Ne|der|fran|kie|se taal, wat aan die suid|punt van A|fri|ka onder in|vloed van ver|skeie ander tale en taal|groe|pe ont|staan het.</p>
+
+        <h2>28: cy</h2>
+        <p id="test28" class="test hyphenate" lang="cy">Crefft gosod teip er mwyn gwneud iaith ysgrifenedig yn ddarllenadwy ac yn atyniadol yw teipograffeg.</p>
+        <p id="ref28" class="ref" lang="cy">Crefft gosod teip er mwyn gwneud iaith ysgrif|enedig yn ddar|llen|adwy ac yn atyn|iadol yw teipograffeg.</p>
+
+        <h2>29: eu</h2>
+        <p id="test29" class="test hyphenate" lang="eu">Tipografia idatzitakoa letra-tipo, letra-tamaina, lerro-altuera, eta lerroen eta letren arteko tarteen bitartez definitzen duen artea eta teknika da.</p>
+        <p id="ref29" class="ref" lang="eu">Ti|po|gra|fia ida|tzi|ta|koa letra-tipo, letra-ta|mai|na, lerro-al|tue|ra, eta le|rroen eta le|tren ar|te|ko tar|teen bi|tar|tez de|fi|ni|tzen duen artea eta tek|ni|ka da.</p>
+
+        <h2>30: fur</h2>
+        <p id="test30" class="test hyphenate" lang="fur">Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont.</p>
+        <p id="ref30" class="ref" lang="fur">Il fur|lan e je une len|ghe ro|man|ze de famee des len|ghis re|ti|chis, che e je fe|ve|la|de so|re|dut intal Friûl, ma ancje vie pal mont.</p>
+
+        <h2>31: hr</h2>
+        <p id="test31" class="test hyphenate" lang="hr">Tipografija je umjetnost i vještina oblikovanja teksta s pomoću raznih tipova slova, različitih veličina slova i različitih proreda između slova.</p>
+        <p id="ref31" class="ref" lang="hr">Ti|po|gra|fi|ja je umjet|nost i vje|šti|na obli|ko|va|nja tek|s|ta s po|mo|ću raz|nih ti|po|va slova, raz|li|či|tih ve|li|či|na slova i raz|li|či|tih pro|re|da iz|me|đu slova.</p>
+
+        <h2>32: hsb</h2>
+        <p id="test32" class="test hyphenate" lang="hsb">Hornjoserbšćina je zapadosłowjanska rěč, kotraž so w Hornjej Łužicy wokoło městow Budyšin, Kamjenc a Wojerecy rěči.</p>
+        <p id="ref32" class="ref" lang="hsb">Hor|njo|serb|šći|na je za|pa|dosło|wjan|ska rěč, ko|traž so w Hor|njej Łu|ži|cy wo|ko|ło mě|stow Bu|dy|šin, Ka|mjenc a Wo|je|re|cy rěči.</p>
+
+        <h2>33: ia</h2>
+        <p id="test33" class="test hyphenate" lang="ia">Typographia es le arte e technica de arrangiar typos pro facer linguas vidibile.</p>
+        <p id="ref33" class="ref" lang="ia">Ty|po|gra|phia es le arte e tech|ni|ca de ar|ran|gi|ar typos pro facer lin|gu|as vi|di|bi|le.</p>
+
+        <h2>34: id</h2>
+        <p id="test34" class="test hyphenate" lang="id">Tipografi, seni cetak atau tata huruf adalah suatu kesenian dan teknik memilih dan menata huruf dengan pengaturan penyebarannya pada ruang yang tersedia, untuk menciptakan kesan tertentu, guna kenyamanan membaca semaksimal mungkin.</p>
+        <p id="ref34" class="ref" lang="id">Ti|po|gra|fi, seni cetak atau tata huruf ada|lah suatu ke|se|ni|an dan tek|nik me|mi|lih dan me|na|ta huruf de|ngan pe|nga|tur|an pe|nye|ba|ran|nya pada ruang yang ter|se|dia, untuk men|cip|tak|an kesan ter|ten|tu, guna ke|nya|man|an mem|ba|ca se|mak|si|mal mung|kin.</p>
+
+        <h2>35: is</h2>
+        <p id="test35" class="test hyphenate" lang="is">Leturfræði eða týpógrafía er prentlist þar sem lögð er áhersla á notkun leturs.</p>
+        <p id="ref35" class="ref" lang="is">Let|ur|fræði eða týpógrafía er prentlist þar sem lögð er áhersla á notk|un let|urs.</p>
+
+        <h2>36: kmr</h2>
+        <p id="test36" class="test hyphenate" lang="kmr">Zimanê kurdî, zimanekê ji şaxa zimanên îranî yê bakûr rojavayê malbata zimanên hind û ewropî ye.</p>
+        <p id="ref36" class="ref" lang="kmr">Zi|ma|nê kurdî, zi|ma|ne|kê ji şaxa zi|ma|nên îranî yê bakûr ro|ja|va|yê mal|ba|ta zi|ma|nên hind û ew|ro|pî ye.</p>
+
+        <h2>37: oc</h2>
+        <p id="test37" class="test hyphenate" lang="oc">L'occitan es una lenga romanica parlada en Occitània e pels occitans emigrats de pel monde.</p>
+        <p id="ref37" class="ref" lang="oc">L'oc|ci|tan es una lenga ro|ma|ni|ca par|la|da en Occitània e pels oc|ci|tans emi|gra|ts de pel monde.</p>
+
+        <h2>38: pms</h2>
+        <p id="test38" class="test hyphenate" lang="pms">Piedmontese</p>
+        <p id="ref38" class="ref" lang="pms">Piedmontese</p>
+
+        <h2>39: rm</h2>
+        <p id="test39" class="test hyphenate" lang="rm">Romansh</p>
+        <p id="ref39" class="ref" lang="rm">Romansh</p>
+
+        <h2>40: tk</h2>
+        <p id="test40" class="test hyphenate" lang="tk">Turkmen</p>
+        <p id="ref40" class="ref" lang="tk">Turkmen</p>
+
+        <h2>41: zh-latn-pinyin</h2>
+        <p id="test41" class="test hyphenate" lang="zh-latn-pinyin">Mandarin pinyin</p>
+        <p id="ref41" class="ref" lang="zh-latn-pinyin">Mandarin pinyin</p>
+
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
     </body>

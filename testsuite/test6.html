@@ -6,13 +6,31 @@
         <script>
         var Hyphenopoly = {
             require: {
-                "hy": "FORCEHYPHENOPOLY",
+                "as": "FORCEHYPHENOPOLY",
                 "be": "FORCEHYPHENOPOLY",
+                "bg": "FORCEHYPHENOPOLY",
+                "bn": "FORCEHYPHENOPOLY",
+                "el-monoton": "FORCEHYPHENOPOLY",
+                "el-polyton": "FORCEHYPHENOPOLY",
+                "grc": "FORCEHYPHENOPOLY",
+                "gu": "FORCEHYPHENOPOLY",
+                "hi": "FORCEHYPHENOPOLY",
+                "hy": "FORCEHYPHENOPOLY",
+                "ka": "FORCEHYPHENOPOLY",
+                "kn": "FORCEHYPHENOPOLY",
+                "mk": "FORCEHYPHENOPOLY",
+                "ml": "FORCEHYPHENOPOLY",
+                "mn-cyrl": "FORCEHYPHENOPOLY",
+                "mr": "FORCEHYPHENOPOLY",
+                "mul-ethi": "FORCEHYPHENOPOLY",
+                "or": "FORCEHYPHENOPOLY",
+                "pa": "FORCEHYPHENOPOLY",
                 "ru": "FORCEHYPHENOPOLY",
                 "sr-cyrl": "FORCEHYPHENOPOLY",
-                "uk": "FORCEHYPHENOPOLY",
-                "ka": "FORCEHYPHENOPOLY",
-                "mk": "FORCEHYPHENOPOLY"
+                "ta": "FORCEHYPHENOPOLY",
+                "te": "FORCEHYPHENOPOLY",
+                "th": "FORCEHYPHENOPOLY",
+                "uk": "FORCEHYPHENOPOLY"
             },
             setup: {
                 selectors: {
@@ -29,7 +47,7 @@
             }
         };
         function assert() {
-            var tests = 7;
+            var tests = 25;
             var i = 1;
             var test = "";
             var ref = "";
@@ -102,6 +120,60 @@
         <h2>7: mk</h2>
         <p id="test7" class="test hyphenate" lang="mk">Македонскиот е службен и национален јазик во Македонија, а воедно е и официјално признат како регионален службен јазик во Горица и Пустец во Албанија каде што живее бројно македонско население, но и во Србија како официјален во општините Јабука и Пландиште, Романија и Косово.</p>
         <p id="ref7" class="ref" lang="mk">Ма|ке|дон|ски|от е служ|бен и на|ци|о|на|лен ја|зик во Ма|ке|до|ни|ја, а во|ед|но е и офи|ци|јал|но приз|нат ка|ко ре|ги|о|на|лен служ|бен ја|зик во Го|ри|ца и Пус|тец во Ал|ба|ни|ја ка|де што жи|вее број|но ма|ке|дон|ско на|се|ле|ние, но и во Срби|ја ка|ко офи|ци|ја|лен во оп|шти|ни|те Ја|бу|ка и План|диш|те, Ро|ма|ни|ја и Ко|со|во.</p>
+        <h2>8: as</h2>
+        <p id="test8" class="test hyphenate" lang="as">Assamese</p>
+        <p id="ref8" class="ref" lang="as">Assamese</p>
+        <h2>9: bg</h2>
+        <p id="test9" class="test hyphenate" lang="bg">Bulgarian</p>
+        <p id="ref9" class="ref" lang="bg">Bulgarian</p>
+        <h2>10: bn</h2>
+        <p id="test10" class="test hyphenate" lang="bn">Bengali</p>
+        <p id="ref10" class="ref" lang="bn">Bengali</p>
+        <h2>11: el-monoton</h2>
+        <p id="test11" class="test hyphenate" lang="el-monoton">Greek monoton</p>
+        <p id="ref11" class="ref" lang="el-monoton">Greek monoton</p>
+        <h2>12: el-polyton</h2>
+        <p id="test12" class="test hyphenate" lang="el-polyton">Greek polyton</p>
+        <p id="ref12" class="ref" lang="el-polyton">Greek polyton</p>
+        <h2>13: grc</h2>
+        <p id="test13" class="test hyphenate" lang="grc">ancient greek</p>
+        <p id="ref13" class="ref" lang="grc">ancient greek</p>
+        <h2>14: gu</h2>
+        <p id="test14" class="test hyphenate" lang="gu">Gujarati</p>
+        <p id="ref14" class="ref" lang="gu">Gujarati</p>
+        <h2>15: hi</h2>
+        <p id="test15" class="test hyphenate" lang="hi">Hindi</p>
+        <p id="ref15" class="ref" lang="hi">Hindi</p>
+        <h2>16: kn</h2>
+        <p id="test16" class="test hyphenate" lang="kn">Kannada</p>
+        <p id="ref16" class="ref" lang="kn">Kannada</p>
+        <h2>17: ml</h2>
+        <p id="test17" class="test hyphenate" lang="ml">Malayalam</p>
+        <p id="ref17" class="ref" lang="ml">Malayalam</p>
+        <h2>18: mn-cyrl</h2>
+        <p id="test18" class="test hyphenate" lang="mn-cyrl">Mongolian</p>
+        <p id="ref18" class="ref" lang="mn-cyrl">Mongolian</p>
+        <h2>19: mr</h2>
+        <p id="test19" class="test hyphenate" lang="mr">Marathi</p>
+        <p id="ref19" class="ref" lang="mr">Marathi</p>
+        <h2>20: mul-ethi</h2>
+        <p id="test20" class="test hyphenate" lang="mul-ethi">Ethiopic</p>
+        <p id="ref20" class="ref" lang="mul-ethi">Ethiopic</p>
+        <h2>21: or</h2>
+        <p id="test21" class="test hyphenate" lang="or">Oriya</p>
+        <p id="ref21" class="ref" lang="or">Oriya</p>
+        <h2>22: pa</h2>
+        <p id="test22" class="test hyphenate" lang="pa">Panjabi</p>
+        <p id="ref22" class="ref" lang="pa">Panjabi</p>
+        <h2>23: ta</h2>
+        <p id="test23" class="test hyphenate" lang="ta">Tamil</p>
+        <p id="ref23" class="ref" lang="ta">Tamil</p>
+        <h2>24: te</h2>
+        <p id="test24" class="test hyphenate" lang="te">Telugu</p>
+        <p id="ref24" class="ref" lang="te">Telugu</p>
+        <h2>25: th</h2>
+        <p id="test25" class="test hyphenate" lang="th">Thai</p>
+        <p id="ref25" class="ref" lang="th">Thai</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
         
