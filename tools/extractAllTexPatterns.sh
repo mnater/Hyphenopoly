@@ -7,12 +7,12 @@
 #
 # sh createWasmForLang.sh language
 
-path_in='../texPatternsNew'
+path_in='../texPatterns'
 mkdir $path_in/converted/
 for filename in ${path_in}/*.tex; do {
     #echo $filename
     base=$(basename "$filename")
     echo $base
-    node extractTeXpatterns.js ../texPatternsNew/$base ../texPatternsNew/converted/
+    node extractTeXpatterns.js $path_in/$base $path_in/converted/
 }
 done
