@@ -3,13 +3,13 @@
 /*
  * Extract chr, hyp, lic and pat from hyph-<lang>.tex files
  *
- * # node extractTexPatterns.js hyph-<lang>.tex
+ * # node extractTexPatterns.js hyph-<lang>.tex outdir
  *
  * This creates the following files in the same direcory:
- * - hyph-<lang>.chr.txt – left-/rightmin and characters
+ * - hyph-<lang>.chr.txt – characters
  * - hyph-<lang>.hyp.txt - exceptions (empty if no exceptions)
  * - hyph-<lang>.lic.txt - license
- * - hyph-<lang>.pat.txt - patterns
+ * - hyph-<lang>.pat.txt - left-/rightmin and patterns
  */
 
 "use strict";
@@ -88,6 +88,9 @@ function createChrFile(patternlist) {
                 lowerCaseSet.add(char);
             }
         });
+        if (langName === "hyph-hy") {
+            lowerCaseSet.add("\u0582");
+        }
         const charArray = Array.from(lowerCaseSet);
         charArray.sort();
         return new Set(charArray);
@@ -100,9 +103,15 @@ function createChrFile(patternlist) {
     function addUpperCase(lowerCaseSet) {
         const mixedCaseSet = new Set();
         lowerCaseSet.forEach((lc) => {
-            const uc = (lc.toUpperCase().length > 1)
+            let uc = (lc.toUpperCase().length > 1)
                 ? ""
                 : lc.toUpperCase();
+            uc = (langName === "hyph-de" && uc === "S")
+                ? "Sſ"
+                : uc;
+            uc = (langName === "hyph-fur" && uc === "A")
+                ? "Aâ"
+                : uc;
             mixedCaseSet.add(lc + uc);
         });
         return mixedCaseSet;
