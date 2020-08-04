@@ -7,7 +7,7 @@
 #
 # sh createWasmForLang.sh language
 
-path_in='./texPatternsNew/converted/'
+path_in='./texPatterns/converted/'
 prefix='hyph-'
 
 mkdir -p ./patterns/
