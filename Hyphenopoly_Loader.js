@@ -69,7 +69,8 @@
      * These is an iife to keep complexity low.
      */
     (() => {
-        const maindir = d.currentScript.src.slice(0, -(scriptName.length));
+        const thisScript = d.currentScript.src;
+        const maindir = thisScript.slice(0, (thisScript.lastIndexOf("/") + 1));
         const patterndir = maindir + "patterns/";
         H.paths = setDefaults(H.paths, {
             maindir,
