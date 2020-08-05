@@ -1,5 +1,5 @@
-export const to: i32 = 578012;
-export const po: i32 = 578142;
+export const to: i32 = 577664;
+export const po: i32 = 577794;
 export const pl: i32 = 13882;
 export const vs: i32 = 1536;
 export const pt: i32 = 14900;

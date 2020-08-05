@@ -60,7 +60,6 @@ H.supportedLanguages = [
     "fur",
     "ga",
     "gl",
-    "grc",
     "gu",
     "hi",
     "hr",
@@ -74,7 +73,6 @@ H.supportedLanguages = [
     "ka",
     "kmr",
     "kn",
-    "la-x-liturgic",
     "la",
     "lt",
     "lv",
@@ -82,10 +80,10 @@ H.supportedLanguages = [
     "ml",
     "mn-cyrl",
     "mr",
-    "mul-ethi",
     "nb-no",
     "nl",
     "nn",
+    "no",
     "oc",
     "or",
     "pa",
@@ -185,7 +183,7 @@ function prepareLanguagesObj(
     patternLeftmin,
     patternRightmin
 ) {
-    alphabet = alphabet.replace(/-/g, "");
+    alphabet = alphabet.replace(/-/g, "\u005c-");
     const lo = createLangObj(lang);
     if (!lo.engineReady) {
         lo.cache = new Map();
