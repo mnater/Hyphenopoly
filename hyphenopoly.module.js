@@ -80,7 +80,7 @@ H.supportedLanguages = [
     "ml",
     "mn-cyrl",
     "mr",
-    "nb-no",
+    "nb",
     "nl",
     "nn",
     "no",
