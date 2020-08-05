@@ -1,8 +1,14 @@
 # Version History
 
-## Version 4.6.1 (2020-07-XX)
+## Version 4.7.0 (2020-08-05)
 ### Fixed
 *   retrieving maindir now works correctly if the filename is mangled (#135)
+*   bump devDependencies
+
+### Changed
+*   use nb instead of nb-no, equivalent to nn
+*   remove some rare/ancient languages (cop, mul-ethi, grc, la-x-liturgic)
+*   tooling now supports extraction of patterns from .tex files (#138)
 
 ## Version 4.6.0 (2020-06-29)
 ### Added

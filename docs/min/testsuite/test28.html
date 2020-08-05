@@ -33,18 +33,19 @@
         <script>
         function assert(el) {
             elCount += 1;
+            const H9YStyles = document.getElementsByTagName("style")[0];
             switch (hide_mode) {
             case "all":
-                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === "html{visibility:hidden!important}");
+                testresult = testresult && (H9YStyles.innerHTML === "html{visibility:hidden!important}");
                 break;
             case "element":
-                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === ".hyphenate1{visibility:hidden!important}.hyphenate2{visibility:hidden!important}");
+                testresult = testresult && (H9YStyles.innerHTML === ".hyphenate1{visibility:hidden!important}.hyphenate2{visibility:hidden!important}");
                 break;
             case "text":
-                testresult = testresult && (document.getElementById("H9Y_Styles").innerHTML === ".hyphenate1{color:transparent!important}.hyphenate2{color:transparent!important}");
+                testresult = testresult && (H9YStyles.innerHTML === ".hyphenate1{color:transparent!important}.hyphenate2{color:transparent!important}");
                 break;
             default:
-                testresult = testresult && (document.getElementById("H9Y_Styles") === null);
+                testresult = testresult && (H9YStyles === null);
                 break;
             }
             if (elCount === 2) {

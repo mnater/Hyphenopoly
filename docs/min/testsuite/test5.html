@@ -6,32 +6,49 @@
         <script>
         var Hyphenopoly = {
             require: {
-                "cs": "FORCEHYPHENOPOLY",
-                "da": "FORCEHYPHENOPOLY",
-                "en-us": "FORCEHYPHENOPOLY",
-                "de": "FORCEHYPHENOPOLY",
-                "fr": "FORCEHYPHENOPOLY",
-                "nl": "FORCEHYPHENOPOLY",
-                "es": "FORCEHYPHENOPOLY",
-                "sv": "FORCEHYPHENOPOLY",
-                "it": "FORCEHYPHENOPOLY",
-                "fi": "FORCEHYPHENOPOLY",
-                "pl": "FORCEHYPHENOPOLY",
-                "pt": "FORCEHYPHENOPOLY",
-                "hu": "FORCEHYPHENOPOLY",
-                "tr": "FORCEHYPHENOPOLY",
-                "lt": "FORCEHYPHENOPOLY",
-                "sl": "FORCEHYPHENOPOLY",
-                "la": "FORCEHYPHENOPOLY",
-                "nb-no": "FORCEHYPHENOPOLY",
-                "lv": "FORCEHYPHENOPOLY",
+                "af": "FORCEHYPHENOPOLY",
                 "ca": "FORCEHYPHENOPOLY",
-                "sk": "FORCEHYPHENOPOLY",
+                "cs": "FORCEHYPHENOPOLY",
+                "cy": "FORCEHYPHENOPOLY",
+                "da": "FORCEHYPHENOPOLY",
+                "de": "FORCEHYPHENOPOLY",
+                "en-gb": "FORCEHYPHENOPOLY",
+                "en-us": "FORCEHYPHENOPOLY",
                 "eo": "FORCEHYPHENOPOLY",
-                "sr-latn": "FORCEHYPHENOPOLY",
-                "ro": "FORCEHYPHENOPOLY",
+                "es": "FORCEHYPHENOPOLY",
                 "et": "FORCEHYPHENOPOLY",
-                "ga": "FORCEHYPHENOPOLY"
+                "eu": "FORCEHYPHENOPOLY",
+                "fi": "FORCEHYPHENOPOLY",
+                "fr": "FORCEHYPHENOPOLY",
+                "fur": "FORCEHYPHENOPOLY",
+                "ga": "FORCEHYPHENOPOLY",
+                "hr": "FORCEHYPHENOPOLY",
+                "hsb": "FORCEHYPHENOPOLY",
+                "hu": "FORCEHYPHENOPOLY",
+                "ia": "FORCEHYPHENOPOLY",
+                "id": "FORCEHYPHENOPOLY",
+                "is": "FORCEHYPHENOPOLY",
+                "it": "FORCEHYPHENOPOLY",
+                "kmr": "FORCEHYPHENOPOLY",
+                "la": "FORCEHYPHENOPOLY",
+                "lt": "FORCEHYPHENOPOLY",
+                "lv": "FORCEHYPHENOPOLY",
+                "nb": "FORCEHYPHENOPOLY",
+                "nl": "FORCEHYPHENOPOLY",
+                "oc": "FORCEHYPHENOPOLY",
+                "pl": "FORCEHYPHENOPOLY",
+                "pms": "FORCEHYPHENOPOLY",
+                "pt": "FORCEHYPHENOPOLY",
+                "rm": "FORCEHYPHENOPOLY",
+                "ro": "FORCEHYPHENOPOLY",
+                "sk": "FORCEHYPHENOPOLY",
+                "sl": "FORCEHYPHENOPOLY",
+                "sr-latn": "FORCEHYPHENOPOLY",
+                "sv": "FORCEHYPHENOPOLY",
+                "tk": "FORCEHYPHENOPOLY",
+                "tr": "FORCEHYPHENOPOLY",
+                "zh-latn-pinyin": "FORCEHYPHENOPOLY"
+
             },
             fallbacks: {
                 "sr-latn": "sh-latn"
@@ -52,7 +69,7 @@
         };
 
         function assert() {
-            var tests = 26;
+            var tests = 41;
             var i = 1;
             var test = "";
             var ref = "";
@@ -118,79 +135,162 @@
         <p id="test3" class="test hyphenate" lang="en-us">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
         <p id="ref3" class="ref" lang="en-us">A hy|phen|ation al|go|rithm is a set of rules that de|cides at which points a word can be bro|ken over two lines with a hy|phen.</p>
 
-        <h2>4: de</h2>
-        <p id="test4" class="test hyphenate" lang="de">Die Worttrennung, auch Silbentrennung genannt, bezeichnet in der Orthographie die Art und Weise, wie die Wörter insbesondere am Zeilenende getrennt werden können.</p>
-        <p id="ref4" class="ref" lang="de">Die Wort|tren|nung, auch Sil|ben|tren|nung ge|nannt, be|zeich|net in der Or|tho|gra|phie die Art und Weise, wie die Wör|ter ins|be|son|de|re am Zei|len|en|de ge|trennt wer|den kön|nen.</p>
+        <h2>4: en-gb</h2>
+        <p id="test4" class="test hyphenate" lang="en-gb">A hyphenation algorithm is a set of rules that decides at which points a word can be broken over two lines with a hyphen.</p>
+        <p id="ref4" class="ref" lang="en-gb">A hy|phen|a|tion al|gorithm is a set of rules that de|cides at which points a word can be broken over two lines with a hy|phen.</p>
 
-        <h2>5: fr</h2>
-        <p id="test5" class="test hyphenate" lang="fr">En typographie, la coupure de mot (parfois aussi appelée césure) est l'opération qui consiste à couper en fin de ligne un mot qui n'entrerait pas dans la justification.</p>
-        <p id="ref5" class="ref" lang="fr">En ty|po|gra|phie, la cou|pure de mot (par|fois aussi ap|pe|lée cé|sure) est l'opé|ra|tion qui consiste à cou|per en fin de ligne un mot qui n'en|tre|rait pas dans la jus|ti|fi|ca|tion.</p>
+        <h2>5: de</h2>
+        <p id="test5" class="test hyphenate" lang="de">Die Worttrennung, auch Silbentrennung genannt, bezeichnet in der Orthographie die Art und Weise, wie die Wörter insbesondere am Zeilenende getrennt werden können.</p>
+        <p id="ref5" class="ref" lang="de">Die Wort|tren|nung, auch Sil|ben|tren|nung ge|nannt, be|zeich|net in der Or|tho|gra|phie die Art und Weise, wie die Wör|ter ins|be|son|de|re am Zei|len|en|de ge|trennt wer|den kön|nen.</p>
 
-        <h2>6: nl</h2>
-        <p id="test6" class="test hyphenate" lang="nl">Een lettergreep of syllabe is een prosodische eenheid in gesproken taal.</p>
-        <p id="ref6" class="ref" lang="nl">Een let|ter|greep of syl|la|be is een pro|so|di|sche een|heid in ge|spro|ken taal.</p>
+        <h2>6: fr</h2>
+        <p id="test6" class="test hyphenate" lang="fr">En typographie, la coupure de mot (parfois aussi appelée césure) est l'opération qui consiste à couper en fin de ligne un mot qui n'entrerait pas dans la justification.</p>
+        <p id="ref6" class="ref" lang="fr">En ty|po|gra|phie, la cou|pure de mot (par|fois aussi ap|pe|lée cé|sure) est l'opé|ra|tion qui consiste à cou|per en fin de ligne un mot qui n'en|tre|rait pas dans la jus|ti|fi|ca|tion.</p>
 
-        <h2>7: es</h2>
-        <p id="test7" class="test hyphenate" lang="es">Las palabras en español suelen ser, en promedio, más largas que en inglés pero más cortas que en alemán. <span lang="de">«Silbentrennungsalgorithmus»</span>, por ejemplo, es una palabra bastante larga.</p>
-        <p id="ref7" class="ref" lang="es">Las pa|la|bras en es|pa|ñol sue|len ser, en pro|me|dio, más lar|gas que en in|glés pero más cor|tas que en ale|mán. <span lang="de">«Sil|ben|tren|nungs|al|go|rith|mus»</span>, por ejem|plo, es una pa|la|bra bas|tan|te larga.</p>
+        <h2>7: nl</h2>
+        <p id="test7" class="test hyphenate" lang="nl">Een lettergreep of syllabe is een prosodische eenheid in gesproken taal.</p>
+        <p id="ref7" class="ref" lang="nl">Een let|ter|greep of syl|la|be is een pro|so|di|sche een|heid in ge|spro|ken taal.</p>
 
-        <h2>8: sv</h2>
-        <p id="test8" class="test hyphenate" lang="sv">En algoritm är inom matematiken och datavetenskapen begränsad uppsättning (mängd) väldefinierade instruktioner för att lösa en uppgift, som från givna utgångstillstånd (starttillstånd) med säkerhet leder till något givet sluttillstånd.</p>
-        <p id="ref8" class="ref" lang="sv">En al|go|ritm är inom ma|te|ma|ti|ken och data|ve|ten|ska|pen be|grän|sad upp|sätt|ning (mängd) väl|de|fi|ni|e|ra|de in|struk|tio|ner för att lösa en upp|gift, som från givna ut|gångs|till|stånd (start|till|stånd) med sä|ker|het leder till något givet slut|till|stånd.</p>
-        <h2>9: it</h2>
-        <p id="test9" class="test hyphenate" lang="it">La storia della scrittura, quel processo lungo e tortuoso, ma anche estremamente affascinante e ricco di sorprese, che parte dai primi incerti disegni sulla roccia degli uomini primitivi e giunge ai moderni word processor, ha avuto proprio negli scribi, nei copisti e negli amanuensi dei solitari, silenziosi, laboriosi e importantissimi protagonisti.</p>
-        <p id="ref9" class="ref" lang="it">La sto|ria della scrit|tu|ra, quel pro|ces|so lungo e tor|tuo|so, ma anche estre|ma|men|te af|fa|sci|nan|te e ricco di sor|pre|se, che parte dai primi in|cer|ti di|se|gni sulla roc|cia degli uo|mi|ni pri|mi|ti|vi e giun|ge ai mo|der|ni word pro|ces|sor, ha avuto pro|prio negli scri|bi, nei co|pi|sti e negli ama|nuen|si dei so|li|ta|ri, si|len|zio|si, la|bo|rio|si e im|por|tan|tis|si|mi pro|ta|go|ni|sti.</p>
-        <h2>10: fi</h2>
-        <p id="test10" class="test hyphenate" lang="fi">Typografia tarkoittaa nykyisin mitä tahansa tekstiin, tekstityyppiin, kirjainten asetteluun, väritykseen ja muuhun liittyvää suunnittelua.</p>
-        <p id="ref10" class="ref" lang="fi">Ty|po|gra|fia tar|koit|taa ny|kyi|sin mitä ta|han|sa teks|tiin, teks|ti|tyyp|piin, kir|jain|ten aset|te|luun, vä|ri|tyk|seen ja muu|hun liit|ty|vää suun|nit|te|lua.</p>
-        <h2>11: pl</h2>
-        <p id="test11" class="test hyphenate" lang="pl">Typografia - termin mający szereg pokrewnych znaczeń związanych z użyciem znaków pisarskich w druku, prezentacją ich na ekranie monitora komputerowego itp.</p>
-        <p id="ref11" class="ref" lang="pl">Ty|po|gra|fia - ter|min ma|ją|cy sze|reg po|krew|nych zna|czeń zwią|za|nych z uży|ciem zna|ków pi|sar|skich w druku, pre|zen|ta|cją ich na ekra|nie mo|ni|to|ra kom|pu|te|ro|we|go itp.</p>
-        <h2>12: pt</h2>
-        <p id="test12" class="test hyphenate" lang="pt">A tipografia é a arte e o processo de criação na composição de um texto, física ou digitalmente.</p>
-        <p id="ref12" class="ref" lang="pt">A ti|po|gra|fia é a arte e o pro|cesso de cri|a|ção na com|po|si|ção de um texto, fí|sica ou di|gi|tal|mente.</p>
-        <h2>13: hu</h2>
-        <p id="test13" class="test hyphenate" lang="hu">A weboldal nyelvét nem sikerült automatikusan megállapítani. Kérem adja meg a nyelvet.</p>
-        <p id="ref13" class="ref" lang="hu">A web|ol|dal nyel|vét nem si|ke|rült au|to|ma|ti|ku|san meg|ál|la|pí|ta|ni. Kérem adja meg a nyel|vet.</p>
-        <h2>14: tr</h2>
-        <p id="test14" class="test hyphenate" lang="tr">Tipografi sözcüklerinden türemiş olan typographia sözcüğünün Türkçe halidir.</p>
-        <p id="ref14" class="ref" lang="tr">Ti|pog|ra|fi söz|cük|le|rin|den tü|re|miş olan ty|pog|rap|hia söz|cü|ğü|nün Türk|çe ha|li|dir.</p>
-        <h2>15: lt</h2>
-        <p id="test15" class="test hyphenate" lang="lt">Lietuvių kalba yra labiausiai vartojama iš rytų baltų kalbų.</p>
-        <p id="ref15" class="ref" lang="lt">Lie|tu|vių kalba yra la|biau|siai var|to|ja|ma iš rytų baltų kalbų.</p>
-        <h2>16: sl</h2>
-        <p id="test16" class="test hyphenate" lang="sl">Tipografija je veda o tipografskem oblikovanju. Preučuje izdelavo črk in pisav ter njihovo uporabo v besedilu.</p>
-        <p id="ref16" class="ref" lang="sl">Ti|po|gra|fi|ja je veda o ti|po|graf|skem obli|ko|va|nju. Pre|u|ču|je iz|de|la|vo črk in pisav ter nji|ho|vo upo|ra|bo v be|se|di|lu.</p>
-        <h2>17: la</h2>
-        <p id="test17" class="test hyphenate" lang="la">Typographia disciplina transcribendarum litterarum est, quae propositum formam scripturae usu formae litterarum ac gentis litterarum assequi temptat, ut litterae eius simul elegantes et accomodatae sint.</p>
-        <p id="ref17" class="ref" lang="la">Ty|po|gra|phia di|sci|pli|na tran|scri|ben|da|rum lit|te|ra|rum est, quae pro|po|si|tum for|mam scrip|tu|rae usu for|mae lit|te|ra|rum ac gen|tis lit|te|ra|rum as|se|qui temp|tat, ut lit|te|rae eius simul ele|gan|tes et ac|co|mo|da|tae sint.</p>
-        <h2>18: no</h2>
-        <p id="test18" class="test hyphenate" lang="nb-no">Typografi er utforming og behandling av skrift, bokstaver og andre grafiske elementer i trykkerfaget og i grafisk design.</p>
-        <p id="ref18" class="ref" lang="nb-no">Ty|po|gra|fi er ut|for|ming og be|hand|ling av skrift, bok|sta|ver og andre gra|fis|ke ele|men|ter i tryk|ker|fa|get og i gra|fisk de|sign.</p>
-        <h2>19: lv</h2>
-        <p id="test19" class="test hyphenate" lang="lv">Šīs lapas valodu nevarēja noteikt automātiski. Lūdzu norādiet pamata valodu:</p>
-        <p id="ref19" class="ref" lang="no">Šīs lapas va|lo|du ne|va|rē|ja no|teikt au|to|mā|tis|ki. Lūdzu no|rā|diet pa|ma|ta va|lo|du:</p>
-        <h2>20: ca</h2>
-        <p id="test20" class="test hyphenate" lang="ca">Una manera especial de provar la partició de paraules en català a la web.</p>
-        <p id="ref20" class="ref" lang="ca">Una ma|ne|ra es|pe|ci|al de pro|var la par|ti|ció de pa|rau|les en ca|ta|là a la web.</p>
-        <h2>21: sk</h2>
-        <p id="test21" class="test hyphenate" lang="sk">Typografia sa zaoberá problematikou grafickej úpravy tlačených dokumentov s použitím vhodných rezov písma a usporiadania jednotlivých znakov a odsekov vo vhodnej, pre čitateľa zrozumiteľnej a esteticky akceptovateľnej forme. Zaoberá sa tiež dizajnom písma, výberom farebnej schémy dokumentov, ilustrácií, zalamovaním textu do odsekov až po výber papiera pre tlač.</p>
-        <p id="ref21" class="ref" lang="sk">Ty|po|gra|fia sa za|oberá prob|le|ma|ti|kou gra|fic|kej úp|ravy tla|če|ných do|ku|men|tov s po|u|ži|tím vhod|ných rezov písma a uspo|ria|da|nia jed|not|li|vých zna|kov a od|se|kov vo vhod|nej, pre či|ta|teľa zro|zu|mi|teľ|nej a es|te|ticky ak|cep|to|va|teľ|nej forme. Za|oberá sa tiež di|zaj|nom písma, vý|be|rom fa|reb|nej schémy do|ku|men|tov, ilus|trá|cií, za|la|mo|va|ním textu do od|se|kov až po výber pa|piera pre tlač.</p>
-        <h2>22: eo</h2>
-        <p id="test22" class="test hyphenate" lang="eo">Tipografio unuavice estas la kreo de komunikaĵo per reproduktebla skribo, sed duavice ankaŭ la dezajno de tia skriba komunikaĵo per linioj, areoj kaj la specifa aranĝo de literoj.</p>
-        <p id="ref22" class="ref" lang="eo">Ti|po|gra|fio unu|a|vi|ce estas la kreo de ko|mu|ni|k|aĵo per re|pro|duk|t|ebla skri|bo, sed du|a|vi|ce ankaŭ la de|zaj|no de tia skri|ba ko|mu|ni|k|aĵo per li|ni|oj, areoj kaj la spe|ci|fa aran|ĝo de li|te|roj.</p>
-        <h2>23: sr-latn</h2>
-        <p id="test23" class="test hyphenate" lang="sr-latn">Tipografija se bavi izborom i organizacijom oblika slova i drugih grafičkih karakteristika štampane strane.</p>
-        <p id="ref23" class="ref" lang="sr-Latn">Ti|po|gra|fi|ja se bavi iz|bo|rom i or|ga|ni|za|ci|jom obli|ka slova i dru|gih gra|fič|kih ka|rak|te|ri|sti|ka štam|pa|ne stra|ne.</p>
-        <h2>24: ro</h2>
-        <p id="test24" class="test hyphenate" lang="ro">Tipografia reprezintă arta și tehnica tipăritului, a formei și aranjării literelor pe un document scris.</p>
-        <p id="ref24" class="ref" lang="ro">Ti|po|gra|fia re|pre|zin|tă arta și teh|ni|ca ti|pă|ri|tu|lui, a for|mei și aran|jă|rii li|te|re|lor pe un do|cu|ment scris.</p>
-        <h2>25: et</h2>
-        <p id="test25" class="test hyphenate" lang="et">Tüpograafia ehk trükikunst on trükiste valmistamise oskus, täpsemini sõnastatult trükimärkide kujundamise ja paigutamise kunst ja tehnika.</p>
-        <p id="ref25" class="ref" lang="et">Tü|pog|raa|fia ehk trü|ki|kunst on trükiste val|mis|ta|mise oskus, täp|se|mini sõ|nas|ta|tult trü|ki|mär|kide ku|jun|da|mise ja pai|gu|ta|mise kunst ja teh|nika.</p>
-        <h2>26: ga</h2>
-        <p id="test26" class="test hyphenate" lang="ga">Dearadh foirmeacha na litreacha le húsáid mar chló-aghaidheanna, agus roghnú na gcló-aghaidheanna i gcomhair cáipéisí clóchurtha.</p>
-        <p id="ref26" class="ref" lang="ga">Dear|adh foirm|eacha na lit|reacha le húsáid mar chló-aghaidh|eanna, agus roghnú na gcló-aghaidh|eanna i gcomh|air cáip|éisí cló|chur|tha.</p>
+        <h2>8: es</h2>
+        <p id="test8" class="test hyphenate" lang="es">Las palabras en español suelen ser, en promedio, más largas que en inglés pero más cortas que en alemán. <span lang="de">«Silbentrennungsalgorithmus»</span>, por ejemplo, es una palabra bastante larga.</p>
+        <p id="ref8" class="ref" lang="es">Las pa|la|bras en es|pa|ñol sue|len ser, en pro|me|dio, más lar|gas que en in|glés pero más cor|tas que en ale|mán. <span lang="de">«Sil|ben|tren|nungs|al|go|rith|mus»</span>, por ejem|plo, es una pa|la|bra bas|tan|te larga.</p>
+
+        <h2>9: sv</h2>
+        <p id="test9" class="test hyphenate" lang="sv">En algoritm är inom matematiken och datavetenskapen begränsad uppsättning (mängd) väldefinierade instruktioner för att lösa en uppgift, som från givna utgångstillstånd (starttillstånd) med säkerhet leder till något givet sluttillstånd.</p>
+        <p id="ref9" class="ref" lang="sv">En al|go|ritm är inom ma|te|ma|ti|ken och data|ve|ten|ska|pen be|grän|sad upp|sätt|ning (mängd) väl|de|fi|ni|e|ra|de in|struk|tio|ner för att lösa en upp|gift, som från givna ut|gångs|till|stånd (start|till|stånd) med sä|ker|het leder till något givet slut|till|stånd.</p>
+
+        <h2>10: it</h2>
+        <p id="test10" class="test hyphenate" lang="it">La storia della scrittura, quel processo lungo e tortuoso, ma anche estremamente affascinante e ricco di sorprese, che parte dai primi incerti disegni sulla roccia degli uomini primitivi e giunge ai moderni word processor, ha avuto proprio negli scribi, nei copisti e negli amanuensi dei solitari, silenziosi, laboriosi e importantissimi protagonisti.</p>
+        <p id="ref10" class="ref" lang="it">La sto|ria della scrit|tu|ra, quel pro|ces|so lungo e tor|tuo|so, ma anche estre|ma|men|te af|fa|sci|nan|te e ricco di sor|pre|se, che parte dai primi in|cer|ti di|se|gni sulla roc|cia degli uo|mi|ni pri|mi|ti|vi e giun|ge ai mo|der|ni word pro|ces|sor, ha avuto pro|prio negli scri|bi, nei co|pi|sti e negli ama|nuen|si dei so|li|ta|ri, si|len|zio|si, la|bo|rio|si e im|por|tan|tis|si|mi pro|ta|go|ni|sti.</p>
+
+        <h2>11: fi</h2>
+        <p id="test11" class="test hyphenate" lang="fi">Typografia tarkoittaa nykyisin mitä tahansa tekstiin, tekstityyppiin, kirjainten asetteluun, väritykseen ja muuhun liittyvää suunnittelua.</p>
+        <p id="ref11" class="ref" lang="fi">Ty|po|gra|fia tar|koit|taa ny|kyi|sin mitä ta|han|sa teks|tiin, teks|ti|tyyp|piin, kir|jain|ten aset|te|luun, vä|ri|tyk|seen ja muu|hun liit|ty|vää suun|nit|te|lua.</p>
+
+        <h2>12: pl</h2>
+        <p id="test12" class="test hyphenate" lang="pl">Typografia - termin mający szereg pokrewnych znaczeń związanych z użyciem znaków pisarskich w druku, prezentacją ich na ekranie monitora komputerowego itp.</p>
+        <p id="ref12" class="ref" lang="pl">Ty|po|gra|fia - ter|min ma|ją|cy sze|reg po|krew|nych zna|czeń zwią|za|nych z uży|ciem zna|ków pi|sar|skich w druku, pre|zen|ta|cją ich na ekra|nie mo|ni|to|ra kom|pu|te|ro|we|go itp.</p>
+
+        <h2>13: pt</h2>
+        <p id="test13" class="test hyphenate" lang="pt">A tipografia é a arte e o processo de criação na composição de um texto, física ou digitalmente.</p>
+        <p id="ref13" class="ref" lang="pt">A ti|po|gra|fia é a arte e o pro|cesso de cri|a|ção na com|po|si|ção de um texto, fí|sica ou di|gi|tal|mente.</p>
+
+        <h2>14: hu</h2>
+        <p id="test14" class="test hyphenate" lang="hu">A weboldal nyelvét nem sikerült automatikusan megállapítani. Kérem adja meg a nyelvet.</p>
+        <p id="ref14" class="ref" lang="hu">A web|ol|dal nyel|vét nem si|ke|rült au|to|ma|ti|ku|san meg|ál|la|pí|ta|ni. Kérem adja meg a nyel|vet.</p>
+
+        <h2>15: tr</h2>
+        <p id="test15" class="test hyphenate" lang="tr">Tipografi sözcüklerinden türemiş olan typographia sözcüğünün Türkçe halidir.</p>
+        <p id="ref15" class="ref" lang="tr">Ti|pog|ra|fi söz|cük|le|rin|den tü|re|miş olan ty|pog|rap|hia söz|cü|ğü|nün Türk|çe ha|li|dir.</p>
+
+        <h2>16: lt</h2>
+        <p id="test16" class="test hyphenate" lang="lt">Lietuvių kalba yra labiausiai vartojama iš rytų baltų kalbų.</p>
+        <p id="ref16" class="ref" lang="lt">Lie|tu|vių kalba yra la|biau|siai var|to|ja|ma iš rytų baltų kalbų.</p>
+
+        <h2>17: sl</h2>
+        <p id="test17" class="test hyphenate" lang="sl">Tipografija je veda o tipografskem oblikovanju. Preučuje izdelavo črk in pisav ter njihovo uporabo v besedilu.</p>
+        <p id="ref17" class="ref" lang="sl">Ti|po|gra|fi|ja je veda o ti|po|graf|skem obli|ko|va|nju. Pre|u|ču|je iz|de|la|vo črk in pisav ter nji|ho|vo upo|ra|bo v be|se|di|lu.</p>
+
+        <h2>18: la</h2>
+        <p id="test18" class="test hyphenate" lang="la">Typographia disciplina transcribendarum litterarum est, quae propositum formam scripturae usu formae litterarum ac gentis litterarum assequi temptat, ut litterae eius simul elegantes et accomodatae sint.</p>
+        <p id="ref18" class="ref" lang="la">Ty|po|gra|phia dis|ci|pli|na tran|scri|ben|da|rum lit|te|ra|rum est, quae pro|pos|i|tum for|mam scrip|tu|rae usu for|mae lit|te|ra|rum ac gen|tis lit|te|ra|rum as|se|qui temp|tat, ut lit|te|rae eius simul ele|gan|tes et ac|co|m|o|da|tae sint.</p>
+
+        <h2>19: nb</h2>
+        <p id="test19" class="test hyphenate" lang="nb">Typografi er utforming og behandling av skrift, bokstaver og andre grafiske elementer i trykkerfaget og i grafisk design.</p>
+        <p id="ref19" class="ref" lang="nb">Ty|po|gra|fi er ut|for|ming og be|hand|ling av skrift, bok|sta|ver og andre gra|fis|ke ele|men|ter i tryk|ker|fa|get og i gra|fisk de|sign.</p>
+
+        <h2>20: lv</h2>
+        <p id="test20" class="test hyphenate" lang="lv">Šīs lapas valodu nevarēja noteikt automātiski. Lūdzu norādiet pamata valodu:</p>
+        <p id="ref20" class="ref" lang="no">Šīs lapas va|lo|du ne|va|rē|ja no|teikt au|to|mā|tis|ki. Lūdzu no|rā|diet pa|ma|ta va|lo|du:</p>
+
+        <h2>21: ca</h2>
+        <p id="test21" class="test hyphenate" lang="ca">Una manera especial de provar la partició de paraules en català a la web.</p>
+        <p id="ref21" class="ref" lang="ca">Una ma|ne|ra es|pe|ci|al de pro|var la par|ti|ció de pa|rau|les en ca|ta|là a la web.</p>
+
+        <h2>22: sk</h2>
+        <p id="test22" class="test hyphenate" lang="sk">Typografia sa zaoberá problematikou grafickej úpravy tlačených dokumentov s použitím vhodných rezov písma a usporiadania jednotlivých znakov a odsekov vo vhodnej, pre čitateľa zrozumiteľnej a esteticky akceptovateľnej forme. Zaoberá sa tiež dizajnom písma, výberom farebnej schémy dokumentov, ilustrácií, zalamovaním textu do odsekov až po výber papiera pre tlač.</p>
+        <p id="ref22" class="ref" lang="sk">Ty|po|gra|fia sa za|oberá prob|le|ma|ti|kou gra|fic|kej úp|ravy tla|če|ných do|ku|men|tov s po|u|ži|tím vhod|ných rezov písma a uspo|ria|da|nia jed|not|li|vých zna|kov a od|se|kov vo vhod|nej, pre či|ta|teľa zro|zu|mi|teľ|nej a es|te|ticky ak|cep|to|va|teľ|nej forme. Za|oberá sa tiež di|zaj|nom písma, vý|be|rom fa|reb|nej schémy do|ku|men|tov, ilus|trá|cií, za|la|mo|va|ním textu do od|se|kov až po výber pa|piera pre tlač.</p>
+
+        <h2>23: eo</h2>
+        <p id="test23" class="test hyphenate" lang="eo">Tipografio unuavice estas la kreo de komunikaĵo per reproduktebla skribo, sed duavice ankaŭ la dezajno de tia skriba komunikaĵo per linioj, areoj kaj la specifa aranĝo de literoj.</p>
+        <p id="ref23" class="ref" lang="eo">Ti|po|gra|fio unu|a|vi|ce estas la kreo de ko|mu|ni|k|aĵo per re|pro|duk|t|ebla skri|bo, sed du|a|vi|ce ankaŭ la de|zaj|no de tia skri|ba ko|mu|ni|k|aĵo per li|ni|oj, areoj kaj la spe|ci|fa aran|ĝo de li|te|roj.</p>
+
+        <h2>24: sr-latn</h2>
+        <p id="test24" class="test hyphenate" lang="sr-latn">Tipografija se bavi izborom i organizacijom oblika slova i drugih grafičkih karakteristika štampane strane.</p>
+        <p id="ref24" class="ref" lang="sr-Latn">Ti|po|gra|fi|ja se bavi iz|bo|rom i or|ga|ni|za|ci|jom obli|ka slova i dru|gih gra|fič|kih ka|rak|te|ri|sti|ka štam|pa|ne stra|ne.</p>
+
+        <h2>25: ro</h2>
+        <p id="test25" class="test hyphenate" lang="ro">Tipografia reprezintă arta și tehnica tipăritului, a formei și aranjării literelor pe un document scris.</p>
+        <p id="ref25" class="ref" lang="ro">Ti|po|gra|fia re|pre|zin|tă arta și teh|ni|ca ti|pă|ri|tu|lui, a for|mei și aran|jă|rii li|te|re|lor pe un do|cu|ment scris.</p>
+
+        <h2>26: et</h2>
+        <p id="test26" class="test hyphenate" lang="et">Tüpograafia ehk trükikunst on trükiste valmistamise oskus, täpsemini sõnastatult trükimärkide kujundamise ja paigutamise kunst ja tehnika.</p>
+        <p id="ref26" class="ref" lang="et">Tü|pog|raa|fia ehk trü|ki|kunst on trükiste val|mis|ta|mise oskus, täp|se|mini sõ|nas|ta|tult trü|ki|mär|kide ku|jun|da|mise ja pai|gu|ta|mise kunst ja teh|nika.</p>
+
+        <h2>27: ga</h2>
+        <p id="test27" class="test hyphenate" lang="ga">Dearadh foirmeacha na litreacha le húsáid mar chló-aghaidheanna, agus roghnú na gcló-aghaidheanna i gcomhair cáipéisí clóchurtha.</p>
+        <p id="ref27" class="ref" lang="ga">Dear|adh foirm|eacha na lit|reacha le húsáid mar chló-aghaidh|eanna, agus roghnú na gcló-aghaidh|eanna i gcomh|air cáip|éisí cló|chur|tha.</p>
+
+        <h2>28: af</h2>
+        <p id="test28" class="test hyphenate" lang="af">Afrikaans is tipologies beskou 'n Indo-Europese, Wes-Germaandse, Nederfrankiese taal, wat aan die suidpunt van Afrika onder invloed van verskeie ander tale en taalgroepe ontstaan het.</p>
+        <p id="ref28" class="ref" lang="af">A|fri|kaans is ti|po|lo|gies be|skou 'n Indo-Eu|ro|pe|se, Wes-Ger|maand|se, Ne|der|fran|kie|se taal, wat aan die suid|punt van A|fri|ka onder in|vloed van ver|skeie ander tale en taal|groe|pe ont|staan het.</p>
+
+        <h2>28: cy</h2>
+        <p id="test28" class="test hyphenate" lang="cy">Crefft gosod teip er mwyn gwneud iaith ysgrifenedig yn ddarllenadwy ac yn atyniadol yw teipograffeg.</p>
+        <p id="ref28" class="ref" lang="cy">Crefft gosod teip er mwyn gwneud iaith ysgrif|enedig yn ddar|llen|adwy ac yn atyn|iadol yw teipograffeg.</p>
+
+        <h2>29: eu</h2>
+        <p id="test29" class="test hyphenate" lang="eu">Tipografia idatzitakoa letra-tipo, letra-tamaina, lerro-altuera, eta lerroen eta letren arteko tarteen bitartez definitzen duen artea eta teknika da.</p>
+        <p id="ref29" class="ref" lang="eu">Ti|po|gra|fia ida|tzi|ta|koa letra-tipo, letra-ta|mai|na, lerro-al|tue|ra, eta le|rroen eta le|tren ar|te|ko tar|teen bi|tar|tez de|fi|ni|tzen duen artea eta tek|ni|ka da.</p>
+
+        <h2>30: fur</h2>
+        <p id="test30" class="test hyphenate" lang="fur">Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont.</p>
+        <p id="ref30" class="ref" lang="fur">Il fur|lan e je une len|ghe ro|man|ze de famee des len|ghis re|ti|chis, che e je fe|ve|la|de so|re|dut intal Friûl, ma ancje vie pal mont.</p>
+
+        <h2>31: hr</h2>
+        <p id="test31" class="test hyphenate" lang="hr">Tipografija je umjetnost i vještina oblikovanja teksta s pomoću raznih tipova slova, različitih veličina slova i različitih proreda između slova.</p>
+        <p id="ref31" class="ref" lang="hr">Ti|po|gra|fi|ja je umjet|nost i vje|šti|na obli|ko|va|nja tek|s|ta s po|mo|ću raz|nih ti|po|va slova, raz|li|či|tih ve|li|či|na slova i raz|li|či|tih pro|re|da iz|me|đu slova.</p>
+
+        <h2>32: hsb</h2>
+        <p id="test32" class="test hyphenate" lang="hsb">Hornjoserbšćina je zapadosłowjanska rěč, kotraž so w Hornjej Łužicy wokoło městow Budyšin, Kamjenc a Wojerecy rěči.</p>
+        <p id="ref32" class="ref" lang="hsb">Hor|njo|serb|šći|na je za|pa|dosło|wjan|ska rěč, ko|traž so w Hor|njej Łu|ži|cy wo|ko|ło mě|stow Bu|dy|šin, Ka|mjenc a Wo|je|re|cy rěči.</p>
+
+        <h2>33: ia</h2>
+        <p id="test33" class="test hyphenate" lang="ia">Typographia es le arte e technica de arrangiar typos pro facer linguas vidibile.</p>
+        <p id="ref33" class="ref" lang="ia">Ty|po|gra|phia es le arte e tech|ni|ca de ar|ran|gi|ar typos pro facer lin|gu|as vi|di|bi|le.</p>
+
+        <h2>34: id</h2>
+        <p id="test34" class="test hyphenate" lang="id">Tipografi, seni cetak atau tata huruf adalah suatu kesenian dan teknik memilih dan menata huruf dengan pengaturan penyebarannya pada ruang yang tersedia, untuk menciptakan kesan tertentu, guna kenyamanan membaca semaksimal mungkin.</p>
+        <p id="ref34" class="ref" lang="id">Ti|po|gra|fi, seni cetak atau tata huruf ada|lah suatu ke|se|ni|an dan tek|nik me|mi|lih dan me|na|ta huruf de|ngan pe|nga|tur|an pe|nye|ba|ran|nya pada ruang yang ter|se|dia, untuk men|cip|tak|an kesan ter|ten|tu, guna ke|nya|man|an mem|ba|ca se|mak|si|mal mung|kin.</p>
+
+        <h2>35: is</h2>
+        <p id="test35" class="test hyphenate" lang="is">Leturfræði eða týpógrafía er prentlist þar sem lögð er áhersla á notkun leturs.</p>
+        <p id="ref35" class="ref" lang="is">Let|ur|fræði eða týpógrafía er prentlist þar sem lögð er áhersla á notk|un let|urs.</p>
+
+        <h2>36: kmr</h2>
+        <p id="test36" class="test hyphenate" lang="kmr">Zimanê kurdî, zimanekê ji şaxa zimanên îranî yê bakûr rojavayê malbata zimanên hind û ewropî ye.</p>
+        <p id="ref36" class="ref" lang="kmr">Zi|ma|nê kurdî, zi|ma|ne|kê ji şaxa zi|ma|nên îranî yê bakûr ro|ja|va|yê mal|ba|ta zi|ma|nên hind û ew|ro|pî ye.</p>
+
+        <h2>37: oc</h2>
+        <p id="test37" class="test hyphenate" lang="oc">L'occitan es una lenga romanica parlada en Occitània e pels occitans emigrats de pel monde.</p>
+        <p id="ref37" class="ref" lang="oc">L'oc|ci|tan es una lenga ro|ma|ni|ca par|la|da en Occitània e pels oc|ci|tans emi|gra|ts de pel monde.</p>
+
+        <h2>38: pms</h2>
+        <p id="test38" class="test hyphenate" lang="pms">Ël Piemontèis a l'é na lenga romanza, visadì derivà dal latin.</p>
+        <p id="ref38" class="ref" lang="pms">Ël Piemontèis a l'é na lenga ro|man|za, visadì derivà dal latin.</p>
+
+        <h2>39: rm</h2>
+        <p id="test39" class="test hyphenate" lang="rm">Il rumantsch grischun (RG) è ina lingua da standard sur las diversas variantas dal rumantsch dal Grischun, creada e derasada a partir dal 1982 per incumbensa da la Lia Rumantscha.</p>
+        <p id="ref39" class="ref" lang="rm">Il ru|mantsch gri|schun (RG) è ina lin|gua da stan|dard sur las di|ver|sas va|rian|tas dal ru|mantsch dal Gri|schun, crea|da e de|ra|sa|da a par|tir dal 1982 per in|cum|ben|sa da la Lia Ru|man|tscha.</p>
+
+        <h2>40: tk</h2>
+        <p id="test40" class="test hyphenate" lang="tk">Türkmenistanyň halkynyň esasy ulanýan dili bolup, şeýle hem Eýranda, Owganystanda, Türkiýede, Garagalpagystanda, Täjigistanda, Gazagystanda, Özbegistanda, Stawropol ülkesinde, Astrahan oblastynda bölekleýin ulanylýar.</p>
+        <p id="ref40" class="ref" lang="tk">Türk|me|nis|ta|nyň hal|ky|nyň esasy ulan|ýan dili bolup, şeýle hem Eý|ran|da, Ow|ga|nys|tan|da, Tür|ki|ýe|de, Ga|ra|gal|pa|gys|tan|da, Tä|ji|gis|tan|da, Ga|za|gys|tan|da, Öz|be|gis|tan|da, Staw|ro|pol ül|ke|sin|de, As|tra|han ob|las|tyn|da bö|lek|le|ýin ula|nyl|ýar.</p>
+
+        <h2>41: zh-latn-pinyin</h2>
+        <p id="test41" class="test hyphenate" lang="zh-latn-pinyin">Xiǎo Wáng gěi júzhǎng hóngbāo.</p>
+        <p id="ref41" class="ref" lang="zh-latn-pinyin">Xiǎo Wáng gěi jú|zhǎng hóng|bāo.</p>
+
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
     </body>
