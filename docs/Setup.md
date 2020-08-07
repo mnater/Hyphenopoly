@@ -21,6 +21,7 @@ These page documents the optional fields in `setup`:
     *   [minWordLength](#minwordlength)
     *   [mixedCase](#mixedcase)
     *   [orphanControl](#orphancontrol)
+    *   [smallWords](#smallwords)
 
 ## Global Settings
 These settings apply to Hyphenopoly in general.
@@ -524,3 +525,36 @@ There are three stages:
 1.  allow orphans
 2.  don't hyphenate the last word of an element
 3.  don't hyphenate the last word of an element and replace the space before with a no-breaking space
+
+### smallWords
+````
+type: number
+default: 0
+````
+Prevent small words at the end of a line by replacing the space after them with a no-breaking space (nbsp / uc: 00A0)
+````html
+<script>
+var Hyphenopoly = {
+    require: {...},
+    paths: {...},
+    setup: {
+        selectors: {
+            ".hyphenate": {
+                smallWords: 1
+            }
+        }
+    }
+};
+</script>
+````
+The number defines what words are considered "small":
+
+`0`: no words are considered small.
+
+`1`: insert nbsp after single letter words (e.g. "I" or "a")
+
+`2`: insert nbsp after single and double letter words
+
+`3`: insert nbsp after words with 1, 2 or 3 letter
+
+and so on...
