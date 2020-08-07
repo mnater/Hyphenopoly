@@ -345,3 +345,37 @@ t.test("set options: orphanControl", function (t) {
     });
     t.end();
 });
+
+t.test("set options: smallWords", function (t) {
+    let H9Y = null;
+    t.beforeEach(function setup(done) {
+        H9Y = require("../hyphenopoly.module");
+        done();
+    });
+
+    t.afterEach(function tearDown(done) {
+        H9Y = null;
+        delete require.cache[require.resolve("../hyphenopoly.module")];
+        done();
+    });
+
+    t.test("smallWords: 1", async function (t) {
+        const hyphenator = await H9Y.config({
+            "hyphen": "•",
+            "require": ["en-us"],
+            "smallWords": 1
+        });
+        t.equal(hyphenator("Yesterday I saw a cat."), "Yes•ter•day I\u00A0saw a\u00A0cat.");
+        t.end();
+    });
+    t.test("smallWords: 2", async function (t) {
+        const hyphenator = await H9Y.config({
+            "hyphen": "•",
+            "require": ["en-us"],
+            "smallWords": 2
+        });
+        t.equal(hyphenator("Yesterday I saw a cat in my backyard."), "Yes•ter•day I\u00A0saw a\u00A0cat in\u00A0my\u00A0back•yard.");
+        t.end();
+    });
+    t.end();
+});
