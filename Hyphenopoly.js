@@ -170,7 +170,8 @@
                         ["mixedCase", true],
                         ["orphanControl", 1],
                         ["rightmin", 0],
-                        ["rightminPerLang", 0]
+                        ["rightminPerLang", 0],
+                        ["smallWords", 0]
                     ]));
                     o.entries(selSettings).forEach(
                         ([selSetting, setVal]) => {
@@ -580,6 +581,17 @@
                         createOrphanController(sel)
                     );
                 }
+                if (selSettings.smallWords > 0) {
+                    const re = RegExp(`(?=(\\s\\S{1,${selSettings.smallWords}}\\s))`, "gu");
+                    const matches = [];
+                    tn.replace(re, (orig, $1) => {
+                        matches.push($1);
+                    });
+                    matches.forEach((m) => {
+                        tn = tn.replace(RegExp(`(\\s)${m.slice(1)}`), `$1${m.slice(1, -1)}\u00A0`);
+                    });
+                }
+
                 return tn;
             }
 

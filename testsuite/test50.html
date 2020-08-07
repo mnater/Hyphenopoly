@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 050</title>
+        <script>
+            var Hyphenopoly = {
+                require: {
+                    "en-us": "FORCEHYPHENOPOLY"
+                },
+                setup: {
+                    selectors: {
+                        ".hyphenate1": {
+                            smallWords: 1
+                        },
+                        ".hyphenate2": {
+                            smallWords: 2
+                        },
+                        ".hyphenate3": {
+                            smallWords: 3
+                        },
+                        ".hyphenate4": {
+                            smallWords: 0
+                        }
+                    }
+                },
+                handleEvent: {
+                    hyphenopolyEnd: function (e) {
+                        assert();
+                    }
+                }
+            };
+            function assert() {
+                var tests = 5;
+                var i = 1;
+                var test = "";
+                var ref = "";
+                var result = true;
+                while (i <= tests) {
+                    test = document.getElementById("test" + i).innerHTML;
+                    ref = document.getElementById("ref" + i).innerHTML;
+                    if (test === ref) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        result = result && true;
+                    } else {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        result = false;
+                    }
+                    i += 1;
+                }
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 50,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
+            }
+        </script>
+        <script src="../Hyphenopoly_Loader.js?var=12345"></script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+                width: 12%;
+            }
+            .ref {
+                background-color: #FEEFC0;
+                width: 12%;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test49.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test51.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 050</h1>
+        <p id="desc">Do not wrap small words.</p>
+        <div id="result"></div>
+        <hr>
+        <p id="test1" class="test hyphenate1" lang="en-us">Yesterday I saw a brown cat in my backyard.</p>
+        <p id="ref1" class="ref" lang="en-us">Yes&shy;ter&shy;day I&nbsp;saw a&nbsp;brown cat in my back&shy;yard.</p>
+
+        <p id="test2" class="test hyphenate2" lang="en-us">Yesterday I saw a brown cat in my backyard.</p>
+        <p id="ref2" class="ref" lang="en-us">Yes&shy;ter&shy;day I&nbsp;saw a&nbsp;brown cat in&nbsp;my&nbsp;back&shy;yard.</p>
+
+        <p id="test3" class="test hyphenate3" lang="en-us">Yesterday I saw a brown cat in my backyard.</p>
+        <p id="ref3" class="ref" lang="en-us">Yes&shy;ter&shy;day I&nbsp;saw&nbsp;a&nbsp;brown cat&nbsp;in&nbsp;my&nbsp;back&shy;yard.</p>
+
+        <p id="test4" class="test hyphenate4" lang="en-us">Yesterday I saw a brown cat in my backyard.</p>
+        <p id="ref4" class="ref" lang="en-us">Yes&shy;ter&shy;day I saw a brown cat in my back&shy;yard.</p>
+
+        <p id="test5" class="test hyphenate1" lang="en-us">Yesterday I saw a brown cat in my backyard. Yesterday I saw a brown cat in my backyard.</p>
+        <p id="ref5" class="ref" lang="en-us">Yes&shy;ter&shy;day I&nbsp;saw a&nbsp;brown cat in my back&shy;yard. Yes&shy;ter&shy;day I&nbsp;saw a&nbsp;brown cat in my back&shy;yard.</p>
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
+    </body>
+</html>
