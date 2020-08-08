@@ -549,12 +549,11 @@ var Hyphenopoly = {
 ````
 The number defines what words are considered "small":
 
-`0`: no words are considered small.
-
-`1`: insert nbsp after single letter words (e.g. "I" or "a")
-
-`2`: insert nbsp after single and double letter words
-
-`3`: insert nbsp after words with 1, 2 or 3 letter
+| Number | Effect |
+|:------:| ------ |
+| `0`    | no words are considered small. |
+| `1`    | insert nbsp after single letter words (e.g. "I" or "a"). |
+| `2`    | insert nbsp after single and double letter words. |
+| `3`    | insert nbsp after words with 1, 2 or 3 letters. |
 
 and so on...
