@@ -27,31 +27,29 @@ module.exports = {
         "hints": false
     },
     "plugins": [
-        new CleanWebpackPlugin(),
-        new CopyPlugin([
-            {
-                "context": "./",
-                "from": "node_modules/hyphenopoly/min/Hyphenopoly.js",
-                "to": "./js/hyphenopoly/",
-                "force": true,
-                "flatten": true
-            },
-            {
-                "context": "./",
-                "from": "node_modules/hyphenopoly/min/patterns/{es,it,de,en-us}.wasm",
-                "to": "./js/hyphenopoly/patterns/",
-                "globOptions": {
-                    "extglob": true
-                },
-                "force": true,
-                "flatten": true
-            }
-        ]),
-        new HtmlWebpackPlugin({
+        new CleanWebpackPlugin(), new CopyPlugin({
+            "patterns": [
+                {
+                    "context": "./",
+                    "from": "node_modules/hyphenopoly/min/Hyphenopoly.js",
+                    "to": "./js/hyphenopoly/",
+                    "force": true,
+                    "flatten": true
+                }, {
+                    "context": "./",
+                    "from": "node_modules/hyphenopoly/min/patterns/{es,it,de,en-us}.wasm",
+                    "to": "./js/hyphenopoly/patterns/",
+                    "globOptions": {
+                        "extglob": true
+                    },
+                    "force": true,
+                    "flatten": true
+                }
+            ]
+        }), new HtmlWebpackPlugin({
             "template": "./src/index.html",
             "favicon": ""
-        }),
-        new HtmlWebpackInjector()
+        }), new HtmlWebpackInjector()
     ],
     "module": {
         "rules": [
