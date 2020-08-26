@@ -1,5 +1,10 @@
 # Version History
 
+## Version tbd (2020-MM-DD)
+### Fixed
+*   bump dependencies in Webpack example
+*   bump devDependencies
+
 ## Version 4.7.0 (2020-08-05)
 ### Fixed
 *   retrieving maindir now works correctly if the filename is mangled (#135)
