@@ -112,44 +112,64 @@ If you’re working in a browser environment you can add the required files, suc
 
 _webpack.config.js_
 ```javascript
+"use strict";
+const path = require("path");
+const TerserPlugin = require("terser-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
+const {CleanWebpackPlugin} = require("clean-webpack-plugin");
+const HtmlWebpackInjector = require("html-webpack-injector");
+
 module.exports = {
-  entry: {
-    vendor_head: "./src/vendor_head.js"
-  },
-  plugins: [
-    new CopyPlugin([
-        {
-            "context": "./",
-            "from": "node_modules/hyphenopoly/min/Hyphenopoly.js",
-            "to": "./js/hyphenopoly/",
-            "force": true,
-            "flatten": true
-        },
-        {
-            "context": "./",
-            "from": "node_modules/hyphenopoly/min/patterns/{es,it,de,en-us}.wasm",
-            "to": "./js/hyphenopoly/patterns/",
-            "globOptions": {
-                "extglob": true
-            },
-            "force": true,
-            "flatten": true
-        }
-    ]),
-    new HtmlWebpackPlugin({
-      template: "./src/index.html",
-      favicon: ""
-    }),
-    new HtmlWebpackInjector()
-  ],
-  module: {
-    rules: [
-      {
-        test: /\.html$/i,
-        loader: "html-loader"
-      }
-    ]
-  }
+    "entry": {
+        "vendor_head": "./src/vendor_head.js",
+        "main": "./src/index.js"
+    },
+    "mode": "production",
+    "output": {
+        "filename": "js/[name].[contentHash].bundle.js",
+        "path": path.resolve(__dirname, "dist")
+    },
+    "optimization": {
+        "minimizer": [new TerserPlugin()],
+        "runtimeChunk": "single"
+    },
+    "performance": {
+        "hints": false
+    },
+    "plugins": [
+        new CleanWebpackPlugin(), new CopyPlugin({
+            "patterns": [
+                {
+                    "context": "./",
+                    "from": "node_modules/hyphenopoly/min/Hyphenopoly.js",
+                    "to": "./js/hyphenopoly/",
+                    "force": true,
+                    "flatten": true
+                }, {
+                    "context": "./",
+                    "from": "node_modules/hyphenopoly/min/patterns/{es,it,de,en-us}.wasm",
+                    "to": "./js/hyphenopoly/patterns/",
+                    "globOptions": {
+                        "extglob": true
+                    },
+                    "force": true,
+                    "flatten": true
+                }
+            ]
+        }), new HtmlWebpackPlugin({
+            "template": "./src/index.html",
+            "favicon": ""
+        }), new HtmlWebpackInjector()
+    ],
+    "module": {
+        "rules": [
+            {
+                "test": /\.html$/i,
+                "loader": "html-loader"
+            }
+        ]
+    }
 };
 ```
 
@@ -157,19 +177,23 @@ Then, inside the vendor_head.js create the proper Hyphenopoly object describing 
 
 _vendor_head.js_
 ```javascript
-var Hyphenopoly = {
-  require: {
-    es: "anticonstitucionalmente", // Required languages
-    it: "precipitevolissimevolmente",
-    de: "Silbentrennungsalgorithmus",
-    "en-us": "antidisestablishmentarianism"
-  },
-  paths: {
-    patterndir: "./js/hyphenopoly/patterns/", // Path to the directory of pattern files
-    maindir: "./js/hyphenopoly/" // Path to the directory where the other ressources are stored
-  }
+"use strict";
+
+const Hyphenopoly = {
+    "require": {
+        "es": "anticonstitucionalmente",
+        "it": "precipitevolissimevolmente",
+        "de": "Silbentrennungsalgorithmus",
+        "en-us": "antidisestablishmentarianism"
+    },
+    "paths": {
+        // Path to the directory of pattern files
+        "patterndir": "./js/hyphenopoly/patterns/",
+        // Path to the directory where the other ressources are stored
+        "maindir": "./js/hyphenopoly/"
+    }
 };
-window.Hyphenopoly = Hyphenopoly; // Make Hyphenopoly object global
+window.Hyphenopoly = Hyphenopoly;
 require("hyphenopoly/Hyphenopoly_Loader");
 ```
 
