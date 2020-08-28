@@ -10,8 +10,6 @@
 LANG=$1
 TEXPATTERNS='./texPatterns/converted/'
 FILENAME="hyph-$LANG"
-WASMUNOPT=$LANG.unopt.wasm
-
 
 echo '(A) setup directories'
 mkdir -p ./lang/$LANG/src
@@ -36,15 +34,8 @@ echo "$LANG\c" > ./lang/$LANG/src/lang.txt
 
 echo '(E) compile WASM-Module'
 cd ./lang/$LANG/src/
-asc hyphenEngine.ts -O3 --runtime none --transform ./mytransform.js -b $WASMUNOPT
+asc hyphenEngine.ts -O3z --converge --runtime none --noExportMemory --transform ./mytransform.js -b ../$LANG.wasm
 
-echo '(F) optimize WASM -> dist'
-WASMNAME=$DIST_PATH$LANG.wasm
-../../../third-party/binaryen/bin/wasm-opt $WASMUNOPT -Oz -o ../$LANG.wasm
-
-echo '(G) clean-up'
-rm $WASMUNOPT
-
-echo "(H) install $LANG"
+echo "(F) install $LANG"
 cd ../../../
 cp ./lang/$LANG/$LANG.wasm ./patterns/$LANG.wasm
