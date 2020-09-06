@@ -34,8 +34,11 @@ echo "$LANG\c" > ./lang/$LANG/src/lang.txt
 
 echo '(E) compile WASM-Module'
 cd ./lang/$LANG/src/
+OLDSIZE=$(wc -c ../$LANG.wasm)
 asc hyphenEngine.ts -O3z --converge --runtime none --noExportMemory --transform ./mytransform.js -b ../$LANG.wasm
-
+NEWSIZE=$(wc -c ../$LANG.wasm)
 echo "(F) install $LANG"
 cd ../../../
 cp ./lang/$LANG/$LANG.wasm ./patterns/$LANG.wasm
+echo "size before: $OLDSIZE"
+echo "size now:    $NEWSIZE"
