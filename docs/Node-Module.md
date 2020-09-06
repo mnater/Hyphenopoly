@@ -1,7 +1,9 @@
 # node.js module
 
 The Hyphenopoly-package contains a file called `hyphenopoly.module.js`.
-This module provides hyphenation for node.js applications.
+This module provides hyphenation of plain text for node.js applications.
+
+_Note: The node module of Hyphenopoly does not support hyphenation of strings containing HTML - just plain text._
 
 ## Install
 
