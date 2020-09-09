@@ -54,6 +54,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "jablonski",
+      "name": "Maik Jablonski",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1702250?v=4",
+      "profile": "http://www.neoskop.de/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7

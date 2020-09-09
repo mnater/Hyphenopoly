@@ -3,7 +3,7 @@
 The Hyphenopoly-package contains a file called `hyphenopoly.module.js`.
 This module provides hyphenation of plain text for node.js applications.
 
-_Note: The node module of Hyphenopoly does not support hyphenation of strings containing HTML - just plain text._
+_Note: The node module of Hyphenopoly does not support hyphenation of strings containing HTML - just plain text. If you need to hyphenate HTML-Strings [parse them first](./Special-use-cases.md#hyphenate-html-strings-using-hyphenopolymodulejs)._
 
 ## Install
 

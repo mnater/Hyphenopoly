@@ -6,6 +6,7 @@
 4.  [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
 5.  [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
 6.  [Words containing special format characters](#format-chars)
+7.  [Hyphenate HTML-Strings using using hyphenopoly.module.js](#hyphenate-html-strings-using-hyphenopolymodulejs)
 
 **Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators.md#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.**
 
@@ -314,3 +315,53 @@ Hyphenopoly does NOT hyphenate words that contain one of the following special f
 *   ZERO WIDTH SPACE (\u200B)
 *   ZERO WIDTH NON-JOINER (\u200C)
 *   ZERO WIDTH JOINER (\u200D)
+
+## Hyphenate HTML-Strings using hyphenopoly.module.js
+
+`hyphenopoly.module.js` only hyphenates plain text strings. If the string contains HTML tags, it must first be parsed. The textContent of the nodes may then be hyphenated using hyphenopoly:
+
+````javascript
+const { JSDOM } = require("jsdom")
+
+const hyphenator = require("hyphenopoly").config({
+  sync: true,
+  require: ["de"],
+  defaultLanguage: "de",
+  minWordLength: 6,
+  leftmin: 4,
+  rightmin: 4,
+})
+
+function hyphenateText(text) {
+  if (typeof text === "string") {
+    return hyphenator(text)
+  } else {
+    return undefined
+  }
+}
+
+function hyphenateHtml(html) {
+  if (typeof html === "string") {
+    if (html.trim().startsWith("<")) {
+      const fragment = JSDOM.fragment(html)
+      const hyphenateNode = (node) => {
+        for (node = node.firstChild; node; node = node.nextSibling) {
+          if (node.nodeType == 3) {
+            node.textContent = hyphenator(node.textContent)
+          } else {
+            hyphenateNode(node)
+          }
+        }
+      }
+      hyphenateNode(fragment)
+      return fragment.firstChild["outerHTML"]
+    } else {
+      return hyphenator(html)
+    }
+  } else {
+    return undefined
+  }
+}
+
+module.exports = { text: hyphenateText, html: hyphenateHtml }
+````
