@@ -5,6 +5,9 @@
 *   bump dependencies in Webpack example
 *   bump devDependencies
 
+### Changed
+*   linked list based pattern trie needs much less memory
+
 ## Version 4.7.0 (2020-08-05)
 ### Fixed
 *   retrieving maindir now works correctly if the filename is mangled (#135)

@@ -104,7 +104,7 @@ function calculateBaseData(hpbBuf) {
         "hs": Math.max(
             // eslint-disable-next-line max-len
             Math.ceil((wordOffset + 512 + hpbMetaData[2] + hpbMetaData[3]) / 65536) * 65536,
-            32 * 1024 * 64
+            65536
         ),
         // Set hyphenatedWordOffset
         "hw": wordOffset + 256,

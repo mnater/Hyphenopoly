@@ -504,24 +504,22 @@ function createPatterns(translate, patterns, exceptionsfile) {
     // eslint-enable security/detect-object-injection
 }
 
+
 /**
  * Create the patterns trie
  * @param {Uint8Array} patterns - hpb-patterns
- * @param {number} trieRowLength - number of characters
  */
-function TrieCreator(patterns, trieRowLength) {
+function TrieCreator(patterns) {
     let i = 0;
     let patternlength = 0;
     let count = 0;
-    let rowStart = 0;
-    let nextRowStart = 0;
     let prevWasDigit = false;
-    let trieNextEmptyRow = 0;
-    let rowOffset = 0;
     let valueStoreNextStartIndex = 0;
     let valueStoreCurrentIdx = 0;
     let valueStorePrevIdx = 0;
-    const patternTrie = [];
+    let currNode = 1;
+    let nextNode = 1;
+    const patternTrie = [5];
     const valueStore = [];
 
     /**
@@ -558,9 +556,9 @@ function TrieCreator(patterns, trieRowLength) {
      * Add a new Row filled with 0
      * @param {number} startIndex - From this index
      */
-    function makeRow(startIndex) {
+    function makeNode(startIndex) {
         let s = startIndex;
-        while (s < (trieRowLength + startIndex)) {
+        while (s < (4 + startIndex)) {
             patternTrie[s] = 0;
             s += 1;
         }
@@ -578,18 +576,35 @@ function TrieCreator(patterns, trieRowLength) {
                 add0ToValueStore();
             }
             prevWasDigit = false;
-            if (nextRowStart === -1) {
-                // Start a new row
-                trieNextEmptyRow = trieNextEmptyRow + trieRowLength + 1;
-                nextRowStart = trieNextEmptyRow;
-                patternTrie[rowStart + rowOffset] = makeRow(nextRowStart);
-            }
-            rowOffset = (codePoint - 12) * 2;
-            rowStart = nextRowStart;
-            nextRowStart = patternTrie[rowStart + rowOffset];
-            if (nextRowStart === 0) {
-                patternTrie[rowStart + rowOffset] = -1;
-                nextRowStart = -1;
+            nextNode = patternTrie[currNode + 2];
+            if (nextNode === 0) {
+                nextNode = patternTrie[0];
+                patternTrie[nextNode] = codePoint;
+                patternTrie[nextNode + 1] = 0;
+                patternTrie[nextNode + 2] = 0;
+                patternTrie[nextNode + 3] = 0;
+                patternTrie[0] = nextNode + 4;
+                patternTrie[currNode + 2] = nextNode;
+                currNode = nextNode;
+            } else {
+                let nodeChar = patternTrie[nextNode];
+                while (nodeChar !== codePoint && nextNode !== 0) {
+                    currNode = nextNode;
+                    nextNode = patternTrie[nextNode + 3];
+                    nodeChar = patternTrie[nextNode];
+                }
+                if (nodeChar === codePoint && nextNode !== 0) {
+                    currNode = nextNode;
+                } else {
+                    nextNode = patternTrie[0];
+                    patternTrie[nextNode] = codePoint;
+                    patternTrie[nextNode + 1] = 0;
+                    patternTrie[nextNode + 2] = 0;
+                    patternTrie[nextNode + 3] = 0;
+                    patternTrie[0] = nextNode + 4;
+                    patternTrie[currNode + 3] = nextNode;
+                    currNode = nextNode;
+                }
             }
         } else {
             // It's a digit
@@ -603,10 +618,10 @@ function TrieCreator(patterns, trieRowLength) {
      * @param {number} codePoint - Translated code Point
      */
     function terminateTrie() {
-        patternTrie[rowStart + rowOffset + 1] = getLinkToValueStore();
+        patternTrie[currNode + 1] = getLinkToValueStore();
     }
 
-    makeRow(0);
+    makeNode(1);
 
     let first = 0;
     let second = 0;
@@ -641,8 +656,8 @@ function TrieCreator(patterns, trieRowLength) {
             terminateTrie();
             // Reset indizes
             count = 0;
-            rowStart = 0;
-            nextRowStart = 0;
+            currNode = 1;
+            nextNode = 1;
             prevWasDigit = 0;
         }
     }
