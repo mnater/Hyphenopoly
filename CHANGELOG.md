@@ -1,6 +1,6 @@
 # Version History
 
-## Version tbd (2020-MM-DD)
+## Version 4.8.0 (2020-10-09)
 ### Fixed
 *   bump dependencies in Webpack example
 *   bump devDependencies
