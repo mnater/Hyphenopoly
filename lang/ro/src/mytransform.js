@@ -24,7 +24,6 @@ class MyTransform extends Transform {
                 "offset": module.i32.const(metaData.ho)
             }
         ]);
-        module.removeExport("memory");
     }
 }
 
