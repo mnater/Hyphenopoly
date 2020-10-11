@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /**
  * @license Hyphenopoly 4.8.0 - client side hyphenation for webbrowsers
  * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
@@ -570,10 +571,24 @@
                 if (C.normalize) {
                     text = text.normalize("NFC");
                 }
-                let tn = text.replace(
-                    reWord,
-                    createWordHyphenator(lo, lang, sel)
-                );
+                let tn = "";
+                if (Intl.Segmenter) {
+                    const segmenter = new Intl.Segmenter(lang, {"granularity": "word"});
+                    const segments = segmenter.segment(text);
+                    const hyphenator = createWordHyphenator(lo, lang, sel);
+                    for (const {segment, isWordLike} of segments) {
+                        if (isWordLike && segment.length >= minWordLength) {
+                            tn += hyphenator(segment);
+                        } else {
+                            tn += segment;
+                        }
+                    }
+                } else {
+                    tn = text.replace(
+                        reWord,
+                        createWordHyphenator(lo, lang, sel)
+                    );
+                }
                 if (selSettings.orphanControl !== 1) {
                     tn = tn.replace(
                         /(\u0020*)(\S+)(\s*)$/,
