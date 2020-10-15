@@ -91,6 +91,10 @@ export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
     return alphabetCount >> 1;
 }
 
+/**
+ * Convert pattern data to linked list trie
+ * Node structure: (0) char, (4) value, (8) child, (12) sibling
+ */
 export function conv(): i32 {
     let i: i32 = po;
     const patternEnd: i32 = po + pl;
@@ -102,10 +106,10 @@ export function conv(): i32 {
     let valueStorePrevIdx: i32 = vs;
     let first: i32 = 0;
     let second: i32 = 0;
-    let nextNode: i32 = pt + 4;
-    let currNode: i32 = pt + 4;
+    let nextNode: i32 = pt;
+    let currNode: i32 = pt;
     let nodeChar: i32 = 0;
-    store<i32>(pt, pt + 20);
+    let nextFreeNode: i32 = pt + 16;
 
     while (i < patternEnd) {
         charAti = load<u8>(i);
@@ -132,9 +136,9 @@ export function conv(): i32 {
                     valueStoreCurrentIdx += 1;
                     nextNode = load<u32>(currNode + 8);
                     if (nextNode === 0) {
-                        nextNode = load<u32>(pt);
+                        nextNode = nextFreeNode;
                         store<u32>(nextNode, charAti);
-                        store<u32>(pt, nextNode + 16);
+                        nextFreeNode = nextNode + 16;
                         store<u32>(currNode + 8, nextNode);
                         currNode = nextNode;
                     } else {
@@ -143,10 +147,10 @@ export function conv(): i32 {
                             nodeChar = load<u32>(currNode);
                             nextNode = load<u32>(currNode + 12);
                         } while (nodeChar !== charAti && nextNode !== 0);
-                        if (nodeChar !== charAti && nextNode === 0) {
-                            nextNode = load<u32>(pt);
+                        if (nextNode === 0 && nodeChar !== charAti) {
+                            nextNode = nextFreeNode;
                             store<u32>(nextNode, charAti);
-                            store<u32>(pt, nextNode + 16);
+                            nextFreeNode = nextNode + 16;
                             store<u32>(currNode + 12, nextNode);
                             currNode = nextNode;
                         }
