@@ -106,7 +106,7 @@ export function conv(): i32 {
     let valueStorePrevIdx: i32 = vs;
     let first: i32 = 0;
     let second: i32 = 0;
-    let nextNode: i32 = pt;
+    let nextNode: i32 = 0;
     let currNode: i32 = pt;
     let nodeChar: i32 = 0;
     let nextFreeNode: i32 = pt + 16;
@@ -172,7 +172,6 @@ export function conv(): i32 {
             valueStoreCurrentIdx = valueStoreStartIndex;
             count = 0;
             currNode = pt;
-            nextNode = pt;
         }
     }
     return createTranslateMap();
@@ -189,7 +188,7 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     let hpPos: i32 = 0;
     let translatedChar: i32 = 0;
     let currNode: i32 = pt;
-    let nextNode: i32 = pt;
+    let nextNode: i32 = 0;
     let nodeChar: i32 = 0;
 
     // Translate UTF16 word to internal ints and clear hpPos-Array
@@ -241,7 +240,6 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         }
         patternStartPos += 1;
         currNode = pt;
-        nextNode = pt;
     }
 
     // Get chars of original word and insert hyphenPoints
