@@ -685,7 +685,7 @@ function main() {
 
     const translate = createTranslate(charactersfile);
     const patterns = createPatterns(translate, patternsfile, exceptionsfile);
-    const dummyTrie = new TrieCreator(patterns, translate[0] * 2);
+    const dummyTrie = new TrieCreator(patterns);
     const header = createHeader(
         paddedLicenseBuf,
         translate.byteLength,
