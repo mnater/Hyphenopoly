@@ -16,12 +16,10 @@
  */
 let loader = require("fs");
 
-const {StringDecoder} = require("string_decoder");
-
 const decode = (() => {
-    const utf16ledecoder = new StringDecoder("utf-16le");
+    const utf16ledecoder = new TextDecoder("utf-16le");
     return (ui16) => {
-        return utf16ledecoder.write(ui16);
+        return utf16ledecoder.decode(ui16);
     };
 })();
 

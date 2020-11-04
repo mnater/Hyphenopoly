@@ -1,5 +1,9 @@
 # Version History
 
+## Version tbd (2020-11-tbd)
+### Changed
+*   use TextDecoder instead of StringDecoder
+
 ## Version 4.8.0 (2020-10-09)
 ### Fixed
 *   bump dependencies in Webpack example
