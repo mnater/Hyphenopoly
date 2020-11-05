@@ -524,6 +524,16 @@ function createTextHyphenator(lang) {
                 orphanController
             );
         }
+        if (H.c.smallWords > 0) {
+            const re = RegExp(`(?=(\\s\\S{1,${H.c.smallWords}}\\s))`, "gu");
+            const matches = [];
+            tn.replace(re, (orig, $1) => {
+                matches.push($1);
+            });
+            matches.forEach((m) => {
+                tn = tn.replace(RegExp(`(\\s)${m.slice(1)}`), `$1${m.slice(1, -1)}\u00A0`);
+            });
+        }
         return tn;
     });
 }
@@ -667,6 +677,7 @@ H.config = ((userConfig) => {
         ["require", []],
         ["rightmin", 0],
         ["rightminPerLang", new Map()],
+        ["smallWords", 0],
         ["substitute", new Map()],
         ["sync", false]
     ]));
