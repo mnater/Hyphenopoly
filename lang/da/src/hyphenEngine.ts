@@ -91,6 +91,10 @@ export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
     return alphabetCount >> 1;
 }
 
+/**
+ * Convert pattern data to linked list trie
+ * Node structure: (0) char, (4) value, (8) child, (12) sibling
+ */
 export function conv(): i32 {
     let i: i32 = po;
     const patternEnd: i32 = po + pl;
@@ -102,10 +106,10 @@ export function conv(): i32 {
     let valueStorePrevIdx: i32 = vs;
     let first: i32 = 0;
     let second: i32 = 0;
-    let nextNode: i32 = pt + 4;
-    let currNode: i32 = pt + 4;
+    let nextNode: i32 = 0;
+    let currNode: i32 = pt;
     let nodeChar: i32 = 0;
-    store<i32>(pt, pt + 20);
+    let nextFreeNode: i32 = pt + 16;
 
     while (i < patternEnd) {
         charAti = load<u8>(i);
@@ -132,21 +136,24 @@ export function conv(): i32 {
                     valueStoreCurrentIdx += 1;
                     nextNode = load<u32>(currNode + 8);
                     if (nextNode === 0) {
-                        nextNode = load<u32>(pt);
+                        // Insert child node
+                        nextNode = nextFreeNode;
+                        nextFreeNode += 16;
                         store<u32>(nextNode, charAti);
-                        store<u32>(pt, nextNode + 16);
                         store<u32>(currNode + 8, nextNode);
                         currNode = nextNode;
                     } else {
                         do {
+                            // Search matching sibling node
                             currNode = nextNode;
                             nodeChar = load<u32>(currNode);
                             nextNode = load<u32>(currNode + 12);
                         } while (nodeChar !== charAti && nextNode !== 0);
-                        if (nodeChar !== charAti && nextNode === 0) {
-                            nextNode = load<u32>(pt);
+                        if (nextNode === 0 && nodeChar !== charAti) {
+                            // Insert sibling node
+                            nextNode = nextFreeNode;
+                            nextFreeNode += 16;
                             store<u32>(nextNode, charAti);
-                            store<u32>(pt, nextNode + 16);
                             store<u32>(currNode + 12, nextNode);
                             currNode = nextNode;
                         }
@@ -164,8 +171,7 @@ export function conv(): i32 {
             valueStoreStartIndex = valueStorePrevIdx + 2;
             valueStoreCurrentIdx = valueStoreStartIndex;
             count = 0;
-            currNode = pt + 4;
-            nextNode = pt + 4;
+            currNode = pt;
         }
     }
     return createTranslateMap();
@@ -181,8 +187,8 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     let hyphenPoint: i32 = 0;
     let hpPos: i32 = 0;
     let translatedChar: i32 = 0;
-    let currNode: i32 = pt + 4;
-    let nextNode: i32 = pt + 4;
+    let currNode: i32 = pt;
+    let nextNode: i32 = 0;
     let nodeChar: i32 = 0;
 
     // Translate UTF16 word to internal ints and clear hpPos-Array
@@ -192,17 +198,17 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         if (translatedChar === 255) {
             return 0;
         }
-        store<u8>(tw + charOffset, translatedChar);
+        store<u8>(charOffset, translatedChar, tw);
         charOffset += 1;
-        store<u8>(hp + charOffset, 0);
-        cc = load<u16>(wo + (charOffset << 1));
+        store<u8>(charOffset, 0, hp);
+        cc = load<u16>(charOffset << 1, wo);
     }
     // Find patterns and collect hyphenPoints
     wordLength = charOffset;
     while (patternStartPos < wordLength) {
         charOffset = patternStartPos;
         while (charOffset < wordLength) {
-            cc = load<u8>(tw + charOffset);
+            cc = load<u8>(charOffset, tw);
             nextNode = load<u32>(currNode + 8);
             if (nextNode === 0) {
                 break;
@@ -218,9 +224,9 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
                     hyphenPointsCount = 0;
                     hyphenPoint = load<u8>(value);
                     while (hyphenPoint !== 255) {
-                        hpPos = hp + patternStartPos + hyphenPointsCount;
-                        if (hyphenPoint > load<u8>(hpPos)) {
-                            store<u8>(hpPos, hyphenPoint);
+                        hpPos = patternStartPos + hyphenPointsCount;
+                        if (hyphenPoint > load<u8>(hpPos, hp)) {
+                            store<u8>(hpPos, hyphenPoint, hp);
                         }
                         hyphenPointsCount += 1;
                         hyphenPoint = load<u8>(value + hyphenPointsCount);
@@ -233,8 +239,7 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
             charOffset += 1;
         }
         patternStartPos += 1;
-        currNode = pt + 4;
-        nextNode = pt + 4;
+        currNode = pt;
     }
 
     // Get chars of original word and insert hyphenPoints
