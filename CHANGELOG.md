@@ -1,8 +1,9 @@
 # Version History
 
-## Version tbd (2020-11-tbd)
+## Version 4.8.1 (2020-11-05)
 ### Fixed
 *   Don't hyphenate words with (non-normalized) COMBINING ACCENTS (#147)
+*   bump devDependencies
 
 ### Changed
 *   use TextDecoder instead of StringDecoder
