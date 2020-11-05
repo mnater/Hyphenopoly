@@ -4,6 +4,9 @@
 ### Changed
 *   use TextDecoder instead of StringDecoder
 
+### Doc
+*   Update the webpack example for webpack 5.4.0
+
 ## Version 4.8.0 (2020-10-09)
 ### Fixed
 *   bump dependencies in Webpack example
