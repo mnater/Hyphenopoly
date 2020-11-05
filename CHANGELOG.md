@@ -1,6 +1,9 @@
 # Version History
 
 ## Version tbd (2020-11-tbd)
+### Fixed
+*   Don't hyphenate words with (non-normalized) COMBINING ACCENTS (#147)
+
 ### Changed
 *   use TextDecoder instead of StringDecoder
 
