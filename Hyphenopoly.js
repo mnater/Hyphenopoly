@@ -762,7 +762,7 @@
             if (!H.languages) {
                 H.languages = new Map();
             }
-            alphabet = alphabet.replace(/-/g, "\u005c-");
+            alphabet = alphabet.replace(/-/g, "\\-");
             H.languages.set(lang, {
                 alphabet,
                 "cache": new Map(),
