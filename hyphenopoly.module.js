@@ -181,7 +181,7 @@ function prepareLanguagesObj(
     patternLeftmin,
     patternRightmin
 ) {
-    alphabet = alphabet.replace(/-/g, "\\-");
+    alphabet = alphabet.replace(/\\*-/g, "\\-");
     const lo = createLangObj(lang);
     if (!lo.engineReady) {
         lo.cache = new Map();
