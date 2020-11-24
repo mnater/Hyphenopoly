@@ -15,6 +15,7 @@
  * in a browser environment (e.g. browserified)
  */
 let loader = require("fs");
+let TextDecoder = require('util').TextDecoder;
 
 const decode = (() => {
     const utf16ledecoder = new TextDecoder("utf-16le");
