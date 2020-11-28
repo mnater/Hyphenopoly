@@ -1,5 +1,13 @@
 # Version History
 
+## Version 4.9.0 (not yet released)
+### Fixed
+*   Add compatibility to node v10 (thanks to yashha and danburzo, #154)
+
+### Changed
+*   Extended CI testing to all node LTS versions (#156)
+*   Add lint script to pretest (4afce88b1b1341daed256ef8fd99e3206c21dd2b)
+
 ## Version 4.8.1 (2020-11-05)
 ### Fixed
 *   Don't hyphenate words with (non-normalized) COMBINING ACCENTS (#147)
