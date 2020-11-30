@@ -5,6 +5,7 @@
 *   Add compatibility to node v10 (thanks to yashha and danburzo, #154)
 
 ### Changed
+*   wasm.hyphenate() returns the length of the hyphenated word - or 0 on error (d1c0d8e23485fc9ae9468d71c4414236a096bd3d)
 *   Extended CI testing to all node LTS versions (#156)
 *   Add lint script to pretest (4afce88b1b1341daed256ef8fd99e3206c21dd2b)
 
