@@ -243,23 +243,22 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     }
 
     // Get chars of original word and insert hyphenPoints
-    charOffset = 1;
+    charOffset = 0;
     hyphenPointsCount = 0;
     wordLength -= 2;
-    rmin = wordLength - rmin;
-    while (charOffset <= wordLength) {
+    rmin = wordLength - rmin - 1;
+    while (charOffset < wordLength) {
         store<u16>(
-            hw + (charOffset << 1) + hyphenPointsCount,
-            load<u16>(wo + (charOffset << 1))
+            hw + ((charOffset + hyphenPointsCount) << 1),
+            load<u16>(wo + (charOffset << 1), 2)
         );
-        if ((charOffset >= lmin) && (charOffset <= rmin)) {
-            if (load<u8>(hp + charOffset, 1) & 1) {
-                hyphenPointsCount += 2;
-                store<u16>(hw + (charOffset << 1) + hyphenPointsCount, hc);
+        if ((charOffset >= lmin - 1) && (charOffset <= rmin)) {
+            if (load<u8>(hp + charOffset, 2) & 1) {
+                hyphenPointsCount += 1;
+                store<u16>(hw + ((charOffset + hyphenPointsCount) << 1), hc);
             }
         }
         charOffset += 1;
     }
-    store<u16>(hw, wordLength + (hyphenPointsCount >> 1));
-    return 1;
+    return wordLength + hyphenPointsCount;
 }

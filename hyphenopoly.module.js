@@ -229,7 +229,6 @@ function prepareLanguagesObj(
 function encloseHyphenateFunction(baseData, hyphenateFunc) {
     const heapBuffer = baseData.wasmMem.buffer;
     const wordStore = new Uint16Array(heapBuffer, baseData.wo, 64);
-    const hydWordStore = new Uint16Array(heapBuffer, baseData.hw, 128);
 
     /**
      * The hyphenateFunction that encloses the env above
@@ -253,8 +252,9 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
         }
         wordStore[i + 1] = 95;
         wordStore[i + 2] = 0;
-        if (hyphenateFunc(leftmin, rightmin, hyphencc) === 1) {
-            word = decode(hydWordStore.subarray(1, hydWordStore[0] + 1));
+        const len = hyphenateFunc(leftmin, rightmin, hyphencc);
+        if (len > 0) {
+            word = decode(new Uint16Array(heapBuffer, baseData.hw, len));
         }
         return word;
     });
