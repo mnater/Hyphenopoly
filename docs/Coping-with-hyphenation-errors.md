@@ -70,7 +70,7 @@ var Hyphenopoly = {
     }
 };
 ````
-In the example above Hyphenopoly.js will never hyphenate the word "desert" (exceptions are not case sensitive) and hyphenate the words "dictionary", "dictionaries" and "blogosphere" at the positions marked with a hyphen-minus.
+In the example above Hyphenopoly.js will never hyphenate the word "desert" and hyphenate the words "dictionary", "dictionaries" and "blogosphere" at the positions marked with a hyphen-minus. Exceptions are case sensitive. The example above will not work for capitalized words (e.g. "Desert").
 
 __pro:__
 -   one place for all exceptions
