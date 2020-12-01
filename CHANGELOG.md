@@ -1,6 +1,6 @@
 # Version History
 
-## Version 4.9.0 (not yet released)
+## Version 4.9.0 (2020-12-01)
 ### Fixed
 *   Add compatibility to node v10 (thanks to yashha and danburzo, #154)
 
