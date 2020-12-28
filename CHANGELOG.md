@@ -1,9 +1,5 @@
 # Version History
 
-## Version 4.x.y (tbd)
-### Changed
-*   Refactor getLang() (decreases code size)
-
 ## Version 4.9.0 (2020-12-01)
 ### Fixed
 *   Add compatibility to node v10 (thanks to yashha and danburzo, #154)
