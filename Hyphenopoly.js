@@ -291,17 +291,15 @@
          * @returns {string|null} The language or null
          */
         function getLang(el, fallback) {
-            try {
-                return (el.getAttribute("lang"))
-                    ? el.getAttribute("lang").toLowerCase()
-                    : el.tagName.toLowerCase() === "html"
-                        ? fallback
-                            ? mainLanguage
-                            : null
-                        : getLang(el.parentNode, fallback);
-            } catch (ignore) {
-                return null;
+            while (el) {
+                if (el.hasAttribute("lang")) {
+                    return el.getAttribute("lang").toLowerCase();
+                }
+                el = el.parentNode;
             }
+            return (fallback)
+                ? mainLanguage
+                : null;
         }
 
         /**
