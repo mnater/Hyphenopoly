@@ -295,7 +295,7 @@
                 if (el.hasAttribute("lang")) {
                     return el.getAttribute("lang").toLowerCase();
                 }
-                el = el.parentNode;
+                el = el.parentElement;
             }
             return (fallback)
                 ? mainLanguage
@@ -328,9 +328,9 @@
              * @returns {string} the language
              */
             function getElementLanguage(el, pLang) {
-                if (el.lang && typeof el.lang === "string") {
-                    return el.lang.toLowerCase();
-                } else if (pLang && pLang !== "") {
+                if (el.hasAttribute("lang")) {
+                    return el.getAttribute("lang").toLowerCase();
+                } else if (pLang) {
                     return pLang.toLowerCase();
                 }
                 return getLang(el, true);
