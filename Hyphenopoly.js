@@ -293,7 +293,8 @@
          */
         function getLang(el, parentLang = "", fallback = true) {
             while (el) {
-                if (el.hasAttribute("lang")) {
+                // Make sure lang is set and not empty string
+                if (el.getAttribute("lang")) {
                     return el.getAttribute("lang").toLowerCase();
                 }
                 if (parentLang) {
