@@ -287,13 +287,17 @@
         /**
          * Get language of element by searching its parents or fallback
          * @param {Object} el The element
+         * @param {string} parentLang Lang of parent if available
          * @param {boolean} fallback Will falback to mainlanguage
          * @returns {string|null} The language or null
          */
-        function getLang(el, fallback) {
+        function getLang(el, parentLang = "", fallback = true) {
             while (el) {
                 if (el.hasAttribute("lang")) {
                     return el.getAttribute("lang").toLowerCase();
+                }
+                if (parentLang) {
+                    return parentLang;
                 }
                 el = el.parentElement;
             }
@@ -305,7 +309,9 @@
         /**
          * Collect elements that have a selector defined in C.selectors
          * and add them to elements.
-         * @returns {undefined}
+         * @param {Object} [parent = null] The start point element
+         * @param {string} [selector = null] The selector matching the parent
+         * @returns {Object} elements-object
          */
         function collectElements(parent = null, selector = null) {
             const elements = makeElementCollection();
@@ -322,31 +328,16 @@
             const matchingSelectors = C.selectors.join(",") + "," + dontHyphenateSelector;
 
             /**
-             * Get Language of Element or of one of its ancestors.
-             * @param {Object} el The element to scan
-             * @param {string} pLang The language of the parent element
-             * @returns {string} the language
-             */
-            function getElementLanguage(el, pLang) {
-                if (el.hasAttribute("lang")) {
-                    return el.getAttribute("lang").toLowerCase();
-                } else if (pLang) {
-                    return pLang.toLowerCase();
-                }
-                return getLang(el, true);
-            }
-
-            /**
              * Recursively walk all elements in el, lending lang and selName
              * add them to elements if necessary.
              * @param {Object} el The element to scan
-             * @param {string} pLang The language of the oarent element
+             * @param {string} pLang The language of the parent element
              * @param {string} sel The selector of the parent element
              * @param {boolean} isChild If el is a child element
              * @returns {undefined}
              */
             function processElements(el, pLang, sel, isChild = false) {
-                const eLang = getElementLanguage(el, pLang);
+                const eLang = getLang(el, pLang);
                 const langDef = H.cf.langs.get(eLang);
                 if (langDef === "H9Y") {
                     elements.add(el, eLang, sel);
@@ -369,14 +360,16 @@
             /**
              * Searches the DOM for each sel
              * @param {object} root The DOM root
+             * @returns {undefined}
              */
             function getElems(root) {
                 C.selectors.forEach((sel) => {
                     root.querySelectorAll(sel).forEach((n) => {
-                        processElements(n, getLang(n, true), sel, false);
+                        processElements(n, getLang(n), sel, false);
                     });
                 });
             }
+
             if (parent === null) {
                 if (C.processShadows) {
                     w.document.querySelectorAll("*").forEach((m) => {
@@ -387,7 +380,7 @@
                 }
                 getElems(w.document);
             } else {
-                processElements(parent, getLang(parent, true), selector);
+                processElements(parent, getLang(parent), selector);
             }
             return elements;
         }
@@ -900,7 +893,7 @@
         }
 
         H.res.DOM.then(() => {
-            mainLanguage = getLang(w.document.documentElement, false);
+            mainLanguage = getLang(w.document.documentElement, "", false);
             if (!mainLanguage && C.defaultLanguage !== "") {
                 mainLanguage = C.defaultLanguage;
             }
