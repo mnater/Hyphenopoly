@@ -302,9 +302,6 @@
                 }
                 el = el.parentElement;
             }
-            return (fallback)
-                ? mainLanguage
-                : null;
         }
 
         /**
