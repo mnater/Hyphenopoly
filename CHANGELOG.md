@@ -1,5 +1,9 @@
 # Version History
 
+## Version 4.10.0 (2021-mm-dd)
+### Fixed
+*   Refactor code to determine language of elements
+
 ## Version 4.9.0 (2020-12-01)
 ### Fixed
 *   Add compatibility to node v10 (thanks to yashha and danburzo, #154)
