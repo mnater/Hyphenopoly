@@ -2,6 +2,7 @@
 
 ## Version 4.10.0 (2021-mm-dd)
 ### Fixed
+*   Prevent error on elements with lang="zxx" (#160)
 *   Refactor code to determine language of elements
 *   bump devDependencies
 

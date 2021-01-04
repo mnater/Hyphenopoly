@@ -345,7 +345,7 @@
                     if (!isChild && C.safeCopy) {
                         registerOnCopy(el);
                     }
-                } else if (!langDef) {
+                } else if (!langDef && eLang !== "zxx") {
                     event.fire(
                         "error",
                         Error(`Element with '${eLang}' found, but '${eLang}.wasm' not loaded. Check language tags!`)
