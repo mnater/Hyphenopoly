@@ -3,6 +3,7 @@
 ## Version 4.10.0 (2021-mm-dd)
 ### Fixed
 *   Refactor code to determine language of elements
+*   bump devDependencies
 
 ## Version 4.9.0 (2020-12-01)
 ### Fixed
