@@ -224,9 +224,11 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
                     hyphenPointsCount = 0;
                     hyphenPoint = load<u8>(value);
                     while (hyphenPoint !== 255) {
-                        hpPos = patternStartPos + hyphenPointsCount;
-                        if (hyphenPoint > load<u8>(hpPos, hp)) {
-                            store<u8>(hpPos, hyphenPoint, hp);
+                        if (hyphenPoint !== 0) {
+                            hpPos = patternStartPos + hyphenPointsCount;
+                            if (hyphenPoint > load<u8>(hpPos, hp)) {
+                                store<u8>(hpPos, hyphenPoint, hp);
+                            }
                         }
                         hyphenPointsCount += 1;
                         hyphenPoint = load<u8>(value + hyphenPointsCount);
