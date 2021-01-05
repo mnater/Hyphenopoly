@@ -2,11 +2,10 @@
 <html lang="en-us">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 020</title>
+        <title>Test 051</title>
         <script>
             var Hyphenopoly = {
                 require: {
-                    "de": "FORCEHYPHENOPOLY",
                     "en-us": "FORCEHYPHENOPOLY"
                 },
                 setup: {
@@ -23,7 +22,7 @@
                 }
             };
             function assert() {
-                var tests = 5;
+                var tests = 4;
                 var i = 1;
                 var test = "";
                 var ref = "";
@@ -47,7 +46,7 @@
                 if (parent != window) {
                     parent.postMessage(JSON.stringify({
                         desc: document.getElementById("desc").innerHTML,
-                        index: 20,
+                        index: 51,
                         result: (result ? "passed" : "failed")
                     }), window.location.href);
                 }
@@ -77,22 +76,23 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test19.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test21.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test50.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test52.html">Next&nbsp;&rarr;</a></div>
 
-        <h1>Test 020</h1>
-        <p id="desc">Inherit language</p>
+        <h1>Test 052</h1>
+        <p id="desc">Check handling of lang="zxx"</p>
         <div id="result"></div>
         <hr>
         <p id="test1" class="test hyphenate">exception</p>
         <p id="ref1" class="ref">ex•cep•tion</p>
-        <p id="test2" class="test hyphenate" lang="de"><span>beinhalten</span></p>
-        <p id="ref2" class="ref" lang="de"><span>be•inhal•ten</span></p>
-        <p id="test3" class="test hyphenate" lang="de"><span lang="en-us">exception</span></p>
-        <p id="ref3" class="ref" lang="de"><span lang="en-us">ex•cep•tion</span></p>
-        <p id="test4" class="test hyphenate"><span>exception</span></p>
-        <p id="ref4" class="ref"><span>ex•cep•tion</span></p>
-        <p id="test5" class="test hyphenate" lang=""><span>exception</span></p>
-        <p id="ref5" class="ref" lang=""><span>ex•cep•tion</span></p>
+
+        <p id="test2" class="test hyphenate" lang="zxx">nonlinguistic</p>
+        <p id="ref2" class="ref" lang="zxx">nonlinguistic</p>
+
+        <p id="test3" class="test hyphenate">hyphenation <span lang="zxx">nonlinguistic</span></p>
+        <p id="ref3" class="ref">hy•phen•ation <span lang="zxx">nonlinguistic</span></p>
+
+        <p id="test4" class="test hyphenate" lang="zxx">nonlinguistic <span lang="en-us">hyphenation</span></p>
+        <p id="ref4" class="ref" lang="zxx">nonlinguistic <span lang="en-us">hy•phen•ation</span></p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 

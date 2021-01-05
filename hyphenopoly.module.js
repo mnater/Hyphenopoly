@@ -1,6 +1,6 @@
 /**
- * @license Hyphenopoly.module.js 4.9.0 - hyphenation for node
- * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
+ * @license Hyphenopoly.module.js 4.10.0 - hyphenation for node
+ * ©2021  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license

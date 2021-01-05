@@ -1,9 +1,10 @@
 # Version History
 
-## Version 4.10.0 (2021-mm-dd)
+## Version 4.10.0 (2021-01-05)
 ### Fixed
 *   Prevent error on elements with lang="zxx" (#160)
-*   Refactor code to determine language of elements
+*   Refactor code to determine language of elements (79735497cb51f15fbc6932dce809293f4cd1050e)
+*   Enhance wasm.hyphenate() (1567e276ccdae2ca1b611c01b51e341e6ddb9dca)
 *   bump devDependencies
 
 ## Version 4.9.0 (2020-12-01)

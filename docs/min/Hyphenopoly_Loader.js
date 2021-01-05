@@ -1,6 +1,6 @@
 /**
- * @license Hyphenopoly_Loader 4.9.0 - client side hyphenation
- * ©2020  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
+ * @license Hyphenopoly_Loader 4.10.0 - client side hyphenation
+ * ©2021  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
