@@ -161,7 +161,6 @@ Hyphenopoly.js hyphenates all elements that match the selectors defined in `sele
 
 _Note: According to [https://www.w3.org/International/questions/qa-no-language#nonlinguistic](https://www.w3.org/International/questions/qa-no-language#nonlinguistic) Hyphenopoly will not hyphenate elements with `lang="zxx"`. Consider to set `lang="zxx"` instead of `class="donthyphenate"` for elements that have non-linguistic contents._
 
-
 ### exceptions
 ````
 type: Object
