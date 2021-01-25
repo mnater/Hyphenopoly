@@ -1,5 +1,9 @@
 # Version History
 
+## Version 4.x.y (2021-mm-dd)
+### Fixed
+*   Refactor code to determine language of elements (again)
+
 ## Version 4.10.0 (2021-01-05)
 ### Fixed
 *   Prevent error on elements with lang="zxx" (#160)

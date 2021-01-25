@@ -292,15 +292,13 @@
          * @returns {string|null} The language or null
          */
         function getLang(el, parentLang = "", fallback = true) {
-            while (el) {
-                // Make sure lang is set and not empty string
-                if (el.getAttribute("lang")) {
-                    return el.getAttribute("lang").toLowerCase();
-                }
-                if (parentLang) {
-                    return parentLang;
-                }
-                el = el.parentElement;
+            // Find closest el with lang attr not empty
+            el = el.closest("[lang]:not([lang=''])");
+            if (el && el.lang) {
+                return el.lang.toLowerCase();
+            }
+            if (parentLang) {
+                return parentLang;
             }
             return (fallback)
                 ? mainLanguage
