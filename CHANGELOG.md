@@ -2,7 +2,9 @@
 
 ## Version 4.x.y (2021-mm-dd)
 ### Fixed
+*   Fixed too long word error not stopping hyphenation in module
 *   Refactor code to determine language of elements (again)
+*   Refactor code to store word in memory
 
 ## Version 4.10.0 (2021-01-05)
 ### Fixed

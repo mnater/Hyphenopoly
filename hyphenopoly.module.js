@@ -240,18 +240,15 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
      * @param {Number} rightmin – min number of chars to go to new line
      * @returns {String} the hyphenated word
      */
-    wordStore[0] = 95;
     return ((word, hyphencc, leftmin, rightmin) => {
-        let i = 0;
-        let cc = word.charCodeAt(i);
-        while (cc) {
-            i += 1;
-            // eslint-disable-next-line security/detect-object-injection
-            wordStore[i] = cc;
-            cc = word.charCodeAt(i);
-        }
-        wordStore[i + 1] = 95;
-        wordStore[i + 2] = 0;
+        wordStore.set([
+            95,
+            ...[...word].map((c) => {
+                return c.charCodeAt(0);
+            }),
+            95,
+            0
+        ]);
         const len = hyphenateFunc(leftmin, rightmin, hyphencc);
         if (len > 0) {
             word = decode(new Uint16Array(heapBuffer, baseData.hw, len));
@@ -379,8 +376,7 @@ function createWordHyphenator(lo, lang) {
     function hyphenateNormal(word) {
         if (word.length > 61) {
             H.events.dispatch("error", {"msg": "found word longer than 61 characters"});
-        }
-        if (!lo.reNotAlphabet.test(word)) {
+        } else if (!lo.reNotAlphabet.test(word)) {
             return lo.hyphenate(
                 word,
                 H.c.hyphen.charCodeAt(0),

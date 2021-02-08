@@ -794,11 +794,14 @@
         function encloseHyphenateFunction(baseData, hyphenateFunc) {
             const wordStore = new Uint16Array(baseData.buf, baseData.wo, 64);
             return ((word, hyphencc, leftmin, rightmin) => {
-                wordStore.set([95].concat(
-                    [...word].map((c) => {
+                wordStore.set([
+                    95,
+                    ...[...word].map((c) => {
                         return c.charCodeAt(0);
-                    }), 95, 0
-                ));
+                    }),
+                    95,
+                    0
+                ]);
                 const len = hyphenateFunc(leftmin, rightmin, hyphencc);
                 if (len > 0) {
                     word = decode(
