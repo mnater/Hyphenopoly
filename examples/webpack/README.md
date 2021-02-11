@@ -1,5 +1,5 @@
 # Example: Webpack, using Hyphenopoly_Loader.js
-Implementing Hyphenopoly alongside Webpack 4.
+Implementing Hyphenopoly alongside Webpack 5.
 
 ## Build the website
 ````bash
