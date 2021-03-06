@@ -1,10 +1,12 @@
 # Version History
 
-## Version 4.x.y (2021-mm-dd)
+## Version 4.11.0 (2021-03-dd)
 ### Fixed
-*   Fixed too long word error not stopping hyphenation in module
-*   Refactor code to determine language of elements (again)
-*   Refactor code to store word in memory
+*   Fixed too long word error not stopping hyphenation in module (7373d9d80c6b632d46194f99d6778cbb04f260e1)
+*   Refactor code to determine language of elements (5c8379f230e3f34e4f3e73fcb32f81fccb383f24)
+*   Refactor code to store word in memory (7373d9d80c6b632d46194f99d6778cbb04f260e1)
+*   Refactor translateMap (35c8eb3dab3010a96feef589b049d2349d0a3bf1)
+*   bump devDependencies
 
 ## Version 4.10.0 (2021-01-05)
 ### Fixed
