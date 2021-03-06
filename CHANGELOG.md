@@ -1,6 +1,6 @@
 # Version History
 
-## Version 4.11.0 (2021-03-dd)
+## Version 4.11.0 (2021-03-07)
 ### Fixed
 *   Fixed too long word error not stopping hyphenation in module (7373d9d80c6b632d46194f99d6778cbb04f260e1)
 *   Refactor code to determine language of elements (5c8379f230e3f34e4f3e73fcb32f81fccb383f24)
