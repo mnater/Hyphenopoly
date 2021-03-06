@@ -38,8 +38,8 @@ function nodeBuffer2typedArray(buf) {
  * |      values:     |
  * |256 chars * 1Byte |
  * |         +        |
- * |      substi:     |
- * |256 chars * 1Byte |
+ * |    collisions:   |
+ * |64 buckets * 4Byte|
  * -------------------- <- 1024 Bytes
  * |     alphabet     |
  * |256 chars * 2Bytes|

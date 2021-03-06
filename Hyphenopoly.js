@@ -759,7 +759,7 @@
                 "exc": createExceptionMap(lang),
                 "hyphenate": hyphenateFunction,
                 "ready": true,
-                "reNotAlphabet": RegExp(`[^${alphabet}]`, "gi")
+                "reNotAlphabet": RegExp(`[^${alphabet}]`, "i")
             });
             H.hy6ors.get(lang).resolve(createStringHyphenator(lang));
             event.fire(
