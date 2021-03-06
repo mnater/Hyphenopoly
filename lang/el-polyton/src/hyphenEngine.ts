@@ -4,41 +4,53 @@ export const uwo: i32 = wo;
 export const hwo: i32 = hw;
 export const lmi: i32 = lm;
 export const rmi: i32 = rm;
-
 let alphabetCount: i32 = 0;
 
-/**
- * Maps BMP-charCode (16bit) to 8bit adresses
- *
- * {0, 1, 2, ..., 2^16 - 1} -> {1, 2, ..., 2^8}
- * collisions will occur!
- */
 function hashCharCode(cc: i32): i32 {
-    // 2^16 (-1 + sqrt(5)) / 2 = 40’503.475...
-    let h: i32 = cc * 40503;
-    // Mask 8bits
-    h &= 255;
-    return h << 1;
+    // Hashes charCodes to [0, 256[
+    return ((19441 * cc) % 19559) & 255;
 }
 
 function pushToTranslateMap(cc: i32, id: i32): void {
-    let addr = hashCharCode(cc);
-    while (load<u16>(addr) !== 0) {
-        addr += 2;
+    let ptr: i32 = hashCharCode(cc) << 1;
+    if (load<u16>(ptr) === 0) {
+        // No collision
+        store<u16>(ptr, cc);
+        store<u8>(ptr >> 1, id, 512);
+    } else {
+        // Handle collision
+        ptr = 0;
+        while (load<u16>(ptr, 768) !== 0) {
+            ptr += 4;
+        }
+        if (ptr >= 256) {
+            unreachable();
+        }
+        store<u16>(ptr, cc, 768);
+        store<u16>(ptr, id, 770);
     }
-    store<u16>(addr, cc);
-    store<u8>(addr >> 1, id, 512);
 }
 
 function pullFromTranslateMap(cc: i32): i32 {
-    let addr = hashCharCode(cc);
-    while (load<u16>(addr) !== cc) {
-        addr += 2;
-        if (addr >= 512) {
-            return 255;
-        }
+    let ptr: i32 = hashCharCode(cc) << 1;
+    const val = load<u16>(ptr);
+    if (val === 0) {
+        // Unknown char
+        return 255;
     }
-    return load<u8>(addr >> 1, 512);
+    if (val === cc) {
+        // Known char
+        return load<u8>(ptr >> 1, 512);
+    }
+    // Find collided char
+    ptr = 0;
+    while (load<u16>(ptr, 768) !== cc) {
+        ptr += 4;
+    }
+    if (ptr >= 256) {
+        return 255;
+    }
+    return load<u16>(ptr, 770);
 }
 
 
@@ -103,7 +115,7 @@ export function conv(): i32 {
     let count: i32 = 0;
     let valueStoreStartIndex: i32 = vs;
     let valueStoreCurrentIdx: i32 = vs;
-    let valueStorePrevIdx: i32 = vs;
+    let valueStorePrevIdx: i32 = 0;
     let first: i32 = 0;
     let second: i32 = 0;
     let nextNode: i32 = 0;
