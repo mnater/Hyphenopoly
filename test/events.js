@@ -5,15 +5,13 @@
 const t = require("tap");
 
 let H9Y = null;
-t.beforeEach(function setup(done) {
+t.beforeEach(function setup() {
     H9Y = require("../hyphenopoly.module");
-    done();
 });
 
-t.afterEach(function tearDown(done) {
+t.afterEach(function tearDown() {
     H9Y = null;
     delete require.cache[require.resolve("../hyphenopoly.module")];
-    done();
 });
 
 t.test("set Event", async function (t) {
