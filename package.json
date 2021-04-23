@@ -69,7 +69,7 @@
     "createWasmForLang": "sh ./tools/createWasmForLang.sh en-us",
     "createAllWasm": "sh ./tools/createAllWasm.sh",
     "pretest": "npm run lint",
-    "test": "tap --no-coverage test/*.js",
+    "test": "tap --branches=95 test/*.js",
     "testsuite": "open http://127.0.0.1/~mnater/Hyphenopoly/testsuite/ && open http://127.0.0.1/~mnater/Hyphenopoly/min/testsuite/",
     "lint": "eslint Hyphenopoly_Loader.js Hyphenopoly.js hyphenopoly.module.js test/*.js src/*.ts && remark -q *.md && remark -q */*.md",
     "prepare": "sh ./tools/minify.sh",
