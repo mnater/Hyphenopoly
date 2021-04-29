@@ -131,6 +131,7 @@ var Hyphenopoly = {
 };
 </script>
 ````
+_Note: According to [https://www.w3.org/International/questions/qa-no-language#nonlinguistic](https://www.w3.org/International/questions/qa-no-language#nonlinguistic) Hyphenopoly will not hyphenate elements with `lang="zxx"`. Consider to set `lang="zxx"` instead of `class="donthyphenate"` for elements that have non-linguistic contents._
 
 ### dontHyphenateClass
 ````
@@ -157,6 +158,8 @@ Hyphenopoly.js hyphenates all elements that match the selectors defined in `sele
     <p>This will. <span class="donthyphenate">This will not</span> And this will…</p>
 </div>
 ````
+
+_Note: According to [https://www.w3.org/International/questions/qa-no-language#nonlinguistic](https://www.w3.org/International/questions/qa-no-language#nonlinguistic) Hyphenopoly will not hyphenate elements with `lang="zxx"`. Consider to set `lang="zxx"` instead of `class="donthyphenate"` for elements that have non-linguistic contents._
 
 ### exceptions
 ````

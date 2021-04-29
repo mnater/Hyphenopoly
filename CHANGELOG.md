@@ -1,5 +1,40 @@
 # Version History
 
+## Version 4.11.0 (2021-03-07)
+### Fixed
+*   Fixed too long word error not stopping hyphenation in module (7373d9d80c6b632d46194f99d6778cbb04f260e1)
+*   Refactor code to determine language of elements (5c8379f230e3f34e4f3e73fcb32f81fccb383f24)
+*   Refactor code to store word in memory (7373d9d80c6b632d46194f99d6778cbb04f260e1)
+*   Refactor translateMap (35c8eb3dab3010a96feef589b049d2349d0a3bf1)
+*   bump devDependencies
+
+## Version 4.10.0 (2021-01-05)
+### Fixed
+*   Prevent error on elements with lang="zxx" (#160)
+*   Refactor code to determine language of elements (79735497cb51f15fbc6932dce809293f4cd1050e)
+*   Enhance wasm.hyphenate() (1567e276ccdae2ca1b611c01b51e341e6ddb9dca)
+*   bump devDependencies
+
+## Version 4.9.0 (2020-12-01)
+### Fixed
+*   Add compatibility to node v10 (thanks to yashha and danburzo, #154)
+
+### Changed
+*   wasm.hyphenate() returns the length of the hyphenated word - or 0 on error (d1c0d8e23485fc9ae9468d71c4414236a096bd3d)
+*   Extended CI testing to all node LTS versions (#156)
+*   Add lint script to pretest (4afce88b1b1341daed256ef8fd99e3206c21dd2b)
+
+## Version 4.8.1 (2020-11-05)
+### Fixed
+*   Don't hyphenate words with (non-normalized) COMBINING ACCENTS (#147)
+*   bump devDependencies
+
+### Changed
+*   use TextDecoder instead of StringDecoder
+
+### Doc
+*   Update the webpack example for webpack 5.4.0
+
 ## Version 4.8.0 (2020-10-09)
 ### Fixed
 *   bump dependencies in Webpack example

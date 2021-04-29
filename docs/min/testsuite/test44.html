@@ -8,6 +8,13 @@
             require: {
                 "en-us": "FORCEHYPHENOPOLY"
             },
+            setup: {
+                selectors: {
+                    ".hyphenate": {
+                        hyphen: "•"
+                    }
+                }
+            },
             handleEvent: {
                 hyphenopolyEnd: function (e) {
                     assert();

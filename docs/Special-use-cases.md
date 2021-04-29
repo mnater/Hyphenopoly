@@ -79,32 +79,71 @@ _Note:_ Make sure the directories referenced in `paths` are available.
 
 **Note: A webpacked hyphenopoly.module.js is by far larger then the Hyphenopoly_Loader.js and Hyphenopoly.js scripts which are optimized for usage in browsers.**
 
-Like `browserify` `webpack` will not shim "fs". Thus we have to tell `webpack` to shim the "fs" module with an empty object and configure `hyphenopoly` to use the "http"-loader.
+**Note2: I am not a webpack expert. The following works for Webpack 5.4.0, but may not be the best way to use hyphenopoly.module.js in webpack.**
+
+Like `browserify`, `webpack` will not shim "fs". Thus we have to tell `webpack` to shim the "fs" module with an empty object and how to polyfill other node-specific functions. And we configure `hyphenopoly` to use the "https"-loader.
 
 webpack.config.js
 
 ```javascript
 module.exports = {
-  node: {
-    fs: "empty" //<- prevent "fs not found"
-  }
+  const path = require("path");
+  const webpack = require("webpack");
+  module.exports = {
+    mode: "production",
+    entry: "./src/index.js",
+    output: {
+      filename: "main.js",
+      path: path.resolve(__dirname, "dist")
+    },
+    node: {
+      global: true
+    },
+    plugins: [
+      new webpack.ProvidePlugin({
+        process: "process/browser",
+        Buffer: ["buffer", "Buffer"],
+      })
+    ],
+    resolve: {
+      fallback: { 
+        "fs": false,
+        "https": require.resolve("https-browserify"),
+        "http": require.resolve("stream-http")
+      }
+    }
+  };
 };
 ```
 
 index.js
 
 ```javascript
+"use strict";
+
 const hyphenopoly = require("hyphenopoly");
 
 const hyphenator = hyphenopoly.config({
-  require: ["de", "en-us"],
-  paths: {
-    maindir: "../node_modules/hyphenopoly/",
-    patterndir: "../node_modules/hyphenopoly/patterns/"
-  },
-  hyphen: "•",
-  loader: "http"
+    "require": ["de", "en-us"],
+    "paths": {
+        "maindir": "../node_modules/hyphenopoly/",
+        "patterndir": "../node_modules/hyphenopoly/patterns/"
+    },
+    "hyphen": "•",
+    "loader": "https"
 });
+
+async function addDiv(lang, text) {
+    const hyphenateText = await hyphenator.get(lang);
+    const element = document.createElement('div');
+    element.innerHTML = hyphenateText(text);
+    document.body.appendChild(element);
+}
+
+(async function () {
+    await addDiv("de", "Silbentrennung verbessert den Blocksatz.");
+    await addDiv("en-us", "hyphenation enhances justification.");
+})();
 ```
 
 ## Webpack, using Hyphenopoly_Loader.js {#webpack-hyphenopoly-loader}
@@ -123,17 +162,25 @@ const HtmlWebpackInjector = require("html-webpack-injector");
 
 module.exports = {
     "entry": {
-        "vendor_head": "./src/vendor_head.js",
-        "main": "./src/index.js"
+        "main": "./src/index.js",
+        "vendor_head": "./src/vendor_head.js"
     },
     "mode": "production",
-    "output": {
-        "filename": "js/[name].[contentHash].bundle.js",
-        "path": path.resolve(__dirname, "dist")
+    "module": {
+        "rules": [
+            {
+                "loader": "html-loader",
+                "test": /\.html$/i
+            }
+        ]
     },
     "optimization": {
         "minimizer": [new TerserPlugin()],
         "runtimeChunk": "single"
+    },
+    "output": {
+        "filename": "js/[name].[contenthash].bundle.js",
+        "path": path.resolve(__dirname, "dist")
     },
     "performance": {
         "hints": false
@@ -144,33 +191,17 @@ module.exports = {
                 {
                     "context": "./",
                     "from": "node_modules/hyphenopoly/min/Hyphenopoly.js",
-                    "to": "./js/hyphenopoly/",
-                    "force": true,
-                    "flatten": true
+                    "to": "./js/hyphenopoly/"
                 }, {
                     "context": "./",
                     "from": "node_modules/hyphenopoly/min/patterns/{es,it,de,en-us}.wasm",
-                    "to": "./js/hyphenopoly/patterns/",
-                    "globOptions": {
-                        "extglob": true
-                    },
-                    "force": true,
-                    "flatten": true
+                    "to": "./js/hyphenopoly/patterns/[name].[ext]"
                 }
             ]
         }), new HtmlWebpackPlugin({
-            "template": "./src/index.html",
-            "favicon": ""
+            "template": "./src/index.html"
         }), new HtmlWebpackInjector()
-    ],
-    "module": {
-        "rules": [
-            {
-                "test": /\.html$/i,
-                "loader": "html-loader"
-            }
-        ]
-    }
+    ]
 };
 ```
 

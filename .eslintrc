@@ -84,10 +84,7 @@
     "no-extra-parens": 0,
     "array-element-newline": [
       1,
-      {
-        "multiline": false,
-        "minItems": 6
-      }
+      "consistent"
     ],
     "no-magic-numbers": 0,
     "function-paren-newline": [
@@ -124,7 +121,7 @@
     {
       "files": ["**/*.ts"],
       "parser": "@typescript-eslint/parser",
-      "plugins": ["@typescript-eslint"],
+      "plugins": ["@typescript-eslint/eslint-plugin"],
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/eslint-recommended",
