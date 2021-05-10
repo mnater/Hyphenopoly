@@ -22,9 +22,9 @@ function pushToTranslateMap(cc: i32, id: i32): void {
         ptr = 0;
         while (load<u16>(ptr, 768) !== 0) {
             ptr += 4;
-        }
-        if (ptr >= 256) {
-            unreachable();
+            if (ptr >= 256) {
+                unreachable();
+            }
         }
         store<u16>(ptr, cc, 768);
         store<u16>(ptr, id, 770);
@@ -46,9 +46,9 @@ function pullFromTranslateMap(cc: i32): i32 {
     ptr = 0;
     while (load<u16>(ptr, 768) !== cc) {
         ptr += 4;
-    }
-    if (ptr >= 256) {
-        return 255;
+        if (ptr >= 256) {
+            return 255;
+        }
     }
     return load<u16>(ptr, 770);
 }
