@@ -5,8 +5,12 @@
 const t = require("tap");
 const fs = require("fs").promises;
 
+const TD = typeof TextDecoder === "undefined"
+    ? require("util").TextDecoder
+    : TextDecoder;
+
 const decode = (() => {
-    const utf16ledecoder = new TextDecoder("utf-16le");
+    const utf16ledecoder = new TD("utf-16le");
     return (ui16) => {
         return utf16ledecoder.decode(ui16);
     };
@@ -55,8 +59,12 @@ t.test("load module", async(t) => {
         });
         t.test("hyphenate standard word", async(t) => {
             const heapBuffer = result.instance.exports.mem.buffer;
-            const unhyphenatedWordOffset = result.instance.exports.uwo.value;
-            const hyphenatedWordOffset = result.instance.exports.hwo.value;
+            const unhyphenatedWordOffset = (WebAssembly.Global)
+                ? result.instance.exports.uwo.value
+                : result.instance.exports.uwo;
+            const hyphenatedWordOffset = (WebAssembly.Global)
+                ? result.instance.exports.hwo.value
+                : result.instance.exports.hwo;
             const unhyphenatedWordStore = new Uint16Array(
                 heapBuffer,
                 unhyphenatedWordOffset,
@@ -84,8 +92,12 @@ t.test("load module", async(t) => {
 
         t.test("hyphenate word with unknown char (no collision)", async(t) => {
             const heapBuffer = result.instance.exports.mem.buffer;
-            const unhyphenatedWordOffset = result.instance.exports.uwo.value;
-            const hyphenatedWordOffset = result.instance.exports.hwo.value;
+            const unhyphenatedWordOffset = (WebAssembly.Global)
+                ? result.instance.exports.uwo.value
+                : result.instance.exports.uwo;
+            const hyphenatedWordOffset = (WebAssembly.Global)
+                ? result.instance.exports.hwo.value
+                : result.instance.exports.hwo;
             const unhyphenatedWordStore = new Uint16Array(
                 heapBuffer,
                 unhyphenatedWordOffset,
@@ -113,8 +125,12 @@ t.test("load module", async(t) => {
 
         t.test("hyphenate word with unknown char (collision)", async(t) => {
             const heapBuffer = result.instance.exports.mem.buffer;
-            const unhyphenatedWordOffset = result.instance.exports.uwo.value;
-            const hyphenatedWordOffset = result.instance.exports.hwo.value;
+            const unhyphenatedWordOffset = (WebAssembly.Global)
+                ? result.instance.exports.uwo.value
+                : result.instance.exports.uwo;
+            const hyphenatedWordOffset = (WebAssembly.Global)
+                ? result.instance.exports.hwo.value
+                : result.instance.exports.hwo;
             const unhyphenatedWordStore = new Uint16Array(
                 heapBuffer,
                 unhyphenatedWordOffset,
@@ -161,8 +177,12 @@ t.test("load module", async(t) => {
             t.test("hyphenate word with substituted char", async(t) => {
                 const exp = result.instance.exports;
                 const heapBuffer = exp.mem.buffer;
-                const unhyphenatedWordOffset = exp.uwo.value;
-                const hyphenatedWordOffset = exp.hwo.value;
+                const unhyphenatedWordOffset = (WebAssembly.Global)
+                    ? result.instance.exports.uwo.value
+                    : result.instance.exports.uwo;
+                const hyphenatedWordOffset = (WebAssembly.Global)
+                    ? result.instance.exports.hwo.value
+                    : result.instance.exports.hwo;
                 const unhyphenatedWordStore = new Uint16Array(
                     heapBuffer,
                     unhyphenatedWordOffset,
@@ -207,8 +227,12 @@ t.test("load module", async(t) => {
             t.test("hyphenate word with substituted char", async(t) => {
                 const exp = result.instance.exports;
                 const heapBuffer = exp.mem.buffer;
-                const unhyphenatedWordOffset = exp.uwo.value;
-                const hyphenatedWordOffset = exp.hwo.value;
+                const unhyphenatedWordOffset = (WebAssembly.Global)
+                    ? result.instance.exports.uwo.value
+                    : result.instance.exports.uwo;
+                const hyphenatedWordOffset = (WebAssembly.Global)
+                    ? result.instance.exports.hwo.value
+                    : result.instance.exports.hwo;
                 const unhyphenatedWordStore = new Uint16Array(
                     heapBuffer,
                     unhyphenatedWordOffset,
