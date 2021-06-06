@@ -10,12 +10,12 @@
   "keywords": [],
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
-    "copy-webpack-plugin": "^8.1.1",
+    "copy-webpack-plugin": "^9.0.0",
     "html-loader": "^2.1.2",
     "html-webpack-injector": "^1.1.4",
     "html-webpack-plugin": "^5.0.0",
-    "webpack": "^5.35.1",
-    "webpack-cli": "^4.6.0",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0",
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
