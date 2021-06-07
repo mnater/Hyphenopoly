@@ -12,18 +12,22 @@ TEXPATTERNS='./texPatterns/converted/'
 FILENAME="hyph-$LANG"
 
 echo '(A) setup directories'
+rm -R ./lang/$LANG/src
 mkdir -p ./lang/$LANG/src
 
-echo '(B) create .hpb file'
-node ./tools/tex2hpb.js $TEXPATTERNS$FILENAME.lic.txt $TEXPATTERNS$FILENAME.chr.txt $TEXPATTERNS$FILENAME.pat.txt $TEXPATTERNS$FILENAME.hyp.txt ./lang/$LANG/src/$LANG
+echo '(B) create .json file'
+node ./tools/tex2json.js $TEXPATTERNS$FILENAME.chr.txt $TEXPATTERNS$FILENAME.hyp.txt $TEXPATTERNS$FILENAME.lic.txt $TEXPATTERNS$FILENAME.pat.txt ./lang/$LANG/src/$LANG
 
-echo '(C) create global imports from .hpb'
-node ./tools/create_imports.js ./lang/$LANG/src/$LANG.hpb > ./lang/$LANG/src/g.ts
+echo '(C) create .wasm data'
+node ./tools/createWasmData.js ./lang/$LANG/src/$LANG.json ./lang/$LANG/src/$LANG.data
 
+#echo '(C) create global imports from .hpb'
+#node ./tools/create_imports.js ./lang/$LANG/src/$LANG.hpb > ./lang/$LANG/src/g.ts
+#
 echo '(D) copy TypeScript sources'
 cp ./src/hyphenEngine.ts ./lang/$LANG/src/hyphenEngine.ts
 cp ./src/mytransform.js ./lang/$LANG/src/mytransform.js
-#cp ./src/tsconfig.json ./lang/$LANG/src/tsconfig.json
+
 echo '{
     "extends": "../../../node_modules/assemblyscript/std/assembly.json",
     "include": [

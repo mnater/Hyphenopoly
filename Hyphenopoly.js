@@ -795,17 +795,17 @@
             const wordStore = new Uint16Array(baseData.buf, baseData.wo, 64);
             return ((word, hyphencc, leftmin, rightmin) => {
                 wordStore.set([
-                    95,
+                    46,
                     ...[...word].map((c) => {
                         return c.charCodeAt(0);
                     }),
-                    95,
+                    46,
                     0
                 ]);
                 const len = hyphenateFunc(leftmin, rightmin, hyphencc);
                 if (len > 0) {
                     word = decode(
-                        new Uint16Array(baseData.buf, baseData.hw, len)
+                        new Uint16Array(baseData.buf, 0, len)
                     );
                 }
                 return word;
@@ -849,15 +849,13 @@
              */
             function handleWasm(res) {
                 const exp = res.instance.exports;
-                let alphalen = exp.conv();
+                let alphalen = exp.init();
                 alphalen = registerSubstitutions(alphalen, exp);
                 const baseData = {
                     /* eslint-disable multiline-ternary */
                     "buf": exp.mem.buffer,
-                    "hw": (wa.Global) ? exp.hwo.value : exp.hwo,
                     "lm": (wa.Global) ? exp.lmi.value : exp.lmi,
-                    "rm": (wa.Global) ? exp.rmi.value : exp.rmi,
-                    "wo": (wa.Global) ? exp.uwo.value : exp.uwo
+                    "rm": (wa.Global) ? exp.rmi.value : exp.rmi
                     /* eslint-enable multiline-ternary */
                 };
                 prepareLanguagesObj(
@@ -866,7 +864,7 @@
                         baseData,
                         exp.hyphenate
                     ),
-                    decode(new Uint16Array(exp.mem.buffer, 1026, alphalen - 1)),
+                    decode(new Uint16Array(exp.mem.buffer, 1280, alphalen - 1)),
                     baseData.lm,
                     baseData.rm
                 );
