@@ -791,8 +791,8 @@
          * @param {function} hyphenateFunc hyphenateFunction
          * @returns {function} hyphenateFunction with closured environment
          */
-        function encloseHyphenateFunction(baseData, hyphenateFunc) {
-            const wordStore = new Uint16Array(baseData.buf, baseData.wo, 64);
+        function encloseHyphenateFunction(buf, hyphenateFunc) {
+            const wordStore = new Uint16Array(buf, 0, 64);
             return ((word, hyphencc, leftmin, rightmin) => {
                 wordStore.set([
                     46,
@@ -805,7 +805,7 @@
                 const len = hyphenateFunc(leftmin, rightmin, hyphencc);
                 if (len > 0) {
                     word = decode(
-                        new Uint16Array(baseData.buf, 0, len)
+                        new Uint16Array(buf, 0, len)
                     );
                 }
                 return word;
@@ -851,22 +851,17 @@
                 const exp = res.instance.exports;
                 let alphalen = exp.init();
                 alphalen = registerSubstitutions(alphalen, exp);
-                const baseData = {
-                    /* eslint-disable multiline-ternary */
-                    "buf": exp.mem.buffer,
-                    "lm": (wa.Global) ? exp.lmi.value : exp.lmi,
-                    "rm": (wa.Global) ? exp.rmi.value : exp.rmi
-                    /* eslint-enable multiline-ternary */
-                };
                 prepareLanguagesObj(
                     lang,
                     encloseHyphenateFunction(
-                        baseData,
+                        exp.mem.buffer,
                         exp.hyphenate
                     ),
                     decode(new Uint16Array(exp.mem.buffer, 1280, alphalen - 1)),
-                    baseData.lm,
-                    baseData.rm
+                    /* eslint-disable multiline-ternary */
+                    (wa.Global) ? exp.lmi.value : exp.lmi,
+                    (wa.Global) ? exp.rmi.value : exp.rmi
+                    /* eslint-enable multiline-ternary */
                 );
             }
             heProm.w.then((response) => {
