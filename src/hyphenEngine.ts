@@ -4,8 +4,8 @@ let charmapOffset:i32 = 0;
 let hasValueOffset:i32 = 0;
 let valuemapOffset:i32 = 0;
 let valuesOffset:i32 = 0;
-export let lmi:i32 = 2;
-export let rmi:i32 = 3;
+export let lmi:i32 = 0;
+export let rmi:i32 = 0;
 let alphabetCount: i32 = 0;
 
 const tw: i32 = 128;
@@ -183,8 +183,8 @@ export function init(): i32 {
     hasValueOffset = load<u32>(dataOffset, 12) + dataOffset;
     valuemapOffset = load<u32>(dataOffset, 16) + dataOffset;
     valuesOffset = load<u32>(dataOffset, 20) + dataOffset;
-    // lmi = load<u32>(dataOffset, 24) + dataOffset;
-    // rmi = load<u32>(dataOffset, 28) + dataOffset;
+    lmi = load<u32>(dataOffset, 24);
+    rmi = load<u32>(dataOffset, 28);
     return createTranslateMap();
 }
 
