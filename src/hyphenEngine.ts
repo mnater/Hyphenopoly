@@ -1,3 +1,5 @@
+declare function log(arg0: i32): void;
+
 let alphabetOffset:i32 = 0;
 let bitmapOffset:i32 = 0;
 let charmapOffset:i32 = 0;
@@ -107,16 +109,17 @@ function getBitAtPos(startByte: i32, pos: i32): i32 {
     return 0;
 }
 
-function count0(byte: i32): i32 {
-    return 8 - popcnt<i32>(byte);
+function count0(dWord: i32): i32 {
+    return 32 - popcnt<i32>(dWord);
 }
 
-function get0PosInByte(byte: i32, startPos: i32): i32 {
+function get0PosInDWord(dWord: i32, startPos: i32): i32 {
     let pos: i32 = startPos;
-    while (pos < 8) {
-        const shift: i32 = 7 - pos;
+    const dWordBigEnd: i32 = bswap<i32>(dWord);
+    while (pos < 32) {
+        const shift: i32 = 31 - pos;
         const mask: i32 = 1 << shift;
-        if ((byte & mask) !== mask) {
+        if ((dWordBigEnd & mask) !== mask) {
             return pos;
         }
         pos += 1;
@@ -141,24 +144,24 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let pos: i32 = 0;
     let bytePos: i32 = startByte;
     let count: i32 = 0;
-    let byte: i32 = 0;
+    let dWord: i32 = 0;
     // Find byte with ith 0 and accumulate count
     while (count < ith) {
         if (bytePos > endByte) {
             return 0;
         }
-        byte = load<u8>(bytePos);
-        count += count0(byte);
+        dWord = load<u32>(bytePos);
+        count += count0(dWord);
         if (count >= ith) {
-            count -= count0(byte);
+            count -= count0(dWord);
             break;
         } else {
-            bytePos += 1;
+            bytePos += 4;
         }
     }
     // The ith 0 is in byte at bytePos
     while (count < ith) {
-        pos = get0PosInByte(byte, pos) + 1;
+        pos = get0PosInDWord(dWord, pos) + 1;
         count += 1;
     }
     return ((bytePos - startByte) * 8) + pos - 1;
