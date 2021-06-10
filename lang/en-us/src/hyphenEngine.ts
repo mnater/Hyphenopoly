@@ -1,11 +1,13 @@
+declare function log(arg0: i32): void;
+
 let alphabetOffset:i32 = 0;
 let bitmapOffset:i32 = 0;
 let charmapOffset:i32 = 0;
 let hasValueOffset:i32 = 0;
 let valuemapOffset:i32 = 0;
 let valuesOffset:i32 = 0;
-export let lmi:i32 = 2;
-export let rmi:i32 = 3;
+export let lmi:i32 = 0;
+export let rmi:i32 = 0;
 let alphabetCount: i32 = 0;
 
 const tw: i32 = 128;
@@ -107,23 +109,6 @@ function getBitAtPos(startByte: i32, pos: i32): i32 {
     return 0;
 }
 
-function count0(byte: i32): i32 {
-    return 8 - popcnt<i32>(byte);
-}
-
-function get0PosInByte(byte: i32, startPos: i32): i32 {
-    let pos: i32 = startPos;
-    while (pos < 8) {
-        const shift: i32 = 7 - pos;
-        const mask: i32 = 1 << shift;
-        if ((byte & mask) !== mask) {
-            return pos;
-        }
-        pos += 1;
-    }
-    return -1;
-}
-
 function rank1(pos: i32, startByte: i32): i32 {
     const numBytes: i32 = floor<i32>(pos / 8);
     const numBits: i32 = pos - (8 * numBytes);
@@ -137,28 +122,46 @@ function rank1(pos: i32, startByte: i32): i32 {
     return count;
 }
 
+function count0(dWord: i32): i32 {
+    return 32 - popcnt<i32>(dWord);
+}
+
+function get0PosInDWord(dWord: i32, startPos: i32): i32 {
+    let pos: i32 = startPos;
+    const dWordBigEnd: i32 = bswap<i32>(dWord);
+    while (pos < 32) {
+        const shift: i32 = 31 - pos;
+        const mask: i32 = 1 << shift;
+        if ((dWordBigEnd & mask) !== mask) {
+            return pos;
+        }
+        pos += 1;
+    }
+    return -1;
+}
+
 function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let pos: i32 = 0;
     let bytePos: i32 = startByte;
     let count: i32 = 0;
-    let byte: i32 = 0;
+    let dWord: i32 = 0;
     // Find byte with ith 0 and accumulate count
     while (count < ith) {
         if (bytePos > endByte) {
             return 0;
         }
-        byte = load<u8>(bytePos);
-        count += count0(byte);
+        dWord = load<u32>(bytePos);
+        count += count0(dWord);
         if (count >= ith) {
-            count -= count0(byte);
+            count -= count0(dWord);
             break;
         } else {
-            bytePos += 1;
+            bytePos += 4;
         }
     }
     // The ith 0 is in byte at bytePos
     while (count < ith) {
-        pos = get0PosInByte(byte, pos) + 1;
+        pos = get0PosInDWord(dWord, pos) + 1;
         count += 1;
     }
     return ((bytePos - startByte) * 8) + pos - 1;
@@ -183,8 +186,8 @@ export function init(): i32 {
     hasValueOffset = load<u32>(dataOffset, 12) + dataOffset;
     valuemapOffset = load<u32>(dataOffset, 16) + dataOffset;
     valuesOffset = load<u32>(dataOffset, 20) + dataOffset;
-    // lmi = load<u32>(dataOffset, 24) + dataOffset;
-    // rmi = load<u32>(dataOffset, 28) + dataOffset;
+    lmi = load<u32>(dataOffset, 24);
+    rmi = load<u32>(dataOffset, 28);
     return createTranslateMap();
 }
 

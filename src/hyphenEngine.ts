@@ -109,6 +109,19 @@ function getBitAtPos(startByte: i32, pos: i32): i32 {
     return 0;
 }
 
+function rank1(pos: i32, startByte: i32): i32 {
+    const numBytes: i32 = floor<i32>(pos / 8);
+    const numBits: i32 = pos - (8 * numBytes);
+    let i: i32 = 0;
+    let count: i32 = 0;
+    while (i < numBytes) {
+        count += popcnt<i32>(load<u8>(startByte + i));
+        i += 1;
+    }
+    count += popcnt<i32>(load<u8>(startByte + i) >> (8 - numBits));
+    return count;
+}
+
 function count0(dWord: i32): i32 {
     return 32 - popcnt<i32>(dWord);
 }
@@ -125,19 +138,6 @@ function get0PosInDWord(dWord: i32, startPos: i32): i32 {
         pos += 1;
     }
     return -1;
-}
-
-function rank1(pos: i32, startByte: i32): i32 {
-    const numBytes: i32 = floor<i32>(pos / 8);
-    const numBits: i32 = pos - (8 * numBytes);
-    let i: i32 = 0;
-    let count: i32 = 0;
-    while (i < numBytes) {
-        count += popcnt<i32>(load<u8>(startByte + i));
-        i += 1;
-    }
-    count += popcnt<i32>(load<u8>(startByte + i) >> (8 - numBits));
-    return count;
 }
 
 function select0(ith: i32, startByte: i32, endByte: i32): i32 {

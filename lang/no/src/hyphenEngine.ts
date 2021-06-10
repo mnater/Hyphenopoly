@@ -1,10 +1,20 @@
-/* eslint-disable max-depth */
-import {hp, hw, lm, pl, po, pt, rm, to, tw, vs, wo} from "./g";
-export const uwo: i32 = wo;
-export const hwo: i32 = hw;
-export const lmi: i32 = lm;
-export const rmi: i32 = rm;
+declare function log(arg0: i32): void;
+
+let alphabetOffset:i32 = 0;
+let bitmapOffset:i32 = 0;
+let charmapOffset:i32 = 0;
+let hasValueOffset:i32 = 0;
+let valuemapOffset:i32 = 0;
+let valuesOffset:i32 = 0;
+export let lmi:i32 = 0;
+export let rmi:i32 = 0;
 let alphabetCount: i32 = 0;
+
+const tw: i32 = 128;
+const hp: i32 = 192;
+const translateMapOffset:i32 = 256;
+const originalWordOffset: i32 = 1792;
+const dataOffset:i32 = 1920;
 
 function hashCharCode(cc: i32): i32 {
     // Hashes charCodes to [0, 256[
@@ -13,44 +23,44 @@ function hashCharCode(cc: i32): i32 {
 
 function pushToTranslateMap(cc: i32, id: i32): void {
     let ptr: i32 = hashCharCode(cc) << 1;
-    if (load<u16>(ptr) === 0) {
+    if (load<u16>(ptr, translateMapOffset) === 0) {
         // No collision
-        store<u16>(ptr, cc);
-        store<u8>(ptr >> 1, id, 512);
+        store<u16>(ptr, cc, translateMapOffset);
+        store<u8>(ptr >> 1, id, translateMapOffset + 512);
     } else {
         // Handle collision
         ptr = 0;
-        while (load<u16>(ptr, 768) !== 0) {
+        while (load<u16>(ptr, translateMapOffset + 768) !== 0) {
             ptr += 4;
             if (ptr >= 256) {
                 unreachable();
             }
         }
-        store<u16>(ptr, cc, 768);
-        store<u16>(ptr, id, 770);
+        store<u16>(ptr, cc, translateMapOffset + 768);
+        store<u16>(ptr, id, translateMapOffset + 770);
     }
 }
 
 function pullFromTranslateMap(cc: i32): i32 {
     let ptr: i32 = hashCharCode(cc) << 1;
-    const val = load<u16>(ptr);
+    const val = load<u16>(ptr, translateMapOffset);
     if (val === 0) {
         // Unknown char
         return 255;
     }
     if (val === cc) {
         // Known char
-        return load<u8>(ptr >> 1, 512);
+        return load<u8>(ptr >> 1, translateMapOffset + 512);
     }
     // Find collided char
     ptr = 0;
-    while (load<u16>(ptr, 768) !== cc) {
+    while (load<u16>(ptr, translateMapOffset + 768) !== cc) {
         ptr += 4;
         if (ptr >= 256) {
             return 255;
         }
     }
-    return load<u16>(ptr, 770);
+    return load<u16>(ptr, translateMapOffset + 770);
 }
 
 
@@ -60,8 +70,9 @@ function createTranslateMap(): i32 {
     let first: i32 = 0;
     let second: i32 = 0;
     let secondInt: i32 = 0;
-    i = to + 2;
-    while (i < po) {
+    i = alphabetOffset;
+    pushToTranslateMap(46, 0);
+    while (i < bitmapOffset) {
         first = load<u16>(i);
         second = load<u16>(i, 2);
         if (second === 0) {
@@ -82,111 +93,145 @@ function createTranslateMap(): i32 {
             pushToTranslateMap(first, secondInt);
         }
         // Add to alphabet
-        store<u16>(alphabetCount, first, 1024);
+        store<u16>(alphabetCount, first, 1280);
         alphabetCount += 2;
         i += 4;
     }
     return alphabetCount >> 1;
 }
 
-export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
-    const replccInt: i32 = pullFromTranslateMap(replcc);
-    if (replccInt !== 255) {
-        pushToTranslateMap(ccl, replccInt);
-        if (ccu !== 0) {
-            pushToTranslateMap(ccu, replccInt);
-        }
-        // Add to alphabet
-        store<u16>(alphabetCount, ccl, 1024);
-        alphabetCount += 2;
+function getBitAtPos(startByte: i32, pos: i32): i32 {
+    const byte: i32 = floor<i32>(pos / 8);
+    const mask: i32 = 1 << (7 - (pos - (byte * 8)));
+    if ((load<u8>(startByte + byte) & mask) !== 0) {
+        return 1;
     }
-    return alphabetCount >> 1;
+    return 0;
 }
 
-/**
- * Convert pattern data to linked list trie
- * Node structure: (0) char, (4) value, (8) child, (12) sibling
- */
-export function conv(): i32 {
-    let i: i32 = po;
-    const patternEnd: i32 = po + pl;
-    let charAti: i32 = 0;
-    let plen: i32 = 0;
+function rank1(pos: i32, startByte: i32): i32 {
+    const numBytes: i32 = floor<i32>(pos / 8);
+    const numBits: i32 = pos - (8 * numBytes);
+    let i: i32 = 0;
     let count: i32 = 0;
-    let valueStoreStartIndex: i32 = vs;
-    let valueStoreCurrentIdx: i32 = vs;
-    let valueStorePrevIdx: i32 = 0;
-    let first: i32 = 0;
-    let second: i32 = 0;
-    let nextNode: i32 = 0;
-    let currNode: i32 = pt;
-    let nodeChar: i32 = 0;
-    let nextFreeNode: i32 = pt + 16;
+    while (i < numBytes) {
+        count += popcnt<i32>(load<u8>(startByte + i));
+        i += 1;
+    }
+    count += popcnt<i32>(load<u8>(startByte + i) >> (8 - numBits));
+    return count;
+}
 
-    while (i < patternEnd) {
-        charAti = load<u8>(i);
-        if (charAti === 0) {
-            plen = load<u8>(i, 1);
-            i += 2;
+function count0(dWord: i32): i32 {
+    return 32 - popcnt<i32>(dWord);
+}
+
+function get0PosInDWord(dWord: i32, startPos: i32): i32 {
+    let pos: i32 = startPos;
+    const dWordBigEnd: i32 = bswap<i32>(dWord);
+    while (pos < 32) {
+        const shift: i32 = 31 - pos;
+        const mask: i32 = 1 << shift;
+        if ((dWordBigEnd & mask) !== mask) {
+            return pos;
+        }
+        pos += 1;
+    }
+    return -1;
+}
+
+function select0(ith: i32, startByte: i32, endByte: i32): i32 {
+    let pos: i32 = 0;
+    let bytePos: i32 = startByte;
+    let count: i32 = 0;
+    let dWord: i32 = 0;
+    // Find byte with ith 0 and accumulate count
+    while (count < ith) {
+        if (bytePos > endByte) {
+            return 0;
+        }
+        dWord = load<u32>(bytePos);
+        count += count0(dWord);
+        if (count >= ith) {
+            count -= count0(dWord);
+            break;
         } else {
-            if (charAti === 255) {
-                first = load<u8>(i, 1);
-                second = load<u8>(i, 2);
-                i += 3;
-            }
-            while (count < plen) {
-                if (count === 0) {
-                    charAti = first;
-                } else if (count === 1) {
-                    charAti = second;
-                } else {
-                    charAti = load<u8>(i);
-                    i += 1;
-                }
-                if (charAti > 11) {
-                    charAti -= 11;
-                    valueStoreCurrentIdx += 1;
-                    nextNode = load<u32>(currNode + 8);
-                    if (nextNode === 0) {
-                        // Insert child node
-                        nextNode = nextFreeNode;
-                        nextFreeNode += 16;
-                        store<u32>(nextNode, charAti);
-                        store<u32>(currNode + 8, nextNode);
-                        currNode = nextNode;
-                    } else {
-                        do {
-                            // Search matching sibling node
-                            currNode = nextNode;
-                            nodeChar = load<u32>(currNode);
-                            nextNode = load<u32>(currNode + 12);
-                        } while (nodeChar !== charAti && nextNode !== 0);
-                        if (nextNode === 0 && nodeChar !== charAti) {
-                            // Insert sibling node
-                            nextNode = nextFreeNode;
-                            nextFreeNode += 16;
-                            store<u32>(nextNode, charAti);
-                            store<u32>(currNode + 12, nextNode);
-                            currNode = nextNode;
-                        }
-                    }
-                } else {
-                    store<u8>(valueStoreCurrentIdx, charAti);
-                    valueStorePrevIdx = valueStoreCurrentIdx;
-                }
-                count += 1;
-            }
-            // Terminate valueStore and save link to valueStoreStartIndex
-            store<u8>(valueStorePrevIdx, 255, 1);
-            store<u32>(currNode + 4, valueStoreStartIndex);
-            // Reset indizes
-            valueStoreStartIndex = valueStorePrevIdx + 2;
-            valueStoreCurrentIdx = valueStoreStartIndex;
-            count = 0;
-            currNode = pt;
+            bytePos += 4;
         }
     }
+    // The ith 0 is in byte at bytePos
+    while (count < ith) {
+        pos = get0PosInDWord(dWord, pos) + 1;
+        count += 1;
+    }
+    return ((bytePos - startByte) * 8) + pos - 1;
+}
+
+function getFirstChild(pos: i32): i32 {
+    return select0(pos + 1, bitmapOffset, charmapOffset - 1) - pos;
+}
+
+function getChild(pos: i32, idx: i32): i32 {
+    return getFirstChild(pos) + idx;
+}
+
+function countChildren(pos: i32): i32 {
+    return getFirstChild(pos + 1) - getFirstChild(pos);
+}
+
+export function init(): i32 {
+    alphabetOffset = load<u32>(dataOffset) + dataOffset;
+    bitmapOffset = load<u32>(dataOffset, 4) + dataOffset;
+    charmapOffset = load<u32>(dataOffset, 8) + dataOffset;
+    hasValueOffset = load<u32>(dataOffset, 12) + dataOffset;
+    valuemapOffset = load<u32>(dataOffset, 16) + dataOffset;
+    valuesOffset = load<u32>(dataOffset, 20) + dataOffset;
+    lmi = load<u32>(dataOffset, 24);
+    rmi = load<u32>(dataOffset, 28);
     return createTranslateMap();
+}
+
+function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
+    const startsAtHalfByte: i32 = valIdx % 2;
+    let byteIdx: i32 = floor<u32>(valIdx / 2);
+    let currentByte: i32 = load<u8>(byteIdx + valuesOffset);
+    let pad: i32 = 0;
+    // 0 = MSB, 1 = LSB
+    let nextPos: i32 = 0;
+    let valuesWritten: i32 = 0;
+    let newValue: i32 = 0;
+    if (startsAtHalfByte === 0) {
+        pad = (currentByte >> 4) & 31;
+        nextPos = 1;
+    } else {
+        pad = currentByte & 15;
+        nextPos = 0;
+    }
+    let i: i32 = 0;
+    while (i < pad) {
+        i += 1;
+        valuesWritten += 1;
+    }
+    i = 1;
+    while (i < length) {
+        if (nextPos === 0) {
+            byteIdx += 1;
+            currentByte = load<u8>(byteIdx + valuesOffset);
+            newValue = (currentByte >> 4) & 15;
+            if (newValue > load<u8>(hp + startOffset + valuesWritten)) {
+                store<u8>(hp + startOffset + valuesWritten, newValue);
+            }
+            nextPos = 1;
+        } else {
+            newValue = currentByte & 15;
+            if (newValue > load<u8>(hp + startOffset + valuesWritten)) {
+                store<u8>(hp + startOffset + valuesWritten, newValue);
+            }
+            nextPos = 0;
+        }
+        i += 1;
+        valuesWritten += 1;
+    }
 }
 
 export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
@@ -194,66 +239,64 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     let wordLength: i32 = 0;
     let charOffset: i32 = 0;
     let cc: i32 = 0;
-    let value: i32 = 0;
     let hyphenPointsCount: i32 = 0;
-    let hyphenPoint: i32 = 0;
-    let hpPos: i32 = 0;
     let translatedChar: i32 = 0;
-    let currNode: i32 = pt;
-    let nextNode: i32 = 0;
-    let nodeChar: i32 = 0;
+    let currNode: i32 = 0;
+    let childCount: i32 = 0;
 
     // Translate UTF16 word to internal ints and clear hpPos-Array
-    cc = load<u16>(wo);
+    cc = load<u16>(0);
     while (cc !== 0) {
         translatedChar = pullFromTranslateMap(cc);
         if (translatedChar === 255) {
             return 0;
         }
         store<u8>(charOffset, translatedChar, tw);
+        store<u16>(charOffset << 1, cc, originalWordOffset);
         charOffset += 1;
         store<u8>(charOffset, 0, hp);
-        cc = load<u16>(charOffset << 1, wo);
+        cc = load<u16>(charOffset << 1);
     }
+    store<u16>(charOffset << 1, 0, originalWordOffset);
     // Find patterns and collect hyphenPoints
     wordLength = charOffset;
     while (patternStartPos < wordLength) {
         charOffset = patternStartPos;
+        currNode = 0;
         while (charOffset < wordLength) {
             cc = load<u8>(charOffset, tw);
-            nextNode = load<u32>(currNode + 8);
-            if (nextNode === 0) {
-                break;
-            }
-            do {
-                currNode = nextNode;
-                nodeChar = load<u32>(currNode);
-                nextNode = load<u32>(currNode + 12);
-            } while (nodeChar !== cc && nextNode !== 0);
-            if (nodeChar === cc) {
-                value = load<u32>(currNode + 4);
-                if (value !== 0) {
-                    hyphenPointsCount = 0;
-                    hyphenPoint = load<u8>(value);
-                    while (hyphenPoint !== 255) {
-                        if (hyphenPoint !== 0) {
-                            hpPos = patternStartPos + hyphenPointsCount;
-                            if (hyphenPoint > load<u8>(hpPos, hp)) {
-                                store<u8>(hpPos, hyphenPoint, hp);
-                            }
-                        }
-                        hyphenPointsCount += 1;
-                        hyphenPoint = load<u8>(value + hyphenPointsCount);
-                    }
+            childCount = countChildren(currNode);
+            let nthChild: i32 = 0;
+            let nthChildIdx: i32 = 0;
+            while (nthChild < childCount) {
+                nthChildIdx = getChild(currNode, nthChild);
+                if (load<u8>(charmapOffset + nthChildIdx - 1) === cc) {
+                    break;
                 }
-            } else {
+                nthChild += 1;
+            }
+            if (nthChild === childCount) {
                 break;
             }
-
+            currNode = nthChildIdx;
+            if (getBitAtPos(hasValueOffset, currNode - 1) === 1) {
+                const pos: i32 = rank1(currNode, hasValueOffset);
+                const valBitsStart: i32 = select0(
+                    pos,
+                    valuemapOffset,
+                    valuesOffset - 1
+                );
+                const len: i32 = select0(
+                    pos + 1,
+                    valuemapOffset,
+                    valuesOffset - 1
+                ) - valBitsStart - 1;
+                const valIdx: i32 = rank1(valBitsStart, valuemapOffset);
+                extractValuesToHp(valIdx, len, patternStartPos);
+            }
             charOffset += 1;
         }
         patternStartPos += 1;
-        currNode = pt;
     }
 
     // Get chars of original word and insert hyphenPoints
@@ -264,16 +307,19 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     while (charOffset < wordLength) {
         store<u16>(
             (charOffset + hyphenPointsCount) << 1,
-            load<u16>(charOffset << 1, wo + 2),
-            hw
+            load<u16>(charOffset << 1, originalWordOffset + 2)
         );
         if ((charOffset >= lmin - 1) && (charOffset <= rmin)) {
             if (load<u8>(charOffset, hp + 2) & 1) {
                 hyphenPointsCount += 1;
-                store<u16>((charOffset + hyphenPointsCount) << 1, hc, hw);
+                store<u16>((charOffset + hyphenPointsCount) << 1, hc);
             }
         }
         charOffset += 1;
     }
+    store<u16>(
+        (charOffset + hyphenPointsCount) << 1,
+        0
+    );
     return wordLength + hyphenPointsCount;
 }
