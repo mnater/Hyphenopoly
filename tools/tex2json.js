@@ -45,7 +45,7 @@ chrFileLines.forEach((line) => {
     if (line.length === 1) {
         line += "_";
     } else if (line.length > 2) {
-        subst.push(line.charAt(0) + line.slice(2));
+        subst.push(line.slice(2) + line.charAt(0));
         line = line.slice(0, 2);
     }
     parsedData.chr.push(line);

@@ -102,8 +102,8 @@ function sTrie() {
         chr.forEach((element) => {
             const first = element.charCodeAt(0);
             const secnd = element.charCodeAt(1);
-            if (ordMap.has(first)) {
-                ordMap.set(secnd, ordMap.get(first));
+            if (ordMap.has(secnd)) {
+                ordMap.set(first, ordMap.get(secnd));
             } else {
                 ordMap.set(first, ord);
                 if (secnd !== 95) {
