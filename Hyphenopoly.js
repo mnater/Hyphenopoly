@@ -787,7 +787,7 @@
 
         /**
          * Setup env for hyphenateFunction
-         * @param {Object} baseData baseData
+         * @param {ArrayBuffer} buf Memory buffer
          * @param {function} hyphenateFunc hyphenateFunction
          * @returns {function} hyphenateFunction with closured environment
          */
