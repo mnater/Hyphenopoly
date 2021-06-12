@@ -234,6 +234,20 @@ function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
     }
 }
 
+export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
+    const replccInt: i32 = pullFromTranslateMap(replcc);
+    if (replccInt !== 255) {
+        pushToTranslateMap(ccl, replccInt);
+        if (ccu !== 0) {
+            pushToTranslateMap(ccu, replccInt);
+        }
+        // Add to alphabet
+        store<u16>(alphabetCount, ccl, 1280);
+        alphabetCount += 2;
+    }
+    return alphabetCount >> 1;
+}
+
 export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     let patternStartPos: i32 = 0;
     let wordLength: i32 = 0;
