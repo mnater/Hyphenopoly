@@ -1,4 +1,4 @@
-declare function log(arg0: i32): void;
+// Debug: declare function log(arg0: i32): void;
 
 let alphabetOffset:i32 = 0;
 let bitmapOffset:i32 = 0;
