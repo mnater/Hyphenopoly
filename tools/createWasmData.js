@@ -41,6 +41,9 @@ const license = Uint8Array.from([...input.lic], (char) => {
 });
 
 const alphabet = Uint16Array.from([...input.chr.join("")], (char) => {
+    if (char === "_") {
+        return 0;
+    }
     return char.charCodeAt(0);
 });
 

@@ -100,9 +100,16 @@ function sTrie() {
         const ordMap = new Map([[46, 0]]);
         let ord = 1;
         chr.forEach((element) => {
-            element.split("").forEach((char) => {
-                ordMap.set(char.charCodeAt(0), ord);
-            });
+            const first = element.charCodeAt(0);
+            const secnd = element.charCodeAt(1);
+            if (ordMap.has(first)) {
+                ordMap.set(secnd, ordMap.get(first));
+            } else {
+                ordMap.set(first, ord);
+                if (secnd !== 95) {
+                    ordMap.set(secnd, ord);
+                }
+            }
             ord += 1;
         });
 

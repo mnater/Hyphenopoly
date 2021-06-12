@@ -32,12 +32,25 @@ const licFileContent = fs.readFileSync(process.argv[4], "utf8").trim();
 const patFileContent = fs.readFileSync(process.argv[5], "utf8").trim();
 
 const parsedData = {
-    "chr": chrFileContent.split("\n"),
+    "chr": [],
     "hyp": hypFileContent.split("\n"),
     "lic": licFileContent,
     "lrmin": [2, 2],
     "pat": []
 };
+
+const chrFileLines = chrFileContent.split("\n");
+const subst = [];
+chrFileLines.forEach((line) => {
+    if (line.length === 1) {
+        line += "_";
+    } else if (line.length > 2) {
+        subst.push(line.charAt(0) + line.slice(2));
+        line = line.slice(0, 2);
+    }
+    parsedData.chr.push(line);
+});
+parsedData.chr.push(...subst);
 
 const patFileLines = patFileContent.split("\n");
 patFileLines.forEach((line) => {
