@@ -1,4 +1,5 @@
-// Debug: declare function log(arg0: i32): void;
+declare function log(arg0: i32): void;
+declare function log2(arg0: i32): void;
 
 let alphabetOffset:i32 = 0;
 let bitmapOffset:i32 = 0;
@@ -6,6 +7,8 @@ let charmapOffset:i32 = 0;
 let hasValueOffset:i32 = 0;
 let valuemapOffset:i32 = 0;
 let valuesOffset:i32 = 0;
+let bitmapIndexStart: i32 = 0;
+let bitmapIndexEnd: i32 = 0;
 export let lmi:i32 = 0;
 export let rmi:i32 = 0;
 let alphabetCount: i32 = 0;
@@ -146,20 +149,39 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let count: i32 = 0;
     let dWord: i32 = 0;
     // Find byte with ith 0 and accumulate count
-    while (count < ith) {
-        if (bytePos > endByte) {
-            return 0;
+    if (startByte === 2330) {
+        let left: i32 = 0;
+        let right: i32 = bitmapIndexEnd - bitmapIndexStart;
+        while (left < right) {
+            const m: i32 = floor<i32>((left + right) / 2);
+            count = load<u16>(bitmapIndexStart + (m << 1));
+            if (count < ith) {
+                left = m + 1;
+            } else {
+                right = m;
+            }
         }
+        count = load<u16>(bitmapIndexStart + ((left - 1) << 1));
+        bytePos = startByte + ((left - 1) << 2);
         dWord = load<u32>(bytePos);
-        count += count0(dWord);
-        if (count >= ith) {
-            count -= count0(dWord);
-            break;
-        } else {
-            bytePos += 4;
+    } else {
+        while (count < ith) {
+            if (bytePos > endByte) {
+                return 0;
+            }
+            dWord = load<u32>(bytePos);
+            count += count0(dWord);
+            if (count >= ith) {
+                count -= count0(dWord);
+                break;
+            } else {
+                bytePos += 4;
+            }
         }
     }
+
     // The ith 0 is in byte at bytePos
+    pos = 0;
     while (count < ith) {
         pos = get0PosInDWord(dWord, pos) + 1;
         count += 1;
@@ -179,6 +201,20 @@ function countChildren(pos: i32): i32 {
     return getFirstChild(pos + 1) - getFirstChild(pos);
 }
 
+function buildSelect0Index(startB: i32, endB: i32, targetStart: i32): i32 {
+    let bytePos: i32 = startB;
+    let dWord: i32 = 0;
+    let aggregatedCount: i32 = 0;
+    while (bytePos <= endB) {
+        dWord = load<u32>(bytePos);
+        store<u16>(targetStart, aggregatedCount);
+        aggregatedCount += count0(dWord);
+        bytePos += 4;
+        targetStart += 2;
+    }
+    return targetStart - 2;
+}
+
 export function init(): i32 {
     alphabetOffset = load<u32>(dataOffset) + dataOffset;
     bitmapOffset = load<u32>(dataOffset, 4) + dataOffset;
@@ -188,6 +224,8 @@ export function init(): i32 {
     valuesOffset = load<u32>(dataOffset, 20) + dataOffset;
     lmi = load<u32>(dataOffset, 24);
     rmi = load<u32>(dataOffset, 28);
+    bitmapIndexStart = 64000;
+    bitmapIndexEnd = buildSelect0Index(bitmapOffset, charmapOffset, bitmapIndexStart);
     return createTranslateMap();
 }
 
