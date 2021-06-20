@@ -161,13 +161,14 @@ function get0PosInDWord2(dWord: i32, nth: i32): i32 {
     return pos;
 }
 
+
 function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let pos: i32 = 0;
     let bytePos: i32 = startByte;
     let count: i32 = 0;
     let dWord: i32 = 0;
     // Find byte with ith 0 and accumulate count
-    if (startByte === 2330) {
+    if (startByte === bitmapOffset) {
         let left: i32 = 0;
         let right: i32 = bitmapIndexEnd - bitmapIndexStart;
         while (left < right) {
@@ -200,12 +201,18 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
 
     // The ith 0 is in byte at bytePos
     pos = get0PosInDWord2(dWord, ith - count);
-    /*pos = 0;
-    while (count < ith) {
-        pos = get0PosInDWord(dWord, pos) + 1;
-        count += 1;
-    }*/
     return ((bytePos - startByte) * 8) + pos;
+
+    /*
+     * Code using old function
+     *
+     * pos = 0;
+     * while (count < ith) {
+     *     pos = get0PosInDWord(dWord, pos) + 1;
+     *     count += 1;
+     * }
+     * return ((bytePos - startByte) * 8) + pos - 1;
+     */
 }
 
 function getFirstChild(pos: i32): i32 {
@@ -241,10 +248,12 @@ export function init(): i32 {
     hasValueOffset = load<u32>(dataOffset, 12) + dataOffset;
     valuemapOffset = load<u32>(dataOffset, 16) + dataOffset;
     valuesOffset = load<u32>(dataOffset, 20) + dataOffset;
-    lmi = load<u32>(dataOffset, 24);
-    rmi = load<u32>(dataOffset, 28);
-    bitmapIndexStart = 64000;
-    bitmapIndexEnd = buildSelect0Index(bitmapOffset, charmapOffset, bitmapIndexStart);
+    lmi = (load<u32>(dataOffset, 24) & 0xff00) >> 8;
+    rmi = load<u32>(dataOffset, 24) & 0xff;
+    bitmapIndexStart = load<u32>(dataOffset, 28) + dataOffset;
+    bitmapIndexEnd = buildSelect0Index(
+        bitmapOffset, charmapOffset, bitmapIndexStart
+    );
     return createTranslateMap();
 }
 

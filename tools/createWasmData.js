@@ -8,14 +8,14 @@
  *
  * HEADER
  * Uint32Array of length 8
- * [0]: 0
- * [1]: ALPHABET offset
- * [2]: BITMAP offset
- * [3]: CHARMAP offset
- * [4]: VALUEMAP offset
- * [5]: VALUES offset
- * [6]: LEFTMIN
- * [7]: RIGHTMIN
+ * [ 0]: 0
+ * [ 1]: ALPHABET offset
+ * [ 2]: BITMAP offset
+ * [ 3]: CHARMAP offset
+ * [ 4]: VALUEMAP offset
+ * [ 5]: VALUES offset
+ * [ 6]: LEFTMIN & RIGHTMIN
+ * [ 7]: dataEnd offset
  *
  * LICENSE
  * ASCII encoded license text
@@ -61,8 +61,8 @@ const charMapOffset = bitMapOffset + strieDat.bits.buffer.byteLength;
 const hasValueOffset = charMapOffset + strieDat.chars.buffer.byteLength;
 const valuemapOffset = hasValueOffset + strieDat.hasValueBits.buffer.byteLength;
 const valuesOffset = valuemapOffset + strieDat.valuesBitMap.buffer.byteLength;
-let fileSize = valuesOffset + strieDat.values.buffer.byteLength;
-fileSize += (4 - (fileSize % 4));
+let dataEndOffset = valuesOffset + strieDat.values.buffer.byteLength;
+dataEndOffset += (4 - (dataEndOffset % 4));
 
 /*
  * Log data
@@ -73,7 +73,7 @@ fileSize += (4 - (fileSize % 4));
  * console.log("hvb:", strieDat.hasValueBits.buffer.byteLength);
  * console.log("vbm:", strieDat.valuesBitMap.buffer.byteLength);
  * console.log("val:", strieDat.values.buffer.byteLength);
- * console.log("tot:", fileSize);
+ * console.log("tot:", dataEndOffset);
  */
 
 
@@ -84,13 +84,14 @@ const header = Uint32Array.from([
     hasValueOffset,
     valuemapOffset,
     valuesOffset,
-    input.lrmin[0],
-    input.lrmin[1]
+    // eslint-disable-next-line no-bitwise
+    (input.lrmin[0] << 8) + input.lrmin[1],
+    dataEndOffset
 ]);
 
-const output = new Uint8Array(fileSize);
+const output = new Uint8Array(dataEndOffset);
 output.set(new Uint8Array(header.buffer), 0);
-output.set(new Uint8Array(license.buffer), 32);
+output.set(new Uint8Array(license.buffer), 64);
 output.set(new Uint8Array(alphabet.buffer), alphabetOffset);
 output.set(new Uint8Array(strieDat.bits.buffer), bitMapOffset);
 output.set(new Uint8Array(strieDat.chars.buffer), charMapOffset);
