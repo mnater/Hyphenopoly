@@ -874,18 +874,17 @@
                         wa.instantiateStreaming &&
                         (response.headers.get("Content-Type") === "application/wasm")
                     ) {
-                        return wa.instantiateStreaming(r2);
-
-                        /*
-                         * Debug
-                         * return wa.instantiateStreaming(r2, {
-                         *  "hyphenEngine": {
-                         *      "log": (value) => {
-                         *          return console.log(value);
-                         *      }
-                         *  }
-                         * });
-                         */
+                        // return wa.instantiateStreaming(r2);
+                        return wa.instantiateStreaming(r2, {
+                            "hyphenEngine": {
+                                "log": (value) => {
+                                    return console.log(value);
+                                },
+                                "log2": (value) => {
+                                    return console.log((value >>> 0).toString(2).padStart(32, "0"));
+                                }
+                            }
+                        });
                     }
                     return r2.arrayBuffer().then((ab) => {
                         return wa.instantiate(ab);

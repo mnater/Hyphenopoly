@@ -143,6 +143,24 @@ function get0PosInDWord(dWord: i32, startPos: i32): i32 {
     return -1;
 }
 
+function get0PosInDWord2(dWord: i32, nth: i32): i32 {
+    let count: i32 = 0;
+    let pos: i32 = 0;
+    const dWordBigEnd: i32 = bswap<i32>(dWord);
+    while (pos < 32) {
+        const shift: i32 = 31 - pos;
+        const mask: i32 = 1 << shift;
+        if ((dWordBigEnd & mask) !== mask) {
+            count += 1;
+        }
+        if (count === nth) {
+            break;
+        }
+        pos += 1;
+    }
+    return pos;
+}
+
 function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let pos: i32 = 0;
     let bytePos: i32 = startByte;
@@ -181,12 +199,13 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     }
 
     // The ith 0 is in byte at bytePos
-    pos = 0;
+    pos = get0PosInDWord2(dWord, ith - count);
+    /*pos = 0;
     while (count < ith) {
         pos = get0PosInDWord(dWord, pos) + 1;
         count += 1;
-    }
-    return ((bytePos - startByte) * 8) + pos - 1;
+    }*/
+    return ((bytePos - startByte) * 8) + pos;
 }
 
 function getFirstChild(pos: i32): i32 {
