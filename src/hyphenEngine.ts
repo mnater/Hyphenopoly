@@ -1,5 +1,8 @@
-declare function log(arg0: i32): void;
-declare function log2(arg0: i32): void;
+/*
+ * LOGDEBUG
+ * declare function log(arg0: i32): void;
+ * declare function log2(arg0: i32): void;
+ */
 
 let alphabetOffset:i32 = 0;
 let bitmapOffset:i32 = 0;
@@ -103,51 +106,59 @@ function createTranslateMap(): i32 {
     return alphabetCount >> 1;
 }
 
-function getBitAtPos(startByte: i32, pos: i32): i32 {
-    const byte: i32 = floor<i32>(pos / 8);
-    const mask: i32 = 1 << (7 - (pos - (byte * 8)));
-    if ((load<u8>(startByte + byte) & mask) !== 0) {
+function getBitAtPos(pos: i32, startByte: i32): i32 {
+    const numBytes: i32 = pos / 8;
+    const numBits: i32 = pos % 8;
+    const mask: i32 = 1 << (7 - numBits);
+    if ((load<u8>(startByte + numBytes) & mask) !== 0) {
         return 1;
     }
     return 0;
 }
 
 function rank1(pos: i32, startByte: i32): i32 {
-    const numBytes: i32 = floor<i32>(pos / 8);
-    const numBits: i32 = pos - (8 * numBytes);
+    const numBytes: i32 = pos / 32;
+    const numBits: i32 = pos % 32;
     let i: i32 = 0;
     let count: i32 = 0;
     while (i < numBytes) {
-        count += popcnt<i32>(load<u8>(startByte + i));
+        count += popcnt<i32>(load<u32>(startByte + (i << 2)));
         i += 1;
     }
-    count += popcnt<i32>(load<u8>(startByte + i) >> (8 - numBits));
+    if (numBits !== 0) {
+        count += popcnt<i32>(
+            bswap<u32>(load<u32>(startByte + (i << 2))) >>> (32 - numBits)
+        );
+    }
     return count;
 }
 
 function count0(dWord: i32): i32 {
-    return 32 - popcnt<i32>(dWord);
+    return popcnt<i32>(~dWord);
 }
 
-export function get0PosInDWord2(dWord: i32, nth: i32): i32 {
-    let count: i32 = 0;
-    let pos: i32 = 0;
-    const dWordBigEnd: i32 = bswap<i32>(dWord);
-    while (pos < 32) {
-        const shift: i32 = 31 - pos;
-        const mask: i32 = 1 << shift;
-        if ((dWordBigEnd & mask) !== mask) {
-            count += 1;
-        }
-        if (count === nth) {
-            break;
-        }
-        pos += 1;
-    }
-    return pos;
-}
+/*
+ * Loop based search for select0 in 32 bit dWord
+ *  function get0PosInDWord2(dWord: i32, nth: i32): i32 {
+ *  let count: i32 = 0;
+ *  let pos: i32 = 0;
+ *  const dWordBigEnd: i32 = bswap<i32>(dWord);
+ *  while (pos < 32) {
+ *      const shift: i32 = 31 - pos;
+ *      const mask: i32 = 1 << shift;
+ *      if ((dWordBigEnd & mask) !== mask) {
+ *          count += 1;
+ *      }
+ *      if (count === nth) {
+ *          break;
+ *      }
+ *      pos += 1;
+ *  }
+ *  return pos;
+ * }
+ */
 
-export function get0PosInDWord3(dWord: i32, nth: i32): i32 {
+function get0PosInDWord3(dWord: i32, nth: i32): i32 {
     const v: i32 = ~bswap<i32>(dWord);
     let r: i32 = nth;
     let s: i32 = 0;
@@ -184,7 +195,7 @@ export function get0PosInDWord3(dWord: i32, nth: i32): i32 {
     return s - 1;
 }
 
-export function select0Indexed(ith: i32, startByte: i32): i32 {
+function select0Indexed(ith: i32, startByte: i32): i32 {
     let pos: i32 = 0;
     let bytePos: i32 = startByte;
     let count: i32 = 0;
@@ -206,16 +217,21 @@ export function select0Indexed(ith: i32, startByte: i32): i32 {
     dWord = load<u32>(bytePos);
 
     // The ith 0 is in byte at bytePos
-    pos = get0PosInDWord2(dWord, ith - count);
+    pos = get0PosInDWord3(dWord, ith - count);
     return ((bytePos - startByte) * 8) + pos;
 }
 
 
-export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
+function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let pos: i32 = 0;
     let bytePos: i32 = startByte;
     let count: i32 = 0;
     let dWord: i32 = 0;
+    // T O D O: implement correct offset (50000)
+    const cached: i32 = load<u16>(ith << 1, 50000);
+    if (cached !== 0) {
+        return cached;
+    }
     // Find byte with ith 0 and accumulate count
     while (count < ith) {
         if (bytePos > endByte) {
@@ -233,14 +249,14 @@ export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
 
     // The ith 0 is in byte at bytePos
     pos = get0PosInDWord3(dWord, ith - count);
+    store<u16>(ith << 1, ((bytePos - startByte) * 8) + pos, 50000);
     return ((bytePos - startByte) * 8) + pos;
 }
-
 function getFirstChild(pos: i32): i32 {
-    let idx: i32 = load<u16>((bitmapIndexEnd + pos + 1) << 1);
+    let idx: i32 = load<u16>((bitmapIndexEnd + 2) + (pos << 1));
     if (idx === 0) {
         idx = select0Indexed(pos + 1, bitmapOffset) - pos;
-        store<u16>((bitmapIndexEnd + pos + 1) << 1, idx);
+        store<u16>((bitmapIndexEnd + 2) + (pos << 1), idx);
     }
     return idx;
 }
@@ -385,7 +401,7 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
                 break;
             }
             currNode = nthChildIdx;
-            if (getBitAtPos(hasValueOffset, currNode - 1) === 1) {
+            if (getBitAtPos(currNode - 1, hasValueOffset) === 1) {
                 const pos: i32 = rank1(currNode, hasValueOffset);
                 const valBitsStart: i32 = select0(
                     pos,

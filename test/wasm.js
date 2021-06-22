@@ -27,7 +27,7 @@ t.test("load module", async(t) => {
     t.test("check filesize", async(t) => {
         return t.equal(
             hyphenEngine.buffer.byteLength,
-            78907,
+            79400,
             "update when de.wasm changes"
         );
     });
