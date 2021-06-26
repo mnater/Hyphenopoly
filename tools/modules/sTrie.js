@@ -102,7 +102,7 @@ function sTrie() {
         chr.forEach((element) => {
             const first = element.charCodeAt(0);
             const secnd = element.charCodeAt(1);
-            if (ordMap.has(secnd)) {
+            if (ordMap.has(first)) {
                 ordMap.set(first, ordMap.get(secnd));
             } else {
                 ordMap.set(first, ord);

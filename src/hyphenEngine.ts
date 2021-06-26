@@ -1,7 +1,8 @@
 /*
- * LOGDEBUG
+ * Debug
  * declare function log(arg0: i32): void;
  * declare function log2(arg0: i32): void;
+ * declare function logc(arg0: i32): void;
  */
 
 let alphabetOffset:i32 = 0;
@@ -86,7 +87,7 @@ function createTranslateMap(): i32 {
         } else {
             secondInt = pullFromTranslateMap(second);
         }
-        if (secondInt === 255) {
+        if (pullFromTranslateMap(first) === 255) {
             // There's no such char yet in the TranslateMap
             pushToTranslateMap(first, k);
             if (second !== 0) {
