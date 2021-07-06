@@ -105,6 +105,14 @@ t.test("set options: exceptions", function (t) {
         t.equal(hyphenator("Algorithmus"), "Algo•rithmus");
         t.end();
     });
+    t.test("exceptions: double entry", async function (t) {
+        const hyphenator = await H9Y.config({
+            "hyphen": "•",
+            "require": ["en-us"]
+        });
+        t.equal(hyphenator("reformation"), "ref•or•ma•tion");
+        t.end();
+    });
     t.end();
 });
 
