@@ -47,7 +47,7 @@
  * |    valuesBitMap    |           |
  * #--------------------#           |
  * |       values       |           |
- * #--------------------#           -
+ * #--------------------# <- dataEnd-
  * |   alignment bytes  |
  * #--------------------# <- heapSize
  */
@@ -64,7 +64,12 @@ const heapSizeBytes = Math.max(
     Math.ceil((dataOffset + dataSize) / 65536) * 65536,
     65536
 );
-const heapSizePages = heapSizeBytes / 1024 / 64;
+
+/*
+ * Add one additional memory page for supplementary data structures
+ * TODO: This should be optimized when stable
+ */
+const heapSizePages = (heapSizeBytes / 1024 / 64) + 1;
 
 class MyTransform extends Transform {
     afterCompile(asModule) {
