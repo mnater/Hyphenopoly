@@ -30,7 +30,7 @@
             };
 
             function assert() {
-                var tests = 2;
+                var tests = 3;
                 var i = 1;
                 var test = "";
                 var ref = "";
@@ -86,10 +86,15 @@
         <p id="desc">Check exceptions</p>
         <div id="result"></div>
         <hr>
+        <h2>User defined</h2>
         <p id="test1" class="test hyphenate" lang="en-us">FORTRAN, JavaScript, WebAssembly <span lang="de">(WebAssembly)</span></p>
         <p id="ref1" class="ref" lang="en-us">FORTRAN, Java•Script, Web•As•sem•bly <span lang="de">(Web•Assembly)</span></p>
         <p id="test2" class="test hyphenate2" lang="en-us">FORTRAN, JavaScript, WebAssembly <span lang="de">(WebAssembly)</span></p>
         <p id="ref2" class="ref" lang="en-us">FORTRAN, Java&shy;Script, Web&shy;As&shy;sem&shy;bly <span lang="de">(Web&shy;Assembly)</span></p>
+        <h2>Pattern exceptions</h2>
+        <p id="test3" class="test hyphenate" lang="en-us">project, associate, reformation, tablespoon</p>
+        <p id="ref3" class="ref" lang="en-us">project, as•so•ciate, ref•or•ma•tion, ta•ble•spoon</span></p>
+
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
 

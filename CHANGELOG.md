@@ -1,5 +1,11 @@
 # Version History
 
+## Version 4.12.0 (2021-07-21)
+### Fixed
+*   Fixed memory access out of bounds (#165)
+*   Fixed Module aborting with SIGBUS error (#169)
+*   bump devDependencies
+
 ## Version 4.11.0 (2021-03-07)
 ### Fixed
 *   Fixed too long word error not stopping hyphenation in module (7373d9d80c6b632d46194f99d6778cbb04f260e1)
