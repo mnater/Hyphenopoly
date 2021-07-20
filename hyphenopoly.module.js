@@ -201,7 +201,7 @@ function prepareLanguagesObj(
             lo.exceptions = new Map();
         }
         lo.alphabet = alphabet;
-        lo.reNotAlphabet = RegExp(`[^${alphabet}]`, "gi");
+        lo.reNotAlphabet = RegExp(`[^${alphabet}]`, "i");
         (() => {
             H.c.leftminPerLang.set(lang, Math.max(
                 patternLeftmin,
