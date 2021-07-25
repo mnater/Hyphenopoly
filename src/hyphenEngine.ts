@@ -1,10 +1,9 @@
 /*
  * Debug
+ * declare function log(arg0: i32): void;
+ * declare function log2(arg0: i32): void;
+ * declare function logc(arg0: i32): void;
  */
-declare function log(arg0: i32): void;
-declare function log2(arg0: i32): void;
-declare function logc(arg0: i32): void;
-
 
 let alphabetOffset:i32 = 0;
 let bitmapOffset:i32 = 0;

@@ -102,7 +102,8 @@ function sTrie() {
         chr.forEach((element) => {
             const first = element.charCodeAt(0);
             const secnd = element.charCodeAt(1);
-            if (ordMap.has(first)) {
+            if (ordMap.has(secnd)) {
+                // This is a substitution
                 ordMap.set(first, ordMap.get(secnd));
             } else {
                 ordMap.set(first, ord);
