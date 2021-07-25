@@ -1,9 +1,10 @@
 /*
  * Debug
- * declare function log(arg0: i32): void;
- * declare function log2(arg0: i32): void;
- * declare function logc(arg0: i32): void;
  */
+declare function log(arg0: i32): void;
+declare function log2(arg0: i32): void;
+declare function logc(arg0: i32): void;
+
 
 let alphabetOffset:i32 = 0;
 let bitmapOffset:i32 = 0;
@@ -228,11 +229,6 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let bytePos: i32 = startByte;
     let count: i32 = 0;
     let dWord: i32 = 0;
-    // T O D O: implement correct offset (50000)
-    const cached: i32 = load<u16>(ith << 1, 50000);
-    if (cached !== 0) {
-        return cached;
-    }
     // Find byte with ith 0 and accumulate count
     while (count < ith) {
         if (bytePos > endByte) {
@@ -250,7 +246,6 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
 
     // The ith 0 is in byte at bytePos
     pos = get0PosInDWord3(dWord, ith - count);
-    store<u16>(ith << 1, ((bytePos - startByte) * 8) + pos, 50000);
     return ((bytePos - startByte) * 8) + pos;
 }
 function getFirstChild(pos: i32): i32 {
