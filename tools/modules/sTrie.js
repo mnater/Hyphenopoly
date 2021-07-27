@@ -117,7 +117,6 @@ function sTrie() {
                 ord += 1;
             }
         });
-        console.log(ordMap);
         return {
             "ord"(charCode) {
                 return ordMap.get(charCode);
