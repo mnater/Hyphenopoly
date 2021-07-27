@@ -380,11 +380,11 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     while (patternStartPos < wordLength) {
         charOffset = patternStartPos;
         currNode = 0;
+        let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
             cc = load<u8>(charOffset, tw);
             childCount = countChildren(currNode);
             let nthChild: i32 = 0;
-            let nthChildIdx: i32 = 0;
             while (nthChild < childCount) {
                 nthChildIdx = getChild(currNode, nthChild);
                 if (load<u8>(charmapOffset + nthChildIdx - 1) === cc) {
