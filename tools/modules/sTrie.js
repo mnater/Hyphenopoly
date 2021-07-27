@@ -102,18 +102,22 @@ function sTrie() {
         chr.forEach((element) => {
             const first = element.charCodeAt(0);
             const secnd = element.charCodeAt(1);
-            if (ordMap.has(secnd)) {
+            if (ordMap.has(first)) {
                 // This is a substitution
-                ordMap.set(first, ordMap.get(secnd));
+                ordMap.set(secnd, ordMap.get(first));
+            } else if (ordMap.has(secnd)) {
+                // Sigma
+                ordMap.set(first, ord);
+                ord += 1;
             } else {
                 ordMap.set(first, ord);
                 if (secnd !== 95) {
                     ordMap.set(secnd, ord);
                 }
+                ord += 1;
             }
-            ord += 1;
         });
-
+        console.log(ordMap);
         return {
             "ord"(charCode) {
                 return ordMap.get(charCode);
