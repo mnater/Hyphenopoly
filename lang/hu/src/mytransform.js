@@ -66,7 +66,7 @@ const heapSizeBytes = Math.max(
 );
 
 /*
- * Add two additional memory page for supplementary data structures
+ * Double the memory pages for supplementary data structures
  * TODO: This should be optimized when stable
  */
 const heapSizePages = (heapSizeBytes / 1024 / 64) * 2;

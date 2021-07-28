@@ -87,20 +87,25 @@ function createTranslateMap(): i32 {
         } else {
             secondInt = pullFromTranslateMap(second);
         }
-        if (pullFromTranslateMap(first) === 255) {
-            // There's no such char yet in the TranslateMap
+        if (pullFromTranslateMap(first) !== 255) {
+            // This is a substitution
+            pushToTranslateMap(second, pullFromTranslateMap(first));
+            store<u16>(alphabetCount, second, 1280);
+        } else if (secondInt === 255) {
+            //  There's no such char yet in the TranslateMap
             pushToTranslateMap(first, k);
             if (second !== 0) {
                 // Set upperCase representation
                 pushToTranslateMap(second, k);
             }
+            store<u16>(alphabetCount, first, 1280);
             k += 1;
         } else {
-            // Char is already in TranslateMap -> SUBSTITUTION
-            pushToTranslateMap(first, secondInt);
+            // Sigma
+            pushToTranslateMap(first, k);
+            store<u16>(alphabetCount, first, 1280);
+            k += 1;
         }
-        // Add to alphabet
-        store<u16>(alphabetCount, first, 1280);
         alphabetCount += 2;
         i += 4;
     }
@@ -380,11 +385,11 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     while (patternStartPos < wordLength) {
         charOffset = patternStartPos;
         currNode = 0;
+        let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
             cc = load<u8>(charOffset, tw);
             childCount = countChildren(currNode);
             let nthChild: i32 = 0;
-            let nthChildIdx: i32 = 0;
             while (nthChild < childCount) {
                 nthChildIdx = getChild(currNode, nthChild);
                 if (load<u8>(charmapOffset + nthChildIdx - 1) === cc) {
