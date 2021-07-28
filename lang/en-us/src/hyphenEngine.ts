@@ -11,8 +11,11 @@ let charmapOffset:i32 = 0;
 let hasValueOffset:i32 = 0;
 let valuemapOffset:i32 = 0;
 let valuesOffset:i32 = 0;
-let bitmapIndexStart: i32 = 0;
-let bitmapIndexEnd: i32 = 0;
+
+/*
+ * Let bitmapIndexStart: i32 = 0;
+ * let bitmapIndexEnd: i32 = 0;
+ */
 export let lmi:i32 = 0;
 export let rmi:i32 = 0;
 let alphabetCount: i32 = 0;
@@ -164,6 +167,13 @@ function count0(dWord: i32): i32 {
  * }
  */
 
+
+/*
+ * Select the bit position (from the most-significant bit)
+ * with the given count (rank)
+ * Adapted for wasm from
+ * https://graphics.stanford.edu/~seander/bithacks.html#SelectPosFromMSBRank
+ */
 function get0PosInDWord3(dWord: i32, nth: i32): i32 {
     const v: i32 = ~bswap<i32>(dWord);
     let r: i32 = nth;
@@ -201,87 +211,87 @@ function get0PosInDWord3(dWord: i32, nth: i32): i32 {
     return s - 1;
 }
 
-function select0Indexed(ith: i32, startByte: i32): i32 {
-    let pos: i32 = 0;
+/*
+ *Function select0Indexed(ith: i32, startByte: i32): i32 {
+ *  let pos: i32 = 0;
+ *  let bytePos: i32 = startByte;
+ *  let count: i32 = 0;
+ *  let dWord: i32 = 0;
+ *  // Find byte with ith 0 and accumulate count
+ *  let left: i32 = 0;
+ *  let right: i32 = bitmapIndexEnd - bitmapIndexStart;
+ *  while (left < right) {
+ *      const m: i32 = floor<i32>((left + right) / 2);
+ *      count = load<u16>(bitmapIndexStart + (m << 1));
+ *      if (count < ith) {
+ *          left = m + 1;
+ *      } else {
+ *          right = m;
+ *      }
+ *  }
+ *  count = load<u16>(bitmapIndexStart + ((left - 1) << 1));
+ *  bytePos = startByte + ((left - 1) << 2);
+ *  dWord = load<u32>(bytePos);
+ *
+ *  // The ith 0 is in byte at bytePos
+ *  pos = get0PosInDWord3(dWord, ith - count);
+ *  return ((bytePos - startByte) * 8) + pos;
+ *}
+ */
+
+
+export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let bytePos: i32 = startByte;
     let count: i32 = 0;
     let dWord: i32 = 0;
-    // Find byte with ith 0 and accumulate count
-    let left: i32 = 0;
-    let right: i32 = bitmapIndexEnd - bitmapIndexStart;
-    while (left < right) {
-        const m: i32 = floor<i32>((left + right) / 2);
-        count = load<u16>(bitmapIndexStart + (m << 1));
-        if (count < ith) {
-            left = m + 1;
-        } else {
-            right = m;
-        }
-    }
-    count = load<u16>(bitmapIndexStart + ((left - 1) << 1));
-    bytePos = startByte + ((left - 1) << 2);
-    dWord = load<u32>(bytePos);
-
-    // The ith 0 is in byte at bytePos
-    pos = get0PosInDWord3(dWord, ith - count);
-    return ((bytePos - startByte) * 8) + pos;
-}
-
-
-function select0(ith: i32, startByte: i32, endByte: i32): i32 {
-    let pos: i32 = 0;
-    let bytePos: i32 = startByte;
-    let count: i32 = 0;
-    let dWord: i32 = 0;
+    let dWord0Count: i32 = 0;
     // Find byte with ith 0 and accumulate count
     while (count < ith) {
         if (bytePos > endByte) {
             return 0;
         }
         dWord = load<u32>(bytePos);
-        count += count0(dWord);
-        if (count >= ith) {
-            count -= count0(dWord);
-            break;
-        } else {
-            bytePos += 4;
-        }
-    }
-
-    // The ith 0 is in byte at bytePos
-    pos = get0PosInDWord3(dWord, ith - count);
-    return ((bytePos - startByte) * 8) + pos;
-}
-function getFirstChild(pos: i32): i32 {
-    let idx: i32 = load<u16>((bitmapIndexEnd + 2) + (pos << 1));
-    if (idx === 0) {
-        idx = select0Indexed(pos + 1, bitmapOffset) - pos;
-        store<u16>((bitmapIndexEnd + 2) + (pos << 1), idx);
-    }
-    return idx;
-}
-
-function getChild(pos: i32, idx: i32): i32 {
-    return getFirstChild(pos) + idx;
-}
-
-function countChildren(pos: i32): i32 {
-    return getFirstChild(pos + 1) - getFirstChild(pos);
-}
-
-function buildSelect0Index(startB: i32, endB: i32, targetStart: i32): i32 {
-    let bytePos: i32 = startB;
-    let dWord: i32 = 0;
-    let aggregatedCount: i32 = 0;
-    while (bytePos <= endB) {
-        dWord = load<u32>(bytePos);
-        store<u16>(targetStart, aggregatedCount);
-        aggregatedCount += count0(dWord);
+        dWord0Count = count0(dWord);
+        count += dWord0Count;
         bytePos += 4;
-        targetStart += 2;
     }
-    return targetStart - 2;
+    count -= dWord0Count;
+    bytePos -= 4;
+    // The ith 0 is in byte at bytePos
+    const pos: i32 = get0PosInDWord3(dWord, ith - count);
+    return ((bytePos - startByte) << 3) + pos;
 }
+
+/*
+ * Function getFirstChild2(pos: i32): i32 {
+ *  let idx: i32 = load<u16>((bitmapIndexEnd + 2) + (pos << 1));
+ *  if (idx === 0) {
+ *      idx = select0Indexed(pos + 1, bitmapOffset) - pos;
+ *      store<u16>((bitmapIndexEnd + 2) + (pos << 1), idx);
+ *  }
+ *  return idx;
+ * }
+ */
+
+function getFirstChild(pos: i32): i32 {
+    return select0(pos + 1, bitmapOffset, charmapOffset) - pos;
+}
+
+/*
+ *Function buildSelect0Index(startB: i32, endB: i32, targetStart: i32): i32 {
+ *  let bytePos: i32 = startB;
+ *  let dWord: i32 = 0;
+ *  let aggregatedCount: i32 = 0;
+ *  while (bytePos <= endB) {
+ *      dWord = load<u32>(bytePos);
+ *      store<u16>(targetStart, aggregatedCount);
+ *      aggregatedCount += count0(dWord);
+ *      bytePos += 4;
+ *      targetStart += 2;
+ *  }
+ *  return targetStart - 2;
+ *}
+ */
 
 export function init(): i32 {
     alphabetOffset = load<u32>(dataOffset) + dataOffset;
@@ -292,10 +302,13 @@ export function init(): i32 {
     valuesOffset = load<u32>(dataOffset, 20) + dataOffset;
     lmi = (load<u32>(dataOffset, 24) & 0xff00) >> 8;
     rmi = load<u32>(dataOffset, 24) & 0xff;
-    bitmapIndexStart = load<u32>(dataOffset, 28) + dataOffset;
-    bitmapIndexEnd = buildSelect0Index(
-        bitmapOffset, charmapOffset, bitmapIndexStart
-    );
+
+    /*
+     *BitmapIndexStart = load<u32>(dataOffset, 28) + dataOffset;
+     *bitmapIndexEnd = buildSelect0Index(
+     *  bitmapOffset, charmapOffset, bitmapIndexStart
+     *);
+     */
     return createTranslateMap();
 }
 
@@ -364,7 +377,6 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     let hyphenPointsCount: i32 = 0;
     let translatedChar: i32 = 0;
     let currNode: i32 = 0;
-    let childCount: i32 = 0;
 
     // Translate UTF16 word to internal ints and clear hpPos-Array
     cc = load<u16>(0);
@@ -388,10 +400,11 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
             cc = load<u8>(charOffset, tw);
-            childCount = countChildren(currNode);
+            const firstChild: i32 = getFirstChild(currNode);
+            const childCount: i32 = getFirstChild(currNode + 1) - firstChild;
             let nthChild: i32 = 0;
             while (nthChild < childCount) {
-                nthChildIdx = getChild(currNode, nthChild);
+                nthChildIdx = firstChild + nthChild;
                 if (load<u8>(charmapOffset + nthChildIdx - 1) === cc) {
                     break;
                 }

@@ -69,7 +69,7 @@ const heapSizeBytes = Math.max(
  * Double the memory pages for supplementary data structures
  * TODO: This should be optimized when stable
  */
-const heapSizePages = (heapSizeBytes / 1024 / 64) * 2;
+const heapSizePages = (heapSizeBytes / 1024 / 64);
 
 class MyTransform extends Transform {
     afterCompile(asModule) {
