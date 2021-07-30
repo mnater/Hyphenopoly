@@ -5,6 +5,8 @@
  * declare function logc(arg0: i32): void;
  */
 
+declare function log(arg0: i32): void;
+
 let alphabetOffset:i32 = 0;
 let bitmapOffset:i32 = 0;
 let charmapOffset:i32 = 0;
@@ -239,7 +241,6 @@ function get0PosInDWord3(dWord: i32, nth: i32): i32 {
  *}
  */
 
-
 export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let bytePos: i32 = startByte;
     let count: i32 = 0;
@@ -273,9 +274,11 @@ export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
  * }
  */
 
-function getFirstChild(pos: i32): i32 {
-    return select0(pos + 1, bitmapOffset, charmapOffset) - pos;
-}
+/*
+ * Function getFirstChild(pos: i32): i32 {
+ *   return select0(pos + 1, bitmapOffset, charmapOffset) - pos;
+ * }
+ */
 
 /*
  *Function buildSelect0Index(startB: i32, endB: i32, targetStart: i32): i32 {
@@ -400,8 +403,18 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
             cc = load<u8>(charOffset, tw);
-            const firstChild: i32 = getFirstChild(currNode);
-            const childCount: i32 = getFirstChild(currNode + 1) - firstChild;
+            // Const firstChild: i32 = getFirstChild(currNode);
+            const firstChild: i32 = select0(
+                currNode + 1,
+                bitmapOffset,
+                charmapOffset
+            ) - currNode;
+            // Const childCount: i32 = getFirstChild(currNode + 1) - firstChild;
+            const childCount: i32 = select0(
+                currNode + 2,
+                bitmapOffset,
+                charmapOffset
+            ) - (currNode + 1) - firstChild;
             let nthChild: i32 = 0;
             while (nthChild < childCount) {
                 nthChildIdx = firstChild + nthChild;
