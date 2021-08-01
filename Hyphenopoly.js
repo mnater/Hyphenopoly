@@ -874,24 +874,26 @@
                         wa.instantiateStreaming &&
                         (response.headers.get("Content-Type") === "application/wasm")
                     ) {
-                        return wa.instantiateStreaming(r2);
+                        // Return wa.instantiateStreaming(r2);
 
-                        /*
-                         * Return wa.instantiateStreaming(r2, {
-                         *  "hyphenEngine": {
-                         *      "log": (value) => {
-                         *          return console.log(value);
-                         *      },
-                         *      "log2": (value) => {
-                         *          return console.log(
-                         *              (value >>> 0).
-                         *              toString(2).
-                         *              padStart(32, "0")
-                         *          );
-                         *      }
-                         *  }
-                         * });
-                         */
+
+                        return wa.instantiateStreaming(r2, {
+                            "hyphenEngine": {
+                                "log": (value) => {
+                                    // eslint-disable-next-line no-console
+                                    return console.log(value);
+                                },
+                                "log2": (value) => {
+                                    // eslint-disable-next-line no-console
+                                    return console.log(
+                                        // eslint-disable-next-line no-bitwise
+                                        (value >>> 0).
+                                            toString(2).
+                                            padStart(32, "0")
+                                    );
+                                }
+                            }
+                        });
                     }
                     return r2.arrayBuffer().then((ab) => {
                         return wa.instantiate(ab);
