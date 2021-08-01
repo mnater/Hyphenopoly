@@ -33,7 +33,6 @@ const patFileContent = fs.readFileSync(process.argv[5], "utf8").trim();
 
 const parsedData = {
     "chr": [],
-    "hyp": hypFileContent.split("\n"),
     "lic": licFileContent,
     "lrmin": [2, 2],
     "pat": []
@@ -53,6 +52,28 @@ chrFileLines.forEach((line) => {
 parsedData.chr.push(...subst);
 
 const patFileLines = patFileContent.split("\n");
+
+const hypFileLines = hypFileContent.split("\n");
+hypFileLines.forEach((line) => {
+    const convertedHyp = ["."];
+    const lineChars = line.split("");
+    let lastWasHyp = false;
+    lineChars.forEach((c) => {
+        if (c === "-") {
+            convertedHyp.push("9");
+            lastWasHyp = true;
+        } else if (lastWasHyp) {
+            convertedHyp.push(c);
+            lastWasHyp = false;
+        } else {
+            convertedHyp.push("8", c);
+            lastWasHyp = false;
+        }
+    });
+    convertedHyp.push("8", ".");
+    patFileLines.push(convertedHyp.join(""));
+});
+
 patFileLines.forEach((line) => {
     const hasAlpha = /\D/;
     if (hasAlpha.test(line)) {
