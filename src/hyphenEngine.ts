@@ -14,6 +14,7 @@ let valuesOffset:i32 = 0;
 export let lmi:i32 = 0;
 export let rmi:i32 = 0;
 let alphabetCount: i32 = 0;
+let dataEndOffset: i32 = 0;
 
 const tw: i32 = 128;
 const hp: i32 = 192;
@@ -202,11 +203,17 @@ function get0PosInDWord3(dWord: i32, nth: i32): i32 {
     return s - 1;
 }
 
-function select0(ith: i32, startByte: i32, endByte: i32): i32 {
+export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
+    let retVal: i32 = 0;
     let bytePos: i32 = startByte;
     let count: i32 = 0;
     let dWord: i32 = 0;
     let dWord0Count: i32 = 0;
+
+    retVal = load<u32>(startByte + (ith << 3) + dataEndOffset);
+    if (retVal !== 0) {
+        return retVal;
+    }
     // Find byte with ith 0 and accumulate count
     while (count < ith) {
         if (bytePos > endByte) {
@@ -221,7 +228,9 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     bytePos -= 4;
     // The ith 0 is in byte at bytePos
     const pos: i32 = get0PosInDWord3(dWord, ith - count);
-    return ((bytePos - startByte) << 3) + pos;
+    retVal = ((bytePos - startByte) << 3) + pos;
+    store<u32>(startByte + (ith << 3) + dataEndOffset, retVal);
+    return retVal;
 }
 
 export function init(): i32 {
@@ -233,7 +242,7 @@ export function init(): i32 {
     valuesOffset = load<u32>(dataOffset, 20) + dataOffset;
     lmi = (load<u32>(dataOffset, 24) & 0xff00) >> 8;
     rmi = load<u32>(dataOffset, 24) & 0xff;
-
+    dataEndOffset = load<u32>(dataOffset, 28) + dataOffset;
     return createTranslateMap();
 }
 
