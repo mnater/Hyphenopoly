@@ -6,28 +6,17 @@
  *
  * Data Structure:
  *
- * HEADER
- * Uint32Array of length 8
- * [ 0]: 0
- * [ 1]: ALPHABET offset
- * [ 2]: BITMAP offset
- * [ 3]: CHARMAP offset
- * [ 4]: VALUEMAP offset
- * [ 5]: VALUES offset
- * [ 6]: LEFTMIN & RIGHTMIN
- * [ 7]: dataEnd offset
- *
  * LICENSE
  * ASCII encoded license text
  *
  * ALPHABET
  * All characters used in these patterns
  *
- * BITMAP, CHARMAP, VALUEMAP, VALUES
+ * BITMAP, CHARMAP, HASVALUEMAP, VALUEMAP, VALUES
  * Succinct hyphenation pattern trie data
  *
  * Usage:
- * # node createWasmData.js <lang>.json.js outname
+ * # node createWasmData.js <lang>.json data-outname globals-outname
  */
 
 "use strict";
@@ -54,7 +43,7 @@ strie.build(input.chr);
 
 const strieDat = strie.dump();
 
-const licenseOffset = 8 * 4;
+const licenseOffset = 0;
 const alphabetOffset = licenseOffset + license.buffer.byteLength;
 const bitMapOffset = alphabetOffset + alphabet.buffer.byteLength;
 const charMapOffset = bitMapOffset + strieDat.bits.buffer.byteLength;
@@ -76,22 +65,21 @@ dataEndOffset += (4 - (dataEndOffset % 4));
  * console.log("tot:", dataEndOffset);
  */
 
+let imports = "";
+const dataOffset = 1920;
+imports += `export const ao: i32 = ${alphabetOffset + dataOffset};\n`;
+imports += `export const bm: i32 = ${bitMapOffset + dataOffset};\n`;
+imports += `export const cm: i32 = ${charMapOffset + dataOffset};\n`;
+imports += `export const hv: i32 = ${hasValueOffset + dataOffset};\n`;
+imports += `export const vm: i32 = ${valuemapOffset + dataOffset};\n`;
+imports += `export const va: i32 = ${valuesOffset + dataOffset};\n`;
+imports += `export const lm: i32 = ${input.lrmin[0]};\n`;
+imports += `export const rm: i32 = ${input.lrmin[1]};\n`;
 
-const header = Uint32Array.from([
-    alphabetOffset,
-    bitMapOffset,
-    charMapOffset,
-    hasValueOffset,
-    valuemapOffset,
-    valuesOffset,
-    // eslint-disable-next-line no-bitwise
-    (input.lrmin[0] << 8) + input.lrmin[1],
-    dataEndOffset
-]);
+fs.writeFileSync(process.argv[4], imports);
 
 const output = new Uint8Array(dataEndOffset);
-output.set(new Uint8Array(header.buffer), 0);
-output.set(new Uint8Array(license.buffer), 64);
+output.set(new Uint8Array(license.buffer), 0);
 output.set(new Uint8Array(alphabet.buffer), alphabetOffset);
 output.set(new Uint8Array(strieDat.bits.buffer), bitMapOffset);
 output.set(new Uint8Array(strieDat.chars.buffer), charMapOffset);

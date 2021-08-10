@@ -4,21 +4,16 @@
  * declare function log2(arg0: i32): void;
  * declare function logc(arg0: i32): void;
  */
-let alphabetOffset:i32 = 0;
-let bitmapOffset:i32 = 0;
-let charmapOffset:i32 = 0;
-let hasValueOffset:i32 = 0;
-let valuemapOffset:i32 = 0;
-let valuesOffset:i32 = 0;
-export let lmi:i32 = 0;
-export let rmi:i32 = 0;
+
+import {ao, bm, cm, hv, lm, rm, va, vm} from "./g";
+export const lmi: i32 = lm;
+export const rmi: i32 = rm;
 let alphabetCount: i32 = 0;
 
 const tw: i32 = 128;
 const hp: i32 = 192;
 const translateMapOffset:i32 = 256;
 const originalWordOffset: i32 = 1792;
-const dataOffset:i32 = 1920;
 
 function hashCharCode(cc: i32): i32 {
     // Hashes charCodes to [0, 256[
@@ -74,9 +69,9 @@ function createTranslateMap(): i32 {
     let first: i32 = 0;
     let second: i32 = 0;
     let secondInt: i32 = 0;
-    i = alphabetOffset;
+    i = ao;
     pushToTranslateMap(46, 0);
-    while (i < bitmapOffset) {
+    while (i < bm) {
         first = load<u16>(i);
         second = load<u16>(i, 2);
         if (second === 0) {
@@ -244,20 +239,12 @@ export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
 }
 
 export function init(): i32 {
-    alphabetOffset = load<u32>(dataOffset) + dataOffset;
-    bitmapOffset = load<u32>(dataOffset, 4) + dataOffset;
-    charmapOffset = load<u32>(dataOffset, 8) + dataOffset;
-    hasValueOffset = load<u32>(dataOffset, 12) + dataOffset;
-    valuemapOffset = load<u32>(dataOffset, 16) + dataOffset;
-    valuesOffset = load<u32>(dataOffset, 20) + dataOffset;
-    lmi = (load<u32>(dataOffset, 24) & 0xff00) >> 8;
-    rmi = load<u32>(dataOffset, 24) & 0xff;
     return createTranslateMap();
 }
 
 function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
     let byteIdx: i32 = valIdx / 2;
-    let currentByte: i32 = load<u8>(byteIdx + valuesOffset);
+    let currentByte: i32 = load<u8>(byteIdx, va);
     let pos: i32 = valIdx & 1;
     let valuesWritten: i32 = 0;
     let newValue: i32 = 0;
@@ -273,7 +260,7 @@ function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
     while (i < length) {
         if (pos) {
             byteIdx += 1;
-            currentByte = load<u8>(byteIdx + valuesOffset);
+            currentByte = load<u8>(byteIdx, va);
             newValue = currentByte >> 4;
         } else {
             newValue = currentByte & 15;
@@ -332,13 +319,13 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
             cc = load<u8>(charOffset, tw);
-            const sel0 = select0(currNode + 1, bitmapOffset, charmapOffset);
+            const sel0 = select0(currNode + 1, bm, cm);
             const firstChild: i32 = (sel0 >> 8) - currNode;
             const childCount: i32 = sel0 & 255;
             let nthChild: i32 = 0;
             while (nthChild < childCount) {
                 nthChildIdx = firstChild + nthChild;
-                if (load<u8>(charmapOffset + nthChildIdx - 1) === cc) {
+                if (load<u8>(nthChildIdx - 1, cm) === cc) {
                     break;
                 }
                 nthChild += 1;
@@ -347,16 +334,16 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
                 break;
             }
             currNode = nthChildIdx;
-            if (getBitAtPos(currNode - 1, hasValueOffset) === 1) {
-                const pos: i32 = rank1(currNode, hasValueOffset);
+            if (getBitAtPos(currNode - 1, hv) === 1) {
+                const pos: i32 = rank1(currNode, hv);
                 const sel: i32 = select0(
                     pos,
-                    valuemapOffset,
-                    valuesOffset - 1
+                    vm,
+                    va - 1
                 );
                 const valBitsStart: i32 = sel >> 8;
                 const len: i32 = sel & 255;
-                const valIdx: i32 = rank1(valBitsStart, valuemapOffset);
+                const valIdx: i32 = rank1(valBitsStart, vm);
                 extractValuesToHp(valIdx, len, patternStartPos);
             }
             charOffset += 1;
