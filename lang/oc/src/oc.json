@@ -30,9 +30,6 @@
         "ïÏ",
         "üÜ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Occitan\nCopyright (C) 2016 Claudio Beccari\nlicences: MIT LPPL",
     "lrmin": [
         2,
@@ -3290,6 +3287,17 @@
                 2,
                 0,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

@@ -72,9 +72,6 @@
         "ํ_",
         "๎_"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Thai\nCopyright (C) 2012-2013 Theppitak Karoonboonyanan\nlicence: LPPL",
     "lrmin": [
         2,
@@ -61343,6 +61340,17 @@
                 0,
                 7,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

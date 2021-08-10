@@ -34,9 +34,6 @@
         "ჯᲯ",
         "ჰᲰ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Georgian\nCopyright (C) 2013 Levan Shoshiashvili\nlicence: LPPL\nsource: http://tex.tsu.ge",
     "lrmin": [
         1,
@@ -28965,6 +28962,17 @@
                 0,
                 1,
                 2
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

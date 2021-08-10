@@ -4,18 +4,12 @@
  * declare function log2(arg0: i32): void;
  * declare function logc(arg0: i32): void;
  */
-
 let alphabetOffset:i32 = 0;
 let bitmapOffset:i32 = 0;
 let charmapOffset:i32 = 0;
 let hasValueOffset:i32 = 0;
 let valuemapOffset:i32 = 0;
 let valuesOffset:i32 = 0;
-
-/*
- * Let bitmapIndexStart: i32 = 0;
- * let bitmapIndexEnd: i32 = 0;
- */
 export let lmi:i32 = 0;
 export let rmi:i32 = 0;
 let alphabetCount: i32 = 0;
@@ -117,33 +111,25 @@ function createTranslateMap(): i32 {
 
 function getBitAtPos(pos: i32, startByte: i32): i32 {
     const numBytes: i32 = pos / 8;
-    const numBits: i32 = pos % 8;
-    const mask: i32 = 1 << (7 - numBits);
-    if ((load<u8>(startByte + numBytes) & mask) !== 0) {
-        return 1;
-    }
-    return 0;
+    const numBits: i32 = 7 - (pos % 8);
+    return (load<u8>(startByte + numBytes) >> numBits) & 1;
 }
 
 function rank1(pos: i32, startByte: i32): i32 {
-    const numBytes: i32 = pos / 32;
+    const numBytes: i32 = (pos / 32) << 2;
     const numBits: i32 = pos % 32;
     let i: i32 = 0;
     let count: i32 = 0;
     while (i < numBytes) {
-        count += popcnt<i32>(load<u32>(startByte + (i << 2)));
-        i += 1;
+        count += popcnt<i32>(load<u32>(startByte + i));
+        i += 4;
     }
     if (numBits !== 0) {
         count += popcnt<i32>(
-            bswap<u32>(load<u32>(startByte + (i << 2))) >>> (32 - numBits)
+            bswap<u32>(load<u32>(startByte + i)) >>> (32 - numBits)
         );
     }
     return count;
-}
-
-function count0(dWord: i32): i32 {
-    return popcnt<i32>(~dWord);
 }
 
 /*
@@ -211,87 +197,51 @@ function get0PosInDWord3(dWord: i32, nth: i32): i32 {
     return s - 1;
 }
 
-/*
- *Function select0Indexed(ith: i32, startByte: i32): i32 {
- *  let pos: i32 = 0;
- *  let bytePos: i32 = startByte;
- *  let count: i32 = 0;
- *  let dWord: i32 = 0;
- *  // Find byte with ith 0 and accumulate count
- *  let left: i32 = 0;
- *  let right: i32 = bitmapIndexEnd - bitmapIndexStart;
- *  while (left < right) {
- *      const m: i32 = floor<i32>((left + right) / 2);
- *      count = load<u16>(bitmapIndexStart + (m << 1));
- *      if (count < ith) {
- *          left = m + 1;
- *      } else {
- *          right = m;
- *      }
- *  }
- *  count = load<u16>(bitmapIndexStart + ((left - 1) << 1));
- *  bytePos = startByte + ((left - 1) << 2);
- *  dWord = load<u32>(bytePos);
- *
- *  // The ith 0 is in byte at bytePos
- *  pos = get0PosInDWord3(dWord, ith - count);
- *  return ((bytePos - startByte) * 8) + pos;
- *}
+/**
+ * Find ith 0 and return its position relative to startByte and the count
+ * of bits set following this 0 (the child count).
+ * The return values are compacted in one i32 number:
+ * bits 0-23: position
+ * bits 24-31: child count
  */
-
-
 export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let bytePos: i32 = startByte;
     let count: i32 = 0;
     let dWord: i32 = 0;
     let dWord0Count: i32 = 0;
-    // Find byte with ith 0 and accumulate count
+
+    // Find pos of ith 0 (first 0)
     while (count < ith) {
         if (bytePos > endByte) {
             return 0;
         }
         dWord = load<u32>(bytePos);
-        dWord0Count = count0(dWord);
+        dWord0Count = popcnt<i32>(~dWord);
         count += dWord0Count;
         bytePos += 4;
     }
     count -= dWord0Count;
     bytePos -= 4;
-    // The ith 0 is in byte at bytePos
-    const pos: i32 = get0PosInDWord3(dWord, ith - count);
-    return ((bytePos - startByte) << 3) + pos;
+    const firstPosInByte: i32 = get0PosInDWord3(dWord, ith - count);
+    const firstPos: i32 = ((bytePos - startByte) << 3) + firstPosInByte;
+    // Find pos of ith + 1 0 (second 0)
+    ith += 1;
+    while (count < ith) {
+        if (bytePos > endByte) {
+            return 0;
+        }
+        dWord = load<u32>(bytePos);
+        dWord0Count = popcnt<i32>(~dWord);
+        count += dWord0Count;
+        bytePos += 4;
+    }
+    count -= dWord0Count;
+    bytePos -= 4;
+    const secndPosInByte: i32 = get0PosInDWord3(dWord, ith - count);
+    const secndPos: i32 = ((bytePos - startByte) << 3) + secndPosInByte;
+
+    return (firstPos << 8) + (secndPos - firstPos - 1);
 }
-
-/*
- * Function getFirstChild2(pos: i32): i32 {
- *  let idx: i32 = load<u16>((bitmapIndexEnd + 2) + (pos << 1));
- *  if (idx === 0) {
- *      idx = select0Indexed(pos + 1, bitmapOffset) - pos;
- *      store<u16>((bitmapIndexEnd + 2) + (pos << 1), idx);
- *  }
- *  return idx;
- * }
- */
-
-function getFirstChild(pos: i32): i32 {
-    return select0(pos + 1, bitmapOffset, charmapOffset) - pos;
-}
-
-/*
- *Function buildSelect0Index(startB: i32, endB: i32, targetStart: i32): i32 {
- *  let bytePos: i32 = startB;
- *  let dWord: i32 = 0;
- *  let aggregatedCount: i32 = 0;
- *  while (bytePos <= endB) {
- *      dWord = load<u32>(bytePos);
- *      store<u16>(targetStart, aggregatedCount);
- *      aggregatedCount += count0(dWord);
- *      bytePos += 4;
- *      targetStart += 2;
- *  }
- *  return targetStart - 2;
- *}
- */
 
 export function init(): i32 {
     alphabetOffset = load<u32>(dataOffset) + dataOffset;
@@ -302,56 +252,38 @@ export function init(): i32 {
     valuesOffset = load<u32>(dataOffset, 20) + dataOffset;
     lmi = (load<u32>(dataOffset, 24) & 0xff00) >> 8;
     rmi = load<u32>(dataOffset, 24) & 0xff;
-
-    /*
-     *BitmapIndexStart = load<u32>(dataOffset, 28) + dataOffset;
-     *bitmapIndexEnd = buildSelect0Index(
-     *  bitmapOffset, charmapOffset, bitmapIndexStart
-     *);
-     */
     return createTranslateMap();
 }
 
 function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
-    const startsAtHalfByte: i32 = valIdx % 2;
-    let byteIdx: i32 = floor<u32>(valIdx / 2);
+    let byteIdx: i32 = valIdx / 2;
     let currentByte: i32 = load<u8>(byteIdx + valuesOffset);
-    let pad: i32 = 0;
-    // 0 = MSB, 1 = LSB
-    let nextPos: i32 = 0;
+    let pos: i32 = valIdx & 1;
     let valuesWritten: i32 = 0;
     let newValue: i32 = 0;
-    if (startsAtHalfByte === 0) {
-        pad = (currentByte >> 4) & 31;
-        nextPos = 1;
+    if (pos) {
+        // Second (right) half of byte
+        valuesWritten = currentByte & 15;
     } else {
-        pad = currentByte & 15;
-        nextPos = 0;
+        // First (left) half of byte
+        valuesWritten = currentByte >> 4;
     }
-    let i: i32 = 0;
-    while (i < pad) {
-        i += 1;
-        valuesWritten += 1;
-    }
-    i = 1;
+    let i: i32 = 1;
+    let addr: i32 = startOffset + valuesWritten;
     while (i < length) {
-        if (nextPos === 0) {
+        if (pos) {
             byteIdx += 1;
             currentByte = load<u8>(byteIdx + valuesOffset);
-            newValue = (currentByte >> 4) & 15;
-            if (newValue > load<u8>(hp + startOffset + valuesWritten)) {
-                store<u8>(hp + startOffset + valuesWritten, newValue);
-            }
-            nextPos = 1;
+            newValue = currentByte >> 4;
         } else {
             newValue = currentByte & 15;
-            if (newValue > load<u8>(hp + startOffset + valuesWritten)) {
-                store<u8>(hp + startOffset + valuesWritten, newValue);
-            }
-            nextPos = 0;
+        }
+        pos ^= 1;
+        if (newValue > load<u8>(addr, hp)) {
+            store<u8>(addr, newValue, hp);
         }
         i += 1;
-        valuesWritten += 1;
+        addr += 1;
     }
 }
 
@@ -400,8 +332,9 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
             cc = load<u8>(charOffset, tw);
-            const firstChild: i32 = getFirstChild(currNode);
-            const childCount: i32 = getFirstChild(currNode + 1) - firstChild;
+            const sel0 = select0(currNode + 1, bitmapOffset, charmapOffset);
+            const firstChild: i32 = (sel0 >> 8) - currNode;
+            const childCount: i32 = sel0 & 255;
             let nthChild: i32 = 0;
             while (nthChild < childCount) {
                 nthChildIdx = firstChild + nthChild;
@@ -416,16 +349,13 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
             currNode = nthChildIdx;
             if (getBitAtPos(currNode - 1, hasValueOffset) === 1) {
                 const pos: i32 = rank1(currNode, hasValueOffset);
-                const valBitsStart: i32 = select0(
+                const sel: i32 = select0(
                     pos,
                     valuemapOffset,
                     valuesOffset - 1
                 );
-                const len: i32 = select0(
-                    pos + 1,
-                    valuemapOffset,
-                    valuesOffset - 1
-                ) - valBitsStart - 1;
+                const valBitsStart: i32 = sel >> 8;
+                const len: i32 = sel & 255;
                 const valIdx: i32 = rank1(valBitsStart, valuemapOffset);
                 extractValuesToHp(valIdx, len, patternStartPos);
             }

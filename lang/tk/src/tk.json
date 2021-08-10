@@ -32,9 +32,6 @@
         "şŞ",
         "žŽ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Turkmen\nCopyright (C) 2010-2015 Nazar Annagurban\nlicence: MIT",
     "lrmin": [
         2,
@@ -29990,6 +29987,17 @@
                 0,
                 2,
                 1
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

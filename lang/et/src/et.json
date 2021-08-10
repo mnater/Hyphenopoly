@@ -28,9 +28,6 @@
         "šŠ",
         "žŽ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Estonian\nCopyright (C) 2004-2015 Enn Saar\nlicences: MIT LPPL",
     "lrmin": [
         2,
@@ -55900,6 +55897,17 @@
                 3,
                 0,
                 4
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

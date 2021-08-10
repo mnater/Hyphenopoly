@@ -26,9 +26,6 @@
         "äÄ",
         "öÖ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Finnish\nCopyright (C) 1986, 1988, 1989 Kauko Saarinen\nlicences: Patterns may be freely distributed",
     "lrmin": [
         2,
@@ -3668,6 +3665,17 @@
                 0,
                 0,
                 2
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

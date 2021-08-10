@@ -28,9 +28,6 @@
         "yY",
         "zZ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Romansh\nCopyright (C) 2011 Claudio Beccari\nlicences: MIT LPPL",
     "lrmin": [
         2,
@@ -4651,6 +4648,17 @@
                 0,
                 0,
                 2
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

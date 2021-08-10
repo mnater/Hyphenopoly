@@ -30,9 +30,6 @@
         "юЮ",
         "яЯ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Bulgarian\nCopyright (C) 2000, 2004, 2017 Anton Zinoviev\nlicence: This software may be used, modified, copied, distributed, and sold, both in source and binary form provided that the above copyright notice and these terms are retained. The name of the author may not be used to endorse or promote products derived from this software without prior permission.  THIS SOFTWARE IS PROVIDES \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE.",
     "lrmin": [
         2,
@@ -100121,6 +100118,17 @@
             [
                 0,
                 1
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

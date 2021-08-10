@@ -32,9 +32,6 @@
         "óÓ",
         "úÚ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Galician\nCopyright (C) 2006, 2007, 2008, 2010 Javier A. Múgica\nlicence: LPPL",
     "lrmin": [
         2,
@@ -44142,6 +44139,17 @@
                 0,
                 0,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

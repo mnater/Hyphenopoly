@@ -32,9 +32,6 @@
         "ќЌ",
         "џЏ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Macedonian\nCopyright (C) 2006 Vasil Taneski\nlicences: GPL",
     "lrmin": [
         2,
@@ -9207,6 +9204,17 @@
             [
                 1,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

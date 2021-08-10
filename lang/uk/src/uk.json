@@ -36,9 +36,6 @@
         "їЇ",
         "ґҐ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Ukrainian\nCopyright (C) 1998-2001 Maksym Polyakov\nlicence: LPPL",
     "lrmin": [
         2,
@@ -63811,6 +63808,17 @@
                 8,
                 8,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

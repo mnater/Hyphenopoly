@@ -29,9 +29,6 @@
         "ŝŜ",
         "ŭŬ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Esperanto\nCopyright (C) 1999 Sergei B. Pokrovsky (Sergio Pokrovskij)\nlicence: LPPL",
     "lrmin": [
         2,
@@ -38448,6 +38445,17 @@
             [
                 4,
                 1
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

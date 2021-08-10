@@ -30,9 +30,6 @@
         "çÇ",
         "aâ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Friulan\nCopyright (C) 2012 Claudio Beccari\nlicences: MIT LPPL",
     "lrmin": [
         2,
@@ -5051,6 +5048,17 @@
                 0,
                 0,
                 2
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

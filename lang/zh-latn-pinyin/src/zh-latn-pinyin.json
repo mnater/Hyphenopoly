@@ -51,9 +51,6 @@
         "ǚǙ",
         "ǜǛ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Chinese pinyin (Mandarin), with tone markers\nCopyright (C) 1994-2018 Werner Lemberg\nlicence: MIT\nsource: http://git.savannah.gnu.org/gitweb/?p=cjk.git;a=commit;h=e058ceae5561a89e33828f593b094c8b57f6a72e",
     "lrmin": [
         1,
@@ -7582,6 +7579,17 @@
             [
                 0,
                 1
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

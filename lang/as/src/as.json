@@ -73,9 +73,6 @@
         "‌_",
         "‍_"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Assamese\nCopyright (C) 2016 Santhosh Thottingal\nlicences: MIT LGPL GPL \nsource: https://github.com/santhoshtr/hyphenation/",
     "lrmin": [
         1,
@@ -765,6 +762,17 @@
             [
                 2,
                 2
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

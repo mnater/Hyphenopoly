@@ -34,9 +34,6 @@
         "ūŪ",
         "žŽ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Latvian\nCopyright (C) 2004-2005 Janis Vilims\nlicences: LGPL GPL \nsource: Latvian Lingucomponents for OpenOffice, http://sourceforge.net/projects/openoffice-lv",
     "lrmin": [
         2,
@@ -183468,6 +183465,17 @@
                 0,
                 2,
                 1
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

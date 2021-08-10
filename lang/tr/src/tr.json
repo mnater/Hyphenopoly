@@ -33,9 +33,6 @@
         "ıI",
         "şŞ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Turkish\nCopyright (C) 1987 Pierre A. MacKay, 2008, 2011 TUG\nlicence: LPPL",
     "lrmin": [
         2,
@@ -6712,6 +6709,17 @@
                 4,
                 0,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

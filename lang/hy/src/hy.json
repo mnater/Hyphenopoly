@@ -39,9 +39,6 @@
         "օՕ",
         "և_"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Armenian\nCopyright (C) 2010 Sahak Petrosyan\nlicence: LGPL",
     "lrmin": [
         1,
@@ -18596,6 +18593,17 @@
                 0,
                 1,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

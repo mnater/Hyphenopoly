@@ -34,9 +34,6 @@
         "ųŲ",
         "žŽ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Lithuanian\nCopyright (C) 1992 Sigitas Tolušis, Yannis Haralambous\nlicence: MIT\nsource: http://www.vtex.lt/tex/littex/index.html",
     "lrmin": [
         2,
@@ -19308,6 +19305,17 @@
             [
                 2,
                 1
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

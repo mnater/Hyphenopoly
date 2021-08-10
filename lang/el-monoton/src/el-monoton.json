@@ -50,9 +50,6 @@
         "᾿_",
         "’_"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Modern Greek, monotonic\nCopyright (C) 2008-2011 Dimitrios Filippou\nlicence: LPPL",
     "lrmin": [
         1,
@@ -6625,6 +6622,17 @@
                 0,
                 1,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

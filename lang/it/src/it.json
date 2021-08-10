@@ -28,9 +28,6 @@
         "yY",
         "zZ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Italian\nCopyright (C) 2008-2011 Claudio Beccari\nlicences: LPPL MIT",
     "lrmin": [
         2,
@@ -4317,6 +4314,17 @@
                 0,
                 0,
                 2
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

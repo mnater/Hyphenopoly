@@ -158,9 +158,6 @@
         "ῷ_",
         "’_"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Modern Greek, polytonic\nCopyright (C) 2008-2011 Dimitrios Filippou\nlicence: LPPL",
     "lrmin": [
         1,
@@ -17356,6 +17353,17 @@
                 0,
                 5,
                 2
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

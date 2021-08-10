@@ -33,9 +33,6 @@
         "óÓ",
         "úÚ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Spanish\nCopyright (C) 1993, 1997 Javier Bezos, 2001-2019 Javier Bezos, CervanTeX\nlicence: MIT/X11",
     "lrmin": [
         2,
@@ -85764,6 +85761,17 @@
                 0,
                 0,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

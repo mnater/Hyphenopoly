@@ -30,9 +30,6 @@
         "šŠ",
         "žŽ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Slovenian\nCopyright (C) 1990 Matjaž Vrečko\nlicences: LPPL MIT",
     "lrmin": [
         2,
@@ -14530,6 +14527,17 @@
             [
                 8,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

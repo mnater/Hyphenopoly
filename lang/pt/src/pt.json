@@ -38,10 +38,6 @@
         "õÕ",
         "úÚ"
     ],
-    "hyp": [
-        "hard-ware",
-        "soft-ware"
-    ],
     "lic": "Hyphenation patterns for Portuguese\nCopyright (C) 1987, 1994, 1996, 2015 Pedro J. de Rezende, 1996, 2015 J. Joao Dias Almeida\nlicence: BSD 3-clause licence",
     "lrmin": [
         2,
@@ -3437,6 +3433,60 @@
             ],
             [
                 1
+            ]
+        ],
+        [
+            ".8h8a8r8d9w8a8r8e8.",
+            [
+                46,
+                104,
+                97,
+                114,
+                100,
+                119,
+                97,
+                114,
+                101,
+                46
+            ],
+            [
+                0,
+                8,
+                8,
+                8,
+                8,
+                9,
+                8,
+                8,
+                8,
+                8
+            ]
+        ],
+        [
+            ".8s8o8f8t9w8a8r8e8.",
+            [
+                46,
+                115,
+                111,
+                102,
+                116,
+                119,
+                97,
+                114,
+                101,
+                46
+            ],
+            [
+                0,
+                8,
+                8,
+                8,
+                8,
+                9,
+                8,
+                8,
+                8,
+                8
             ]
         ]
     ]

@@ -37,9 +37,6 @@
         "ýÝ",
         "þÞ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Icelandic\nCopyright (C) 1988, 2004 Jörgen Pind\nlicence: LPPL",
     "lrmin": [
         2,
@@ -60698,6 +60695,17 @@
             [
                 0,
                 6
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

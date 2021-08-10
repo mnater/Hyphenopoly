@@ -28,9 +28,6 @@
         "yY",
         "zZ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Piedmontese\nCopyright (C) 2013 Claudio Beccari\nlicences: MIT LPPL",
     "lrmin": [
         2,
@@ -4372,6 +4369,17 @@
                 0,
                 0,
                 2
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

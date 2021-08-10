@@ -32,9 +32,6 @@
         "ûÛ",
         "şŞ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Kurmanji (Northern Kurdish) – as spoken in Turkey and by the Kurdish diaspora in Europe\nCopyright (C) 2009 Jörg Knappen, Medeni Shemdê\nlicence: LPPL",
     "lrmin": [
         2,
@@ -3546,6 +3543,17 @@
             [
                 2,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

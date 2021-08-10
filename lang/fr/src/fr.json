@@ -39,9 +39,6 @@
         "ûÛ",
         "œŒ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for French\nCopyright (C) 1994-2002 Daniel Flipo, Bernard Gaulle, 2016 Arthur Reutenauer\nlicence: MIT",
     "lrmin": [
         2,
@@ -19962,6 +19959,17 @@
             [
                 1,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

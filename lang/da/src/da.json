@@ -30,9 +30,6 @@
         "æÆ",
         "øØ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Danish\nCopyright (C) 1994 Frank Jensen\nlicences: LPPL MIT",
     "lrmin": [
         2,
@@ -15424,6 +15421,17 @@
             [
                 0,
                 3
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

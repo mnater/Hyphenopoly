@@ -28,9 +28,6 @@
         "ôÔ",
         "öÖ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Welsh\nCopyright (C) 1996 Yannis Haralambous\nlicences: LPPL MIT",
     "lrmin": [
         2,
@@ -106434,6 +106431,17 @@
             [
                 0,
                 1
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]

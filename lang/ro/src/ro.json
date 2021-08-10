@@ -28,9 +28,6 @@
         "șȘ",
         "țȚ"
     ],
-    "hyp": [
-        ""
-    ],
     "lic": "Hyphenation patterns for Romanian\nCopyright (C) 1995-1996 Adrian Rezus\nlicences: None",
     "lrmin": [
         2,
@@ -8347,6 +8344,17 @@
                 0,
                 3,
                 0
+            ]
+        ],
+        [
+            ".8.",
+            [
+                46,
+                46
+            ],
+            [
+                0,
+                8
             ]
         ]
     ]
