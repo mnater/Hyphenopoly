@@ -256,45 +256,34 @@ export function init(): i32 {
 }
 
 function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
-    const startsAtHalfByte: i32 = valIdx % 2;
-    let byteIdx: i32 = floor<u32>(valIdx / 2);
+    let byteIdx: i32 = valIdx / 2;
     let currentByte: i32 = load<u8>(byteIdx + valuesOffset);
-    let pad: i32 = 0;
-    // 0 = MSB, 1 = LSB
-    let nextPos: i32 = 0;
+    let pos: i32 = valIdx & 1;
     let valuesWritten: i32 = 0;
     let newValue: i32 = 0;
-    if (startsAtHalfByte === 0) {
-        pad = (currentByte >> 4) & 31;
-        nextPos = 1;
+    if (pos) {
+        // Second (right) half of byte
+        valuesWritten = currentByte & 15;
     } else {
-        pad = currentByte & 15;
-        nextPos = 0;
+        // First (left) half of byte
+        valuesWritten = currentByte >> 4;
     }
-    let i: i32 = 0;
-    while (i < pad) {
-        i += 1;
-        valuesWritten += 1;
-    }
-    i = 1;
+    let i: i32 = 1;
+    let addr: i32 = startOffset + valuesWritten;
     while (i < length) {
-        if (nextPos === 0) {
+        if (pos) {
             byteIdx += 1;
             currentByte = load<u8>(byteIdx + valuesOffset);
-            newValue = (currentByte >> 4) & 15;
-            if (newValue > load<u8>(hp + startOffset + valuesWritten)) {
-                store<u8>(hp + startOffset + valuesWritten, newValue);
-            }
-            nextPos = 1;
+            newValue = currentByte >> 4;
         } else {
             newValue = currentByte & 15;
-            if (newValue > load<u8>(hp + startOffset + valuesWritten)) {
-                store<u8>(hp + startOffset + valuesWritten, newValue);
-            }
-            nextPos = 0;
+        }
+        pos ^= 1;
+        if (newValue > load<u8>(addr, hp)) {
+            store<u8>(addr, newValue, hp);
         }
         i += 1;
-        valuesWritten += 1;
+        addr += 1;
     }
 }
 
