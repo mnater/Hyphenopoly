@@ -116,17 +116,17 @@ function getBitAtPos(pos: i32, startByte: i32): i32 {
 }
 
 function rank1(pos: i32, startByte: i32): i32 {
-    const numBytes: i32 = pos / 32;
+    const numBytes: i32 = (pos / 32) << 2;
     const numBits: i32 = pos % 32;
     let i: i32 = 0;
     let count: i32 = 0;
     while (i < numBytes) {
-        count += popcnt<i32>(load<u32>(startByte + (i << 2)));
-        i += 1;
+        count += popcnt<i32>(load<u32>(startByte + i));
+        i += 4;
     }
     if (numBits !== 0) {
         count += popcnt<i32>(
-            bswap<u32>(load<u32>(startByte + (i << 2))) >>> (32 - numBits)
+            bswap<u32>(load<u32>(startByte + i)) >>> (32 - numBits)
         );
     }
     return count;
