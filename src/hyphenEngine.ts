@@ -111,12 +111,8 @@ function createTranslateMap(): i32 {
 
 function getBitAtPos(pos: i32, startByte: i32): i32 {
     const numBytes: i32 = pos / 8;
-    const numBits: i32 = pos % 8;
-    const mask: i32 = 1 << (7 - numBits);
-    if ((load<u8>(startByte + numBytes) & mask) !== 0) {
-        return 1;
-    }
-    return 0;
+    const numBits: i32 = 7 - (pos % 8);
+    return (load<u8>(startByte + numBytes) >> numBits) & 1;
 }
 
 function rank1(pos: i32, startByte: i32): i32 {
