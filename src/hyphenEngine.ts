@@ -129,25 +129,24 @@ function rank1(pos: i32, startByte: i32): i32 {
 
 /*
  * Loop based search for select0 in 32 bit dWord
- *  function get0PosInDWord2(dWord: i32, nth: i32): i32 {
- *  let count: i32 = 0;
- *  let pos: i32 = 0;
- *  const dWordBigEnd: i32 = bswap<i32>(dWord);
- *  while (pos < 32) {
- *      const shift: i32 = 31 - pos;
- *      const mask: i32 = 1 << shift;
- *      if ((dWordBigEnd & mask) !== mask) {
- *          count += 1;
- *      }
- *      if (count === nth) {
- *          break;
- *      }
- *      pos += 1;
- *  }
- *  return pos;
+ *
+ * function get1PosIndDWord(dWord: i32, nth: i32): i32 {
+ *     let count: i32 = 0;
+ *     let pos: i32 = 0;
+ *     const dWordBigEnd: i32 = bswap<i32>(dWord);
+ *     while (pos < 32) {
+ *         const mask: i32 = 1 << (31 - pos);
+ *         if ((dWordBigEnd & mask) === mask) {
+ *             count += 1;
+ *         }
+ *         if (count === nth) {
+ *             break;
+ *         }
+ *         pos += 1;
+ *     }
+ *     return pos;
  * }
  */
-
 
 /*
  * Select the bit position (from the most-significant bit)
@@ -155,8 +154,8 @@ function rank1(pos: i32, startByte: i32): i32 {
  * Adapted for wasm from
  * https://graphics.stanford.edu/~seander/bithacks.html#SelectPosFromMSBRank
  */
-function get0PosInDWord3(dWord: i32, nth: i32): i32 {
-    const v: i32 = ~bswap<i32>(dWord);
+function get1PosIndDWord(dWord: i32, nth: i32): i32 {
+    const v: i32 = bswap<i32>(dWord);
     let r: i32 = nth;
     let s: i32 = 0;
     let a: i32 = 0;
@@ -210,14 +209,14 @@ export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
         if (bytePos > endByte) {
             return 0;
         }
-        dWord = load<u32>(bytePos);
-        dWord0Count = popcnt<i32>(~dWord);
+        dWord = ~load<u32>(bytePos);
+        dWord0Count = popcnt<i32>(dWord);
         count += dWord0Count;
         bytePos += 4;
     }
     count -= dWord0Count;
     bytePos -= 4;
-    const firstPosInByte: i32 = get0PosInDWord3(dWord, ith - count);
+    const firstPosInByte: i32 = get1PosIndDWord(dWord, ith - count);
     const firstPos: i32 = ((bytePos - startByte) << 3) + firstPosInByte;
     // Find pos of ith + 1 0 (second 0)
     ith += 1;
@@ -225,14 +224,14 @@ export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
         if (bytePos > endByte) {
             return 0;
         }
-        dWord = load<u32>(bytePos);
-        dWord0Count = popcnt<i32>(~dWord);
+        dWord = ~load<u32>(bytePos);
+        dWord0Count = popcnt<i32>(dWord);
         count += dWord0Count;
         bytePos += 4;
     }
     count -= dWord0Count;
     bytePos -= 4;
-    const secndPosInByte: i32 = get0PosInDWord3(dWord, ith - count);
+    const secndPosInByte: i32 = get1PosIndDWord(dWord, ith - count);
     const secndPos: i32 = ((bytePos - startByte) << 3) + secndPosInByte;
 
     return (firstPos << 8) + (secndPos - firstPos - 1);
