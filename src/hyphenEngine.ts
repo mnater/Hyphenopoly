@@ -105,14 +105,17 @@ function createTranslateMap(): i32 {
 }
 
 function getBitAtPos(pos: i32, startByte: i32): i32 {
-    const numBytes: i32 = pos / 8;
-    const numBits: i32 = 7 - (pos % 8);
+    const numBytes: i32 = pos >> 3;
+    // BitHack: pos % 8 === pos & (8 - 1)
+    const numBits: i32 = 7 - (pos & 7);
     return (load<u8>(startByte + numBytes) >> numBits) & 1;
 }
 
 function rank1(pos: i32, startByte: i32): i32 {
-    const numBytes: i32 = (pos / 32) << 2;
-    const numBits: i32 = pos % 32;
+    // (pos / 32) << 2 === (pos >> 5) << 2
+    const numBytes: i32 = (pos >> 5) << 2;
+    // BitHack: pos % 32 === pos & (32 - 1)
+    const numBits: i32 = pos & 31;
     let i: i32 = 0;
     let count: i32 = 0;
     while (i < numBytes) {
@@ -198,7 +201,7 @@ function get1PosIndDWord(dWord: i32, nth: i32): i32 {
  * bits 0-23: position
  * bits 24-31: child count
  */
-export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
+function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let bytePos: i32 = startByte;
     let count: i32 = 0;
     let dWord: i32 = 0;
@@ -242,7 +245,7 @@ export function init(): i32 {
 }
 
 function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
-    let byteIdx: i32 = valIdx / 2;
+    let byteIdx: i32 = valIdx >> 1;
     let currentByte: i32 = load<u8>(byteIdx, va);
     let pos: i32 = valIdx & 1;
     let valuesWritten: i32 = 0;
