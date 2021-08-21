@@ -849,7 +849,8 @@
              */
             function handleWasm(res) {
                 const exp = res.instance.exports;
-                let alphalen = exp.init();
+                // eslint-disable-next-line multiline-ternary
+                let alphalen = (wa.Global) ? exp.lct.value : exp.lct;
                 alphalen = registerSubstitutions(alphalen, exp);
                 prepareLanguagesObj(
                     lang,

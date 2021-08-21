@@ -291,7 +291,8 @@ function instantiateWasmEngine(lang) {
      */
     function handleWasm(inst) {
         const exp = inst.exports;
-        let alphalen = exp.init();
+        // eslint-disable-next-line multiline-ternary
+        let alphalen = (WebAssembly.Global) ? exp.lct.value : exp.lct;
         alphalen = registerSubstitutions(alphalen, exp);
         prepareLanguagesObj(
             lang,

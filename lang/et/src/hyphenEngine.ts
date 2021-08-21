@@ -4,21 +4,16 @@
  * declare function log2(arg0: i32): void;
  * declare function logc(arg0: i32): void;
  */
-let alphabetOffset:i32 = 0;
-let bitmapOffset:i32 = 0;
-let charmapOffset:i32 = 0;
-let hasValueOffset:i32 = 0;
-let valuemapOffset:i32 = 0;
-let valuesOffset:i32 = 0;
-export let lmi:i32 = 0;
-export let rmi:i32 = 0;
-let alphabetCount: i32 = 0;
+
+import {ao, bm, cm, hv, lm, rm, va, vm} from "./g";
+export const lmi: i32 = lm;
+export const rmi: i32 = rm;
+export let lct: i32 = 0;
 
 const tw: i32 = 128;
 const hp: i32 = 192;
 const translateMapOffset:i32 = 256;
 const originalWordOffset: i32 = 1792;
-const dataOffset:i32 = 1920;
 
 function hashCharCode(cc: i32): i32 {
     // Hashes charCodes to [0, 256[
@@ -68,15 +63,16 @@ function pullFromTranslateMap(cc: i32): i32 {
 }
 
 
-function createTranslateMap(): i32 {
+function createTranslateMap(): void {
     let i: i32 = 0;
     let k: i32 = 1;
     let first: i32 = 0;
     let second: i32 = 0;
     let secondInt: i32 = 0;
-    i = alphabetOffset;
+    i = ao;
+    lct <<= 1;
     pushToTranslateMap(46, 0);
-    while (i < bitmapOffset) {
+    while (i < bm) {
         first = load<u16>(i);
         second = load<u16>(i, 2);
         if (second === 0) {
@@ -87,7 +83,7 @@ function createTranslateMap(): i32 {
         if (pullFromTranslateMap(first) !== 255) {
             // This is a substitution
             pushToTranslateMap(second, pullFromTranslateMap(first));
-            store<u16>(alphabetCount, second, 1280);
+            store<u16>(lct, second, 1280);
         } else if (secondInt === 255) {
             //  There's no such char yet in the TranslateMap
             pushToTranslateMap(first, k);
@@ -95,29 +91,32 @@ function createTranslateMap(): i32 {
                 // Set upperCase representation
                 pushToTranslateMap(second, k);
             }
-            store<u16>(alphabetCount, first, 1280);
+            store<u16>(lct, first, 1280);
             k += 1;
         } else {
             // Sigma
             pushToTranslateMap(first, k);
-            store<u16>(alphabetCount, first, 1280);
+            store<u16>(lct, first, 1280);
             k += 1;
         }
-        alphabetCount += 2;
+        lct += 2;
         i += 4;
     }
-    return alphabetCount >> 1;
+    lct >>= 1;
 }
 
 function getBitAtPos(pos: i32, startByte: i32): i32 {
-    const numBytes: i32 = pos / 8;
-    const numBits: i32 = 7 - (pos % 8);
+    const numBytes: i32 = pos >> 3;
+    // BitHack: pos % 8 === pos & (8 - 1)
+    const numBits: i32 = 7 - (pos & 7);
     return (load<u8>(startByte + numBytes) >> numBits) & 1;
 }
 
 function rank1(pos: i32, startByte: i32): i32 {
-    const numBytes: i32 = (pos / 32) << 2;
-    const numBits: i32 = pos % 32;
+    // (pos / 32) << 2 === (pos >> 5) << 2
+    const numBytes: i32 = (pos >> 5) << 2;
+    // BitHack: pos % 32 === pos & (32 - 1)
+    const numBits: i32 = pos & 31;
     let i: i32 = 0;
     let count: i32 = 0;
     while (i < numBytes) {
@@ -134,25 +133,24 @@ function rank1(pos: i32, startByte: i32): i32 {
 
 /*
  * Loop based search for select0 in 32 bit dWord
- *  function get0PosInDWord2(dWord: i32, nth: i32): i32 {
- *  let count: i32 = 0;
- *  let pos: i32 = 0;
- *  const dWordBigEnd: i32 = bswap<i32>(dWord);
- *  while (pos < 32) {
- *      const shift: i32 = 31 - pos;
- *      const mask: i32 = 1 << shift;
- *      if ((dWordBigEnd & mask) !== mask) {
- *          count += 1;
- *      }
- *      if (count === nth) {
- *          break;
- *      }
- *      pos += 1;
- *  }
- *  return pos;
+ *
+ * function get1PosIndDWord(dWord: i32, nth: i32): i32 {
+ *     let count: i32 = 0;
+ *     let pos: i32 = 0;
+ *     const dWordBigEnd: i32 = bswap<i32>(dWord);
+ *     while (pos < 32) {
+ *         const mask: i32 = 1 << (31 - pos);
+ *         if ((dWordBigEnd & mask) === mask) {
+ *             count += 1;
+ *         }
+ *         if (count === nth) {
+ *             break;
+ *         }
+ *         pos += 1;
+ *     }
+ *     return pos;
  * }
  */
-
 
 /*
  * Select the bit position (from the most-significant bit)
@@ -160,8 +158,8 @@ function rank1(pos: i32, startByte: i32): i32 {
  * Adapted for wasm from
  * https://graphics.stanford.edu/~seander/bithacks.html#SelectPosFromMSBRank
  */
-function get0PosInDWord3(dWord: i32, nth: i32): i32 {
-    const v: i32 = ~bswap<i32>(dWord);
+function get1PosIndDWord(dWord: i32, nth: i32): i32 {
+    const v: i32 = bswap<i32>(dWord);
     let r: i32 = nth;
     let s: i32 = 0;
     let a: i32 = 0;
@@ -204,7 +202,7 @@ function get0PosInDWord3(dWord: i32, nth: i32): i32 {
  * bits 0-23: position
  * bits 24-31: child count
  */
-export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
+function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let bytePos: i32 = startByte;
     let count: i32 = 0;
     let dWord: i32 = 0;
@@ -215,14 +213,14 @@ export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
         if (bytePos > endByte) {
             return 0;
         }
-        dWord = load<u32>(bytePos);
-        dWord0Count = popcnt<i32>(~dWord);
+        dWord = ~load<u32>(bytePos);
+        dWord0Count = popcnt<i32>(dWord);
         count += dWord0Count;
         bytePos += 4;
     }
     count -= dWord0Count;
     bytePos -= 4;
-    const firstPosInByte: i32 = get0PosInDWord3(dWord, ith - count);
+    const firstPosInByte: i32 = get1PosIndDWord(dWord, ith - count);
     const firstPos: i32 = ((bytePos - startByte) << 3) + firstPosInByte;
     // Find pos of ith + 1 0 (second 0)
     ith += 1;
@@ -230,34 +228,22 @@ export function select0(ith: i32, startByte: i32, endByte: i32): i32 {
         if (bytePos > endByte) {
             return 0;
         }
-        dWord = load<u32>(bytePos);
-        dWord0Count = popcnt<i32>(~dWord);
+        dWord = ~load<u32>(bytePos);
+        dWord0Count = popcnt<i32>(dWord);
         count += dWord0Count;
         bytePos += 4;
     }
     count -= dWord0Count;
     bytePos -= 4;
-    const secndPosInByte: i32 = get0PosInDWord3(dWord, ith - count);
+    const secndPosInByte: i32 = get1PosIndDWord(dWord, ith - count);
     const secndPos: i32 = ((bytePos - startByte) << 3) + secndPosInByte;
 
     return (firstPos << 8) + (secndPos - firstPos - 1);
 }
 
-export function init(): i32 {
-    alphabetOffset = load<u32>(dataOffset) + dataOffset;
-    bitmapOffset = load<u32>(dataOffset, 4) + dataOffset;
-    charmapOffset = load<u32>(dataOffset, 8) + dataOffset;
-    hasValueOffset = load<u32>(dataOffset, 12) + dataOffset;
-    valuemapOffset = load<u32>(dataOffset, 16) + dataOffset;
-    valuesOffset = load<u32>(dataOffset, 20) + dataOffset;
-    lmi = (load<u32>(dataOffset, 24) & 0xff00) >> 8;
-    rmi = load<u32>(dataOffset, 24) & 0xff;
-    return createTranslateMap();
-}
-
 function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
-    let byteIdx: i32 = valIdx / 2;
-    let currentByte: i32 = load<u8>(byteIdx + valuesOffset);
+    let byteIdx: i32 = valIdx >> 1;
+    let currentByte: i32 = load<u8>(byteIdx, va);
     let pos: i32 = valIdx & 1;
     let valuesWritten: i32 = 0;
     let newValue: i32 = 0;
@@ -273,7 +259,7 @@ function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
     while (i < length) {
         if (pos) {
             byteIdx += 1;
-            currentByte = load<u8>(byteIdx + valuesOffset);
+            currentByte = load<u8>(byteIdx, va);
             newValue = currentByte >> 4;
         } else {
             newValue = currentByte & 15;
@@ -289,16 +275,18 @@ function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
 
 export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
     const replccInt: i32 = pullFromTranslateMap(replcc);
+    lct <<= 1;
     if (replccInt !== 255) {
         pushToTranslateMap(ccl, replccInt);
         if (ccu !== 0) {
             pushToTranslateMap(ccu, replccInt);
         }
         // Add to alphabet
-        store<u16>(alphabetCount, ccl, 1280);
-        alphabetCount += 2;
+        store<u16>(lct, ccl, 1280);
+        lct += 2;
     }
-    return alphabetCount >> 1;
+    lct >>= 1;
+    return lct;
 }
 
 export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
@@ -332,13 +320,13 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
             cc = load<u8>(charOffset, tw);
-            const sel0 = select0(currNode + 1, bitmapOffset, charmapOffset);
+            const sel0 = select0(currNode + 1, bm, cm);
             const firstChild: i32 = (sel0 >> 8) - currNode;
             const childCount: i32 = sel0 & 255;
             let nthChild: i32 = 0;
             while (nthChild < childCount) {
                 nthChildIdx = firstChild + nthChild;
-                if (load<u8>(charmapOffset + nthChildIdx - 1) === cc) {
+                if (load<u8>(nthChildIdx - 1, cm) === cc) {
                     break;
                 }
                 nthChild += 1;
@@ -347,16 +335,16 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
                 break;
             }
             currNode = nthChildIdx;
-            if (getBitAtPos(currNode - 1, hasValueOffset) === 1) {
-                const pos: i32 = rank1(currNode, hasValueOffset);
+            if (getBitAtPos(currNode - 1, hv) === 1) {
+                const pos: i32 = rank1(currNode, hv);
                 const sel: i32 = select0(
                     pos,
-                    valuemapOffset,
-                    valuesOffset - 1
+                    vm,
+                    va - 1
                 );
                 const valBitsStart: i32 = sel >> 8;
                 const len: i32 = sel & 255;
-                const valIdx: i32 = rank1(valBitsStart, valuemapOffset);
+                const valIdx: i32 = rank1(valBitsStart, vm);
                 extractValuesToHp(valIdx, len, patternStartPos);
             }
             charOffset += 1;
@@ -388,3 +376,5 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     );
     return wordLength + hyphenPointsCount;
 }
+
+createTranslateMap();

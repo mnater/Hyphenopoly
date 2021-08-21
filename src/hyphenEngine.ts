@@ -8,7 +8,7 @@
 import {ao, bm, cm, hv, lm, rm, va, vm} from "./g";
 export const lmi: i32 = lm;
 export const rmi: i32 = rm;
-let alphabetCount: i32 = 0;
+export let lct: i32 = 0;
 
 const tw: i32 = 128;
 const hp: i32 = 192;
@@ -63,13 +63,14 @@ function pullFromTranslateMap(cc: i32): i32 {
 }
 
 
-function createTranslateMap(): i32 {
+function createTranslateMap(): void {
     let i: i32 = 0;
     let k: i32 = 1;
     let first: i32 = 0;
     let second: i32 = 0;
     let secondInt: i32 = 0;
     i = ao;
+    lct <<= 1;
     pushToTranslateMap(46, 0);
     while (i < bm) {
         first = load<u16>(i);
@@ -82,7 +83,7 @@ function createTranslateMap(): i32 {
         if (pullFromTranslateMap(first) !== 255) {
             // This is a substitution
             pushToTranslateMap(second, pullFromTranslateMap(first));
-            store<u16>(alphabetCount, second, 1280);
+            store<u16>(lct, second, 1280);
         } else if (secondInt === 255) {
             //  There's no such char yet in the TranslateMap
             pushToTranslateMap(first, k);
@@ -90,18 +91,18 @@ function createTranslateMap(): i32 {
                 // Set upperCase representation
                 pushToTranslateMap(second, k);
             }
-            store<u16>(alphabetCount, first, 1280);
+            store<u16>(lct, first, 1280);
             k += 1;
         } else {
             // Sigma
             pushToTranslateMap(first, k);
-            store<u16>(alphabetCount, first, 1280);
+            store<u16>(lct, first, 1280);
             k += 1;
         }
-        alphabetCount += 2;
+        lct += 2;
         i += 4;
     }
-    return alphabetCount >> 1;
+    lct >>= 1;
 }
 
 function getBitAtPos(pos: i32, startByte: i32): i32 {
@@ -240,10 +241,6 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     return (firstPos << 8) + (secndPos - firstPos - 1);
 }
 
-export function init(): i32 {
-    return createTranslateMap();
-}
-
 function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
     let byteIdx: i32 = valIdx >> 1;
     let currentByte: i32 = load<u8>(byteIdx, va);
@@ -278,16 +275,18 @@ function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
 
 export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
     const replccInt: i32 = pullFromTranslateMap(replcc);
+    lct <<= 1;
     if (replccInt !== 255) {
         pushToTranslateMap(ccl, replccInt);
         if (ccu !== 0) {
             pushToTranslateMap(ccu, replccInt);
         }
         // Add to alphabet
-        store<u16>(alphabetCount, ccl, 1280);
-        alphabetCount += 2;
+        store<u16>(lct, ccl, 1280);
+        lct += 2;
     }
-    return alphabetCount >> 1;
+    lct >>= 1;
+    return lct;
 }
 
 export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
@@ -377,3 +376,5 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     );
     return wordLength + hyphenPointsCount;
 }
+
+createTranslateMap();

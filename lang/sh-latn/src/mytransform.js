@@ -31,16 +31,13 @@
  * |    originalWord    |
  * | 64 * Uint16 = 128B |
  * #--------------------# <- 1920   - DATAOFFSET
- * |       header       |           |
- * |  8 * Uint32 = 32B  |           |
- * #--------------------# <- 288    |
  * |      licence       |           |
  * #--------------------#           |
  * |      alphabet      |           |
  * #--------------------#           |
  * |     STrieBits      |           |
- * #--------------------#           } pattern data (succinct value trie)
- * |     STrieChars     |           |
+ * #--------------------#           |
+ * |     STrieChars     |           } pattern data (succinct value trie)
  * #--------------------#           |
  * |    hasValueBits    |           |
  * #--------------------#           |
