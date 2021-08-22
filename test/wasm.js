@@ -27,7 +27,7 @@ t.test("load module", async(t) => {
     t.test("check filesize", async(t) => {
         return t.equal(
             hyphenEngine.buffer.byteLength,
-            79400,
+            79024,
             "update when de.wasm changes"
         );
     });
@@ -36,11 +36,13 @@ t.test("load module", async(t) => {
         t.test("check instance keys", async(t) => {
             return t.same(
                 Object.keys(result.instance.exports),
-                ["lmi", "rmi", "init", "subst", "hyphenate", "mem"]
+                ["lmi", "rmi", "lct", "subst", "hyphenate", "mem"]
             );
         });
         t.test("build trie", async(t) => {
-            const ret = result.instance.exports.init();
+            const ret = (WebAssembly.Global)
+                ? result.instance.exports.lct.value
+                : result.instance.exports.lct;
             return t.equal(ret, 31, "length of alphabet");
         });
         t.test("check translate table", async(t) => {
