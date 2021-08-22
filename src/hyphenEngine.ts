@@ -207,37 +207,34 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let count: i32 = 0;
     let dWord: i32 = 0;
     let dWord0Count: i32 = 0;
+    let run: i32 = 0;
+    let posInByte: i32 = 0;
+    let pos: i32 = 0;
+    let firstPos: i32 = 0;
+    let secndPos: i32 = 0;
 
-    // Find pos of ith 0 (first 0)
-    while (count < ith) {
-        if (bytePos > endByte) {
-            return 0;
+    while (run < 2) {
+        ith += run;
+        while (count < ith) {
+            if (bytePos > endByte) {
+                return 0;
+            }
+            dWord = ~load<u32>(bytePos);
+            dWord0Count = popcnt<i32>(dWord);
+            count += dWord0Count;
+            bytePos += 4;
         }
-        dWord = ~load<u32>(bytePos);
-        dWord0Count = popcnt<i32>(dWord);
-        count += dWord0Count;
-        bytePos += 4;
-    }
-    count -= dWord0Count;
-    bytePos -= 4;
-    const firstPosInByte: i32 = get1PosIndDWord(dWord, ith - count);
-    const firstPos: i32 = ((bytePos - startByte) << 3) + firstPosInByte;
-    // Find pos of ith + 1 0 (second 0)
-    ith += 1;
-    while (count < ith) {
-        if (bytePos > endByte) {
-            return 0;
+        count -= dWord0Count;
+        bytePos -= 4;
+        posInByte = get1PosIndDWord(dWord, ith - count);
+        pos = ((bytePos - startByte) << 3) + posInByte;
+        if (run === 0) {
+            firstPos = pos;
+        } else {
+            secndPos = pos;
         }
-        dWord = ~load<u32>(bytePos);
-        dWord0Count = popcnt<i32>(dWord);
-        count += dWord0Count;
-        bytePos += 4;
+        run += 1;
     }
-    count -= dWord0Count;
-    bytePos -= 4;
-    const secndPosInByte: i32 = get1PosIndDWord(dWord, ith - count);
-    const secndPos: i32 = ((bytePos - startByte) << 3) + secndPosInByte;
-
     return (firstPos << 8) + (secndPos - firstPos - 1);
 }
 
