@@ -158,7 +158,7 @@ function rank1(pos: i32, startByte: i32): i32 {
  * Adapted for wasm from
  * https://graphics.stanford.edu/~seander/bithacks.html#SelectPosFromMSBRank
  */
-function get1PosIndDWord(dWord: i32, nth: i32): i32 {
+function get1PosInDWord(dWord: i32, nth: i32): i32 {
     const v: i32 = bswap<i32>(dWord);
     let r: i32 = nth;
     let s: i32 = 0;
@@ -226,7 +226,7 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
         }
         count -= dWord0Count;
         bytePos -= 4;
-        posInByte = get1PosIndDWord(dWord, ith - count);
+        posInByte = get1PosInDWord(dWord, ith - count);
         pos = ((bytePos - startByte) << 3) + posInByte;
         if (run === 0) {
             firstPos = pos;
