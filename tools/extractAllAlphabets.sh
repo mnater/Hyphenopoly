@@ -1,11 +1,9 @@
 #!/bin/sh
 # -*- coding: utf-8 -*-
 #
-# Creates a wasm module containing hyphenEngine (from ../src/hyphenEngine.ts)
-# and license and patterns (from ../texPatterns/) for the specified language
-# in ../lang/<language>/
-#
-# sh createWasmForLang.sh language
+# Reads all .chr.txt files in "texPattners/converted" and
+# emit a file "abc.txt" containing the needen chars for usage in
+# searchHashSedds.js
 
 path_in='../texPatterns'
 touch abc.txt

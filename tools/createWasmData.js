@@ -2,7 +2,9 @@
 /* eslint-env node */
 
 /**
- * Reads parsed pattern data in JSON format and emits data for wasm
+ * Reads parsed pattern data in JSON format and emits two files:
+ * 1) A file containing the succinct trie data
+ * 2) A file containing imported globals
  *
  * Data Structure:
  *
@@ -65,6 +67,17 @@ dataEndOffset += (4 - (dataEndOffset % 4));
  * console.log("tot:", dataEndOffset);
  */
 
+const output = new Uint8Array(dataEndOffset);
+output.set(new Uint8Array(license.buffer), 0);
+output.set(new Uint8Array(alphabet.buffer), alphabetOffset);
+output.set(new Uint8Array(strieDat.bits.buffer), bitMapOffset);
+output.set(new Uint8Array(strieDat.chars.buffer), charMapOffset);
+output.set(new Uint8Array(strieDat.hasValueBits.buffer), hasValueOffset);
+output.set(new Uint8Array(strieDat.valuesBitMap.buffer), valuemapOffset);
+output.set(new Uint8Array(strieDat.values.buffer), valuesOffset);
+
+fs.writeFileSync(process.argv[3], output);
+
 let imports = "";
 const dataOffset = 1920;
 imports += `export const ao: i32 = ${alphabetOffset + dataOffset};\n`;
@@ -77,14 +90,3 @@ imports += `export const lm: i32 = ${input.lrmin[0]};\n`;
 imports += `export const rm: i32 = ${input.lrmin[1]};\n`;
 
 fs.writeFileSync(process.argv[4], imports);
-
-const output = new Uint8Array(dataEndOffset);
-output.set(new Uint8Array(license.buffer), 0);
-output.set(new Uint8Array(alphabet.buffer), alphabetOffset);
-output.set(new Uint8Array(strieDat.bits.buffer), bitMapOffset);
-output.set(new Uint8Array(strieDat.chars.buffer), charMapOffset);
-output.set(new Uint8Array(strieDat.hasValueBits.buffer), hasValueOffset);
-output.set(new Uint8Array(strieDat.valuesBitMap.buffer), valuemapOffset);
-output.set(new Uint8Array(strieDat.values.buffer), valuesOffset);
-
-fs.writeFileSync(process.argv[3], output);
