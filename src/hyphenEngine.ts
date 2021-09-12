@@ -5,21 +5,106 @@
  * declare function logc(arg0: i32): void;
  */
 
+/*
+ * MEMORY LAYOUT (static)
+ *
+ * #--------------------# <- Offset 0
+ * |        word        |
+ * | 64 * Uint16 = 128B |
+ * #--------------------# <- 128 (tw)
+ * |   translatedWord   |
+ * |  64 * Uint8 = 64B  |
+ * #--------------------# <- 192 (hp)
+ * |    hyphenPoints    |
+ * |  64 * Uint8 = 64B  |
+ * #--------------------# <- 256 (translateMapOffset)
+ * |    translateMap    |
+ * |         keys:      |
+ * | 256 chars * 2Bytes |
+ * |          +         |
+ * |       values:      | 1024B
+ * | 256 chars * 1Byte  |
+ * |          +         |
+ * |     collisions:    |
+ * | 64 buckets * 4Byte |
+ * #--------------------# <- 1280 (alphabetOffset)
+ * |      alphabet      |
+ * | 256 chars * 2Bytes | 512B
+ * #--------------------# <- 1792 (originalWordOffset)
+ * |    originalWord    |
+ * | 64 * Uint16 = 128B |
+ * #--------------------# <- 1920   - DATAOFFSET
+ * |      licence       |           |
+ * #--------------------#           |
+ * |      alphabet      |    (ao)   |
+ * #--------------------#           |
+ * |     STrieBits      |    (bm)   | (bm)
+ * #--------------------#           |
+ * |     STrieChars     |    (cm)   } pattern data (succinct value trie)
+ * #--------------------#           |
+ * |    hasValueBits    |    (hv)   |
+ * #--------------------#           |
+ * |    valuesBitMap    |    (vm)   |
+ * #--------------------#           |
+ * |       values       |    (va)   |
+ * #--------------------# <- dataEnd-
+ * |   alignment bytes  |
+ * #--------------------# <- heapSize
+ *
+ * USAGE:
+ * Each module created from this source is language specific.
+ * 1. Write a UTF-16 String to memory starting at index 0 (64 chars max)
+ * 2. Call hyphenate(), which returns the lenght of the hyphenated string
+ * 3. Read the hyphenated UTF-16 string from memory starting at index 0
+ *
+ * INTERNALS:
+ * Upon instantiation the module builds a translate map that maps UTF-16 chars
+ * to 8bit numbers.
+ * This limits the size of the alphabet to a theoretically maximum of
+ * 255 characters (practically the number is lower to prevent hash collisions).
+ * Hyphenation patterns are stored in and read from a static succinct trie.
+ */
+
+/*
+ * Import the offsets and left-/rightmin of the language specific data.
+ * The import file is created by the createWasmData.js script
+ */
 import {ao, bm, cm, hv, lm, rm, va, vm} from "./g";
+
+/*
+ * Export the variables essential for the user of the module:
+ * lmi: leftmin - the number of characters before the first hyphenation point
+ * rmi: rightmin - the number of characters after the last hyphenation point
+ * lct: lettercount - number of letters in the alphabet
+ */
 export const lmi: i32 = lm;
 export const rmi: i32 = rm;
 export let lct: i32 = 0;
 
+/*
+ * Define the offsets into memory
+ */
 const tw: i32 = 128;
 const hp: i32 = 192;
 const translateMapOffset:i32 = 256;
+const alphabetOffset: i32 = 1280;
 const originalWordOffset: i32 = 1792;
 
+/*
+ * Minimalistic hash function to map 16-bit to 8-bit
+ *
+ * The magic numbers are found by tools/searchHashSeeds.*
+ * with the goal of having as few collisions as possible.
+ */
 function hashCharCode(cc: i32): i32 {
-    // Hashes charCodes to [0, 256[
     return ((19441 * cc) % 19559) & 255;
 }
 
+/*
+ * Store a k/v pair in translateMap
+ * k is the utf-16 char
+ * v is it's 8-bit representation
+ */
 function pushToTranslateMap(cc: i32, id: i32): void {
     let ptr: i32 = hashCharCode(cc) << 1;
     if (load<u16>(ptr, translateMapOffset) === 0) {
@@ -40,6 +125,10 @@ function pushToTranslateMap(cc: i32, id: i32): void {
     }
 }
 
+/*
+ * Retrieve the 8-bit value for a UTF-16 char
+ * Returns 255 if the char is not in the translateMap
+ */
 function pullFromTranslateMap(cc: i32): i32 {
     let ptr: i32 = hashCharCode(cc) << 1;
     const val = load<u16>(ptr, translateMapOffset);
@@ -62,7 +151,10 @@ function pullFromTranslateMap(cc: i32): i32 {
     return load<u16>(ptr, translateMapOffset + 770);
 }
 
-
+/*
+ * Creates the translateMap for the language specific alphabet.
+ * This function is called upon instantiation of the module.
+ */
 function createTranslateMap(): void {
     let i: i32 = 0;
     let k: i32 = 1;
@@ -83,7 +175,7 @@ function createTranslateMap(): void {
         if (pullFromTranslateMap(first) !== 255) {
             // This is a substitution
             pushToTranslateMap(second, pullFromTranslateMap(first));
-            store<u16>(lct, second, 1280);
+            store<u16>(lct, second, alphabetOffset);
         } else if (secondInt === 255) {
             //  There's no such char yet in the TranslateMap
             pushToTranslateMap(first, k);
@@ -91,12 +183,12 @@ function createTranslateMap(): void {
                 // Set upperCase representation
                 pushToTranslateMap(second, k);
             }
-            store<u16>(lct, first, 1280);
+            store<u16>(lct, first, alphabetOffset);
             k += 1;
         } else {
             // Sigma
             pushToTranslateMap(first, k);
-            store<u16>(lct, first, 1280);
+            store<u16>(lct, first, alphabetOffset);
             k += 1;
         }
         lct += 2;
@@ -105,6 +197,10 @@ function createTranslateMap(): void {
     lct >>= 1;
 }
 
+/*
+ * Returns the bit at pos starting at startByte
+ * For our purposes the bits are numbered from left to right
+ */
 function getBitAtPos(pos: i32, startByte: i32): i32 {
     const numBytes: i32 = pos >> 3;
     // BitHack: pos % 8 === pos & (8 - 1)
@@ -112,6 +208,14 @@ function getBitAtPos(pos: i32, startByte: i32): i32 {
     return (load<u8>(startByte + numBytes) >> numBits) & 1;
 }
 
+/*
+ * Computes the rank at pos starting at startByte.
+ * The rank is the number of bits set up to the given position.
+ * We first count the bits set in the 32-bit blocks,
+ * then we count the bits set until the final pos.
+ * Since byte ordering in webassembly is little-endian, but we count from
+ * left to right we need to byteswap the last number read from memory.
+ */
 function rank1(pos: i32, startByte: i32): i32 {
     // (pos / 32) << 2 === (pos >> 5) << 2
     const numBytes: i32 = (pos >> 5) << 2;
@@ -132,31 +236,11 @@ function rank1(pos: i32, startByte: i32): i32 {
 }
 
 /*
- * Loop based search for select0 in 32 bit dWord
- *
- * function get1PosIndDWord(dWord: i32, nth: i32): i32 {
- *     let count: i32 = 0;
- *     let pos: i32 = 0;
- *     const dWordBigEnd: i32 = bswap<i32>(dWord);
- *     while (pos < 32) {
- *         const mask: i32 = 1 << (31 - pos);
- *         if ((dWordBigEnd & mask) === mask) {
- *             count += 1;
- *         }
- *         if (count === nth) {
- *             break;
- *         }
- *         pos += 1;
- *     }
- *     return pos;
- * }
- */
-
-/*
  * Select the bit position (from the most-significant bit)
  * with the given count (rank)
  * Adapted for wasm from
  * https://graphics.stanford.edu/~seander/bithacks.html#SelectPosFromMSBRank
+ * This is faster than a loop based approach but the code is some bytes bigger.
  */
 function get1PosInDWord(dWord: i32, nth: i32): i32 {
     const v: i32 = bswap<i32>(dWord);
@@ -238,21 +322,29 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     return (firstPos << 8) + (secndPos - firstPos - 1);
 }
 
+/*
+ * Get the values from memory and copy to hp if greater than value in hp
+ *
+ * To save space the values are stored in a compact form:
+ * Values range from 0 to 11, so we only need 4bits for each value
+ * Leading zeroes are compressed to a number, trailing zeroes are left out
+ * [0,0,0,1,0,2,0,0] -> [3,1,0,2] -> [0011,0001,0000,0010] -> [49,2]
+ */
 function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
     let byteIdx: i32 = valIdx >> 1;
     let currentByte: i32 = load<u8>(byteIdx, va);
     let pos: i32 = valIdx & 1;
-    let valuesWritten: i32 = 0;
+    let leadingZeros: i32 = 0;
     let newValue: i32 = 0;
     if (pos) {
         // Second (right) half of byte
-        valuesWritten = currentByte & 15;
+        leadingZeros = currentByte & 15;
     } else {
         // First (left) half of byte
-        valuesWritten = currentByte >> 4;
+        leadingZeros = currentByte >> 4;
     }
     let i: i32 = 1;
-    let addr: i32 = startOffset + valuesWritten;
+    let addr: i32 = startOffset + leadingZeros;
     while (i < length) {
         if (pos) {
             byteIdx += 1;
@@ -270,6 +362,10 @@ function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
     }
 }
 
+/*
+ * Method to define character substitutions
+ * e.g. é/É -> e
+ */
 export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
     const replccInt: i32 = pullFromTranslateMap(replcc);
     lct <<= 1;
@@ -279,13 +375,23 @@ export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
             pushToTranslateMap(ccu, replccInt);
         }
         // Add to alphabet
-        store<u16>(lct, ccl, 1280);
+        store<u16>(lct, ccl, alphabetOffset);
         lct += 2;
     }
     lct >>= 1;
     return lct;
 }
 
+/*
+ * The main hyphenate function
+ * lmin: leftmin - the number of characters before the first hyphenation point
+ * rmin: rightmin - the number of characters after the last hyphenation point
+ * hc: hyphenchar – the char to insert as hyphen (usually soft hyphen \00AD)
+ *
+ * Reads the word from memory[0] until 0 termination and writes back to memory
+ * starting at adress 0.
+ * Returns the new length of the hyphenated word.
+ */
 export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     let patternStartPos: i32 = 0;
     let wordLength: i32 = 0;
