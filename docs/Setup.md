@@ -189,8 +189,8 @@ Words that contain a hyphen when unhyphenated should not be entered in the list.
 
 ### hide
 ````
-type: string ("all" | "element" | "text")
-default: "all"
+type: number (0 | 1 | 2)
+default: 0
 ````
 Define if and how elements are made invisible while being hyphenated.
 ````html
@@ -199,16 +199,16 @@ var Hyphenopoly = {
     require: {...},
     paths: {...},
     setup: {
-        hide: "element"
+        hide: 1
     }
 };
 </script>
 ````
 To prevent a flash of unhyphenated content (FOUHC) Hyphenopoly hides the elements being hyphenated. Depending on the structure of your page this can lead to visual flicker. You can change the way Hyphenopoly hides the content:
 
--   `all` hides the whole page by inserting the following CSS-rule `html {visibility: hidden !important}`
--   `element` hides the selected elements by inserting the following CSS-rule for each selector: `<selector> {visibility: hidden !important}`
--   `text` hides only the text of the selected elements by inserting the following CSS-rule for each selector: `<selector> {color: transparent !important}`
+-   `0` hides the whole page by inserting the following CSS-rule `html {visibility: hidden !important}`
+-   `1` hides the selected elements by inserting the following CSS-rule for each selector: `<selector> {visibility: hidden !important}`
+-   `2` hides only the text of the selected elements by inserting the following CSS-rule for each selector: `<selector> {color: transparent !important}`
 -   any other keyword prevents hiding.
 
 These CSS-rules are removed, when Hyphenopoly has finished its job or when the [timeout](#timeout) gets fired.

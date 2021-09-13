@@ -1,5 +1,12 @@
 # Version History
 
+## Version 5.0.0-beta-1 (2021-09-dd)
+### Breaking changes
+*   The wasm modules internally use a succint trie data structure, memory layout has changed
+*   Use numbers instead of strings for hiding options
+*   Drop support for outdated (eol) node versions. Hyphenopoly.module now requires node >= 12
+
+
 ## Version 4.12.0 (2021-07-21)
 ### Fixed
 *   Fixed memory access out of bounds (#165)

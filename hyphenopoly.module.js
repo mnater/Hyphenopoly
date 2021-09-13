@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 4.12.0 - hyphenation for node
+ * @license Hyphenopoly.module.js 5.0.0-beta.1 - hyphenation for node
  * ©2021  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -15,12 +15,9 @@
  * in a browser environment (e.g. browserified)
  */
 let loader = require("fs");
-const TD = typeof TextDecoder === "undefined"
-    ? require("util").TextDecoder
-    : TextDecoder;
 
 const decode = (() => {
-    const utf16ledecoder = new TD("utf-16le");
+    const utf16ledecoder = new TextDecoder("utf-16le");
     return (ui16) => {
         return utf16ledecoder.decode(ui16);
     };
@@ -291,8 +288,7 @@ function instantiateWasmEngine(lang) {
      */
     function handleWasm(inst) {
         const exp = inst.exports;
-        // eslint-disable-next-line multiline-ternary
-        let alphalen = (WebAssembly.Global) ? exp.lct.value : exp.lct;
+        let alphalen = exp.lct.value;
         alphalen = registerSubstitutions(alphalen, exp);
         prepareLanguagesObj(
             lang,
@@ -301,10 +297,8 @@ function instantiateWasmEngine(lang) {
                 exp.hyphenate
             ),
             decode(new Uint16Array(exp.mem.buffer, 1280, alphalen)),
-            /* eslint-disable multiline-ternary */
-            (WebAssembly.Global) ? exp.lmi.value : exp.lmi,
-            (WebAssembly.Global) ? exp.rmi.value : exp.rmi
-            /* eslint-enable multiline-ternary */
+            exp.lmi.value,
+            exp.rmi.value
         );
     }
     if (H.c.sync) {
