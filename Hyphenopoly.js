@@ -787,25 +787,25 @@
 
         /**
          * Setup env for hyphenateFunction
-         * @param {Object} baseData baseData
+         * @param {ArrayBuffer} buf Memory buffer
          * @param {function} hyphenateFunc hyphenateFunction
          * @returns {function} hyphenateFunction with closured environment
          */
-        function encloseHyphenateFunction(baseData, hyphenateFunc) {
-            const wordStore = new Uint16Array(baseData.buf, baseData.wo, 64);
+        function encloseHyphenateFunction(buf, hyphenateFunc) {
+            const wordStore = new Uint16Array(buf, 0, 64);
             return ((word, hyphencc, leftmin, rightmin) => {
                 wordStore.set([
-                    95,
+                    46,
                     ...[...word].map((c) => {
                         return c.charCodeAt(0);
                     }),
-                    95,
+                    46,
                     0
                 ]);
                 const len = hyphenateFunc(leftmin, rightmin, hyphencc);
                 if (len > 0) {
                     word = decode(
-                        new Uint16Array(baseData.buf, baseData.hw, len)
+                        new Uint16Array(buf, 0, len)
                     );
                 }
                 return word;
@@ -849,26 +849,20 @@
              */
             function handleWasm(res) {
                 const exp = res.instance.exports;
-                let alphalen = exp.conv();
+                // eslint-disable-next-line multiline-ternary
+                let alphalen = (wa.Global) ? exp.lct.value : exp.lct;
                 alphalen = registerSubstitutions(alphalen, exp);
-                const baseData = {
-                    /* eslint-disable multiline-ternary */
-                    "buf": exp.mem.buffer,
-                    "hw": (wa.Global) ? exp.hwo.value : exp.hwo,
-                    "lm": (wa.Global) ? exp.lmi.value : exp.lmi,
-                    "rm": (wa.Global) ? exp.rmi.value : exp.rmi,
-                    "wo": (wa.Global) ? exp.uwo.value : exp.uwo
-                    /* eslint-enable multiline-ternary */
-                };
                 prepareLanguagesObj(
                     lang,
                     encloseHyphenateFunction(
-                        baseData,
+                        exp.mem.buffer,
                         exp.hyphenate
                     ),
-                    decode(new Uint16Array(exp.mem.buffer, 1026, alphalen - 1)),
-                    baseData.lm,
-                    baseData.rm
+                    decode(new Uint16Array(exp.mem.buffer, 1280, alphalen)),
+                    /* eslint-disable multiline-ternary */
+                    (wa.Global) ? exp.lmi.value : exp.lmi,
+                    (wa.Global) ? exp.rmi.value : exp.rmi
+                    /* eslint-enable multiline-ternary */
                 );
             }
             heProm.w.then((response) => {
@@ -881,7 +875,26 @@
                         wa.instantiateStreaming &&
                         (response.headers.get("Content-Type") === "application/wasm")
                     ) {
-                        return wa.instantiateStreaming(r2);
+                        // Return wa.instantiateStreaming(r2);
+
+
+                        return wa.instantiateStreaming(r2, {
+                            "hyphenEngine": {
+                                "log": (value) => {
+                                    // eslint-disable-next-line no-console
+                                    return console.log(value);
+                                },
+                                "log2": (value) => {
+                                    // eslint-disable-next-line no-console
+                                    return console.log(
+                                        // eslint-disable-next-line no-bitwise
+                                        (value >>> 0).
+                                            toString(2).
+                                            padStart(32, "0")
+                                    );
+                                }
+                            }
+                        });
                     }
                     return r2.arrayBuffer().then((ab) => {
                         return wa.instantiate(ab);

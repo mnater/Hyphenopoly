@@ -226,9 +226,8 @@ function prepareLanguagesObj(
  * @param {function} hyphenateFunc hyphenateFunction
  * @returns {function} hyphenateFunction with closured environment
  */
-function encloseHyphenateFunction(baseData, hyphenateFunc) {
-    const heapBuffer = baseData.wasmMem.buffer;
-    const wordStore = new Uint16Array(heapBuffer, baseData.wo, 64);
+function encloseHyphenateFunction(buf, hyphenateFunc) {
+    const wordStore = new Uint16Array(buf, 0, 64);
 
     /**
      * The hyphenateFunction that encloses the env above
@@ -242,16 +241,16 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
      */
     return ((word, hyphencc, leftmin, rightmin) => {
         wordStore.set([
-            95,
+            46,
             ...[...word].map((c) => {
                 return c.charCodeAt(0);
             }),
-            95,
+            46,
             0
         ]);
         const len = hyphenateFunc(leftmin, rightmin, hyphencc);
         if (len > 0) {
-            word = decode(new Uint16Array(heapBuffer, baseData.hw, len));
+            word = decode(new Uint16Array(buf, 0, len));
         }
         return word;
     });
@@ -292,26 +291,20 @@ function instantiateWasmEngine(lang) {
      */
     function handleWasm(inst) {
         const exp = inst.exports;
-        const baseData = {
-            /* eslint-disable multiline-ternary */
-            "hw": (WebAssembly.Global) ? exp.hwo.value : exp.hwo,
-            "lm": (WebAssembly.Global) ? exp.lmi.value : exp.lmi,
-            "rm": (WebAssembly.Global) ? exp.rmi.value : exp.rmi,
-            "wasmMem": exp.mem,
-            "wo": (WebAssembly.Global) ? exp.uwo.value : exp.uwo
-            /* eslint-enable multiline-ternary */
-        };
-        let alphalen = exp.conv();
+        // eslint-disable-next-line multiline-ternary
+        let alphalen = (WebAssembly.Global) ? exp.lct.value : exp.lct;
         alphalen = registerSubstitutions(alphalen, exp);
         prepareLanguagesObj(
             lang,
             encloseHyphenateFunction(
-                baseData,
+                exp.mem.buffer,
                 exp.hyphenate
             ),
-            decode(new Uint16Array(exp.mem.buffer, 1026, alphalen - 1)),
-            baseData.lm,
-            baseData.rm
+            decode(new Uint16Array(exp.mem.buffer, 1280, alphalen)),
+            /* eslint-disable multiline-ternary */
+            (WebAssembly.Global) ? exp.lmi.value : exp.lmi,
+            (WebAssembly.Global) ? exp.rmi.value : exp.rmi
+            /* eslint-enable multiline-ternary */
         );
     }
     if (H.c.sync) {

@@ -1,11 +1,10 @@
 #!/bin/sh
 # -*- coding: utf-8 -*-
 #
-# Creates a wasm module containing hyphenEngine (from ../src/hyphenEngine.ts)
-# and license and patterns (from ../texPatterns/) for the specified language
-# in ../lang/<language>/
+# create all .wasm files, overwrite existing files
 #
-# sh createWasmForLang.sh language
+# Loops over all files in "./texPatterns/converted/" and calls
+# createWasmForLang.sh <lang>
 
 path_in='./texPatterns/converted/'
 prefix='hyph-'
