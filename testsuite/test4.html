@@ -3,9 +3,10 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 004</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         var startTime;
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "en-us": "FORCEHYPHENOPOLY"
             },
@@ -18,10 +19,7 @@
                 }
             }
             
-        };
-        </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
-        <script>
+        });
         function assert() {
             var endTime = performance.now();
             document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">" + (Math.round((endTime - startTime) * 100) / 100).toString() + " ms</p>";
