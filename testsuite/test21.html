@@ -3,11 +3,12 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 021</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         window.PagedConfig = {
             auto: false
         };
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "en-us": "FORCEHYPHENOPOLY",
                 "hy": "FORCEHYPHENOPOLY"
@@ -20,7 +21,7 @@
                     assert();
                 }
             }
-        };
+        });
         function assert() {
             var tests = 2;
             var i = 1;
@@ -55,7 +56,6 @@
             }
         }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
         <style type="text/css">
             body {
