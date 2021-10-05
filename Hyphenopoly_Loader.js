@@ -305,6 +305,9 @@ window.Hyphenopoly = {};
          * This is in an iife to keep complexity low.
          */
         (() => {
+            if (c.cacheFeatureTests) {
+                H.cacheFeatureTests = c.cacheFeatureTests;
+            }
             if (c.cacheFeatureTests && store.getItem(scriptName)) {
                 H.cf = JSON.parse(store.getItem(scriptName));
                 H.cf.langs = mp(H.cf.langs);
