@@ -73,18 +73,17 @@ window.Hyphenopoly = {};
                     stylesNode.remove();
                 }
             } else {
-                const vis = "{visibility:hidden!important}";
+                let vis = "{visibility:hidden!important}";
                 stylesNode = d[shortcuts.ce]("style");
                 let myStyle = "";
                 if (mode === 0) {
                     myStyle = "html" + vis;
-                } else {
+                } else if (mode !== -1) {
+                    if (mode === 2) {
+                        vis = "{color:transparent!important}";
+                    }
                     o.keys(H.s.selectors).forEach((sel) => {
-                        if (mode === 1) {
-                            myStyle += sel + vis;
-                        } else {
-                            myStyle += sel + "{color:transparent!important}";
-                        }
+                        myStyle += sel + vis;
                     });
                 }
                 stylesNode[shortcuts.ac](d[shortcuts.ct](myStyle));
@@ -220,22 +219,12 @@ window.Hyphenopoly = {};
                     res();
                 }
             });
-            const hide = H.s.hide;
-            if (hide === 0) {
-                H.hide(1, 0);
-            }
-            if (hide !== -1) {
-                H.timeOutHandler = w.setTimeout(() => {
-                    H.hide(0, null);
-                    // eslint-disable-next-line no-console
-                    console.info(scriptName + " timed out.");
-                }, H.s.timeout);
-            }
-            H.res.DOM.then(() => {
-                if (hide > 0) {
-                    H.hide(1, hide);
-                }
-            });
+            H.hide(1, H.s.hide);
+            H.timeOutHandler = w.setTimeout(() => {
+                H.hide(0, null);
+                // eslint-disable-next-line no-console
+                console.info(scriptName + " timed out.");
+            }, H.s.timeout);
             // Load main script
             const script = d[shortcuts.ce]("script");
             script.src = H.paths.maindir + "Hyphenopoly.js";
