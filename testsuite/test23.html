@@ -6,7 +6,6 @@
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         var reloaded = !!sessionStorage.getItem("Hyphenopoly_Loader.js");
-        console.log(reloaded);
         Hyphenopoly.config({
             cacheFeatureTests: true,
             require: {
@@ -22,7 +21,6 @@
             },
             handleEvent: {
                 hyphenopolyEnd: function (e) {
-                    console.log(reloaded);
                     if (!reloaded) {
                         reloaded = true;
                         window.location.reload();
