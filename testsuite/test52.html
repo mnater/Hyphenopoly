@@ -3,8 +3,9 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 052</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-            var Hyphenopoly = {
+            Hyphenopoly.config({
                 require: {
                     "de": "FORCEHYPHENOPOLY"
                 },
@@ -21,7 +22,7 @@
                         assert();
                     }
                 }
-            };
+            });
             function assert() {
                 var tests = 1;
                 var i = 1;
@@ -53,7 +54,6 @@
                 }
             }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;
@@ -70,7 +70,7 @@
         </style>
     </head>
     <body>
-        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test50.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test52.html">Next&nbsp;&rarr;</a></div>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test51.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test53.html">Next&nbsp;&rarr;</a></div>
 
         <h1>Test 052</h1>
         <p id="desc">Use defaultLanguage as fallback if no lang-attribute is set.</p>

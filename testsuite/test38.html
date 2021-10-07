@@ -3,11 +3,12 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 038</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         var mode = window.location.search.substring(1);
         var path = "../patterns/";
         var result = true;
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "de": "FORCEHYPHENOPOLY",
                 "en": "FORCEHYPHENOPOLY"
@@ -23,7 +24,7 @@
                     }
                 }
             }
-        };
+        });
 
         window.onload = function () {
             if (window.Promise) {
@@ -94,7 +95,6 @@
             }
         }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;

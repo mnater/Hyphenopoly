@@ -3,12 +3,13 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 039</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         document.addEventListener("DOMContentLoaded", function(event) {
             document.getElementById("myTextField").focus();
         });
         
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "en-us": "FORCEHYPHENOPOLY"
             },
@@ -20,7 +21,7 @@
                     assert();
                 }
             }
-        };
+        });
         function assert() {
             var tests = 1;
             var i = 1;
@@ -48,7 +49,6 @@
             }
         }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;

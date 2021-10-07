@@ -3,13 +3,14 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 036</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         var mode = window.location.search.substring(1);
         var path = "../patterns/";
         if (mode === "fail") {
             path = "../pattern/"
         }
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "fur": "probabilmentri"
             },
@@ -24,7 +25,7 @@
                     }
                 }
             }
-        };
+        });
 
         window.onload = function () {
             function hyphenate_fur(text) {
@@ -94,7 +95,6 @@
             window.location = "test36.html?fail";
         }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;
