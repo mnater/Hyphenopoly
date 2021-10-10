@@ -105,7 +105,6 @@ Zuerst werden die Daten in einem Baum mit einem zusätzlichen root-Knoten (das m
    <text x="405" y="400">0</text>
 </g>
 
-
 <g font-family="sans-serif" font-size="12px" fill="#0000ff">
     <text x="285" y="350">100</text>
     <text x="445" y="350">100</text>
@@ -155,9 +154,9 @@ in einem Byte gespeichert werden.
 
 Die Trennwerte werden nun wie folgt abgespeichert:
 
-1. In einem Bitmuster wird die Länge der Muster abgelegt: es werden so viele Bits
+1.  In einem Bitmuster wird die Länge der Muster abgelegt: es werden so viele Bits
 gesetzt, wie das Muster lang ist. Dazwischen wird eine Null gesetzt.
-2. Weiter werden die komprimierten Trennwerte der Reihe nach abgespeichert.
+2.  Weiter werden die komprimierten Trennwerte der Reihe nach abgespeichert.
 
 Diese Muster (ohne Lizenztext aber mit Ausnahmen) belegen noch 19'672 Byte.
 
@@ -178,17 +177,17 @@ select0(101101011101100100000, 3) -> 6, 3
 
 Um nun z.B. das Muster `ba` zu finden, folgen wir folgendem Algorithmus:
 
-1. Nimm den ersten Buchstaben -> b
-2. Finde die erste Null -> 1
-3. Zähle die darauf folgenden 1en -> 2 (d.h. 2 Kindknoten)
-4. Überprüfe für jeden Kindknoten, ob der entsprechende Wert in chars mit dem
+1.  Nimm den ersten Buchstaben -> b
+2.  Finde die erste Null -> 1
+3.  Zähle die darauf folgenden 1en -> 2 (d.h. 2 Kindknoten)
+4.  Überprüfe für jeden Kindknoten, ob der entsprechende Wert in chars mit dem
 Buchstaben aus 1 übereinstimmt. Brich ab, wenn kein Buchstabe gefunden wird.
 Dann ist das Muster nicht im Trie.
-5. Wenn der Wert in hasVal 1 ist -> lies die Trennwerte aus (s.u.)
-6. Die Nummer des Kindknoten (hier 2) addiert zur Position aus 2 gibt uns an, welche Null wir als nächstes finden müssen -> 3
-7. Nimm den nächsten Buchstaben -> a
-8. Zähle die Einsen nach der 3. Null (von Schritt 6) -> 3
-9. weiter mit Schritt 4.
+5.  Wenn der Wert in hasVal 1 ist -> lies die Trennwerte aus (s.u.)
+6.  Die Nummer des Kindknoten (hier 2) addiert zur Position aus 2 gibt uns an, welche Null wir als nächstes finden müssen -> 3
+7.  Nimm den nächsten Buchstaben -> a
+8.  Zähle die Einsen nach der 3. Null (von Schritt 6) -> 3
+9.  weiter mit Schritt 4.
 
 Um die Trennwerte (Schritt 5) auszulesen, wird zuerst der `rank1` an der jeweiligen Position ausgelesen.
 Das gibt den Index des Trennmusters zurück. Nun Wird ein `select0` mit diesem Index auf dem Bitmuster der Trennwerte berechnet.
