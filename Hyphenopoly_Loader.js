@@ -23,7 +23,6 @@ window.Hyphenopoly = {};
 
     const scriptName = "Hyphenopoly_Loader.js";
     const store = sessionStorage;
-    const lcRequire = mp();
 
     /**
      * The main function runs the feature test and loads Hyphenopoly if
@@ -132,7 +131,7 @@ window.Hyphenopoly = {};
                     testDiv.lang = lang;
                     testDiv.style.cssText = `visibility:hidden;-webkit-${ha};-ms-${ha};${ha};width:48px;font-size:12px;line-height:12px;border:none;padding:0;word-wrap:normal`;
                     testDiv[shortcuts.ac](
-                        d[shortcuts.ct](lcRequire.get(lang).wo.toLowerCase())
+                        d[shortcuts.ct](H.lrq.get(lang).wo.toLowerCase())
                     );
                     fakeBody[shortcuts.ac](testDiv);
                 }
@@ -154,7 +153,6 @@ window.Hyphenopoly = {};
         H.res = {
             "he": mp()
         };
-        const fw = mp();
 
         /**
          * Load hyphenEngines
@@ -168,24 +166,22 @@ window.Hyphenopoly = {};
          * @returns {undefined}
          */
         const loadhyphenEngine = (lang) => {
-            const filename = lcRequire.get(lang).fn + ".wasm";
+            const fn = H.lrq.get(lang).fn;
             H.cf.pf = true;
             H.cf.langs.set(lang, "H9Y");
-            if (fw.has(filename)) {
-                const hyphenEngineWrapper = H.res.he.get(fw.get(filename));
-                hyphenEngineWrapper.c = true;
-                H.res.he.set(lang, hyphenEngineWrapper);
+            if (H.res.he.has(fn)) {
+                H.res.he.get(fn).l.push(lang);
             } else {
                 H.res.he.set(
-                    lang,
+                    fn,
                     {
-                        "w": w.fetch(H.paths.patterndir + filename, {"credentials": H.s.CORScredentials})
+                        "l": [lang],
+                        "w": w.fetch(H.paths.patterndir + fn + ".wasm", {"credentials": H.s.CORScredentials})
                     }
                 );
-                fw.set(filename, lang);
             }
         };
-        lcRequire.forEach((value, lang) => {
+        H.lrq.forEach((value, lang) => {
             if (value.wo === "FORCEHYPHENOPOLY" || H.cf.langs.get(lang) === "H9Y") {
                 loadhyphenEngine(lang);
             } else {
@@ -344,14 +340,15 @@ window.Hyphenopoly = {};
         })();
 
         /**
-         * Copy required languages to local lcRequire (lowercaseRequire) and
-         * eventually fallbacks to local lcFallbacks (lowercaseFallbacks).
+         * Copy required languages to H.lrq (lowercaseRequire).
+         *
          * This is in an iife to keep complexity low.
          */
         (() => {
             const fallbacks = mp(o.entries(c.fallbacks || {}));
+            H.lrq = mp();
             o.entries(c.require).forEach(([lang, wo]) => {
-                lcRequire.set(lang.toLowerCase(), {
+                H.lrq.set(lang.toLowerCase(), {
                     "fn": fallbacks.get(lang) || lang,
                     wo
                 });

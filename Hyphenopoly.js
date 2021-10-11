@@ -850,51 +850,30 @@
                 // eslint-disable-next-line multiline-ternary
                 let alphalen = (wa.Global) ? exp.lct.value : exp.lct;
                 alphalen = registerSubstitutions(alphalen, exp);
-                prepareLanguagesObj(
-                    lang,
-                    encloseHyphenateFunction(
-                        exp.mem.buffer,
-                        exp.hyphenate
-                    ),
-                    decode(new Uint16Array(exp.mem.buffer, 1280, alphalen)),
-                    /* eslint-disable multiline-ternary */
-                    (wa.Global) ? exp.lmi.value : exp.lmi,
-                    (wa.Global) ? exp.rmi.value : exp.rmi
-                    /* eslint-enable multiline-ternary */
-                );
+                heProm.l.forEach((l) => {
+                    prepareLanguagesObj(
+                        l,
+                        encloseHyphenateFunction(
+                            exp.mem.buffer,
+                            exp.hyphenate
+                        ),
+                        decode(new Uint16Array(exp.mem.buffer, 1280, alphalen)),
+                        /* eslint-disable multiline-ternary */
+                        (wa.Global) ? exp.lmi.value : exp.lmi,
+                        (wa.Global) ? exp.rmi.value : exp.rmi
+                        /* eslint-enable multiline-ternary */
+                    );
+                });
             }
             heProm.w.then((response) => {
                 if (response.ok) {
-                    let r2 = response;
-                    if (heProm.c) {
-                        r2 = response.clone();
-                    }
                     if (
                         wa.instantiateStreaming &&
                         (response.headers.get("Content-Type") === "application/wasm")
                     ) {
-                        // Return wa.instantiateStreaming(r2);
-
-
-                        return wa.instantiateStreaming(r2, {
-                            "hyphenEngine": {
-                                "log": (value) => {
-                                    // eslint-disable-next-line no-console
-                                    return console.log(value);
-                                },
-                                "log2": (value) => {
-                                    // eslint-disable-next-line no-console
-                                    return console.log(
-                                        // eslint-disable-next-line no-bitwise
-                                        (value >>> 0).
-                                            toString(2).
-                                            padStart(32, "0")
-                                    );
-                                }
-                            }
-                        });
+                        return wa.instantiateStreaming(response);
                     }
-                    return r2.arrayBuffer().then((ab) => {
+                    return response.arrayBuffer().then((ab) => {
                         return wa.instantiate(ab);
                     });
                 }
@@ -922,9 +901,7 @@
             });
         });
 
-        H.res.he.forEach((heProm, lang) => {
-            instantiateWasmEngine(heProm, lang);
-        });
+        H.res.he.forEach(instantiateWasmEngine);
 
         Promise.all(
             // Make sure all lang specific hyphenators and DOM are ready
