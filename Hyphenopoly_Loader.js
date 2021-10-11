@@ -155,13 +155,10 @@ window.Hyphenopoly = {};
         };
 
         /**
-         * Load hyphenEngines
+         * Load hyphenEngines to H.res.he
          *
          * Make sure each .wasm is loaded exactly once, even for fallbacks
-         * fw: fetched wasm (maps filename to language)
-         * he: hyphenEngines (maps lang to wasm and counter)
-         * c (counter) is needed in Hyphenopoly.js to decide
-         * if wasm needs to be cloned
+         * Store a list of languages to by hyphenated with each .wasm
          * @param {string} lang The language
          * @returns {undefined}
          */
