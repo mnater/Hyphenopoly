@@ -22,6 +22,7 @@ window.Hyphenopoly = {};
     };
 
     const scriptName = "Hyphenopoly_Loader.js";
+    const thisScript = d.currentScript.src;
     const store = sessionStorage;
 
     /**
@@ -196,7 +197,7 @@ window.Hyphenopoly = {};
             });
             tester.cl();
         }
-        const he = H.handleEvent;
+        const hev = H.hev;
         if (H.cf.pf) {
             H.res.DOM = new Promise((res) => {
                 if (d.readyState === "loading") {
@@ -239,20 +240,20 @@ window.Hyphenopoly = {};
                 }
             });
             (() => {
-                if (he && he.polyfill) {
-                    he.polyfill();
+                if (hev && hev.polyfill) {
+                    hev.polyfill();
                 }
             })();
         } else {
             (() => {
-                if (he && he.tearDown) {
-                    he.tearDown();
+                if (hev && hev.tearDown) {
+                    hev.tearDown();
                 }
                 w.Hyphenopoly = null;
             })();
         }
         (() => {
-            if (H.cacheFeatureTests) {
+            if (H.cft) {
                 store.setItem(scriptName, JSON.stringify(
                     {
                         "langs": [...H.cf.langs.entries()],
@@ -281,76 +282,44 @@ window.Hyphenopoly = {};
             return defaults;
         };
 
-        /**
-         * Set H.cf (Hyphenopoly.clientFeatures) either by reading previously
-         * computed settings from sessionStorage or creating a template object.
-         * This is in an iife to keep complexity low.
-         */
-        (() => {
-            if (c.cacheFeatureTests) {
-                H.cacheFeatureTests = c.cacheFeatureTests;
-            }
-            if (c.cacheFeatureTests && store.getItem(scriptName)) {
-                H.cf = JSON.parse(store.getItem(scriptName));
-                H.cf.langs = mp(H.cf.langs);
-            } else {
-                H.cf = {
-                    "langs": mp(),
-                    "pf": false
-                };
-            }
-        })();
+        H.cft = Boolean(c.cacheFeatureTests);
+        if (H.cft && store.getItem(scriptName)) {
+            H.cf = JSON.parse(store.getItem(scriptName));
+            H.cf.langs = mp(H.cf.langs);
+        } else {
+            H.cf = {
+                "langs": mp(),
+                "pf": false
+            };
+        }
 
-        /**
-         * Set H.paths, some H.s (setup) fields and handleEvent to defaults or
-         * overwrite with user settings.
-         * These is an iife to keep complexity low.
-         */
-        (() => {
-            const thisScript = (() => {
-                let src = "";
-                for (const sc of d.scripts) {
-                    if (sc.src && sc.src.indexOf(scriptName) !== -1) {
-                        src = sc.src;
-                        break;
-                    }
-                }
-                return src;
-            })();
-            const maindir = thisScript.slice(0, (thisScript.lastIndexOf("/") + 1));
-            const patterndir = maindir + "patterns/";
-            H.paths = setDefaults(c.paths, {
-                maindir,
-                patterndir
-            });
-            H.s = setDefaults(c.setup, {
-                "CORScredentials": "include",
-                "hide": "all",
-                "selectors": {".hyphenate": {}},
-                "timeout": 1000
-            });
-            // Change mode string to mode int
-            H.s.hide = ["all", "element", "text"].indexOf(H.s.hide);
-            if (c.handleEvent) {
-                H.handleEvent = c.handleEvent;
-            }
-        })();
+        const maindir = thisScript.slice(0, (thisScript.lastIndexOf("/") + 1));
+        const patterndir = maindir + "patterns/";
+        H.paths = setDefaults(c.paths, {
+            maindir,
+            patterndir
+        });
+        H.s = setDefaults(c.setup, {
+            "CORScredentials": "include",
+            "hide": "all",
+            "selectors": {".hyphenate": {}},
+            "timeout": 1000
+        });
+        // Change mode string to mode int
+        H.s.hide = ["all", "element", "text"].indexOf(H.s.hide);
+        if (c.handleEvent) {
+            H.hev = c.handleEvent;
+        }
 
-        /**
-         * Copy required languages to H.lrq (lowercaseRequire).
-         *
-         * This is in an iife to keep complexity low.
-         */
-        (() => {
-            const fallbacks = mp(o.entries(c.fallbacks || {}));
-            H.lrq = mp();
-            o.entries(c.require).forEach(([lang, wo]) => {
-                H.lrq.set(lang.toLowerCase(), {
-                    "fn": fallbacks.get(lang) || lang,
-                    wo
-                });
+        const fallbacks = mp(o.entries(c.fallbacks || {}));
+        H.lrq = mp();
+        o.entries(c.require).forEach(([lang, wo]) => {
+            H.lrq.set(lang.toLowerCase(), {
+                "fn": fallbacks.get(lang) || lang,
+                wo
             });
-        })();
+        });
+
         main();
     };
 })(window, document, Hyphenopoly, Object);

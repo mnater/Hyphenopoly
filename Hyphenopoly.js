@@ -32,8 +32,8 @@
             ["hyphenopolyEnd", []],
             ["hyphenopolyStart", []]
         ]);
-        if (H.handleEvent) {
-            const userEvents = new Map(o.entries(H.handleEvent));
+        if (H.hev) {
+            const userEvents = new Map(o.entries(H.hev));
             knownEvents.forEach((eventFuncs, eventName) => {
                 if (userEvents.has(eventName)) {
                     eventFuncs.unshift(userEvents.get(eventName));
