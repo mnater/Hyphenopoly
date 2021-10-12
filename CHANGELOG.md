@@ -1,5 +1,15 @@
 # Version History
 
+## Version 5.0.0-beta-2 (2021-10-dd)
+### Breaking changes
+*   Changed API for embedding Hyphenopoly in webpages.
+### Doc
+*   Added documentation for Hyphenopoly.config()
+### Fixed
+*   Cloning of modules for fallbacks not necessary any more
+*   Cleaning up code
+*   bump devDependencies
+
 ## Version 5.0.0-beta-1 (2021-09-dd)
 ### Breaking changes
 *   The wasm modules internally use a succint trie data structure, memory layout has changed
