@@ -272,8 +272,8 @@ PLATFORMS
   x86_64-darwin-18
 
 DEPENDENCIES
-  github-pages (~> 214)
-  webrick (~> 1.7)
+  github-pages
+  webrick
 
 BUNDLED WITH
    2.2.22
