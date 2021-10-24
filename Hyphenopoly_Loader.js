@@ -220,14 +220,14 @@ window.Hyphenopoly = {};
                 // eslint-disable-next-line no-console
                 console.info(scriptName + " timed out.");
             }, H.s.timeout);
-            if (!mainScriptLoaded) {
+            if (mainScriptLoaded) {
+                H.main();
+            } else {
                 // Load main script
                 const script = d[shortcuts.ce]("script");
                 script.src = H.paths.maindir + "Hyphenopoly.js";
                 d.head[shortcuts.ac](script);
                 mainScriptLoaded = true;
-            } else {
-                H.main();
             }
             H.hy6ors = mp();
             H.cf.langs.forEach((langDef, lang) => {

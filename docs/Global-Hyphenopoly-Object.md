@@ -102,7 +102,6 @@ Hyphenopoly.config({
 ````
 It's up to you to comply to the cookie-regulations of your country.
 
-
 ## Second Layer
 ### setup (optional)
 The `setup` field gives access to the second level of configuration. It defaults to the following configuration:
