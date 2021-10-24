@@ -74,6 +74,10 @@ In the example a `string` is handed over to the `hyphenator` which returns a hyp
 ## Use `Hyphenopoly.hyphenators.HTML` for DOM-Elements
 Objects of type `HTMLElement` can be hyphenated with the `HTML`-hyphenator (`Hyphenopoly.hyphenators.HTML`). The `HTML`-hyphenator hyphenates the handed over `HTMLElement` and all it's `childElements` if their language is one of the loaded languages directly and returns `null`.
 
+Like string-hyphenators HTML-hyphenators take a selector as an optional second argument.
+
+`function hyphenator({HTMLElement}, [Optional: selector=".hyphenate"]) => null`
+
 ````html
 <html>
 <head>
