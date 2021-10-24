@@ -884,39 +884,42 @@
             });
         }
 
-        H.res.DOM.then(() => {
-            mainLanguage = getLang(w.document.documentElement, "", false);
-            if (!mainLanguage && C.defaultLanguage !== "") {
-                mainLanguage = C.defaultLanguage;
-            }
-            const elements = collectElements();
-            H.res.els = elements;
-            elements.list.forEach((ignore, lang) => {
-                if (H.languages &&
-                    H.languages.has(lang) &&
-                    H.languages.get(lang).ready
-                ) {
-                    hyphenateLangElements(lang, elements);
+        H.main = () => {
+            H.res.DOM.then(() => {
+                mainLanguage = getLang(w.document.documentElement, "", false);
+                if (!mainLanguage && C.defaultLanguage !== "") {
+                    mainLanguage = C.defaultLanguage;
                 }
-            });
-        });
-
-        H.res.he.forEach(instantiateWasmEngine);
-
-        Promise.all(
-            // Make sure all lang specific hyphenators and DOM are ready
-            [...H.hy6ors.entries()].
-                reduce((accumulator, value) => {
-                    if (value[0] !== "HTML") {
-                        return accumulator.concat(value[1]);
+                const elements = collectElements();
+                H.res.els = elements;
+                elements.list.forEach((ignore, lang) => {
+                    if (H.languages &&
+                        H.languages.has(lang) &&
+                        H.languages.get(lang).ready
+                    ) {
+                        hyphenateLangElements(lang, elements);
                     }
-                    return accumulator;
-                }, []).
-                concat(H.res.DOM)
-        ).then(() => {
-            H.hy6ors.get("HTML").resolve(createDOMHyphenator());
-        }, (e) => {
-            event.fire("error", e);
-        });
+                });
+            });
+
+            H.res.he.forEach(instantiateWasmEngine);
+
+            Promise.all(
+                // Make sure all lang specific hyphenators and DOM are ready
+                [...H.hy6ors.entries()].
+                    reduce((accumulator, value) => {
+                        if (value[0] !== "HTML") {
+                            return accumulator.concat(value[1]);
+                        }
+                        return accumulator;
+                    }, []).
+                    concat(H.res.DOM)
+            ).then(() => {
+                H.hy6ors.get("HTML").resolve(createDOMHyphenator());
+            }, (e) => {
+                event.fire("error", e);
+            });
+        };
+        H.main();
     })(Hyphenopoly);
 })(window, Object);

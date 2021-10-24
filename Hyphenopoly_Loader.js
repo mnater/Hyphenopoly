@@ -24,6 +24,7 @@ window.Hyphenopoly = {};
     const scriptName = "Hyphenopoly_Loader.js";
     const thisScript = d.currentScript.src;
     const store = sessionStorage;
+    let mainScriptLoaded = false;
 
     /**
      * The main function runs the feature test and loads Hyphenopoly if
@@ -219,10 +220,15 @@ window.Hyphenopoly = {};
                 // eslint-disable-next-line no-console
                 console.info(scriptName + " timed out.");
             }, H.s.timeout);
-            // Load main script
-            const script = d[shortcuts.ce]("script");
-            script.src = H.paths.maindir + "Hyphenopoly.js";
-            d.head[shortcuts.ac](script);
+            if (!mainScriptLoaded) {
+                // Load main script
+                const script = d[shortcuts.ce]("script");
+                script.src = H.paths.maindir + "Hyphenopoly.js";
+                d.head[shortcuts.ac](script);
+                mainScriptLoaded = true;
+            } else {
+                H.main();
+            }
             H.hy6ors = mp();
             H.cf.langs.forEach((langDef, lang) => {
                 if (langDef === "H9Y") {
