@@ -3,14 +3,15 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 043</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/5.0.0-beta.2/Hyphenopoly_Loader.js"></script>
         <script>
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "en-us": "FORCEHYPHENOPOLY"
             },
             paths: {
-                maindir: "https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/4.2.1/",
-                patterndir: "https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/4.2.1/patterns/"
+                maindir: "https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/5.0.0-beta.2/",
+                patterndir: "https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/5.0.0-beta.2/patterns/"
             },
             setup: {
                 "CORScredentials": "omit"
@@ -20,7 +21,7 @@
                     assert();
                 }
             }
-        };
+        });
         function assert() {
             var tests = 1;
             var i = 1;
@@ -55,7 +56,6 @@
             }
         }
         </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/4.2.0/Hyphenopoly_Loader.min.js"></script>
         <style type="text/css">
             body {
                 width:50%;

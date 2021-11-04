@@ -3,11 +3,12 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 038</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         var mode = window.location.search.substring(1);
         var path = "../patterns/";
         var result = true;
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "de": "FORCEHYPHENOPOLY",
                 "en": "FORCEHYPHENOPOLY"
@@ -23,7 +24,7 @@
                     }
                 }
             }
-        };
+        });
 
         window.onload = function () {
             if (window.Promise) {
@@ -94,7 +95,6 @@
             }
         }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;
@@ -123,7 +123,7 @@
         <p id="test1" lang="en-us" class="test"></p>
         <p id="ref1" lang="en-us" class="ref">hy|phen|ation al|go|rithm</p>
         <h2>de</h2>
-        <p id="test2" lang="de" class="test"></p>
+        <p id="test2" lang="de" class="test hyphenate"></p>
         <p id="ref2" lang="de" class="ref">Sil|ben|tren|nungs|al|go|rith|mus</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>

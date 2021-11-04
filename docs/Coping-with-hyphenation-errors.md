@@ -27,7 +27,7 @@ In any case automatic hyphenation needs proofreading and may need some intervent
 ## Proofread
 Use a visible hyphen character to display all hyphen opportunities:
 ````javascript
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: [...],
     setup: {
         selectors: {
@@ -36,7 +36,7 @@ var Hyphenopoly = {
             }
         }
     }
-};
+});
 ````
 See also [Setup#hyphen](./Setup.md#hyphen)
 
@@ -60,7 +60,7 @@ __contra:__
 Hyphenopoly.js has an [API for hyphenation exceptions](https://github.com/mnater/Hyphenopoly/wiki/Setup#exceptions):
 
 ````javascript
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     setup: {
         exceptions: {
@@ -68,7 +68,7 @@ var Hyphenopoly = {
         },
         selectors: {...}
     }
-};
+});
 ````
 In the example above Hyphenopoly.js will never hyphenate the word "desert" and hyphenate the words "dictionary", "dictionaries" and "blogosphere" at the positions marked with a hyphen-minus. Exceptions are case sensitive. The example above will not work for capitalized words (e.g. "Desert").
 

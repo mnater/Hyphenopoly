@@ -33,14 +33,14 @@ default: "include"
 Set the [RequestCredentials](https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials) for fetching `*.wasm` files.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
         CORScredentials: "omit",
         selectors: {...}
     }
-};
+});
 </script>
 ````
 
@@ -52,14 +52,14 @@ default: "en-us"
 Sets a fallback language in case no language is set in HTML.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
         defaultLanguage: "en-us",
         selectors: {...}
     }
-};
+});
 </script>
 ````
 To hyphenate a text its language needs to be known to the system (be it native CSS hyphenation or Hyphenopoly.js). Thus the language needs to be set in HTML either for the whole document (`<html lang="...">`) or on the elements.
@@ -98,7 +98,7 @@ default: {
 Elements in this list with a `true`-value and their contents are not hyphenated. Change the value to `false` or delete the line to change this.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: [...],
     paths: [...],
     setup: {
@@ -128,7 +128,7 @@ var Hyphenopoly = {
         },
         selectors: {...}
     }
-};
+});
 </script>
 ````
 _Note: According to [https://www.w3.org/International/questions/qa-no-language#nonlinguistic](https://www.w3.org/International/questions/qa-no-language#nonlinguistic) Hyphenopoly will not hyphenate elements with `lang="zxx"`. Consider to set `lang="zxx"` instead of `class="donthyphenate"` for elements that have non-linguistic contents._
@@ -141,14 +141,14 @@ default: "donthyphenate"
 Elements with this class will not be hyphenated by Hyphenopoly.js
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: [...],
     paths: [...],
     setup: {
         dontHyphenateClass: "donthyphenate",
         selectors: {...}
     }
-};
+});
 </script>
 ````
 Hyphenopoly.js hyphenates all elements that match the selectors defined in `selectors` – and it hyphenates their childElements unless they have the `dontHyphenateClass` set.
@@ -169,7 +169,7 @@ default: undefined
 Provide exceptions for hyphenation.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
@@ -179,7 +179,7 @@ var Hyphenopoly = {
         },
         selectors: {...}
     }
-};
+});
 </script>
 ````
 The exceptions object must contain language-codes as keys (or "global" for all languages). The values must be words separated by `,⎵` (comma, space), where a hyphen-minus marks the hyphenation points.
@@ -195,13 +195,13 @@ default: "all"
 Define if and how elements are made invisible while being hyphenated.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
         hide: "element"
     }
-};
+});
 </script>
 ````
 To prevent a flash of unhyphenated content (FOUHC) Hyphenopoly hides the elements being hyphenated. Depending on the structure of your page this can lead to visual flicker. You can change the way Hyphenopoly hides the content:
@@ -221,14 +221,14 @@ default: true
 Keeps object `window.Hyphenopoly` in memory to be accessible for further use (e.g. hyphenators). If Hyphenopoly is not used after initial run, it should be cleared to save memory.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
         keepAlive: false,
         selectors: {...}
     }
-};
+});
 </script>
 ````
 
@@ -240,17 +240,17 @@ default: false
 Normalize words before hyphenation.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
         normalize: true,
         selectors: {...}
     }
-};
+});
 </script>
 ````
-The pattern files work with _precomposed_ characters. So an `Å` (LATIN CAPITAL LETTER A WITH RING ABOVE) must not be composed of `A` (LATIN CAPITAL LETTER A) and ` ̊` (COMBINING RING ABOVE) to be recognizable by hyphenation-engine.
+The pattern files work with _precomposed_ characters. So an `Å` (LATIN CAPITAL LETTER A WITH RING ABOVE) must not be composed of `A` (LATIN CAPITAL LETTER A) and `̊` (COMBINING RING ABOVE) to be recognizable by hyphenation-engine.
 If the text contains _composed_ characters they must be normalized to _precomposed_ characters. If `normalize` is activated and the user agent supports `String.prototype.normalize()` this can happen automatically.
 Since this comes with a performance penalty it is deactivated by default and it's recommended to use _precomposed_ characters in HTML.
 
@@ -262,14 +262,14 @@ default: false
 Configure if Hyphenopoly searches for given selectors in (open) shadowDOMs.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
         processShadows: true,
         selectors: {...}
     }
-};
+});
 </script>
 ````
 By default Hyphenopoly only searches for the given [selectors](./Global-Hyphenopoly-Object.md#selectors) in `window.document`. With this option set to true, Hyphenopoly also searches for the given selectors in Web Components (if accessible, i.e. `open`).
@@ -282,14 +282,14 @@ default: true
 Removes soft hyphens from the clipboard.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
         safeCopy: true,
         selectors: {...}
     }
-};
+});
 </script>
 ````
 To prevent soft hyphens from being copied to the clipboard, Hyphenopoly.js registers a `onCopy`-Event on hyphenated elements. When text is copied to the clipboard, this event fires and soft hyphens are removed.
@@ -304,7 +304,7 @@ default: undefined
 Substitute characters
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
@@ -315,7 +315,7 @@ var Hyphenopoly = {
         },
         selectors: {...}
     }
-};
+});
 </script>
 ````
 If a word contains a letter that is not part of the alphabet defined in the sample file, this word is not hyphenated by default. This is the case for example with "communiqué". The letter "é" is not in the English alphabet, so the word cannot be hyphenated.
@@ -333,14 +333,14 @@ default: 1000
 Sets a timeout in ms after which in case of a failure Hyphenopoly stops executing and unhides the text.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
         timeout: 1000,
         selectors: {...}
     }
-};
+});
 </script>
 ````
 To prevent a _Flash Of Unhyphenated Content (FOUHC)_ Hyphenopoly_Loader.js hides text to be hyphenated until hyphenation is done. If something goes wrong (e.g. a resource didn't load correctly) this timeout saves us from an empty page. The timeout is cleared when hyphenation succeeds.
@@ -359,7 +359,7 @@ default: "hyphen"
 Define how compound words (words containing a hyphen) will be treated.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
@@ -369,7 +369,7 @@ var Hyphenopoly = {
             }
         }
     }
-};
+});
 </script>
 ````
 Not all browsers recognize the hyphen as a possible line-breaking spot. Thus we have to handle this.
@@ -389,7 +389,7 @@ default: "\u00AD" (&shy; | &#173;)
 The hyphen character.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
@@ -399,7 +399,7 @@ var Hyphenopoly = {
             }
         }
     }
-};
+});
 </script>
 ````
 Can be set to something visible for testing and documentation. Characters that have a special meaning in RegularExpressions (`.\+*?[^]$(){}=!<>|:-`) are not allowed.
@@ -412,7 +412,7 @@ default: 0
 Minimal number of characters before the first hyphenation point (leftmin). And minimal number of characters after the last hyphenation point (rightmin).
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
@@ -423,7 +423,7 @@ var Hyphenopoly = {
             }
         }
     }
-};
+});
 </script>
 ````
 Leftmin and rightmin are provided by the pattern-file but can be overwritten with larger values.
@@ -437,7 +437,7 @@ default: 0
 While `leftmin` and `rightmin` have an effect on all elements that are matched by the selector, `leftminPerLang` and `rightminPerLang` are language specific.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
@@ -450,7 +450,7 @@ var Hyphenopoly = {
             }
         }
     }
-};
+});
 </script>
 ````
 If both (left-/rightmin and left-/rightminPerLanguage) are given, the highest value is respectively taken in account.
@@ -463,7 +463,7 @@ default: 6
 Minimal length of words to be hyphenated.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
@@ -473,7 +473,7 @@ var Hyphenopoly = {
             }
         }
     }
-};
+});
 </script>
 ````
 
@@ -485,7 +485,7 @@ default: true
 If set to false, prevents hyphenation of mixed case words.
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
@@ -495,7 +495,7 @@ var Hyphenopoly = {
             }
         }
     }
-};
+});
 </script>
 ````
 According to a [note in the css-text draft](https://drafts.csswg.org/css-text-3/#valdef-hyphens-auto)
@@ -510,7 +510,7 @@ default: 1
 Prevent [orphans](https://en.wikipedia.org/wiki/Widows_and_orphans)
 ````html
 <script>
-var Hyphenopoly = {
+Hyphenopoly.config({
     require: {...},
     paths: {...},
     setup: {
@@ -520,7 +520,7 @@ var Hyphenopoly = {
             }
         }
     }
-};
+});
 </script>
 ````
 There are three stages:

@@ -45,41 +45,44 @@
                 function handleSize(mql) {
                     if (mql.matches) {
                         if (H9YLisLoaded) {
-                            window.Hyphenopoly.hyphenators["de"].then((deh) => {
+                            window.Hyphenopoly.hyphenators.HTML.then((hyn) => {
                                 elements.list.get("de").forEach((elo) => {
-                                    deh(elo.element, elo.selector);
+                                    hyn(elo.element, elo.selector);
                                 });
-                            });
-                            window.Hyphenopoly.hyphenators["en-us"].then((deh) => {
                                 elements.list.get("en-us").forEach((elo) => {
-                                    deh(elo.element, elo.selector);
+                                    hyn(elo.element, elo.selector);
                                 });
                                 assert();
                             });
                         } else {
-                            window.Hyphenopoly = {
-                                require: {
-                                    "de": "FORCEHYPHENOPOLY",
-                                    "en-us": "FORCEHYPHENOPOLY"
-                                },
-                                setup: {
-                                    selectors: {
-                                        ".hyphenate": {
-                                            hyphen: "•"
-                                        }
-                                    }
-                                },
-                                handleEvent: {
-                                    hyphenopolyEnd: function (e) {
-                                        assert();
-                                        if (parent != window) {
-                                            window.parent.document.getElementById("testframe").width = "800px";
-                                        }
-                                    }
-                                }
-                            };
                             const loaderScript = document.createElement("script");
                             loaderScript.src = "../Hyphenopoly_Loader.js";
+                            loaderScript.onload = () => {
+                                Hyphenopoly.config({
+                                    require: {
+                                        "de": "FORCEHYPHENOPOLY",
+                                        "en-us": "FORCEHYPHENOPOLY"
+                                    },
+                                    setup: {
+                                        selectors: {
+                                            ".hyphenate": {
+                                                hyphen: "•"
+                                            },
+                                            ".hyphenate2": {
+                                                hyphen: "·"
+                                            }
+                                        }
+                                    },
+                                    handleEvent: {
+                                        hyphenopolyEnd: function (e) {
+                                            assert();
+                                            if (parent != window) {
+                                                window.parent.document.getElementById("testframe").width = "800px";
+                                            }
+                                        }
+                                    }
+                                })
+                            };
                             document.head.appendChild(loaderScript);
                             H9YLisLoaded = true;
                         }
@@ -136,8 +139,8 @@
         <p id="ref1" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus</p>
         <p id="ref1_u" class="ref" lang="de">Silbentrennungsalgorithmus</p>
 
-        <p id="test2" class="test hyphenate" lang="de">Silbentrennungsalgorithmus <span>Donaudampfschiff</span></p>
-        <p id="ref2" class="ref" lang="de">Sil•ben•tren•nungs•al•go•rith•mus <span>Do•nau•dampf•schiff</span></p>
+        <p id="test2" class="test hyphenate2" lang="de">Silbentrennungsalgorithmus <span>Donaudampfschiff</span></p>
+        <p id="ref2" class="ref" lang="de">Sil·ben·tren·nungs·al·go·rith·mus <span>Do·nau·dampf·schiff</span></p>
         <p id="ref2_u" class="ref" lang="de">Silbentrennungsalgorithmus <span>Donaudampfschiff</span></p>
 
         <p id="test3" class="test hyphenate" lang="de">Silbentrennungsalgorithmus <span class="donthyphenate">Donaudampfschiff</span></p>

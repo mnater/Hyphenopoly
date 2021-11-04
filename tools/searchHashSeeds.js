@@ -2,6 +2,12 @@
 /* eslint-disable security/detect-object-injection */
 /* eslint-disable require-jsdoc */
 
+/*
+ * Find good hash seeds for creating the translateMap
+ * Needs to be rerun if new patterns with new alphabets
+ * are added
+ */
+
 (() => {
     "use strict";
     const rawABC = {
@@ -5467,7 +5473,7 @@
      * last search up to p[2499]
      */
     function findSeeds() {
-        for (let a = 2250; a < 2500/*primeNumbers.length*/; a += 1) {
+        for (let a = 2250; a < 2500; a += 1) {
             p1 = primeNumbers[a];
             console.log(`testing p[${a}]`);
             for (let b = 0; b < primeNumbers.length; b += 1) {

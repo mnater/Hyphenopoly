@@ -31,6 +31,9 @@
 *   [Words containing special format characters](./Special-use-cases.md#format-chars)
 *   [Hyphenate HTML-Strings using using hyphenopoly.module.js](./Special-use-cases.md#hyphenate-html-strings-using-hyphenopolymodulejs)
 
+## Implementation Details
+*   [Succinct Data Structure](./SuccinctTrie.md)
+
 ## Develop
 *   [Dev Tools (devDeps)](./Usage-of-devDependencies.md)
 *   [Branching Model](./Branching-Model.md)

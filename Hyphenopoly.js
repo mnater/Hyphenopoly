@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly 4.12.0 - client side hyphenation for webbrowsers
+ * @license Hyphenopoly 5.0.0-beta.2 - client side hyphenation for webbrowsers
  * ©2021  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -32,8 +32,8 @@
             ["hyphenopolyEnd", []],
             ["hyphenopolyStart", []]
         ]);
-        if (H.handleEvent) {
-            const userEvents = new Map(o.entries(H.handleEvent));
+        if (H.hev) {
+            const userEvents = new Map(o.entries(H.hev));
             knownEvents.forEach((eventFuncs, eventName) => {
                 if (userEvents.has(eventName)) {
                     eventFuncs.unshift(userEvents.get(eventName));
@@ -673,9 +673,7 @@
             }
             if (elements.counter[0] === 0) {
                 w.clearTimeout(H.timeOutHandler);
-                if (C.hide !== -1) {
-                    H.hide(0, null);
-                }
+                H.hide(0, null);
                 event.fire(
                     "hyphenopolyEnd",
                     {
@@ -787,25 +785,25 @@
 
         /**
          * Setup env for hyphenateFunction
-         * @param {Object} baseData baseData
+         * @param {ArrayBuffer} buf Memory buffer
          * @param {function} hyphenateFunc hyphenateFunction
          * @returns {function} hyphenateFunction with closured environment
          */
-        function encloseHyphenateFunction(baseData, hyphenateFunc) {
-            const wordStore = new Uint16Array(baseData.buf, baseData.wo, 64);
+        function encloseHyphenateFunction(buf, hyphenateFunc) {
+            const wordStore = new Uint16Array(buf, 0, 64);
             return ((word, hyphencc, leftmin, rightmin) => {
                 wordStore.set([
-                    95,
+                    46,
                     ...[...word].map((c) => {
                         return c.charCodeAt(0);
                     }),
-                    95,
+                    46,
                     0
                 ]);
                 const len = hyphenateFunc(leftmin, rightmin, hyphencc);
                 if (len > 0) {
                     word = decode(
-                        new Uint16Array(baseData.buf, baseData.hw, len)
+                        new Uint16Array(buf, 0, len)
                     );
                 }
                 return word;
@@ -849,41 +847,33 @@
              */
             function handleWasm(res) {
                 const exp = res.instance.exports;
-                let alphalen = exp.conv();
+                // eslint-disable-next-line multiline-ternary
+                let alphalen = (wa.Global) ? exp.lct.value : exp.lct;
                 alphalen = registerSubstitutions(alphalen, exp);
-                const baseData = {
-                    /* eslint-disable multiline-ternary */
-                    "buf": exp.mem.buffer,
-                    "hw": (wa.Global) ? exp.hwo.value : exp.hwo,
-                    "lm": (wa.Global) ? exp.lmi.value : exp.lmi,
-                    "rm": (wa.Global) ? exp.rmi.value : exp.rmi,
-                    "wo": (wa.Global) ? exp.uwo.value : exp.uwo
-                    /* eslint-enable multiline-ternary */
-                };
-                prepareLanguagesObj(
-                    lang,
-                    encloseHyphenateFunction(
-                        baseData,
-                        exp.hyphenate
-                    ),
-                    decode(new Uint16Array(exp.mem.buffer, 1026, alphalen - 1)),
-                    baseData.lm,
-                    baseData.rm
-                );
+                heProm.l.forEach((l) => {
+                    prepareLanguagesObj(
+                        l,
+                        encloseHyphenateFunction(
+                            exp.mem.buffer,
+                            exp.hyphenate
+                        ),
+                        decode(new Uint16Array(exp.mem.buffer, 1280, alphalen)),
+                        /* eslint-disable multiline-ternary */
+                        (wa.Global) ? exp.lmi.value : exp.lmi,
+                        (wa.Global) ? exp.rmi.value : exp.rmi
+                        /* eslint-enable multiline-ternary */
+                    );
+                });
             }
             heProm.w.then((response) => {
                 if (response.ok) {
-                    let r2 = response;
-                    if (heProm.c) {
-                        r2 = response.clone();
-                    }
                     if (
                         wa.instantiateStreaming &&
                         (response.headers.get("Content-Type") === "application/wasm")
                     ) {
-                        return wa.instantiateStreaming(r2);
+                        return wa.instantiateStreaming(response);
                     }
-                    return r2.arrayBuffer().then((ab) => {
+                    return response.arrayBuffer().then((ab) => {
                         return wa.instantiate(ab);
                     });
                 }
@@ -894,41 +884,42 @@
             });
         }
 
-        H.res.DOM.then(() => {
-            mainLanguage = getLang(w.document.documentElement, "", false);
-            if (!mainLanguage && C.defaultLanguage !== "") {
-                mainLanguage = C.defaultLanguage;
-            }
-            const elements = collectElements();
-            H.res.els = elements;
-            elements.list.forEach((ignore, lang) => {
-                if (H.languages &&
-                    H.languages.has(lang) &&
-                    H.languages.get(lang).ready
-                ) {
-                    hyphenateLangElements(lang, elements);
+        H.main = () => {
+            H.res.DOM.then(() => {
+                mainLanguage = getLang(w.document.documentElement, "", false);
+                if (!mainLanguage && C.defaultLanguage !== "") {
+                    mainLanguage = C.defaultLanguage;
                 }
-            });
-        });
-
-        H.res.he.forEach((heProm, lang) => {
-            instantiateWasmEngine(heProm, lang);
-        });
-
-        Promise.all(
-            // Make sure all lang specific hyphenators and DOM are ready
-            [...H.hy6ors.entries()].
-                reduce((accumulator, value) => {
-                    if (value[0] !== "HTML") {
-                        return accumulator.concat(value[1]);
+                const elements = collectElements();
+                H.res.els = elements;
+                elements.list.forEach((ignore, lang) => {
+                    if (H.languages &&
+                        H.languages.has(lang) &&
+                        H.languages.get(lang).ready
+                    ) {
+                        hyphenateLangElements(lang, elements);
                     }
-                    return accumulator;
-                }, []).
-                concat(H.res.DOM)
-        ).then(() => {
-            H.hy6ors.get("HTML").resolve(createDOMHyphenator());
-        }, (e) => {
-            event.fire("error", e);
-        });
+                });
+            });
+
+            H.res.he.forEach(instantiateWasmEngine);
+
+            Promise.all(
+                // Make sure all lang specific hyphenators and DOM are ready
+                [...H.hy6ors.entries()].
+                    reduce((accumulator, value) => {
+                        if (value[0] !== "HTML") {
+                            return accumulator.concat(value[1]);
+                        }
+                        return accumulator;
+                    }, []).
+                    concat(H.res.DOM)
+            ).then(() => {
+                H.hy6ors.get("HTML").resolve(createDOMHyphenator());
+            }, (e) => {
+                event.fire("error", e);
+            });
+        };
+        H.main();
     })(Hyphenopoly);
 })(window, Object);

@@ -18,16 +18,15 @@ Hyphenopoly_Loader.js creates a [Promise](https://developer.mozilla.org/en-US/do
 Additionally it creates a Promise for a `HTML`-hyphenator, that is able to hyphenate HTMLEntities of all loaded languages.
 
 ````html
+<script src="./Hyphenopoly_Loader.js"></script>
 <script>
-    var Hyphenopoly = {
+    Hyphenopoly.config({
         require: {
             "en-us": "FORCEHYPHENOPOLY",
             "de": "Silbentrennungsalgorithmus"
         }
-    };
-</script>
-<script src="./Hyphenopoly_Loader.js"></script>
-<script>
+    });
+
     console.log(Hyphenopoly.hyphenators); //{en-us: Promise, HTML: Promise}
 </script>
 ````
@@ -40,8 +39,9 @@ In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for
 `function hyphenator({string}, [Optional: selector=".hyphenate"]) => {string|undefined}`
 
 ````html
+<script src="./Hyphenopoly_Loader.js"></script>
 <script>
-    var Hyphenopoly = {
+    Hyphenopoly.config({
         require: {
             "en-us": "FORCEHYPHENOPOLY",
             "de": "Silbentrennungsalgorithmus"
@@ -60,10 +60,8 @@ In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for
                 }
             }
         }
-    };
-</script>
-<script src="./Hyphenopoly_Loader.js"></script>
-<script>
+    });
+
     Hyphenopoly.hyphenators["en-us"].then((hyphenator_en) => {
         console.log(hyphenator_en("Hyphenation")); //Hy•phen•ation
         console.log(hyphenator_en("Hyphenation", ".hyphenatePipe")); //Hy|phen|ation
@@ -76,11 +74,16 @@ In the example a `string` is handed over to the `hyphenator` which returns a hyp
 ## Use `Hyphenopoly.hyphenators.HTML` for DOM-Elements
 Objects of type `HTMLElement` can be hyphenated with the `HTML`-hyphenator (`Hyphenopoly.hyphenators.HTML`). The `HTML`-hyphenator hyphenates the handed over `HTMLElement` and all it's `childElements` if their language is one of the loaded languages directly and returns `null`.
 
+Like string-hyphenators HTML-hyphenators take a selector as an optional second argument.
+
+`function hyphenator({HTMLElement}, [Optional: selector=".hyphenate"]) => null`
+
 ````html
 <html>
 <head>
+<script src="./Hyphenopoly_Loader.js"></script>
 <script>
-    var Hyphenopoly = {
+    Hyphenopoly.config({
         require: {
             "en-us": "FORCEHYPHENOPOLY",
             "de": "Silbentrennungsalgorithmus"
@@ -92,10 +95,8 @@ Objects of type `HTMLElement` can be hyphenated with the `HTML`-hyphenator (`Hyp
                 }
             }
         }
-    };
-</script>
-<script src="./Hyphenopoly_Loader.js"></script>
-<script>
+    });
+
     Hyphenopoly.hyphenators.HTML.then((hyn) => {
         hyn(document.getElementById("hyphenateme"));
     });
@@ -141,9 +142,11 @@ runHyphenator("hyphenateme");
 <html>
   <head>
     <meta charset="UTF-8" />
+    <title>Use Hyphenopoly in React</title>
+    <script src="./hyphenopoly/min/Hyphenopoly_Loader.js"></script>
     <script>
     //attach the global 'Hyphenopoly' object to window
-        window.Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "en-us": "FORCEHYPHENOPOLY"
             },
@@ -158,10 +161,8 @@ runHyphenator("hyphenateme");
                 }
               }
             },
-        }
+        });
     </script>
-    <script src="./hyphenopoly/min/Hyphenopoly_Loader.js"></script>
-    <title>Use Hyphenopoly in React</title>
   </head>
   <body>
     <!-- We will put our React component inside this div. -->

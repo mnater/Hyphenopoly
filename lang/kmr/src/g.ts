@@ -1,11 +1,8 @@
-export const to: i32 = 8956;
-export const po: i32 = 9086;
-export const pl: i32 = 765;
-export const vs: i32 = 1536;
-export const pt: i32 = 2292;
-export const wo: i32 = 8232;
-export const tw: i32 = 8360;
-export const hp: i32 = 8424;
-export const hw: i32 = 8488;
+export const ao: i32 = 2093;
+export const bm: i32 = 2217;
+export const cm: i32 = 2311;
+export const hv: i32 = 2682;
+export const vm: i32 = 2729;
+export const va: i32 = 2847;
 export const lm: i32 = 2;
 export const rm: i32 = 2;

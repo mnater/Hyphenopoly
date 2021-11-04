@@ -1,17 +1,40 @@
-# The global Hyphenopoly object
+# Configure and run Hyphenopoly
 
-Before loading Hyphenopoly_Loader.js initial settings must be provided in a global `Hyphenopoly`-object. This is the only place in global space where Hyphenopoly.js puts data.
+___Note: The API for using Hyphenopoly on websites changed with version 5.___
 
-## Mandatory Fields
-These fields in the `Hyphenopoly`-object must be defined.
+This is a minimal embedding of Hyphenopoly on a website:
+````html
+<script src="../Hyphenopoly_Loader.js"></script>
+<script>
+    Hyphenopoly.config({
+        require: {
+            "en-us": "supercalifragilisticexpialidocious"
+        }
+    });
+</script>
+````
+The first script tag loads `Hyphenopoly_Loader.js` which registers the global object `window.Hyphenopoly`. This is the one and only global that is set by Hyphenopoly.
 
-### require
+In the second script tag Hyphenopoly gets configured. This also runs every step necessary to hyphenate the page.
+
+To configure Hyphenopoly you pass an object with the values defined here to the function `Hyphenopoly.config()`. The settings in this object have multiple layers and each layer (if present) has mandatory and optional settings.
+
+The first layer contains settings for the general behavior of Hyphenopoly_Loader.js (`require`, `handleEvent` etc.). This first layer may contain a property `setup` wich contains the second layer.
+
+The second layer defines the behavior of Hyphenopoly.js. There are global settings (like `defaultLanguage`, `safeCopy` etc.) that are independent of the respective element selectors. And there are selector based settings (like `minWordLength`, `leftmin` etc.) that apply only to the given selectors.
+
+## First layer
+### require (mandatory)
+The config-Object must contain exactly one field called `require`. It defines the language(s) used on the page.
+
 The `require` field must be an object of key-value-pairs, where the keys are language codes and the values are a long word (>=12 characters) in the required language.
 ````javascript
-require: {
-    "en-us": "supercalifragilisticexpialidocious",
-    "de": "Silbentrennungsalgorithmus"
-}
+Hyphenopoly.config({
+    require: {
+        "en-us": "supercalifragilisticexpialidocious",
+        "de": "Silbentrennungsalgorithmus"
+    }
+});
 ````
 Hyphenopoly_Loader.js feature tests the browser for CSS-hyphenation support of the required languages using the long word.
 If the feature test indicates that the browser doesn't support CSS-hyphenation for at least one language, all necessary resources will be loaded and Hyphenopoly.js gets executed.
@@ -20,20 +43,22 @@ Use this to test support for every language used on the current page. If e.g. th
 
 To force the usage of Hyphenopoly.js (e.g. for testing or if you prefer to use your own patterns) the special keyword `"FORCEHYPHENOPOLY"` can be used as value. Note: Disable CSS-hyphenation while using `"FORCEHYPHENOPOLY"`.
 
-## Optional Fields
-### paths
+### paths (optional)
 By default Hyphenopoly looks in `../Hyphenopoly/patterns/` for .wasm-files and in `../Hyphenopoly/` for other resources.
 
 These paths can be reconfigured:
 The `paths` field must be an object with two key-value-pairs:
 ````javascript
-paths: {
-    "patterndir": "../patterns/", //path to the directory of pattern files
-    "maindir": "../" //path to the directory where the other ressources are stored
-}
+Hyphenopoly.config({
+    require: {...},
+    paths: {
+        "patterndir": "../patterns/", //path to the directory of pattern files
+        "maindir": "../" //path to the directory where the other ressources are stored
+    }
+});
 ````
 
-### fallbacks
+### fallbacks (optional)
 
 In some cases a fallback-language need to be defined:
 *   patterns for a given language are not (yet) available but patterns of an other language can be used.
@@ -42,7 +67,7 @@ In some cases a fallback-language need to be defined:
 E.g. you'd like to use `en-gb` patterns for `en-au` and `de` for `de-DE`:
 
 ````javascript
-const Hyphenopoly = {
+Hyphenopoly.config({
     require: {
         "en-au": "FORCEHYPHENOPOLY", //or a long string
         "de-DE": "FORCEHYPHENOPOLY"  //or a long string
@@ -52,10 +77,10 @@ const Hyphenopoly = {
         "de-DE": "de".               //use de for de-DE
     },
     setup: { ... }
-}
+});
 ````
 
-### cacheFeatureTests
+### cacheFeatureTests (optional)
 On the first run Hyphenopoly_Loader.js feature tests the client for support of **CSS-hyphenation**
 for each language in `Hyphenopoly.require`.
 
@@ -70,17 +95,38 @@ Because the law in some countries require a user opt-in or opt-out or whatever i
 data on the client, `cacheFeatureTests` is deactivated by default and has to be activated
 explicitly by hand in the [Hyphenopoly global object](./Global-Hyphenopoly-Object.md):
 ````javascript
-const Hyphenopoly = {
+Hyphenopoly.config({
     "require": {...},
     "cacheFeatureTests": true
-}
+});
 ````
 It's up to you to comply to the cookie-regulations of your country.
 
-### setup
-By default Hyphenopoly.js hyphenates elements with the classname `.hyphenate` and sets a FOUHC-timeout of 1000ms.
+## Second Layer
+### setup (optional)
+The `setup` field gives access to the second level of configuration. It defaults to the following configuration:
+````javascript
+Hyphenopoly.config({
+    "require": {...},
+    "setup": {
+        CORScredentials: "include",
+        defaultLanguage: "en-us",
+        dontHyphenateClass: "donthyphenate",
+        hide: "element",
+        keepAlive: true,
+        normalize: false,
+        processShadows: false,
+        safeCopy: true,
+        timeout: 1000,
+        selectors: {
+            ".hyphenate": {}
+        }
+    }
+});
+````
+This list is not conclusive. For full documentation see [Setup](./Setup.md).
 
-#### selectors
+#### selectors 
 
 With selectors elements can be selected very precisely without the need of adding classes to the HTML. The selectors-object is a list of key-value-pairs where the key is a selector and the value is an object of settings specific to the selected elements.
 
@@ -96,10 +142,7 @@ setup: {
 ````
 See [CSS-Selectors on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) for a complete reference on CSS-Selectors.
 
-#### Optional fields in setup
-See [Setup](./Setup.md)
-
-### Events
+### Events (optional)
 See [Events](./Events.md)
 
 ### Hyphenate manually
@@ -117,7 +160,7 @@ Hyphenopoly.unhyphenate().then((elements) => {
 ## Putting it all together
 A typical init could look like this:
 ````javascript
-const Hyphenopoly = {
+Hyphenopoly.config({
     require: {
         "en-us": "supercalifragilisticexpialidocious"
     },
@@ -131,7 +174,7 @@ const Hyphenopoly = {
             e.preventDefault(); //don't show error messages in console
         }
     }
-}
+});
 ````
 
 ## Internal Fields

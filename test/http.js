@@ -18,8 +18,8 @@ t.test("use https loader", async function (t) {
     const deHyphenator = await H9Y.config({
         "loader": "https",
         "paths": {
-            "maindir": "https://cdn.jsdelivr.net/gh/mnater/Hyphenopoly/",
-            "patterndir": "https://cdn.jsdelivr.net/gh/mnater/Hyphenopoly/patterns/"
+            "maindir": "https://cdn.jsdelivr.net/npm/hyphenopoly@5.0.0-beta.1/Hyphenopoly_Loader.js",
+            "patterndir": "https://cdn.jsdelivr.net/npm/hyphenopoly@5.0.0-beta.1/patterns/"
         },
         "require": ["de"]
     });

@@ -3,9 +3,10 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 023</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         var reloaded = !!sessionStorage.getItem("Hyphenopoly_Loader.js");
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             cacheFeatureTests: true,
             require: {
                 "fur": "probabilmentri"
@@ -29,7 +30,7 @@
                     }
                 }
             }
-        };
+        });
         function assert() {
             var tests = 1;
             var i = 1;
@@ -59,7 +60,6 @@
             }
         }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;

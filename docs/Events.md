@@ -14,7 +14,7 @@ Some events have a default action that may be prevented (if event is cancellable
 To handle some of these events, you may specify a 'handleEvent' property in the global 'Hyphenopoly' object:
 
 ````javascript
-const Hyphenopoly = {
+Hyphenopoly.config({
     require: {
         //[...]
     },
@@ -23,7 +23,7 @@ const Hyphenopoly = {
             console.log("Hyphenopoly ended");
         }
     }
-}
+});
 ````
 
 Internally events in Hyphenopoly are implemented as Promises that fulfill with a certain value.
@@ -67,7 +67,7 @@ Fields: e (Error)
 To silent errors prevent default of this event:
 
 ````javascript
-const Hyphenopoly = {
+Hyphenopoly.config({
     require: {
         //[...]
     },
@@ -76,7 +76,7 @@ const Hyphenopoly = {
             e.preventDefault(); //don't show error messages in console
         }
     }
-}
+});
 ````
 ## hyphenopolyEnd-Event
 Fired when all collected elements are hyphenated.

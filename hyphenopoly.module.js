@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 4.12.0 - hyphenation for node
+ * @license Hyphenopoly.module.js 5.0.0-beta.2 - hyphenation for node
  * ©2021  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -15,12 +15,9 @@
  * in a browser environment (e.g. browserified)
  */
 let loader = require("fs");
-const TD = typeof TextDecoder === "undefined"
-    ? require("util").TextDecoder
-    : TextDecoder;
 
 const decode = (() => {
-    const utf16ledecoder = new TD("utf-16le");
+    const utf16ledecoder = new TextDecoder("utf-16le");
     return (ui16) => {
         return utf16ledecoder.decode(ui16);
     };
@@ -226,9 +223,8 @@ function prepareLanguagesObj(
  * @param {function} hyphenateFunc hyphenateFunction
  * @returns {function} hyphenateFunction with closured environment
  */
-function encloseHyphenateFunction(baseData, hyphenateFunc) {
-    const heapBuffer = baseData.wasmMem.buffer;
-    const wordStore = new Uint16Array(heapBuffer, baseData.wo, 64);
+function encloseHyphenateFunction(buf, hyphenateFunc) {
+    const wordStore = new Uint16Array(buf, 0, 64);
 
     /**
      * The hyphenateFunction that encloses the env above
@@ -242,16 +238,16 @@ function encloseHyphenateFunction(baseData, hyphenateFunc) {
      */
     return ((word, hyphencc, leftmin, rightmin) => {
         wordStore.set([
-            95,
+            46,
             ...[...word].map((c) => {
                 return c.charCodeAt(0);
             }),
-            95,
+            46,
             0
         ]);
         const len = hyphenateFunc(leftmin, rightmin, hyphencc);
         if (len > 0) {
-            word = decode(new Uint16Array(heapBuffer, baseData.hw, len));
+            word = decode(new Uint16Array(buf, 0, len));
         }
         return word;
     });
@@ -292,26 +288,17 @@ function instantiateWasmEngine(lang) {
      */
     function handleWasm(inst) {
         const exp = inst.exports;
-        const baseData = {
-            /* eslint-disable multiline-ternary */
-            "hw": (WebAssembly.Global) ? exp.hwo.value : exp.hwo,
-            "lm": (WebAssembly.Global) ? exp.lmi.value : exp.lmi,
-            "rm": (WebAssembly.Global) ? exp.rmi.value : exp.rmi,
-            "wasmMem": exp.mem,
-            "wo": (WebAssembly.Global) ? exp.uwo.value : exp.uwo
-            /* eslint-enable multiline-ternary */
-        };
-        let alphalen = exp.conv();
+        let alphalen = exp.lct.value;
         alphalen = registerSubstitutions(alphalen, exp);
         prepareLanguagesObj(
             lang,
             encloseHyphenateFunction(
-                baseData,
+                exp.mem.buffer,
                 exp.hyphenate
             ),
-            decode(new Uint16Array(exp.mem.buffer, 1026, alphalen - 1)),
-            baseData.lm,
-            baseData.rm
+            decode(new Uint16Array(exp.mem.buffer, 1280, alphalen)),
+            exp.lmi.value,
+            exp.rmi.value
         );
     }
     if (H.c.sync) {
