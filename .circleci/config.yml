@@ -9,13 +9,14 @@ orbs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  matrix-tests:
     jobs:
       - node/test:
-          # This is the node version to use for the `cimg/node` tag
-          # Relevant tags can be found on the CircleCI Developer Hub
-          # https://circleci.com/developer/images/image/cimg/node
-          version: '16.10'
-          # If you are using yarn, change the line below from "npm" to "yarn"
+          version: current
+          pkg-manager: npm
+      - node/test:
+          version: lts
+          pkg-manager: npm
+      - node/test:
+          version: 12.22.7
           pkg-manager: npm
