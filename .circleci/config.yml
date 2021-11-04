@@ -13,13 +13,10 @@ workflows:
     jobs:
       - node/test:
           version: current
-          name: current
           pkg-manager: npm
       - node/test:
           version: lts
-          name: lts
           pkg-manager: npm
       - node/test:
           version: 12.22.7
-          name: 12
           pkg-manager: npm
