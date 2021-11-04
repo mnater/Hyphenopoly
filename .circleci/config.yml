@@ -11,12 +11,15 @@ orbs:
 workflows:
   matrix-tests:
     jobs:
-      - node/testcurrent:
+      - node/test:
           version: current
+          name: current
           pkg-manager: npm
-      - node/testlts:
+      - node/test:
           version: lts
+          name: lts
           pkg-manager: npm
-      - node/test12:
+      - node/test:
           version: 12.22.7
+          name: 12
           pkg-manager: npm
