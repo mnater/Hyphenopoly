@@ -11,9 +11,10 @@ orbs:
 workflows:
   matrix-tests:
     jobs:
-      - node/test:
-          version: current
-          pkg-manager: npm
+      # Disabling latest node 17, because of tap-js error
+      #- node/test:
+      #    version: current
+      #    pkg-manager: npm
       - node/test:
           version: lts
           pkg-manager: npm
