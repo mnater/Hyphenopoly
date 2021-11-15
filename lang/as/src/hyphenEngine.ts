@@ -246,37 +246,37 @@ function get1PosInDWord(dWord: i32, nth: i32): i32 {
     const v: i32 = bswap<i32>(dWord);
     let r: i32 = nth;
     let s: i32 = 0;
-    let a: i32 = 0;
-    let b: i32 = 0;
-    let c: i32 = 0;
-    let d: i32 = 0;
     let t: i32 = 0;
 
-    a = v - ((v >> 1) & 0x55555555);
-    b = (a & 0x33333333) + ((a >> 2) & 0x33333333);
-    c = (b + (b >> 4)) & 0x0f0f0f0f;
-    d = (c + (c >> 8)) & 0x00ff00ff;
-    t = (d >> 32) + (d >> 48);
+    const a: i32 = v - ((v >> 1) & 0x55555555);
+    const b: i32 = (a & 0x33333333) + ((a >> 2) & 0x33333333);
+    const c: i32 = (b + (b >> 4)) & 0x0f0f0f0f;
+    const d: i32 = (c + (c >> 8)) & 0x00ff00ff;
+    t = d + (d >> 16);
     // Now do branchless select!
     s = 32;
     s -= ((t - r) & 256) >> 3;
     r -= (t & ((t - r) >> 8));
     t = (d >> (s - 16)) & 0xff;
+
     s -= ((t - r) & 256) >> 4;
     r -= (t & ((t - r) >> 8));
     t = (c >> (s - 8)) & 0xf;
+
     s -= ((t - r) & 256) >> 5;
     r -= (t & ((t - r) >> 8));
     t = (b >> (s - 4)) & 0x7;
+
     s -= ((t - r) & 256) >> 6;
     r -= (t & ((t - r) >> 8));
     t = (a >> (s - 2)) & 0x3;
+
     s -= ((t - r) & 256) >> 7;
     r -= (t & ((t - r) >> 8));
     t = (v >> (s - 1)) & 0x1;
+
     s -= ((t - r) & 256) >> 8;
-    s = 33 - s;
-    return s - 1;
+    return 32 - s;
 }
 
 /**
