@@ -295,7 +295,6 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let posInByte: i32 = 0;
     let pos: i32 = 0;
     let firstPos: i32 = 0;
-    let secndPos: i32 = 0;
 
     while (run < 2) {
         ith += run;
@@ -314,12 +313,10 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
         pos = ((bytePos - startByte) << 3) + posInByte;
         if (run === 0) {
             firstPos = pos;
-        } else {
-            secndPos = pos;
         }
         run += 1;
     }
-    return (firstPos << 8) + (secndPos - firstPos - 1);
+    return (firstPos << 8) + (pos - firstPos - 1);
 }
 
 /*
