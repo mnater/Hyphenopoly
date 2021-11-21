@@ -362,17 +362,15 @@ function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
  */
 export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
     const replccInt: i32 = pullFromTranslateMap(replcc);
-    lct <<= 1;
     if (replccInt !== 255) {
         pushToTranslateMap(ccl, replccInt);
         if (ccu !== 0) {
             pushToTranslateMap(ccu, replccInt);
         }
         // Add to alphabet
-        store<u16>(lct, ccl, alphabetOffset);
-        lct += 2;
+        store<u16>(lct << 1, ccl, alphabetOffset);
+        lct += 1;
     }
-    lct >>= 1;
     return lct;
 }
 
@@ -390,15 +388,12 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     let patternStartPos: i32 = 0;
     let wordLength: i32 = 0;
     let charOffset: i32 = 0;
-    let cc: i32 = 0;
     let hyphenPointsCount: i32 = 0;
-    let translatedChar: i32 = 0;
-    let currNode: i32 = 0;
 
     // Translate UTF16 word to internal ints and clear hpPos-Array
-    cc = load<u16>(0);
+    let cc: i32 = load<u16>(0);
     while (cc !== 0) {
-        translatedChar = pullFromTranslateMap(cc);
+        const translatedChar: i32 = pullFromTranslateMap(cc);
         if (translatedChar === 255) {
             return 0;
         }
@@ -413,7 +408,7 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     wordLength = charOffset;
     while (patternStartPos < wordLength) {
         charOffset = patternStartPos;
-        currNode = 0;
+        let currNode: i32 = 0;
         let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
             const sel0 = select0(currNode + 1, bm, cm);
@@ -448,7 +443,6 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
 
     // Get chars of original word and insert hyphenPoints
     charOffset = 0;
-    hyphenPointsCount = 0;
     wordLength -= 2;
     rmin = wordLength - rmin - 1;
     while (charOffset < wordLength) {
