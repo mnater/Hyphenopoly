@@ -331,17 +331,14 @@ function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
     let byteIdx: i32 = valIdx >> 1;
     let currentByte: i32 = load<u8>(byteIdx, va);
     let pos: i32 = valIdx & 1;
-    let leadingZeros: i32 = 0;
     let newValue: i32 = 0;
-    if (pos) {
-        // Second (right) half of byte
-        leadingZeros = currentByte & 15;
-    } else {
-        // First (left) half of byte
-        leadingZeros = currentByte >> 4;
-    }
-    let i: i32 = 1;
+    const leadingZeros: i32 = (pos
+        // Right nibble
+        ? currentByte & 15
+        // Left nibble
+        : currentByte >> 4);
     let addr: i32 = startOffset + leadingZeros;
+    let i: i32 = 1;
     while (i < length) {
         if (pos) {
             byteIdx += 1;
@@ -419,14 +416,15 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         currNode = 0;
         let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
-            cc = load<u8>(charOffset, tw);
             const sel0 = select0(currNode + 1, bm, cm);
             const firstChild: i32 = (sel0 >> 8) - currNode;
             const childCount: i32 = sel0 & 255;
             let nthChild: i32 = 0;
             while (nthChild < childCount) {
                 nthChildIdx = firstChild + nthChild;
-                if (load<u8>(nthChildIdx - 1, cm) === cc) {
+                if (
+                    load<u8>(nthChildIdx - 1, cm) === load<u8>(charOffset, tw)
+                ) {
                     break;
                 }
                 nthChild += 1;
@@ -437,14 +435,10 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
             currNode = nthChildIdx;
             if (getBitAtPos(currNode - 1, hv) === 1) {
                 const pos: i32 = rank1(currNode, hv);
-                const sel: i32 = select0(
-                    pos,
-                    vm,
-                    va - 1
-                );
+                const sel: i32 = select0(pos, vm, va - 1);
                 const valBitsStart: i32 = sel >> 8;
-                const len: i32 = sel & 255;
                 const valIdx: i32 = rank1(valBitsStart, vm);
+                const len: i32 = sel & 255;
                 extractValuesToHp(valIdx, len, patternStartPos);
             }
             charOffset += 1;
@@ -470,10 +464,7 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         }
         charOffset += 1;
     }
-    store<u16>(
-        (charOffset + hyphenPointsCount) << 1,
-        0
-    );
+    store<u16>((charOffset + hyphenPointsCount) << 1, 0);
     return wordLength + hyphenPointsCount;
 }
 
