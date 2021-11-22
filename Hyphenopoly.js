@@ -688,7 +688,7 @@
 
         /**
          * Convert the exceptions from user input to Map
-         * @param {string} lang – The language for which the Map is created
+         * @param {string} lang - The language for which the Map is created
          * @return {Map}
          */
         function createExceptionMap(lang) {

@@ -231,9 +231,9 @@ function encloseHyphenateFunction(buf, hyphenateFunc) {
      * Copies the word to wasm-Memory, calls wasm.hyphenateFunc and reads
      * the hyphenated word from wasm-Memory (eventually replacing hyphenchar)
      * @param {String} word - the word that has to be hyphenated
-     * @param {String} hyphenchar – the hyphenate character
-     * @param {Number} leftmin – min number of chars to remain on line
-     * @param {Number} rightmin – min number of chars to go to new line
+     * @param {String} hyphenchar - the hyphenate character
+     * @param {Number} leftmin - min number of chars to remain on line
+     * @param {Number} rightmin - min number of chars to go to new line
      * @returns {String} the hyphenated word
      */
     return ((word, hyphencc, leftmin, rightmin) => {

@@ -6,7 +6,7 @@
  * # node extractTexPatterns.js hyph-<lang>.tex outdir
  *
  * This creates the following files in the same direcory:
- * - hyph-<lang>.chr.txt – characters
+ * - hyph-<lang>.chr.txt - characters
  * - hyph-<lang>.hyp.txt - exceptions (empty if no exceptions)
  * - hyph-<lang>.lic.txt - license
  * - hyph-<lang>.pat.txt - left-/rightmin and patterns

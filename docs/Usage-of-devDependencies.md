@@ -49,9 +49,9 @@ This will install and compile [binaryen](https://github.com/WebAssembly/binaryen
 ## Use the tools
 With the tools mentioned above installed you can run the following scripts:
 
-*   `npm prepare` – recreates a minified subset of the files in the `min`-directory.
-*   `npm test` – runs the tap tests for Hyphenopoly.module.js
-*   `npm run testsuite` – opens a browser and runs the test suite
-*   `npm run lint` – runs the linter on all .js and .md files
+*   `npm prepare` - recreates a minified subset of the files in the `min`-directory.
+*   `npm test` - runs the tap tests for Hyphenopoly.module.js
+*   `npm run testsuite` - opens a browser and runs the test suite
+*   `npm run lint` - runs the linter on all .js and .md files
 *   `npm run createAllWasm` - compiles language-specific hyphenEngines from AssemblyScript and textPatterns (not included) to './lang/' and copies the '.wasm'-files to './patterns/'
-*   `npm run doc` – build and open documentation page locally
+*   `npm run doc` - build and open documentation page locally
