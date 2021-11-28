@@ -7,6 +7,7 @@
 5.  [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
 6.  [Words containing special format characters](#format-chars)
 7.  [Hyphenate HTML-Strings using using hyphenopoly.module.js](#hyphenate-html-strings-using-hyphenopolymodulejs)
+8.  [Usage of .wasm Modules outside Hyphenopoly](#usage-of-wasm-modules-outside-hyphenopoly)
 
 **Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators.md#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.**
 
@@ -396,3 +397,69 @@ function hyphenateHtml(html) {
 
 module.exports = { text: hyphenateText, html: hyphenateHtml }
 ````
+
+## Usage of <lang>.wasm Modules outside Hyphenopoly
+The Webassembly-modules provide some basic, language specific hyphenation
+functionality (hyphenation of a singel word). These modules can be used in any
+system that supports instantiation and execution of Webassembly.
+
+The following example shows how to interact with the module in Python:
+````python
+#!/usr/bin/env python3
+"""This script shows the basic usage of a WebAssembly hyphenator module
+from Hyphenopoly in Python to hyphenate a single word."""
+
+# Install wasmer:
+# pip install wasmer wasmer_compiler_llvm
+
+from wasmer import engine, Store, Module, Instance
+from wasmer_compiler_llvm import Compiler
+
+# Load WebAssembly file
+with open('./en-us.wasm', 'rb') as file_handle:
+    wasmBytes = file_handle.read()
+
+# Compile and instantiate WebAssembly Module
+engine = engine.JIT(Compiler)
+store = Store(engine)
+module = Module(store, wasmBytes)
+instance = Instance(module)
+
+# Create a view into WebAssembly Module memory
+mem = instance.exports.mem.uint16_view()
+WORD = 'hyphenation'
+
+# Copy Unicode code points of the word to memory
+# precede with "." and end with ".\x00"
+WORD_LEN = len(WORD)
+mem[0] = 46
+mem[1:WORD_LEN + 1] = list(map(ord, WORD))
+mem[WORD_LEN + 1] = 46
+mem[WORD_LEN + 2] = 0
+
+# Call the hyphenate function
+# with leftmin and rightmin set to 2 and hyphen char set to "|"
+HYLEN = instance.exports.hyphenate(2, 2, ord("|"))
+
+# Read and decode string from memory
+hyphenated = bytes(instance.exports.mem.buffer)[0:(HYLEN * 2)].decode(encoding='utf-16')
+print(hyphenated)
+````
+
+### Exports of wasm-modules
+- `mem` - memory: The uInt16View into the first 64 values (128 Bytes) is where
+the word to be hyphenated is written to and read from after calling `hyphenate()`.
+- `lmi` - left min: The minimum of letters before the first hyphenation point.
+The patterns have been computed with this value.
+- `rmi` - rigth min: The minimum of letters after the last hyphenation point.
+The patterns have been computed with this value.
+- `lct` - lettercount: The number of letters in the alphabet.
+- `hyphenate(leftmin=lmi, rightmin=rmi, hyphenchar=0)` - This function expects
+a sequence of UTF-16 values (a single word) in the first 128 Bytes of `mem`. The 
+word must be preceeded and succeeded with a "." (value `46`) denoting the 
+beginning an end of the word. The last "." must be followed by `0`. The function 
+writes the hyphenated word back to the same memory location (without the ".") and
+returns the length of the hyphenated word.
+If something goes wrong the returned value is <= 0.
+- `subst(ccl: i32, ccu: i32, replcc: i32): i32` - Substitute `ccl` (charcode lowercase)
+and `ccu` (charcode uppercase) with `replcc`. Returns the new length of the alphabet.
