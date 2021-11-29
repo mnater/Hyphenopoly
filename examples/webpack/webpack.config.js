@@ -43,7 +43,7 @@ module.exports = {
                 }, {
                     "context": "./",
                     "from": "node_modules/hyphenopoly/min/patterns/{es,it,de,en-us}.wasm",
-                    "to": "./js/hyphenopoly/patterns/[name].[ext]"
+                    "to": "./js/hyphenopoly/patterns/[name][ext]"
                 }
             ]
         }), new HtmlWebpackPlugin({

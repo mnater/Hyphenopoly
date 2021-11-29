@@ -3,8 +3,8 @@
 
 
 "use strict";
-
-const Hyphenopoly = {
+require("hyphenopoly/Hyphenopoly_Loader");
+Hyphenopoly.config({
     "require": {
         "es": "anticonstitucionalmente",
         "it": "precipitevolissimevolmente",
@@ -17,6 +17,5 @@ const Hyphenopoly = {
         // Path to the directory where the other ressources are stored
         "maindir": "./js/hyphenopoly/"
     }
-};
-window.Hyphenopoly = Hyphenopoly;
-require("hyphenopoly/Hyphenopoly_Loader");
+});
+
