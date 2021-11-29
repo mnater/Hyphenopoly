@@ -3,8 +3,9 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Example 1</title>
+        <script src="./Hyphenopoly_Loader.js"></script>
         <script>
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "la": "honorificabilitudinitas",
                 "de": "Silbentrennungsalgorithmus",
@@ -20,9 +21,8 @@
                     ".container": {}
                 }
             }
-        };
+        });
         </script>
-        <script src="./Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:60%;

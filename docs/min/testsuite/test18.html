@@ -3,6 +3,7 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 018</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         function assert() {
             const r = !Hyphenopoly
@@ -21,7 +22,7 @@
                 }), window.location.href);
             }
         }
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "en-us": "supercalifragilisticexpialidocious"
             },
@@ -30,13 +31,10 @@
                     window.onload = assert;
                 }
             }
-        };
+        });
         window.setTimeout(assert, 1000);
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
-        <script>
 
-        </script>
         <style type="text/css">
             body {
                 width:50%;

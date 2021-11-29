@@ -3,8 +3,9 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 035</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-            var Hyphenopoly = {
+            Hyphenopoly.config({
                 require: {
                     "hu": "FORCEHYPHENOPOLY"
                 },
@@ -21,7 +22,7 @@
                         window.setTimeout(assert, 500);
                     }
                 }
-            };
+            });
             function assert() {
                 var test = document.getElementById("test1").innerHTML;;
                 var ref = document.getElementById("ref1").innerHTML;;
@@ -46,7 +47,6 @@
                 }
             }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;

@@ -3,8 +3,9 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 016</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-            var Hyphenopoly = {
+            Hyphenopoly.config({
                 require: {
                     "en-us": "FORCEHYPHENOPOLY",
                     "de": "FORCEHYPHENOPOLY",
@@ -23,7 +24,7 @@
                         assert(e);
                     }
                 }
-            };
+            });
             let test = true;
             let count = 0;
             function assert(e) {
@@ -32,7 +33,7 @@
                 var test2 = "Engine for language 'de' loaded, but no elements found.";
                 var ref = e.message;
                 var result = true;
-                if (test1 === ref || test2 === ref) {
+                if (test1 === ref || test2 === ref) {
                     document.getElementById("result").innerHTML += `<span style="background-color: #d6ffd6">${count}</span> `;
                     result = result && true;
                 } else {
@@ -48,7 +49,6 @@
                 }
             }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;

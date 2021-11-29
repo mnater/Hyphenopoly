@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 053</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
+            Hyphenopoly.config({
+                require: {
+                    "en-us": "FORCEHYPHENOPOLY"
+                },
+                setup: {
+                    selectors: {
+                        ".hyphenate": {
+                            hyphen: "•"
+                        }
+                    }
+                },
+                handleEvent: {
+                    hyphenopolyEnd: function (e) {
+                        assert();
+                    }
+                }
+            });
+            function assert() {
+                var tests = 1;
+                var i = 1;
+                var test = "";
+                var ref = "";
+                var result = true;
+                while (i <= tests) {
+                    test = document.getElementById("test" + i).innerHTML;
+                    ref = document.getElementById("ref" + i).innerHTML;
+                    console.log(test, ref);
+                    if (test === ref) {
+                        document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                        result = result && true;
+                    } else {
+                        document.getElementById("result").innerHTML = "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                        result = false;
+                    }
+                    i += 1;
+                }
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 53,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
+            }
+            window.addEventListener("DOMContentLoaded", () => {
+                const contents = new Map([
+                    ["de", new Map([
+                        ["unhyphenatedText", "Silbentrennung"],
+                        ["hyphenatedText", "Sil•ben•tren•nung"],
+                        ["initObj", {
+                            require: {
+                                "de": "FORCEHYPHENOPOLY"
+                            },
+                            setup: {
+                                selectors: {
+                                    ".hyphenate": {
+                                        hyphen: "•"
+                                    }
+                                }
+                            },
+                            handleEvent: {
+                                hyphenopolyEnd: function (e) {
+                                    assert();
+                                }
+                            }
+                        }]
+                    ])],
+                    ["en-us", new Map([
+                        ["unhyphenatedText", "hyphenation"],
+                        ["hyphenatedText", "hy•phen•ation"],
+                        ["initObj", {
+                            "require": {
+                                "en-us": "FORCEHYPHENOPOLY"
+                            },
+                            setup: {
+                                selectors: {
+                                    ".hyphenate": {
+                                        hyphen: "•"
+                                    }
+                                }
+                            },
+                            handleEvent: {
+                                hyphenopolyEnd: function (e) {
+                                    assert();
+                                }
+                            }
+                        }]
+                    ])],
+                    ["fr", new Map([
+                        ["unhyphenatedText", "coupure"],
+                        ["hyphenatedText", "cou•pure"],
+                        ["initObj", {
+                            "require": {
+                                "fr": "FORCEHYPHENOPOLY"
+                            },
+                            setup: {
+                                selectors: {
+                                    ".hyphenate": {
+                                        hyphen: "•"
+                                    }
+                                }
+                            },
+                            handleEvent: {
+                                hyphenopolyEnd: function (e) {
+                                    assert();
+                                }
+                            }
+                        }]
+                    ])],
+                    ["ru", new Map([
+                        ["unhyphenatedText", "Перенос"],
+                        ["hyphenatedText", "Пе•ре•нос"],
+                        ["initObj", {
+                            "require": {
+                                "ru": "FORCEHYPHENOPOLY"
+                            },
+                            setup: {
+                                selectors: {
+                                    ".hyphenate": {
+                                        hyphen: "•"
+                                    }
+                                }
+                            },
+                            handleEvent: {
+                                hyphenopolyEnd: function (e) {
+                                    assert();
+                                }
+                            }
+                        }]
+                    ])]
+                ]);
+                const selectLang = document.getElementById("selectlang");
+                selectLang.addEventListener("change", (event) => {
+                    const lang = event.srcElement.value;
+                    document.getElementById("title").textContent = lang;
+                    const ref1 = document.getElementById("ref1");
+                    ref1.lang = lang;
+                    ref1.textContent = contents.get(lang).get("hyphenatedText");
+                    const test1 = document.getElementById("test1");
+                    test1.lang = lang;
+                    test1.textContent = contents.get(lang).get("unhyphenatedText");
+                    Hyphenopoly.config(contents.get(lang).get("initObj"));
+                });
+            });
+        </script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test52.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test54.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 053</h1>
+        <p id="desc">Dynamically instantiate .wasm-Module when requested.</p>
+        <select id="selectlang">
+            <option value="de">de</option>
+            <option value="en-us" selected>en-us</option>
+            <option value="fr">fr</option>
+            <option value="ru">ru</option>
+        </select>
+        <div id="result"></div>
+        <hr>
+        <h2 id="title">en-us</h2>
+        <p id="test1" class="test hyphenate" lang="en-us">hyphenation</p>
+        <p id="ref1" class="ref" lang="en-us">hy•phen•ation</p>
+
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
+    </body>
+</html>

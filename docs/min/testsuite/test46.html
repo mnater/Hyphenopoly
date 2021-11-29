@@ -4,9 +4,10 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
         <title>Test 046</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
         var asserted = false;
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "en-us": "FORCEHYPHENOPOLY"
             },
@@ -31,7 +32,7 @@
                     }
                 }
             }
-        };
+        });
 
         function assert(msg) {
             asserted = true;
@@ -65,7 +66,6 @@
             }
         }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;

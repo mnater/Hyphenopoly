@@ -3,8 +3,9 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 001</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "en-us": "supercalifragilisticexpialidocious",
                 "hy": "ձայնավորձայնավոր"
@@ -19,7 +20,7 @@
                     }
                 }
             }
-        };
+        });
         function assert(mode) {
             var tests = 2;
             var i = 1;
@@ -55,7 +56,6 @@
             }
         }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;

@@ -3,11 +3,10 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 028</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        let elCount = 0;
-        let testresult = true;
         const hide_mode = window.sessionStorage.getItem("H9Y_hideMode") || "all";
-        var Hyphenopoly = {
+        Hyphenopoly.config({
             require: {
                 "en-us": "FORCEHYPHENOPOLY"
             },
@@ -23,44 +22,40 @@
                 }
             },
             handleEvent: {
-                beforeElementHyphenation: function (e) {
-                    assert(e.el);
+                hyphenopolyStart: function (e) {
+                    assert();
                 }
             }
-        };
-        </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
-        <script>
-        function assert(el) {
-            elCount += 1;
+        });
+        function assert() {
             const H9YStyles = document.getElementsByTagName("style")[0];
+            let testresult = false;
             switch (hide_mode) {
             case "all":
-                testresult = testresult && (H9YStyles.innerHTML === "html{visibility:hidden!important}");
+                testresult = (H9YStyles.innerHTML === "html{visibility:hidden!important}");
                 break;
             case "element":
-                testresult = testresult && (H9YStyles.innerHTML === ".hyphenate1{visibility:hidden!important}.hyphenate2{visibility:hidden!important}");
+                testresult = (H9YStyles.innerHTML === ".hyphenate1{visibility:hidden!important}.hyphenate2{visibility:hidden!important}");
                 break;
             case "text":
-                testresult = testresult && (H9YStyles.innerHTML === ".hyphenate1{color:transparent!important}.hyphenate2{color:transparent!important}");
+                testresult = (H9YStyles.innerHTML === ".hyphenate1{color:transparent!important}.hyphenate2{color:transparent!important}");
                 break;
             default:
-                testresult = testresult && (H9YStyles === null);
+                testresult = (H9YStyles.innerHTML === "");
                 break;
             }
-            if (elCount === 2) {
-                if (testresult) {
-                    document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">passed</p>";
-                } else {
-                    document.getElementById("result").innerHTML = "<p style=\"background-color: #ffd6d6\">failed</p>";
-                }
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 28,
-                        result: (testresult ? "passed" : "failed")
-                    }), window.location.href);
-                }
+            
+            if (testresult) {
+                document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">passed</p>";
+            } else {
+                document.getElementById("result").innerHTML = "<p style=\"background-color: #ffd6d6\">failed</p>";
+            }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 28,
+                    result: (testresult ? "passed" : "failed")
+                }), window.location.href);
             }
         }
 

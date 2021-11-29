@@ -3,8 +3,9 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 027</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        var Hyphenopoly = {
+            Hyphenopoly.config({
             require: {
                 "fur": "probabilmentri"
             },
@@ -34,21 +35,21 @@
                     assertError(e);
                 }
             }
-        };
+        });
 
-            function assertError(e) {
-                var result = false;
-                if (e.msg.indexOf("Promises not supported in this engine") !== -1) {
-                    result = true;
-                }
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 27,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
+        function assertError(e) {
+            var result = false;
+            if (e.msg.indexOf("Promises not supported in this engine") !== -1) {
+                result = true;
             }
+            if (parent != window) {
+                parent.postMessage(JSON.stringify({
+                    desc: document.getElementById("desc").innerHTML,
+                    index: 27,
+                    result: (result ? "passed" : "failed")
+                }), window.location.href);
+            }
+        }
         function assertAll() {
             var tests = 1;
             var i = 1;
@@ -76,7 +77,6 @@
             }
         }
         </script>
-        <script src="../Hyphenopoly_Loader.js"></script>
         <style type="text/css">
             body {
                 width:50%;
