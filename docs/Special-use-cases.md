@@ -447,19 +447,19 @@ print(hyphenated)
 ````
 
 ### Exports of wasm-modules
-- `mem` - memory: The uInt16View into the first 64 values (128 Bytes) is where
+-   `mem` - memory: The uInt16View into the first 64 values (128 Bytes) is where 
 the word to be hyphenated is written to and read from after calling `hyphenate()`.
-- `lmi` - left min: The minimum of letters before the first hyphenation point.
+-   `lmi` - left min: The minimum of letters before the first hyphenation point.
 The patterns have been computed with this value.
-- `rmi` - rigth min: The minimum of letters after the last hyphenation point.
+-   `rmi` - rigth min: The minimum of letters after the last hyphenation point.
 The patterns have been computed with this value.
-- `lct` - lettercount: The number of letters in the alphabet.
-- `hyphenate(leftmin=lmi, rightmin=rmi, hyphenchar=0)` - This function expects
+-   `lct` - lettercount: The number of letters in the alphabet.
+-   `hyphenate(leftmin=lmi, rightmin=rmi, hyphenchar=0)` - This function expects
 a sequence of UTF-16 values (a single word) in the first 128 Bytes of `mem`. The 
 word must be preceeded and succeeded with a "." (value `46`) denoting the 
 beginning an end of the word. The last "." must be followed by `0`. The function 
 writes the hyphenated word back to the same memory location (without the ".") and
 returns the length of the hyphenated word.
 If something goes wrong the returned value is <= 0.
-- `subst(ccl: i32, ccu: i32, replcc: i32): i32` - Substitute `ccl` (charcode lowercase)
+-   `subst(ccl: i32, ccu: i32, replcc: i32): i32` - Substitute `ccl` (charcode lowercase)
 and `ccu` (charcode uppercase) with `replcc`. Returns the new length of the alphabet.
