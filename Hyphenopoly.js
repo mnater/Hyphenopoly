@@ -772,14 +772,9 @@
         }
 
         const decode = (() => {
-            if (w.TextDecoder) {
-                const utf16ledecoder = new TextDecoder("utf-16le");
-                return ((ui16) => {
-                    return utf16ledecoder.decode(ui16);
-                });
-            }
+            const utf16ledecoder = new TextDecoder("utf-16le");
             return ((ui16) => {
-                return String.fromCharCode.apply(null, ui16);
+                return utf16ledecoder.decode(ui16);
             });
         })();
 
