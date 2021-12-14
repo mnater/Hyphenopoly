@@ -1,9 +1,8 @@
 /* eslint-disable require-await */
 /* eslint-disable no-shadow */
 /* eslint-env node */
-"use strict";
-const t = require("tap");
-const fs = require("fs").promises;
+import * as fs from "fs/promises";
+import t from "tap";
 
 const TD = typeof TextDecoder === "undefined"
     ? require("util").TextDecoder

@@ -132,6 +132,12 @@
         "no-bitwise": 0,
         "complexity": 0
       }
+    },
+    {
+      "files": ["*.module.js", "example.js", "test/*"],
+      "parserOptions": {
+        "sourceType": "module"
+      }
     }
   ],
   "reportUnusedDisableDirectives": true
