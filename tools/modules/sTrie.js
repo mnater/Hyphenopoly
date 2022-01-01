@@ -91,7 +91,7 @@ function sTrie() {
             hasValue,
             valuesAsUint8Array,
             "valuesBitMap"() {
-                return valuesBitMap.asUint8Array();
+                return valuesBitMap.asUint8ArraySwapped();
             }
         };
     })();
@@ -182,9 +182,9 @@ function sTrie() {
 
     function dump() {
         return {
-            "bits": bits.asUint8Array(),
+            "bits": bits.asUint8ArraySwapped(),
             "chars": chars.asUint8Array(),
-            "hasValueBits": hasValueBits.asUint8Array(),
+            "hasValueBits": hasValueBits.asUint8ArraySwapped(),
             "values": valueStore.valuesAsUint8Array(),
             "valuesBitMap": valueStore.valuesBitMap()
         };

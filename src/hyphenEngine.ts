@@ -1,5 +1,15 @@
 /*
- * Debug
+ * Debug:
+ * return wa.instantiateStreaming(response, {
+ *     "hyphenEngine": {
+ *         "log": (value) => {
+ *             console.log(value);
+ *         },
+ *         "log2": (value) => {
+ *             console.log((value >>> 0).toString(2));
+ *         }
+ *     }
+ * });
  * declare function log(arg0: i32): void;
  * declare function log2(arg0: i32): void;
  * declare function logc(arg0: i32): void;
@@ -198,14 +208,22 @@ function createTranslateMap(): void {
 }
 
 /*
+ * Checks if the bit in hv (hasValueBitMap) is set
  * Returns the bit at pos starting at startByte
  * For our purposes the bits are numbered from left to right
+ * but the bytes are stored in Little Endian (3 2 1 0)
+ * to access the bytes in Big Endian order (0 1 2 3) we need to calculate
+ * the address: numBytes = (numBytes - (numBytes % 4) + 3) - (numBytes % 4)
+ * This can be simplyfied as follows
  */
-function getBitAtPos(pos: i32, startByte: i32): i32 {
-    const numBytes: i32 = pos >> 3;
+function nodeHasValue(pos: i32): i32 {
+    // BE:
+    let bytePtr: i32 = pos >> 3;
+    // LE:
+    bytePtr = bytePtr + 3 - ((bytePtr & 3) << 1);
     // BitHack: pos % 8 === pos & (8 - 1)
     const numBits: i32 = 7 - (pos & 7);
-    return (load<u8>(startByte + numBytes) >> numBits) & 1;
+    return (load<u8>(bytePtr, hv) >> numBits) & 1;
 }
 
 /*
@@ -229,7 +247,7 @@ function rank1(pos: i32, startByte: i32): i32 {
     }
     if (numBits !== 0) {
         count += popcnt<i32>(
-            bswap<u32>(load<u32>(startByte + i)) >>> (32 - numBits)
+            load<u32>(startByte + i) >>> (32 - numBits)
         );
     }
     return count;
@@ -243,12 +261,11 @@ function rank1(pos: i32, startByte: i32): i32 {
  * This is faster than a loop based approach but the code is some bytes bigger.
  */
 function get1PosInDWord(dWord: i32, nth: i32): i32 {
-    const v: i32 = bswap<i32>(dWord);
     let r: i32 = nth;
     let s: i32 = 0;
     let t: i32 = 0;
 
-    const a: i32 = v - ((v >> 1) & 0x55555555);
+    const a: i32 = dWord - ((dWord >> 1) & 0x55555555);
     const b: i32 = (a & 0x33333333) + ((a >> 2) & 0x33333333);
     const c: i32 = (b + (b >> 4)) & 0x0f0f0f0f;
     const d: i32 = (c + (c >> 8)) & 0x00ff00ff;
@@ -273,7 +290,7 @@ function get1PosInDWord(dWord: i32, nth: i32): i32 {
 
     s -= ((t - r) & 256) >> 7;
     r -= (t & ((t - r) >> 8));
-    t = (v >> (s - 1)) & 0x1;
+    t = (dWord >> (s - 1)) & 0x1;
 
     s -= ((t - r) & 256) >> 8;
     return 32 - s;
@@ -378,7 +395,7 @@ export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
  * The main hyphenate function
  * lmin: leftmin - the number of characters before the first hyphenation point
  * rmin: rightmin - the number of characters after the last hyphenation point
- * hc: hyphenchar – the char to insert as hyphen (usually soft hyphen \00AD)
+ * hc: hyphenchar - the char to insert as hyphen (usually soft hyphen \00AD)
  *
  * Reads the word from memory[0] until 0 termination and writes back to memory
  * starting at adress 0.
@@ -428,7 +445,7 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
                 break;
             }
             currNode = nthChildIdx;
-            if (getBitAtPos(currNode - 1, hv) === 1) {
+            if (nodeHasValue(currNode - 1) === 1) {
                 const pos: i32 = rank1(currNode, hv);
                 const sel: i32 = select0(pos, vm, va - 1);
                 const valBitsStart: i32 = sel >> 8;
