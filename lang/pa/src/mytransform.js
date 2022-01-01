@@ -23,7 +23,7 @@ const heapSizePages = (heapSizeBytes / 1024 / 64);
 
 class MyTransform extends Transform {
     afterCompile(asModule) {
-        this.log("  [mytransform.js] add data...");
+        this.log("  [mytransform.js] add data (" + dataSize + " Bytes)");
         asModule.setMemory(heapSizePages, -1, "mem", [
             {
                 data,

@@ -1,5 +1,15 @@
 /*
- * Debug
+ * Debug:
+ * return wa.instantiateStreaming(response, {
+ *     "hyphenEngine": {
+ *         "log": (value) => {
+ *             console.log(value);
+ *         },
+ *         "log2": (value) => {
+ *             console.log((value >>> 0).toString(2));
+ *         }
+ *     }
+ * });
  * declare function log(arg0: i32): void;
  * declare function log2(arg0: i32): void;
  * declare function logc(arg0: i32): void;
@@ -198,14 +208,22 @@ function createTranslateMap(): void {
 }
 
 /*
+ * Checks if the bit in hv (hasValueBitMap) is set
  * Returns the bit at pos starting at startByte
  * For our purposes the bits are numbered from left to right
+ * but the bytes are stored in Little Endian (3 2 1 0)
+ * to access the bytes in Big Endian order (0 1 2 3) we need to calculate
+ * the address: numBytes = (numBytes - (numBytes % 4) + 3) - (numBytes % 4)
+ * This can be simplyfied as follows
  */
-function getBitAtPos(pos: i32, startByte: i32): i32 {
-    const numBytes: i32 = pos >> 3;
+function nodeHasValue(pos: i32): i32 {
+    // BE:
+    let bytePtr: i32 = pos >> 3;
+    // LE:
+    bytePtr = bytePtr + 3 - ((bytePtr & 3) << 1);
     // BitHack: pos % 8 === pos & (8 - 1)
     const numBits: i32 = 7 - (pos & 7);
-    return (load<u8>(startByte + numBytes) >> numBits) & 1;
+    return (load<u8>(bytePtr, hv) >> numBits) & 1;
 }
 
 /*
@@ -229,7 +247,7 @@ function rank1(pos: i32, startByte: i32): i32 {
     }
     if (numBits !== 0) {
         count += popcnt<i32>(
-            bswap<u32>(load<u32>(startByte + i)) >>> (32 - numBits)
+            load<u32>(startByte + i) >>> (32 - numBits)
         );
     }
     return count;
@@ -243,12 +261,11 @@ function rank1(pos: i32, startByte: i32): i32 {
  * This is faster than a loop based approach but the code is some bytes bigger.
  */
 function get1PosInDWord(dWord: i32, nth: i32): i32 {
-    const v: i32 = bswap<i32>(dWord);
     let r: i32 = nth;
     let s: i32 = 0;
     let t: i32 = 0;
 
-    const a: i32 = v - ((v >> 1) & 0x55555555);
+    const a: i32 = dWord - ((dWord >> 1) & 0x55555555);
     const b: i32 = (a & 0x33333333) + ((a >> 2) & 0x33333333);
     const c: i32 = (b + (b >> 4)) & 0x0f0f0f0f;
     const d: i32 = (c + (c >> 8)) & 0x00ff00ff;
@@ -273,7 +290,7 @@ function get1PosInDWord(dWord: i32, nth: i32): i32 {
 
     s -= ((t - r) & 256) >> 7;
     r -= (t & ((t - r) >> 8));
-    t = (v >> (s - 1)) & 0x1;
+    t = (dWord >> (s - 1)) & 0x1;
 
     s -= ((t - r) & 256) >> 8;
     return 32 - s;
@@ -295,7 +312,6 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     let posInByte: i32 = 0;
     let pos: i32 = 0;
     let firstPos: i32 = 0;
-    let secndPos: i32 = 0;
 
     while (run < 2) {
         ith += run;
@@ -314,12 +330,10 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
         pos = ((bytePos - startByte) << 3) + posInByte;
         if (run === 0) {
             firstPos = pos;
-        } else {
-            secndPos = pos;
         }
         run += 1;
     }
-    return (firstPos << 8) + (secndPos - firstPos - 1);
+    return (firstPos << 8) + (pos - firstPos - 1);
 }
 
 /*
@@ -334,17 +348,14 @@ function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
     let byteIdx: i32 = valIdx >> 1;
     let currentByte: i32 = load<u8>(byteIdx, va);
     let pos: i32 = valIdx & 1;
-    let leadingZeros: i32 = 0;
     let newValue: i32 = 0;
-    if (pos) {
-        // Second (right) half of byte
-        leadingZeros = currentByte & 15;
-    } else {
-        // First (left) half of byte
-        leadingZeros = currentByte >> 4;
-    }
-    let i: i32 = 1;
+    const leadingZeros: i32 = (pos
+        // Right nibble
+        ? currentByte & 15
+        // Left nibble
+        : currentByte >> 4);
     let addr: i32 = startOffset + leadingZeros;
+    let i: i32 = 1;
     while (i < length) {
         if (pos) {
             byteIdx += 1;
@@ -368,17 +379,15 @@ function extractValuesToHp(valIdx: i32, length: i32, startOffset: i32): void {
  */
 export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
     const replccInt: i32 = pullFromTranslateMap(replcc);
-    lct <<= 1;
     if (replccInt !== 255) {
         pushToTranslateMap(ccl, replccInt);
         if (ccu !== 0) {
             pushToTranslateMap(ccu, replccInt);
         }
         // Add to alphabet
-        store<u16>(lct, ccl, alphabetOffset);
-        lct += 2;
+        store<u16>(lct << 1, ccl, alphabetOffset);
+        lct += 1;
     }
-    lct >>= 1;
     return lct;
 }
 
@@ -386,7 +395,7 @@ export function subst(ccl: i32, ccu: i32, replcc: i32): i32 {
  * The main hyphenate function
  * lmin: leftmin - the number of characters before the first hyphenation point
  * rmin: rightmin - the number of characters after the last hyphenation point
- * hc: hyphenchar – the char to insert as hyphen (usually soft hyphen \00AD)
+ * hc: hyphenchar - the char to insert as hyphen (usually soft hyphen \00AD)
  *
  * Reads the word from memory[0] until 0 termination and writes back to memory
  * starting at adress 0.
@@ -396,15 +405,12 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     let patternStartPos: i32 = 0;
     let wordLength: i32 = 0;
     let charOffset: i32 = 0;
-    let cc: i32 = 0;
     let hyphenPointsCount: i32 = 0;
-    let translatedChar: i32 = 0;
-    let currNode: i32 = 0;
 
     // Translate UTF16 word to internal ints and clear hpPos-Array
-    cc = load<u16>(0);
+    let cc: i32 = load<u16>(0);
     while (cc !== 0) {
-        translatedChar = pullFromTranslateMap(cc);
+        const translatedChar: i32 = pullFromTranslateMap(cc);
         if (translatedChar === 255) {
             return 0;
         }
@@ -419,17 +425,18 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     wordLength = charOffset;
     while (patternStartPos < wordLength) {
         charOffset = patternStartPos;
-        currNode = 0;
+        let currNode: i32 = 0;
         let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
-            cc = load<u8>(charOffset, tw);
             const sel0 = select0(currNode + 1, bm, cm);
             const firstChild: i32 = (sel0 >> 8) - currNode;
             const childCount: i32 = sel0 & 255;
             let nthChild: i32 = 0;
             while (nthChild < childCount) {
                 nthChildIdx = firstChild + nthChild;
-                if (load<u8>(nthChildIdx - 1, cm) === cc) {
+                if (
+                    load<u8>(nthChildIdx - 1, cm) === load<u8>(charOffset, tw)
+                ) {
                     break;
                 }
                 nthChild += 1;
@@ -438,16 +445,12 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
                 break;
             }
             currNode = nthChildIdx;
-            if (getBitAtPos(currNode - 1, hv) === 1) {
+            if (nodeHasValue(currNode - 1) === 1) {
                 const pos: i32 = rank1(currNode, hv);
-                const sel: i32 = select0(
-                    pos,
-                    vm,
-                    va - 1
-                );
+                const sel: i32 = select0(pos, vm, va - 1);
                 const valBitsStart: i32 = sel >> 8;
-                const len: i32 = sel & 255;
                 const valIdx: i32 = rank1(valBitsStart, vm);
+                const len: i32 = sel & 255;
                 extractValuesToHp(valIdx, len, patternStartPos);
             }
             charOffset += 1;
@@ -457,7 +460,6 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
 
     // Get chars of original word and insert hyphenPoints
     charOffset = 0;
-    hyphenPointsCount = 0;
     wordLength -= 2;
     rmin = wordLength - rmin - 1;
     while (charOffset < wordLength) {
@@ -473,10 +475,7 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         }
         charOffset += 1;
     }
-    store<u16>(
-        (charOffset + hyphenPointsCount) << 1,
-        0
-    );
+    store<u16>((charOffset + hyphenPointsCount) << 1, 0);
     return wordLength + hyphenPointsCount;
 }
 
