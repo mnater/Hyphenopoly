@@ -36,7 +36,7 @@ echo "$LANG\c" > ./lang/$LANG/src/lang.txt
 echo '(E) compile WASM-Module'
 cd ./lang/$LANG/src/
 OLDSIZE=$(wc -c < ../$LANG.wasm)
-asc hyphenEngine.ts -O3z --converge --noExportMemory -b ../$LANG.wasm
+#asc hyphenEngine.ts -O3z --converge --noExportMemory -b ../$LANG.wasm
 #CODESIZE=$(wc -c < ../$LANG.wasm)
 #echo "codesize:    $CODESIZE"
 asc hyphenEngine.ts -O3z --converge --noExportMemory --transform ./mytransform.js -b ../$LANG.wasm
