@@ -1,5 +1,14 @@
 # Version History
 
+## Version 5.0.0-beta-3 (2022-01-08)
+### Doc
+*   Update examples to new API
+*   update copyright to 2022
+### Fixed
+*   Perf: optimize creation of word finding RegEx
+*   Perf: write hyphenation data in little endian
+*   bump devDependencies
+
 ## Version 5.0.0-beta-2 (2021-11-03)
 ### Breaking changes
 *   Changed API for embedding Hyphenopoly in webpages.
