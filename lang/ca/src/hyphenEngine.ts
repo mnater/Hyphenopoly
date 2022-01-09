@@ -316,13 +316,13 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
     do {
         ith += run;
         do {
+            if (bytePos > endByte) {
+                return 0;
+            }
             dWord = ~load<u32>(bytePos);
             dWord0Count = popcnt<i32>(dWord);
             count += dWord0Count;
             bytePos += 4;
-            if (bytePos > endByte) {
-                return 0;
-            }
         } while (count < ith);
         count -= dWord0Count;
         bytePos -= 4;
