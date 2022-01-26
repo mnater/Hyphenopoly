@@ -79,7 +79,7 @@
  * Import the offsets and left-/rightmin of the language specific data.
  * The import file is created by the createWasmData.js script
  */
-import {ao, bm, cm, hv, lm, rm, va, vm} from "./g";
+import {ao, as, bm, cm, hv, lm, rm, va, vm} from "./g";
 
 /*
  * Export the variables essential for the user of the module:
@@ -172,9 +172,10 @@ function createTranslateMap(): void {
     let second: i32 = 0;
     let secondInt: i32 = 0;
     i = ao;
+    const lastLetterAddr: i32 = ao + (as << 1);
     lct <<= 1;
     pushToTranslateMap(46, 0);
-    while (i < bm) {
+    while (i < lastLetterAddr) {
         first = load<u16>(i);
         second = load<u16>(i, 2);
         if (second === 0) {

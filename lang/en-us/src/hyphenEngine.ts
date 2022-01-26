@@ -79,7 +79,7 @@
  * Import the offsets and left-/rightmin of the language specific data.
  * The import file is created by the createWasmData.js script
  */
-import {ao, bm, cm, hv, lm, rm, va, vm} from "./g";
+import {ao, as, bm, cm, hv, lm, rm, va, vm} from "./g";
 
 /*
  * Export the variables essential for the user of the module:
@@ -172,9 +172,10 @@ function createTranslateMap(): void {
     let second: i32 = 0;
     let secondInt: i32 = 0;
     i = ao;
+    const lastLetterAddr: i32 = ao + (as << 1);
     lct <<= 1;
     pushToTranslateMap(46, 0);
-    while (i < bm) {
+    while (i < lastLetterAddr) {
         first = load<u16>(i);
         second = load<u16>(i, 2);
         if (second === 0) {
@@ -231,13 +232,11 @@ function nodeHasValue(pos: i32): i32 {
  * The rank is the number of bits set up to the given position.
  * We first count the bits set in the 32-bit blocks,
  * then we count the bits set until the final pos.
- * Since byte ordering in webassembly is little-endian, but we count from
- * left to right we need to byteswap the last number read from memory.
  */
-function rank1(pos: i32, startByte: i32): i32 {
-    // (pos / 32) << 2 === (pos >> 5) << 2
+function rank(pos: i32, startByte: i32): i32 {
+    // (pos / 64) << 3 === (pos >> 6) << 3
     const numBytes: i32 = (pos >> 6) << 3;
-    // BitHack: pos % 32 === pos & (32 - 1)
+    // BitHack: pos % 64 === pos & (64 - 1)
     const numBits: i32 = pos & 63;
     let i: i32 = 0;
     let count: i64 = 0;
@@ -305,7 +304,7 @@ function get1PosInDWord(dWord: i64, nth: i64): i32 {
  * bits 0-23: position
  * bits 24-31: child count
  */
-function select0(ith: i32, startByte: i32, endByte: i32): i32 {
+function select(ith: i32, startByte: i32, endByte: i32): i32 {
     let bytePos: i32 = startByte;
     let count: i32 = 0;
     let dWord: i64 = 0;
@@ -430,7 +429,7 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         let currNode: i32 = 0;
         let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
-            const sel0: i32 = select0(currNode + 1, bm, cm);
+            const sel0: i32 = select(currNode + 1, bm, cm);
             const firstChild: i32 = (sel0 >> 8) - currNode;
             const childCount: i32 = sel0 & 255;
             let nthChild: i32 = 0;
@@ -448,10 +447,10 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
             }
             currNode = nthChildIdx;
             if (nodeHasValue(currNode - 1) === 1) {
-                const pos: i32 = rank1(currNode, hv);
-                const sel: i32 = select0(pos, vm, va - 1);
+                const pos: i32 = rank(currNode, hv);
+                const sel: i32 = select(pos, vm, va - 1);
                 const valBitsStart: i32 = sel >> 8;
-                const valIdx: i32 = rank1(valBitsStart, vm);
+                const valIdx: i32 = rank(valBitsStart, vm);
                 const len: i32 = sel & 255;
                 extractValuesToHp(valIdx, len, patternStartPos);
             }

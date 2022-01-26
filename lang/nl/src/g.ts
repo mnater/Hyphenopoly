@@ -1,4 +1,5 @@
 export const ao: i32 = 1998;
+export const as: i32 = 76;
 export const bm: i32 = 2152;
 export const cm: i32 = 6792;
 export const hv: i32 = 25333;

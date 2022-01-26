@@ -125,6 +125,7 @@ fs.writeFileSync(process.argv[3], output);
 let imports = "";
 const dataOffset = 1920;
 imports += `export const ao: i32 = ${alphabetOffset + dataOffset};\n`;
+imports += `export const as: i32 = ${alphabet.length};\n`;
 imports += `export const bm: i32 = ${bitMapOffset + dataOffset};\n`;
 imports += `export const cm: i32 = ${charMapOffset + dataOffset};\n`;
 imports += `export const hv: i32 = ${hasValueOffset + dataOffset};\n`;
