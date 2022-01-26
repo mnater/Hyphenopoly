@@ -220,7 +220,7 @@ function nodeHasValue(pos: i32): i32 {
     // BE:
     let bytePtr: i32 = pos >> 3;
     // LE:
-    bytePtr = bytePtr + 3 - ((bytePtr & 3) << 1);
+    bytePtr = bytePtr + 7 - ((bytePtr & 7) << 1);
     // BitHack: pos % 8 === pos & (8 - 1)
     const numBits: i32 = 7 - (pos & 7);
     return (load<u8>(bytePtr, hv) >> numBits) & 1;
@@ -231,26 +231,24 @@ function nodeHasValue(pos: i32): i32 {
  * The rank is the number of bits set up to the given position.
  * We first count the bits set in the 32-bit blocks,
  * then we count the bits set until the final pos.
- * Since byte ordering in webassembly is little-endian, but we count from
- * left to right we need to byteswap the last number read from memory.
  */
-function rank1(pos: i32, startByte: i32): i32 {
-    // (pos / 32) << 2 === (pos >> 5) << 2
-    const numBytes: i32 = (pos >> 5) << 2;
-    // BitHack: pos % 32 === pos & (32 - 1)
-    const numBits: i32 = pos & 31;
+function rank(pos: i32, startByte: i32): i32 {
+    // (pos / 64) << 3 === (pos >> 6) << 3
+    const numBytes: i32 = (pos >> 6) << 3;
+    // BitHack: pos % 64 === pos & (64 - 1)
+    const numBits: i32 = pos & 63;
     let i: i32 = 0;
-    let count: i32 = 0;
+    let count: i64 = 0;
     while (i < numBytes) {
-        count += popcnt<i32>(load<u32>(startByte + i));
-        i += 4;
+        count += popcnt<i64>(load<i64>(startByte + i, 0, 8));
+        i += 8;
     }
     if (numBits !== 0) {
-        count += popcnt<i32>(
-            load<u32>(startByte + i) >>> (32 - numBits)
+        count += popcnt<i64>(
+            load<i64>(startByte + i, 0, 8) >>> (64 - numBits)
         );
     }
-    return count;
+    return count as i32;
 }
 
 /*
@@ -260,21 +258,23 @@ function rank1(pos: i32, startByte: i32): i32 {
  * https://graphics.stanford.edu/~seander/bithacks.html#SelectPosFromMSBRank
  * This is faster than a loop based approach but the code is some bytes bigger.
  */
-function get1PosInDWord(dWord: i32, nth: i32): i32 {
-    let r: i32 = nth;
-    let s: i32 = 0;
-    let t: i32 = 0;
+function get1PosInDWord(dWord: i64, nth: i64): i32 {
+    let r: i64 = nth;
+    let s: i64 = 0;
+    let t: i64 = 0;
 
-    const a: i32 = dWord - ((dWord >> 1) & 0x55555555);
-    const b: i32 = (a & 0x33333333) + ((a >> 2) & 0x33333333);
-    const c: i32 = (b + (b >> 4)) & 0x0f0f0f0f;
-    const d: i32 = (c + (c >> 8)) & 0x00ff00ff;
-    t = d + (d >> 16);
+    /* eslint-disable @typescript-eslint/no-loss-of-precision */
+    const a: i64 = dWord - ((dWord >> 1) & 0x5555555555555555);
+    const b: i64 = (a & 0x3333333333333333) + ((a >> 2) & 0x3333333333333333);
+    const c: i64 = (b + (b >> 4)) & 0x0f0f0f0f0f0f0f0f;
+    const d: i64 = (c + (c >> 8)) & 0x00ff00ff00ff00ff;
+    /* eslint-enable @typescript-eslint/no-loss-of-precision */
+    t = ((d >> 32) + (d >> 48));
     // Now do branchless select!
-    s = 32;
+    s = 64;
     s -= ((t - r) & 256) >> 3;
     r -= (t & ((t - r) >> 8));
-    t = (d >> (s - 16)) & 0xff;
+    t = ((d >> (s - 16)) & 0xff);
 
     s -= ((t - r) & 256) >> 4;
     r -= (t & ((t - r) >> 8));
@@ -293,7 +293,7 @@ function get1PosInDWord(dWord: i32, nth: i32): i32 {
     t = (dWord >> (s - 1)) & 0x1;
 
     s -= ((t - r) & 256) >> 8;
-    return 32 - s;
+    return (64 - s) as i32;
 }
 
 /**
@@ -303,10 +303,10 @@ function get1PosInDWord(dWord: i32, nth: i32): i32 {
  * bits 0-23: position
  * bits 24-31: child count
  */
-function select0(ith: i32, startByte: i32, endByte: i32): i32 {
+function select(ith: i32, startByte: i32, endByte: i32): i32 {
     let bytePos: i32 = startByte;
     let count: i32 = 0;
-    let dWord: i32 = 0;
+    let dWord: i64 = 0;
     let dWord0Count: i32 = 0;
     let run: i32 = 0;
     let posInByte: i32 = 0;
@@ -319,13 +319,13 @@ function select0(ith: i32, startByte: i32, endByte: i32): i32 {
             if (bytePos > endByte) {
                 return 0;
             }
-            dWord = ~load<u32>(bytePos);
-            dWord0Count = popcnt<i32>(dWord);
+            dWord = ~load<i64>(bytePos, 0, 8);
+            dWord0Count = <i32>popcnt<i64>(dWord);
             count += dWord0Count;
-            bytePos += 4;
+            bytePos += 8;
         } while (count < ith);
         count -= dWord0Count;
-        bytePos -= 4;
+        bytePos -= 8;
         posInByte = get1PosInDWord(dWord, ith - count);
         pos = ((bytePos - startByte) << 3) + posInByte;
         if (run === 0) {
@@ -428,7 +428,7 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
         let currNode: i32 = 0;
         let nthChildIdx: i32 = 0;
         while (charOffset < wordLength) {
-            const sel0 = select0(currNode + 1, bm, cm);
+            const sel0: i32 = select(currNode + 1, bm, cm);
             const firstChild: i32 = (sel0 >> 8) - currNode;
             const childCount: i32 = sel0 & 255;
             let nthChild: i32 = 0;
@@ -446,10 +446,10 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
             }
             currNode = nthChildIdx;
             if (nodeHasValue(currNode - 1) === 1) {
-                const pos: i32 = rank1(currNode, hv);
-                const sel: i32 = select0(pos, vm, va - 1);
+                const pos: i32 = rank(currNode, hv);
+                const sel: i32 = select(pos, vm, va - 1);
                 const valBitsStart: i32 = sel >> 8;
-                const valIdx: i32 = rank1(valBitsStart, vm);
+                const valIdx: i32 = rank(valBitsStart, vm);
                 const len: i32 = sel & 255;
                 extractValuesToHp(valIdx, len, patternStartPos);
             }

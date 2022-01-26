@@ -66,7 +66,7 @@ function bits() {
         }
         const swapped = [];
         bytes.forEach((val, k) => {
-            swapped[(k - (k % 4) + 3) - (k % 4)] = val;
+            swapped[(k - (k % 8) + 7) - (k % 8)] = val;
         });
         const ret = Uint8Array.from(swapped);
         return ret;
