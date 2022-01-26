@@ -1,9 +1,15 @@
 # Version History
 
+## Version 5.tbd (tbd)
+### Doc
+*   Added documentation for using .wasm modules outside Hyphenopoly
+### Fixed
+*   Perf: improve select and rank (64Bit load and popcnt)
+
 ## Version 5.0.0-beta-3 (2022-01-08)
 ### Doc
 *   Update examples to new API
-*   update copyright to 2022
+*   Update copyright to 2022
 ### Fixed
 *   Perf: optimize creation of word finding RegEx
 *   Perf: write hyphenation data in little endian
