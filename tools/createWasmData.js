@@ -84,7 +84,7 @@ const charMapOffset = alignOffsetTo(
 );
 const hasValueOffset = alignOffsetTo(
     charMapOffset + strieDat.chars.buffer.byteLength,
-    1
+    8
 );
 const valuemapOffset = alignOffsetTo(
     hasValueOffset + strieDat.hasValueBits.buffer.byteLength,
