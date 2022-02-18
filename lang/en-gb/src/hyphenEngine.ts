@@ -252,49 +252,26 @@ function rank(pos: i32, startByte: i32): i32 {
     return count as i32;
 }
 
-/*
- * Select the bit position (from the most-significant bit)
- * with the given count (rank)
- * Adapted for wasm from
- * https://graphics.stanford.edu/~seander/bithacks.html#SelectPosFromMSBRank
- * This is faster than a loop based approach but the code is some bytes bigger.
- */
-function get1PosInDWord(dWord: i64, nth: i64): i32 {
-    let r: i64 = nth;
-    let s: i64 = 0;
-    let t: i64 = 0;
-
-    /* eslint-disable @typescript-eslint/no-loss-of-precision */
-    const a: i64 = dWord - ((dWord >> 1) & 0x5555555555555555);
-    const b: i64 = (a & 0x3333333333333333) + ((a >> 2) & 0x3333333333333333);
-    const c: i64 = (b + (b >> 4)) & 0x0f0f0f0f0f0f0f0f;
-    const d: i64 = (c + (c >> 8)) & 0x00ff00ff00ff00ff;
-    /* eslint-enable @typescript-eslint/no-loss-of-precision */
-    t = ((d >> 32) + (d >> 48));
-    // Now do branchless select!
-    s = 64;
-    s -= ((t - r) & 256) >> 3;
-    r -= (t & ((t - r) >> 8));
-    t = ((d >> (s - 16)) & 0xff);
-
-    s -= ((t - r) & 256) >> 4;
-    r -= (t & ((t - r) >> 8));
-    t = (c >> (s - 8)) & 0xf;
-
-    s -= ((t - r) & 256) >> 5;
-    r -= (t & ((t - r) >> 8));
-    t = (b >> (s - 4)) & 0x7;
-
-    s -= ((t - r) & 256) >> 6;
-    r -= (t & ((t - r) >> 8));
-    t = (a >> (s - 2)) & 0x3;
-
-    s -= ((t - r) & 256) >> 7;
-    r -= (t & ((t - r) >> 8));
-    t = (dWord >> (s - 1)) & 0x1;
-
-    s -= ((t - r) & 256) >> 8;
-    return (64 - s) as i32;
+function get1PosInDWord(dWord: i64, nth: i32): i32 {
+    const first: i32 = (dWord >> 32) as i32;
+    const pcntf: i32 = popcnt<i32>(first);
+    let word: i32 = 0;
+    let pos: i32 = -1;
+    if (pcntf >= nth) {
+        word = first;
+    } else {
+        word = (dWord & 0xFFFFFFFF) as i32;
+        nth -= pcntf;
+        pos = 31;
+    }
+    let shift: i32 = 0;
+    do {
+        shift = clz<i32>(word) + 1;
+        word <<= shift;
+        pos += shift;
+        nth -= 1;
+    } while (nth);
+    return pos;
 }
 
 /**

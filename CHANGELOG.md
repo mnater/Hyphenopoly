@@ -5,6 +5,7 @@
 *   Added documentation for using .wasm modules outside Hyphenopoly
 ### Fixed
 *   Perf: improve select and rank (64Bit load and popcnt)
+*   Perf: improve get1PosInDWord
 
 ## Version 5.0.0-beta-3 (2022-01-08)
 ### Doc
