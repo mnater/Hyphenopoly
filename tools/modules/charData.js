@@ -1,8 +1,8 @@
 /* eslint-disable security/detect-object-injection */
 /* eslint-disable require-jsdoc */
 /* eslint-env node */
-"use strict";
-function charData() {
+
+export default function charData() {
     const data = [];
     return {
         "add"(translatedCC) {
@@ -16,4 +16,3 @@ function charData() {
         }
     };
 }
-module.exports = charData();

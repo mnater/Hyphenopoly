@@ -1,9 +1,8 @@
 /* eslint-disable security/detect-object-injection */
 /* eslint-disable require-jsdoc */
 /* eslint-env node */
-"use strict";
 
-function trie() {
+export default function trie() {
     function createTrieNode(childCount, level, value) {
         return {
             childCount,
@@ -18,7 +17,7 @@ function trie() {
         if (atLevel === null) {
             atLevel = data.root;
         }
-        if (Object.prototype.hasOwnProperty.call(atLevel, char)) {
+        if (Object.hasOwn(atLevel, char)) {
             atLevel[char].value = value || atLevel[char].value;
         } else {
             atLevel.childCount += 1;
@@ -58,4 +57,3 @@ function trie() {
         breadthFirstIteration
     };
 }
-module.exports = trie();

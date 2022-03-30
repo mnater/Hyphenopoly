@@ -39,7 +39,7 @@ OLDSIZE=$(wc -c < ../$LANG.wasm)
 #asc hyphenEngine.ts -O3z --converge --noExportMemory -b ../$LANG.wasm
 #CODESIZE=$(wc -c < ../$LANG.wasm)
 #echo "codesize:    $CODESIZE"
-asc hyphenEngine.ts -O3z --converge --noExportMemory --transform ./mytransform.js -b ../$LANG.wasm
+asc hyphenEngine.ts -O3z --converge --noExportMemory --transform ./mytransform.js -o ../$LANG.wasm
 NEWSIZE=$(wc -c < ../$LANG.wasm)
 #gzip -k -9 ../$LANG.wasm
 #ZIPPED=$(wc -c < ../$LANG.wasm.gz)

@@ -21,9 +21,8 @@
  * # node createWasmData.js <lang>.json data-outname globals-outname
  */
 
-"use strict";
-const fs = require("fs");
-const strie = require("./modules/sTrie.js");
+import fs from "fs";
+import strie from "./modules/sTrie.js";
 const rawInput = fs.readFileSync(process.argv[2]);
 const input = JSON.parse(rawInput);
 

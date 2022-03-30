@@ -1,8 +1,8 @@
 /* eslint-disable security/detect-object-injection */
 /* eslint-disable require-jsdoc */
 /* eslint-env node */
-"use strict";
-function bits() {
+
+export default function bits() {
     const data = [];
 
     function rank1(pos) {
@@ -87,4 +87,3 @@ function bits() {
         select0
     };
 }
-module.exports = bits;

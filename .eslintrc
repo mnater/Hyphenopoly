@@ -134,7 +134,7 @@
       }
     },
     {
-      "files": ["*.module.js", "*.deno.js", "example.js", "test/*"],
+      "files": ["*.module.js", "*.deno.js", "example.js", "test/*", "tools/**", "src/*"],
       "parserOptions": {
         "sourceType": "module"
       }
