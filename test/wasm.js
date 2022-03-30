@@ -25,7 +25,7 @@ t.test("load module", async(t) => {
     });
     t.test("check filesize", async(t) => {
         return t.ok(
-            hyphenEngine.buffer.byteLength <= 78992,
+            hyphenEngine.buffer.byteLength <= 78996,
             "update when de.wasm changes"
         );
     });

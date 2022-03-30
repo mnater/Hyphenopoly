@@ -45,15 +45,59 @@ strie.build(input.chr);
 
 const strieDat = strie.dump();
 
+/**
+ * Aligns a byteoffset such that byteoffset mod align === 0
+ * Align is 1 = 8bit, 2 = 16bit, 4 = 32bit or 8 = 64bit
+ * @param {number} offset - offset before alignment
+ * @param {number} align - number of bytes
+ * @return {number}
+ */
+function alignOffsetTo(offset, align) {
+    switch (align) {
+    case 1:
+        return offset;
+    case 2:
+        return offset + (offset % 2);
+    case 4:
+        return offset + ((4 - (offset % 4)) % 4);
+    case 8:
+        return offset + ((8 - (offset % 8)) % 8);
+    default:
+        // eslint-disable-next-line no-console
+        console.log("Alignment error");
+        return null;
+    }
+}
+
 const licenseOffset = 0;
-const alphabetOffset = licenseOffset + license.buffer.byteLength;
-const bitMapOffset = alphabetOffset + alphabet.buffer.byteLength;
-const charMapOffset = bitMapOffset + strieDat.bits.buffer.byteLength;
-const hasValueOffset = charMapOffset + strieDat.chars.buffer.byteLength;
-const valuemapOffset = hasValueOffset + strieDat.hasValueBits.buffer.byteLength;
-const valuesOffset = valuemapOffset + strieDat.valuesBitMap.buffer.byteLength;
-let dataEndOffset = valuesOffset + strieDat.values.buffer.byteLength;
-dataEndOffset += (4 - (dataEndOffset % 4));
+const alphabetOffset = alignOffsetTo(
+    licenseOffset + license.buffer.byteLength,
+    2
+);
+const bitMapOffset = alignOffsetTo(
+    alphabetOffset + alphabet.buffer.byteLength,
+    8
+);
+const charMapOffset = alignOffsetTo(
+    bitMapOffset + strieDat.bits.buffer.byteLength,
+    1
+);
+const hasValueOffset = alignOffsetTo(
+    charMapOffset + strieDat.chars.buffer.byteLength,
+    8
+);
+const valuemapOffset = alignOffsetTo(
+    hasValueOffset + strieDat.hasValueBits.buffer.byteLength,
+    8
+);
+const valuesOffset = alignOffsetTo(
+    valuemapOffset + strieDat.valuesBitMap.buffer.byteLength,
+    1
+);
+const dataEndOffset = alignOffsetTo(
+    valuesOffset + strieDat.values.buffer.byteLength,
+    4
+);
 
 /*
  * Log data
@@ -81,6 +125,7 @@ fs.writeFileSync(process.argv[3], output);
 let imports = "";
 const dataOffset = 1920;
 imports += `export const ao: i32 = ${alphabetOffset + dataOffset};\n`;
+imports += `export const as: i32 = ${alphabet.length};\n`;
 imports += `export const bm: i32 = ${bitMapOffset + dataOffset};\n`;
 imports += `export const cm: i32 = ${charMapOffset + dataOffset};\n`;
 imports += `export const hv: i32 = ${hasValueOffset + dataOffset};\n`;

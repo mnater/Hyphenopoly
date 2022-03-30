@@ -400,7 +400,7 @@ module.exports = { text: hyphenateText, html: hyphenateHtml }
 
 ## Usage of <lang>.wasm Modules outside Hyphenopoly
 The Webassembly-modules provide some basic, language specific hyphenation
-functionality (hyphenation of a singel word). These modules can be used in any
+functionality (hyphenation of a single word). These modules can be used in any
 system that supports instantiation and execution of Webassembly.
 
 The following example shows how to interact with the module in Python:

@@ -36,9 +36,11 @@ echo "$LANG\c" > ./lang/$LANG/src/lang.txt
 echo '(E) compile WASM-Module'
 cd ./lang/$LANG/src/
 OLDSIZE=$(wc -c < ../$LANG.wasm)
+#asc hyphenEngine.ts -O3z --converge --noExportMemory -b ../$LANG.wasm
+#CODESIZE=$(wc -c < ../$LANG.wasm)
+#echo "codesize:    $CODESIZE"
 asc hyphenEngine.ts -O3z --converge --noExportMemory --transform ./mytransform.js -b ../$LANG.wasm
 NEWSIZE=$(wc -c < ../$LANG.wasm)
-CODESIZE="$(($NEWSIZE-$(wc -c < $LANG.data)))"
 #gzip -k -9 ../$LANG.wasm
 #ZIPPED=$(wc -c < ../$LANG.wasm.gz)
 #rm ../$LANG.wasm.gz
@@ -46,5 +48,5 @@ echo "(F) install $LANG"
 cd ../../../
 cp ./lang/$LANG/$LANG.wasm ./patterns/$LANG.wasm
 echo "size before: $OLDSIZE"
-echo "size now:    $NEWSIZE ($CODESIZE Bytes optimized wasm code)"
+echo "size now:    $NEWSIZE"
 #echo "zpped size:  $ZIPPED"

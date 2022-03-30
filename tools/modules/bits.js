@@ -56,11 +56,28 @@ function bits() {
         return ret;
     }
 
+    function asUint8ArraySwapped() {
+        const bitString = data.join("");
+        let pos = 0;
+        const bytes = [];
+        while (pos < bitString.length) {
+            bytes.push(parseInt(bitString.substr(pos, 8).padEnd(8, "0"), 2));
+            pos += 8;
+        }
+        const swapped = [];
+        bytes.forEach((val, k) => {
+            swapped[(k - (k % 8) + 7) - (k % 8)] = val;
+        });
+        const ret = Uint8Array.from(swapped);
+        return ret;
+    }
+
     return {
         "add"(bit) {
             data.push(bit);
         },
         asUint8Array,
+        asUint8ArraySwapped,
         countChildren,
         "get"(idx) {
             return data[idx];
