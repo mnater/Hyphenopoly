@@ -49,7 +49,7 @@ function bits() {
         let pos = 0;
         const bytes = [];
         while (pos < bitString.length) {
-            bytes.push(parseInt(bitString.substr(pos, 8).padEnd(8, "0"), 2));
+            bytes.push(parseInt(bitString.slice(pos, pos + 8).padEnd(8, "0"), 2));
             pos += 8;
         }
         const ret = Uint8Array.from(bytes);
@@ -61,7 +61,7 @@ function bits() {
         let pos = 0;
         const bytes = [];
         while (pos < bitString.length) {
-            bytes.push(parseInt(bitString.substr(pos, 8).padEnd(8, "0"), 2));
+            bytes.push(parseInt(bitString.slice(pos, pos + 8).padEnd(8, "0"), 2));
             pos += 8;
         }
         const swapped = [];
