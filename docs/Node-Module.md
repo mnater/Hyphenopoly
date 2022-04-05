@@ -16,9 +16,9 @@ npm install hyphenopoly
 One language:
 
 ````javascript
-const Hyphenopoly = require("hyphenopoly");
+import hyphenopoly from "hyphenopoly";
 
-const textHyphenators = Hyphenopoly.config({
+const textHyphenators = hyphenopoly.config({
     "require": ["en-us"],
     "hyphen": "•"
 });
@@ -37,9 +37,9 @@ textHyphenators.then(
 More then one language:
 
 ````javascript
-const Hyphenopoly = require("hyphenopoly");
+import hyphenopoly from "hyphenopoly";
 
-const textHyphenators = Hyphenopoly.config({
+const textHyphenators = hyphenopoly.config({
     "require": ["de", "en-us"],
     "hyphen": "•"
 });
@@ -59,11 +59,11 @@ textHyphenators.get("en-us").then(
 
 ## Synchronous mode
 
-By default, `Hyphenopoly.config` returns a promise (or a `Map` of promises). Some code bases are not yet capable of handling async code.
+By default, `hyphenopoly.config` returns a promise (or a `Map` of promises). Some code bases are not yet capable of handling async code.
 By setting `"sync" : true` the hyphenopoly module switches to a sync mode.
 
 ````javascript
-const hyphenopoly = require("hyphenopoly");
+import hyphenopoly from "hyphenopoly";
 
 const hyphenator = hyphenopoly.config({
     "sync": true,
@@ -139,9 +139,9 @@ For documentation about the other options see the `Hyphenopoly.js`-documentation
 ## Supported languages (since Version 2.8.0)
 A list of supported languages can be programmatically obtained by looking at `Hyphenopoly.supportedLanguages`:
 ````javascript
-const Hyphenopoly = require("hyphenopoly");
-Hyphenopoly.supportedLanguages.includes("en-us"); //true
-Hyphenopoly.supportedLanguages.includes("en"); //false
+import hyphenopoly from "hyphenopoly";
+hyphenopoly.supportedLanguages.includes("en-us"); //true
+hyphenopoly.supportedLanguages.includes("en"); //false
 ````
 
 ## Performance
