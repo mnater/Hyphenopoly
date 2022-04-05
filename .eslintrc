@@ -97,6 +97,10 @@
     ],
     "no-ternary": 0,
     "no-nested-ternary": 0,
+    "no-restricted-properties": [
+      "error",
+      { "property": "substr", "message": "Use .slice instead of .substr." }
+    ],
     "prefer-destructuring": 0,
     "max-params": [
       1,
