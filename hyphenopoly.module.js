@@ -8,13 +8,17 @@
  */
 
 /* eslint-env node */
-"use strict";
+
+import {dirname} from "path";
+import {fileURLToPath} from "url";
 
 /*
  * Use 'fs' in node environment and fallback to http if the module gets executed
  * in a browser environment (e.g. browserified)
  */
-let loader = require("fs");
+import loader from "fs";
+
+const cwd = dirname(fileURLToPath(import.meta.url));
 
 const decode = (() => {
     const utf16ledecoder = new TextDecoder("utf-16le");
@@ -32,6 +36,7 @@ const empty = () => {
 };
 
 const H = empty();
+
 H.binaries = new Map();
 
 H.supportedLanguages = [
@@ -122,13 +127,15 @@ function readFile(file, cb, sync) {
         loader.readFile(file, cb);
         /* eslint-enable security/detect-non-literal-fs-filename */
     } else {
-        loader.get(file, (res) => {
-            const rawData = [];
-            res.on("data", (chunk) => {
-                rawData.push(chunk);
-            });
-            res.on("end", () => {
-                cb(null, Buffer.concat(rawData));
+        import("https").then((https) => {
+            https.get(file, (res) => {
+                const rawData = [];
+                res.on("data", (chunk) => {
+                    rawData.push(chunk);
+                });
+                res.on("end", () => {
+                    cb(null, Buffer.concat(rawData));
+                });
             });
         });
     }
@@ -647,7 +654,7 @@ H.config = ((userConfig) => {
         ["orphanControl", 1],
         [
             "paths", createMapWithDefaults(
-                new Map([["maindir", `${__dirname}/`], ["patterndir", `${__dirname}/patterns/`]])
+                new Map([["maindir", `${cwd}/`], ["patterndir", `${cwd}/patterns/`]])
             )
         ],
         ["require", []],
@@ -679,9 +686,6 @@ H.config = ((userConfig) => {
         }
     });
     H.c = settings;
-    if (H.c.loader === "https") {
-        loader = require("https");
-    }
     if (H.c.handleEvent) {
         Object.entries(H.c.handleEvent).forEach(([name, fn]) => {
             H.events.addListener(name, fn);
@@ -724,4 +728,4 @@ H.config = ((userConfig) => {
         : result;
 });
 
-module.exports = H;
+export default H;

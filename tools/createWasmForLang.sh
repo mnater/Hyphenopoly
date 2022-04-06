@@ -24,13 +24,8 @@ node ./tools/createWasmData.js ./lang/$LANG/src/$LANG.json ./lang/$LANG/src/$LAN
 echo '(D) copy TypeScript sources'
 cp ./src/hyphenEngine.ts ./lang/$LANG/src/hyphenEngine.ts
 cp ./src/mytransform.js ./lang/$LANG/src/mytransform.js
+cp ./src/tsconfig.json ./lang/$LANG/src/tsconfig.json
 
-echo '{
-    "extends": "../../../node_modules/assemblyscript/std/assembly.json",
-    "include": [
-      "./*.ts"
-    ]
-}' > ./lang/$LANG/src/tsconfig.json
 echo "$LANG\c" > ./lang/$LANG/src/lang.txt
 
 echo '(E) compile WASM-Module'
@@ -39,7 +34,9 @@ OLDSIZE=$(wc -c < ../$LANG.wasm)
 #asc hyphenEngine.ts -O3z --converge --noExportMemory -b ../$LANG.wasm
 #CODESIZE=$(wc -c < ../$LANG.wasm)
 #echo "codesize:    $CODESIZE"
-asc hyphenEngine.ts -O3z --converge --noExportMemory --transform ./mytransform.js -b ../$LANG.wasm
+
+asc hyphenEngine.ts -O3z --converge --noExportMemory --disable bulk-memory --transform ./mytransform.js -o ../$LANG.wasm
+
 NEWSIZE=$(wc -c < ../$LANG.wasm)
 #gzip -k -9 ../$LANG.wasm
 #ZIPPED=$(wc -c < ../$LANG.wasm.gz)

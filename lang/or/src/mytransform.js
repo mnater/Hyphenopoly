@@ -2,9 +2,9 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
 /* eslint-env node */
 
-"use strict";
-const {Transform} = require("assemblyscript/cli/transform");
-const fs = require("fs");
+import {Transform} from "assemblyscript/transform";
+import fs from "fs";
+
 const lang = fs.readFileSync("./lang.txt", "utf8");
 const data = fs.readFileSync(`./${lang}.data`);
 
@@ -21,7 +21,7 @@ const heapSizeBytes = Math.max(
  */
 const heapSizePages = (heapSizeBytes / 1024 / 64);
 
-class MyTransform extends Transform {
+export default class MyTransform extends Transform {
     afterCompile(asModule) {
         this.log("  [mytransform.js] add data (" + dataSize + " Bytes)");
         asModule.setMemory(heapSizePages, -1, "mem", [
@@ -32,5 +32,3 @@ class MyTransform extends Transform {
         ]);
     }
 }
-
-module.exports = MyTransform;

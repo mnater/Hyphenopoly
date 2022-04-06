@@ -1,22 +1,22 @@
 /* eslint-env node */
 /* eslint global-require: 0, func-names: 0, no-shadow: 0 */
 /* eslint-disable prefer-arrow-callback */
-"use strict";
 
-const t = require("tap");
+import t from "tap";
+
+/**
+ * Imports and returns the defaults of the hyphenopoly module.
+ * Circumvents module caching by appending a query to the URL
+ * LEAKS MEMORY!
+ */
+async function freshImport() {
+    const {"default": H9Y} = await import(`../hyphenopoly.module.js?update=${Date.now()}`);
+    return H9Y;
+}
 
 t.test("set options: compound", function (t) {
-    let H9Y = null;
-    t.beforeEach(function setup() {
-        H9Y = require("../hyphenopoly.module");
-    });
-
-    t.afterEach(function tearDown() {
-        H9Y = null;
-        delete require.cache[require.resolve("../hyphenopoly.module")];
-    });
-
     t.test("compound: all", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "compound": "all",
             "hyphen": "•",
@@ -26,6 +26,7 @@ t.test("set options: compound", function (t) {
         t.end();
     });
     t.test("compound: auto", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "compound": "auto",
             "hyphen": "•",
@@ -35,6 +36,7 @@ t.test("set options: compound", function (t) {
         t.end();
     });
     t.test("compound: hyphen", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "compound": "hyphen",
             "hyphen": "•",
@@ -44,6 +46,7 @@ t.test("set options: compound", function (t) {
         t.end();
     });
     t.test("compound: auto, one part too small", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "compound": "auto",
             "hyphen": "•",
@@ -53,6 +56,7 @@ t.test("set options: compound", function (t) {
         t.end();
     });
     t.test("compound: all, one part too small", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "compound": "all",
             "hyphen": "•",
@@ -65,17 +69,8 @@ t.test("set options: compound", function (t) {
 });
 
 t.test("set options: exceptions", function (t) {
-    let H9Y = null;
-    t.beforeEach(function setup() {
-        H9Y = require("../hyphenopoly.module");
-    });
-
-    t.afterEach(function tearDown() {
-        H9Y = null;
-        delete require.cache[require.resolve("../hyphenopoly.module")];
-    });
-
     t.test("exceptions: global (only)", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "exceptions": {"global": "Silben-trennung"},
             "hyphen": "•",
@@ -85,6 +80,7 @@ t.test("set options: exceptions", function (t) {
         t.end();
     });
     t.test("exceptions: global and lang", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "exceptions": {
                 "de": "Algo-rithmus",
@@ -97,6 +93,7 @@ t.test("set options: exceptions", function (t) {
         t.end();
     });
     t.test("exceptions: double entry", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "exceptions": {"de": "Algo-rithmus, Algo-rithmus"},
             "hyphen": "•",
@@ -106,6 +103,7 @@ t.test("set options: exceptions", function (t) {
         t.end();
     });
     t.test("exceptions: double entry", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "require": ["en-us"]
@@ -117,17 +115,8 @@ t.test("set options: exceptions", function (t) {
 });
 
 t.test("set options: hyphen", function (t) {
-    let H9Y = null;
-    t.beforeEach(function setup() {
-        H9Y = require("../hyphenopoly.module");
-    });
-
-    t.afterEach(function tearDown() {
-        H9Y = null;
-        delete require.cache[require.resolve("../hyphenopoly.module")];
-    });
-
     t.test("hyphen: •", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "require": ["de"]
@@ -136,6 +125,7 @@ t.test("set options: hyphen", function (t) {
         t.end();
     });
     t.test("hyphen: |", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "|",
             "require": ["de"]
@@ -147,17 +137,8 @@ t.test("set options: hyphen", function (t) {
 });
 
 t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
-    let H9Y = null;
-    t.beforeEach(function setup() {
-        H9Y = require("../hyphenopoly.module");
-    });
-
-    t.afterEach(function tearDown() {
-        H9Y = null;
-        delete require.cache[require.resolve("../hyphenopoly.module")];
-    });
-
     t.test("left-/rightmin: 4, 5", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "leftmin": 4,
@@ -169,6 +150,7 @@ t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
     });
 
     t.test("left-/rightminPerLang: 4, 5", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "leftminPerLang": {
@@ -186,17 +168,8 @@ t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
 });
 
 t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
-    let H9Y = null;
-    t.beforeEach(function setup() {
-        H9Y = require("../hyphenopoly.module");
-    });
-
-    t.afterEach(function tearDown() {
-        H9Y = null;
-        delete require.cache[require.resolve("../hyphenopoly.module")];
-    });
-
     t.test("left-/rightmin: 2, 2", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "leftmin": 2,
@@ -208,6 +181,7 @@ t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
     });
 
     t.test("left-/rightmin: def, def", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "require": ["pt"]
@@ -219,17 +193,8 @@ t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
 });
 
 t.test("set options: minWordLength", function (t) {
-    let H9Y = null;
-    t.beforeEach(function setup() {
-        H9Y = require("../hyphenopoly.module");
-    });
-
-    t.afterEach(function tearDown() {
-        H9Y = null;
-        delete require.cache[require.resolve("../hyphenopoly.module")];
-    });
-
     t.test("minWordLength: 7", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "minWordLength": 7,
@@ -242,17 +207,8 @@ t.test("set options: minWordLength", function (t) {
 });
 
 t.test("set options: mixedCase", function (t) {
-    let H9Y = null;
-    t.beforeEach(function setup() {
-        H9Y = require("../hyphenopoly.module");
-    });
-
-    t.afterEach(function tearDown() {
-        H9Y = null;
-        delete require.cache[require.resolve("../hyphenopoly.module")];
-    });
-
     t.test("mixedCase: false", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "mixedCase": false,
@@ -265,17 +221,8 @@ t.test("set options: mixedCase", function (t) {
 });
 
 t.test("set options: normalize", function (t) {
-    let H9Y = null;
-    t.beforeEach(function setup() {
-        H9Y = require("../hyphenopoly.module");
-    });
-
-    t.afterEach(function tearDown() {
-        H9Y = null;
-        delete require.cache[require.resolve("../hyphenopoly.module")];
-    });
-
     t.test("normalize: true", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "normalize": true,
@@ -288,17 +235,8 @@ t.test("set options: normalize", function (t) {
 });
 
 t.test("set options: orphanControl", function (t) {
-    let H9Y = null;
-    t.beforeEach(function setup() {
-        H9Y = require("../hyphenopoly.module");
-    });
-
-    t.afterEach(function tearDown() {
-        H9Y = null;
-        delete require.cache[require.resolve("../hyphenopoly.module")];
-    });
-
     t.test("orphanControl: 1 (default)", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "require": ["de"]
@@ -307,6 +245,7 @@ t.test("set options: orphanControl", function (t) {
         t.end();
     });
     t.test("orphanControl: 2", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "orphanControl": 2,
@@ -316,6 +255,7 @@ t.test("set options: orphanControl", function (t) {
         t.end();
     });
     t.test("orphanControl: 2, hyphen: |", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "|",
             "orphanControl": 2,
@@ -325,6 +265,7 @@ t.test("set options: orphanControl", function (t) {
         t.end();
     });
     t.test("orphanControl: 3", async function (t) {
+        const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "orphanControl": 3,

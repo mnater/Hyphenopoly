@@ -24,8 +24,7 @@
  * # node tex2json.js chr.txt hyp.txt lic.txt pat.txt outname
  */
 
-"use strict";
-const fs = require("fs");
+import fs from "fs";
 const chrFileContent = fs.readFileSync(process.argv[2], "utf8").trim();
 const hypFileContent = fs.readFileSync(process.argv[3], "utf8").trim();
 const licFileContent = fs.readFileSync(process.argv[4], "utf8").trim();

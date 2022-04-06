@@ -12,17 +12,20 @@
  * STrie.dump() -> Uint8Array
  */
 
-"use strict";
-function sTrie() {
-    const trie = require("./trie.js");
-    const bits = require("./bits.js")();
+import bitArray from "./bits.js";
+import charData from "./charData.js";
+import trieStructure from "./trie.js";
+
+export default (function sTrie() {
+    const bits = bitArray();
+    const trie = trieStructure();
     bits.add(1);
     bits.add(0);
-    const hasValueBits = require("./bits.js")();
-    const chars = require("./charData.js");
+    const hasValueBits = bitArray();
+    const chars = charData();
 
     const valueStore = (() => {
-        const valuesBitMap = require("./Bits.js")();
+        const valuesBitMap = bitArray();
         valuesBitMap.add(0);
         const values = [];
 
@@ -196,6 +199,4 @@ function sTrie() {
         dump,
         lookup
     };
-}
-
-module.exports = sTrie();
+}());

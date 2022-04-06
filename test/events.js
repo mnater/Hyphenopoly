@@ -1,20 +1,21 @@
 /* eslint-env node */
 /* eslint global-require: 0, func-names: 0, no-shadow: 0 */
 /* eslint-disable prefer-arrow-callback */
-"use strict";
-const t = require("tap");
 
-let H9Y = null;
-t.beforeEach(function setup() {
-    H9Y = require("../hyphenopoly.module");
-});
+import t from "tap";
 
-t.afterEach(function tearDown() {
-    H9Y = null;
-    delete require.cache[require.resolve("../hyphenopoly.module")];
-});
+/**
+ * Imports and returns the defaults of the hyphenopoly module.
+ * Circumvents module caching by appending a query to the URL
+ * LEAKS MEMORY!
+ */
+async function freshImport() {
+    const {"default": H9Y} = await import(`../hyphenopoly.module.js?update=${Date.now()}`);
+    return H9Y;
+}
 
 t.test("set Event", async function (t) {
+    const H9Y = await freshImport();
     await H9Y.config({
         "handleEvent": {
 
@@ -33,6 +34,7 @@ t.test("set Event", async function (t) {
 });
 
 t.test("set unknown event", async function (t) {
+    const H9Y = await freshImport();
     await H9Y.config({
         "handleEvent": {
 
@@ -51,6 +53,7 @@ t.test("set unknown event", async function (t) {
 });
 
 t.test("try to overwrite noncancellable event", async function (t) {
+    const H9Y = await freshImport();
     await H9Y.config({
         "handleEvent": {
 

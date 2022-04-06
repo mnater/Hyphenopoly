@@ -1,20 +1,21 @@
 /* eslint-env node */
 /* eslint global-require: 0, func-names: 0, no-shadow: 0 */
 /* eslint-disable prefer-arrow-callback */
-"use strict";
-const t = require("tap");
 
-let H9Y = null;
-t.beforeEach(function setup() {
-    H9Y = require("../hyphenopoly.module");
-});
+import t from "tap";
 
-t.afterEach(function tearDown() {
-    H9Y = null;
-    delete require.cache[require.resolve("../hyphenopoly.module")];
-});
+/**
+ * Imports and returns the defaults of the hyphenopoly module.
+ * Circumvents module caching by appending a query to the URL
+ * LEAKS MEMORY!
+ */
+async function freshImport() {
+    const {"default": H9Y} = await import(`../hyphenopoly.module.js?update=${Date.now()}`);
+    return H9Y;
+}
 
 t.test("run config with one language", async function (t) {
+    const H9Y = await freshImport();
     const deHyphenator = await H9Y.config({"require": ["de"]});
     t.test("return a function", function (t) {
         t.equal(typeof deHyphenator, "function", typeof deHyphenator);
@@ -32,6 +33,7 @@ t.test("run config with one language", async function (t) {
 });
 
 t.test("substitue characters", async function (t) {
+    const H9Y = await freshImport();
     const deHyphenator = await H9Y.config({
         "require": ["de"],
         "substitute": {
@@ -48,6 +50,7 @@ t.test("substitue characters", async function (t) {
 });
 
 t.test("substitue characters unicase", async function (t) {
+    const H9Y = await freshImport();
     const deHyphenator = await H9Y.config({
         "require": ["en-us"],
         "substitute": {
@@ -70,6 +73,7 @@ t.test("substitue characters unicase", async function (t) {
 });
 
 t.test("try to hyphenate a word outside alphabet", async function (t) {
+    const H9Y = await freshImport();
     const deHyphenator = await H9Y.config({"require": ["de"]});
     t.test("hyphenate ångström", function (t) {
         t.equal(deHyphenator("ångström"), "ångström", deHyphenator("ångström"));
@@ -79,6 +83,7 @@ t.test("try to hyphenate a word outside alphabet", async function (t) {
 });
 
 t.test("force .wasm.hyphenate to return 0", async function (t) {
+    const H9Y = await freshImport();
     const deHyphenator = await H9Y.config({"require": ["de"]});
     // eslint-disable-next-line prefer-regex-literals
     H9Y.languages.get("de").reNotAlphabet = RegExp("[^abcdefghijklmnopqrstuvwxyzåäöüßſ‌-]", "gi");
@@ -90,6 +95,7 @@ t.test("force .wasm.hyphenate to return 0", async function (t) {
 });
 
 t.test("disable Webassembly.Globals", async function (t) {
+    const H9Y = await freshImport();
     const wag = WebAssembly.Global;
     WebAssembly.Global = null;
     const deHyphenator = await H9Y.config({"require": ["de"]});
@@ -102,6 +108,7 @@ t.test("disable Webassembly.Globals", async function (t) {
 });
 
 t.test("run config with two languages", async function (t) {
+    const H9Y = await freshImport();
     const hyphenators = await H9Y.config({"require": ["de", "en-us"]});
     t.test("return a Map", function (t) {
         t.type(hyphenators, Map);
@@ -141,6 +148,7 @@ t.test("run config with two languages", async function (t) {
 });
 
 t.test("run config with two same languages", async function (t) {
+    const H9Y = await freshImport();
     const deHyphenator2 = await H9Y.config({"require": ["de", "de"]});
     t.test("return a function", function (t) {
         t.equal(typeof deHyphenator2, "function", typeof deHyphenator2);
@@ -157,7 +165,8 @@ t.test("run config with two same languages", async function (t) {
     t.end();
 });
 
-t.test("execute synchronically with one language", function (t) {
+t.test("execute synchronically with one language", async function (t) {
+    const H9Y = await freshImport();
     const deHyphenator = H9Y.config({
         "require": ["de"],
         "sync": true
@@ -177,7 +186,8 @@ t.test("execute synchronically with one language", function (t) {
     t.end();
 });
 
-t.test("execute synchronically with two languages", function (t) {
+t.test("execute synchronically with two languages", async function (t) {
+    const H9Y = await freshImport();
     const hyphenators = H9Y.config({
         "require": ["de", "en-us"],
         "sync": true

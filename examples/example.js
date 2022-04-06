@@ -1,9 +1,10 @@
 // For RunKit:
-const hyphenopoly = require("hyphenopoly");
+// import hyphenopoly from "hyphenopoly";
 
+import hyphenopoly from "../hyphenopoly.module.js";
 
 // For local node:
-// const hyphenopoly = require("../hyphenopoly.module.js");
+// import hyphenopoly from "../hyphenopoly.module.js";
 
 const hyphenator = hyphenopoly.config({
     "exceptions": {

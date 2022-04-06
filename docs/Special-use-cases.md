@@ -1,80 +1,14 @@
 # Special use cases and how-to's
 
-1.  [Browserify hyphenopoly.module.js](#browserify-hyphenopolymodulejs)
-2.  [Webpack, using hyphenopoly.module.js](#webpack-hyphenopoly-module)
-3.  [Webpack, using Hyphenopoly_Loader.js](#webpack-hyphenopoly-loader)
-4.  [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
-5.  [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
-6.  [Words containing special format characters](#format-chars)
-7.  [Hyphenate HTML-Strings using using hyphenopoly.module.js](#hyphenate-html-strings-using-hyphenopolymodulejs)
-8.  [Usage of .wasm Modules outside Hyphenopoly](#usage-of-wasm-modules-outside-hyphenopoly)
+1.  [Webpack, using hyphenopoly.module.js](#webpack-hyphenopoly-module)
+1.  [Webpack, using Hyphenopoly_Loader.js](#webpack-hyphenopoly-loader)
+1.  [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
+1.  [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
+1.  [Words containing special format characters](#format-chars)
+1.  [Hyphenate HTML-Strings using using hyphenopoly.module.js](#hyphenate-html-strings-using-hyphenopolymodulejs)
+1.  [Usage of .wasm Modules outside Hyphenopoly](#usage-of-wasm-modules-outside-hyphenopoly)
 
 **Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators.md#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.**
-
-## Browserify hyphenopoly.module.js
-
-**Note: A browserifyed hyphenopoly.module.js is by far larger then the Hyphenopoly_Loader.js and Hyphenopoly.js scripts which are optimized for usage in browsers.**
-
-### Basic setup
-
-Create a npm project:
-
-```Shell
-npm init
-```
-
-Install browserify as devDependency
-
-```Shell
-npm install --save-dev browserify
-```
-
-Install hyphenopoly
-
-```Shell
-npm install hyphenopoly
-```
-
-Setup hyphenopoly in main.js. Make sure to set the loader to "http" since browserify will not shim the "fs" module:
-
-```javascript
-"use strict";
-
-const hyphenopoly = require("hyphenopoly");
-
-const hyphenator = hyphenopoly.config({
-  require: ["de", "en-us"],
-  paths: {
-    maindir: "./node_modules/hyphenopoly/",
-    patterndir: "./node_modules/hyphenopoly/patterns/"
-  },
-  hyphen: "•",
-  loader: "https"
-});
-
-async function hyphenate_en(text) {
-  const hyphenateText = await hyphenator.get("en-us");
-  console.log(hyphenateText(text));
-}
-
-async function hyphenate_de(text) {
-  const hyphenateText = await hyphenator.get("de");
-  console.log(hyphenateText(text));
-}
-
-hyphenate_en("hyphenation enhances justification.");
-hyphenate_de("Silbentrennung verbessert den Blocksatz.");
-```
-
-Transform the module
-
-```Shell
-browserify main.js -o bundle.js
-```
-
-This will generate the script-file `bundle.js`. Usage of a minifying tool (e.g. [tinyify](https://github.com/browserify/tinyify)) is recommended.
-
-_Note:_ Make sure the directories referenced in `paths` are available.
 
 ## Webpack, using hyphenopoly.module.js {#webpack-hyphenopoly-module}
 
@@ -82,17 +16,17 @@ _Note:_ Make sure the directories referenced in `paths` are available.
 
 **Note2: I am not a webpack expert. The following works for Webpack 5.4.0, but may not be the best way to use hyphenopoly.module.js in webpack.**
 
-Like `browserify`, `webpack` will not shim "fs". Thus we have to tell `webpack` to shim the "fs" module with an empty object and how to polyfill other node-specific functions. And we configure `hyphenopoly` to use the "https"-loader.
+`Webpack` will not shim "fs". Thus we have to tell `webpack` to shim the "fs" module with an empty object and how to polyfill other node-specific functions. And we configure `hyphenopoly` to use the "https"-loader.
 
 webpack.config.js
 
 ```javascript
+const path = require("path");
+const webpack = require("webpack");
+
 module.exports = {
-  const path = require("path");
-  const webpack = require("webpack");
-  module.exports = {
     mode: "production",
-    entry: "./src/index.js",
+    entry: "./index.js",
     output: {
       filename: "main.js",
       path: path.resolve(__dirname, "dist")
@@ -110,19 +44,17 @@ module.exports = {
       fallback: { 
         "fs": false,
         "https": require.resolve("https-browserify"),
-        "http": require.resolve("stream-http")
+        "http": require.resolve("stream-http"),
+        "url": require.resolve("url/")
       }
     }
-  };
 };
 ```
 
 index.js
 
 ```javascript
-"use strict";
-
-const hyphenopoly = require("hyphenopoly");
+import hyphenopoly from "hyphenopoly";
 
 const hyphenator = hyphenopoly.config({
     "require": ["de", "en-us"],
@@ -149,7 +81,7 @@ async function addDiv(lang, text) {
 
 ## Webpack, using Hyphenopoly_Loader.js {#webpack-hyphenopoly-loader}
 
-If you’re working in a browser environment you can add the required files, such as Hyphenopoly.js and the essential patterns, by copying them with the [copy-webpack-plugin](https://www.npmjs.com/package/copy-webpack-plugin) into your distribution folder.
+If you're working in a browser environment you can add the required files, such as Hyphenopoly.js and the essential patterns, by copying them with the [copy-webpack-plugin](https://www.npmjs.com/package/copy-webpack-plugin) into your distribution folder.
 
 _webpack.config.js_
 ```javascript
@@ -353,15 +285,15 @@ Hyphenopoly does NOT hyphenate words that contain one of the following special f
 `hyphenopoly.module.js` only hyphenates plain text strings. If the string contains HTML tags, it must first be parsed. The textContent of the nodes may then be hyphenated using hyphenopoly:
 
 ````javascript
-const { JSDOM } = require("jsdom")
+import {JSDOM} from "jsdom";
+import hyphenopoly from "hyphenopoly";
 
-const hyphenator = require("hyphenopoly").config({
+const hyphenator = hyphenopoly.config({
   sync: true,
   require: ["de"],
   defaultLanguage: "de",
   minWordLength: 6,
-  leftmin: 4,
-  rightmin: 4,
+  hyphen: "•"
 })
 
 function hyphenateText(text) {
@@ -395,7 +327,7 @@ function hyphenateHtml(html) {
   }
 }
 
-module.exports = { text: hyphenateText, html: hyphenateHtml }
+console.log(hyphenateHtml("<p>Silbentrennung ist <b>wichtig</b> im <i>Blocksatz</i>."));
 ````
 
 ## Usage of <lang>.wasm Modules outside Hyphenopoly

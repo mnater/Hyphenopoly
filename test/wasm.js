@@ -1,9 +1,8 @@
 /* eslint-disable require-await */
 /* eslint-disable no-shadow */
 /* eslint-env node */
-"use strict";
-const t = require("tap");
-const fs = require("fs").promises;
+import * as fs from "fs";
+import t from "tap";
 
 const TD = typeof TextDecoder === "undefined"
     ? require("util").TextDecoder
@@ -17,7 +16,7 @@ const decode = (() => {
 })();
 
 t.test("load module", async(t) => {
-    const hyphenEngine = await fs.readFile("./patterns/de.wasm");
+    const hyphenEngine = fs.readFileSync("./patterns/de.wasm");
     t.test("check wasm header", async(t) => {
         return t.same(
             new Uint8Array(hyphenEngine.buffer.slice(0, 4)),
