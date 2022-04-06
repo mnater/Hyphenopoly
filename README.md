@@ -188,8 +188,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="http://danburzo.ro/"><img src="https://avatars3.githubusercontent.com/u/205375?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Dan Burzo</b></sub></a><br /><a href="https://github.com/mnater/Hyphenopoly/commits?author=danburzo" title="Code">💻</a></td>
-  </tr>
-  <tr>
     <td align="center"><a href="https://github.com/CommanderRoot"><img src="https://avatars.githubusercontent.com/u/4395417?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tobias Speicher</b></sub></a><br /><a href="https://github.com/mnater/Hyphenopoly/commits?author=CommanderRoot" title="Code">💻</a></td>
   </tr>
 </table>
