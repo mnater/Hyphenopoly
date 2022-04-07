@@ -28,8 +28,8 @@ Also, don't forget to enable CSS hyphenation.
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Example 1</title>
-        <script>
         <script src="./Hyphenopoly_Loader.js"></script>
+        <script>
         Hyphenopoly.config({
             require: {
                 "la": "honorificabilitudinitas",
