@@ -28,8 +28,8 @@ Also, don't forget to enable CSS hyphenation.
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Example 1</title>
-        <script>
         <script src="./Hyphenopoly_Loader.js"></script>
+        <script>
         Hyphenopoly.config({
             require: {
                 "la": "honorificabilitudinitas",
@@ -106,9 +106,7 @@ npm i hyphenopoly
 ````
 
 ````javascript
-"use strict";
-
-const hyphenopoly = require("hyphenopoly");
+import hyphenopoly from "hyphenopoly";
 
 const hyphenator = hyphenopoly.config({
     "require": ["de", "en-us"],
@@ -190,6 +188,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="http://danburzo.ro/"><img src="https://avatars3.githubusercontent.com/u/205375?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Dan Burzo</b></sub></a><br /><a href="https://github.com/mnater/Hyphenopoly/commits?author=danburzo" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/CommanderRoot"><img src="https://avatars.githubusercontent.com/u/4395417?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tobias Speicher</b></sub></a><br /><a href="https://github.com/mnater/Hyphenopoly/commits?author=CommanderRoot" title="Code">💻</a></td>
   </tr>
 </table>
 

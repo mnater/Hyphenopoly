@@ -1,9 +1,15 @@
 # Version History
 
-## Version 5.tbd (tbd)
+## Version 5.0.0-beta-4 (2022-04-06)
+### Breaking changes
+*   Use esm instead of require
 ### Doc
+*   Update documenation for esm module
 *   Added documentation for using .wasm modules outside Hyphenopoly
+### Test
+*   use c8 to check coverage
 ### Fixed
+*   bump devDependencies
 *   Perf: improve select and rank (64Bit load and popcnt)
 *   Perf: improve get1PosInDWord
 
