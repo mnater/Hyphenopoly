@@ -8,6 +8,7 @@
  */
 
 /* eslint-env deno */
+/* global Deno, Buffer */
 
 const cwd = "./";
 
@@ -117,7 +118,10 @@ function readFile(file, cb, sync) {
         }
         Deno.readFile(file).then((data) => {
             cb(null, data);
-        });
+        }).
+            catch((e) => {
+                cb(e, null);
+            });
         /* eslint-enable security/detect-non-literal-fs-filename */
     } else {
         import("https").then((https) => {
