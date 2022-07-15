@@ -11,7 +11,7 @@ async function freshImport() {
     return H9Y;
 }
 
-Deno.test("set Event", async (t) => {
+Deno.test("set Event", async () => {
     const H9Y = await freshImport();
     await H9Y.config({
         "handleEvent": {
@@ -29,7 +29,7 @@ Deno.test("set Event", async (t) => {
     });
 });
 
-Deno.test("set unknown event", async (t) => {
+Deno.test("set unknown event", async () => {
     const H9Y = await freshImport();
     await H9Y.config({
         "handleEvent": {
@@ -47,7 +47,7 @@ Deno.test("set unknown event", async (t) => {
     });
 });
 
-Deno.test("try to overwrite noncancellable event", async (t) => {
+Deno.test("try to overwrite noncancellable event", async () => {
     const H9Y = await freshImport();
     await H9Y.config({
         "handleEvent": {
