@@ -52,7 +52,7 @@
       {
         "anonymous": "always",
         "named": "never",
-        "asyncArrow": "never"
+        "asyncArrow": "always"
       }
     ],
     "padded-blocks": [
