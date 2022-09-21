@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.deno.js 5.0.0-beta.2 - hyphenation for deno
+ * @license Hyphenopoly.deno.js 5.0.0-beta.4 - hyphenation for deno
  * ©2021  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *

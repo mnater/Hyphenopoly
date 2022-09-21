@@ -35,7 +35,7 @@
   "main": "hyphenopoly.module.js",
   "type": "module",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14"
   },
   "repository": {
     "type": "git",
