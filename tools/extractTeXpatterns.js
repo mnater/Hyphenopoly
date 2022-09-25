@@ -12,10 +12,9 @@
  * - hyph-<lang>.pat.txt - left-/rightmin and patterns
  */
 
-"use strict";
-const fs = require("fs");
-const path = require("path");
-const YAML = require("yaml");
+import fs from "fs";
+import path from "path";
+import yaml from "yaml";
 
 const patternsFileName = process.argv[2];
 const outDir = process.argv[3];
@@ -59,7 +58,7 @@ function getHeaderFromFile(patternfile) {
 }
 
 function getMetaFromHeader(header) {
-    return YAML.parse(header);
+    return yaml.parse(header);
 }
 
 function getLRMFromMeta(meta) {
