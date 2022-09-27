@@ -119,7 +119,8 @@
         "caseSensitive": false
       }
     ],
-    "prefer-named-capture-group": 0
+    "prefer-named-capture-group": 0,
+    "logical-assignment-operators": 0
   },
   "overrides": [
     {
