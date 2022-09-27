@@ -25,7 +25,7 @@ t.test("load module", async (t) => {
     });
     t.test("check filesize", async (t) => {
         return t.ok(
-            hyphenEngine.buffer.byteLength <= 78996,
+            hyphenEngine.buffer.byteLength <= 93648,
             "update when de.wasm changes"
         );
     });
@@ -157,13 +157,13 @@ t.test("load module", async (t) => {
                 ]);
                 const len = result.instance.exports.hyphenate(2, 2, 8226);
                 t.test("check length of hwo", async (t) => {
-                    return t.equal(len, 11);
+                    return t.equal(len, 12);
                 });
                 t.test("check hyphenated word", async (t) => {
                     const hw = decode(
                         new Uint16Array(heapBuffer, 0, len)
                     );
-                    return t.equal(hw, "Jala•pe•ños");
+                    return t.equal(hw, "Ja•la•pe•ños");
                 });
             });
         });
