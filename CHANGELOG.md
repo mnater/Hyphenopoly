@@ -1,8 +1,20 @@
 # Version History
 
+## Version 5.0.0-beta-5 (2022-09-29)
+### Fixed
+*   created and updated patterns for german
+*   updated patterns from tex-hyphen
+*   bump devDependencies
+### Added
+*   Albanian hyphenation
+*   Pali hyphenation
+
 ## Version 5.0.0-beta-4 (2022-04-06)
 ### Breaking changes
 *   Use esm instead of require
+### Added
+*   Albanian hyphenation
+*   Pali hyphenation
 ### Doc
 *   Update documenation for esm module
 *   Added documentation for using .wasm modules outside Hyphenopoly
