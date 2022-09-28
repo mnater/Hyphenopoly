@@ -70,7 +70,7 @@
     "preinstall3rdparty": "rm -fR third-party",
     "install3rdparty": "git clone https://github.com/WebAssembly/binaryen.git third-party/binaryen",
     "postinstall3rdparty": "cd ./third-party/binaryen/ && cmake . && make",
-    "createWasmForLang": "sh ./tools/createWasmForLang.sh en-us",
+    "createWasmForLang": "sh ./tools/createWasmForLang.sh bn",
     "createAllWasm": "sh ./tools/createAllWasm.sh",
     "pretest": "npm run lint",
     "test": "c8 tap --no-cov test/*.js",
