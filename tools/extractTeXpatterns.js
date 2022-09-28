@@ -101,8 +101,9 @@ function createChrFile(patternlist) {
      */
     function addUpperCase(lowerCaseSet) {
         const mixedCaseSet = new Set();
+        // eslint-disable-next-line complexity
         lowerCaseSet.forEach((lc) => {
-            let uc = (lc.toUpperCase().length > 1)
+            let uc = (lc.toUpperCase().length > 1 || lc === lc.toUpperCase())
                 ? ""
                 : lc.toUpperCase();
             uc = (langName === "hyph-de" && uc === "S")
