@@ -37,6 +37,7 @@
                 "nb": "FORCEHYPHENOPOLY",
                 "nl": "FORCEHYPHENOPOLY",
                 "oc": "FORCEHYPHENOPOLY",
+                "pi": "FORCEHYPHENOPOLY",
                 "pl": "FORCEHYPHENOPOLY",
                 "pms": "FORCEHYPHENOPOLY",
                 "pt": "FORCEHYPHENOPOLY",
@@ -44,6 +45,7 @@
                 "ro": "FORCEHYPHENOPOLY",
                 "sk": "FORCEHYPHENOPOLY",
                 "sl": "FORCEHYPHENOPOLY",
+                "sq": "FORCEHYPHENOPOLY",
                 "sr-latn": "FORCEHYPHENOPOLY",
                 "sv": "FORCEHYPHENOPOLY",
                 "tk": "FORCEHYPHENOPOLY",
@@ -70,7 +72,7 @@
         });
 
         function assert() {
-            var tests = 42;
+            var tests = 44;
             var i = 1;
             var test = "";
             var ref = "";
@@ -290,6 +292,14 @@
         <h2>42: cy</h2>
         <p id="test42" class="test hyphenate" lang="cy">Crefft gosod teip er mwyn gwneud iaith ysgrifenedig yn ddarllenadwy ac yn atyniadol yw teipograffeg.</p>
         <p id="ref42" class="ref" lang="cy">Crefft gosod teip er mwyn gwneud iaith ysgrif|enedig yn ddar|llen|adwy ac yn atyn|iadol yw teipograffeg.</p>
+
+        <h2>43: pi</h2>
+        <p id="test43" class="test hyphenate" lang="pi">Tena samayena buddho bhagavā verañjāyaṃ viharati naḷerupucimandamūle mahatā bhikkhusaṅghena saddhiṃ pañcamattehi bhikkhusatehi.</p>
+        <p id="ref43" class="ref" lang="pi">Tena sa|ma|ye|na bud|dho bha|ga|vā ve|rañ|jā|yaṃ vi|ha|ra|ti na|ḷe|ru|pu|ci|man|da|mū|le ma|ha|tā bhik|khu|saṅ|ghe|na sad|dhiṃ pañ|ca|mat|te|hi bhik|khu|sa|te|hi.</p>
+
+        <h2>44: sq</h2>
+        <p id="test44" class="test hyphenate" lang="sq">Me termin Tipografi përfshihet një fushë e dizajnit grafik që mirret me ndërtimin e llojeve të shkronjave.</p>
+        <p id="ref44" class="ref" lang="sq">Me ter|min Ti|pog|ra|fi për|fshi|het një fushë e di|za|jnit gra|fik që mi|rret me ndër|ti|min e llo|je|ve të shkro|nja|ve.</p>
 
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
