@@ -51,7 +51,7 @@ Alle diese Ansätze zur Speicherplatzreduzierung gelten nur für die Übertragun
 ## Succinct Trie
 In einem "Succinct Trie" werden die Daten so abgespeichert, dass
 
-*   der Speicherbedarf nahe am informationstechnischen Minimum liegt
+*   der Speicherbedarf nahe am informationstheoretischen Minimum liegt
 *   und der Algorithmus direkt auf den gespeicherten Daten läuft; eine Expansion in den Arbeitsspeicher entfällt also.
 
 ### Wie funktioniert das?
@@ -114,14 +114,14 @@ Zuerst werden die Daten in einem Baum mit einem zusätzlichen root-Knoten (das m
 </g>
 </svg>
 
-Dann werden in einem Breitensuche-Verfahren sowohl die roten Werte, als auch die
+Nun werden in einem Breitensuche-Verfahren sowohl die roten Werte, als auch die
 Buchstaben in den Knoten der Reihe nach rausgeschrieben. Ein weiteres Bitmuster
 gibt Auskunft, ob zum jeweiligen Knoten noch Trennwerte vorhanden sind.
 
 ````text
 sTrie bitmap: 101101011101100100000
 sTrie chars:  _abbabedfa
-sTrie hasVal: 00000101111
+sTrie hasVal: 0000010111
 ````
 
 Für die Trennwerte ist eine zusätzliche Datenstruktur nötig, da diese nicht im
@@ -143,7 +143,7 @@ Wert zusammengefasst. Ausserdem können die Nullen am Ende weggelassen werden.
 ````
 
 Die erste Ziffer gibt also immer die Anzahl der führenden Nullen, bzw. den Offset
-ins Muster an. Dan folgen die eigentlichen Trennwerte.
+ins Muster an. Darauf folgen die eigentlichen Trennwerte.
 
 Da die Ziffern der Trennwerte immer kleiner als 16 sind, können jeweils zwei Werte
 in einem Byte gespeichert werden.
