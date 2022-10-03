@@ -9,7 +9,10 @@
   },
   "ignorePatterns": [
     "min/*.js",
-    "*.deno.js"
+    "*.deno.js",
+    "test_deno/*.ts",
+    "deno_example.js",
+    "examples/webpack/src/*"
   ],
   "plugins": [
     "security"
