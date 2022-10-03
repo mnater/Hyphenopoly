@@ -212,9 +212,9 @@ function createTranslateMap(): void {
  * Checks if the bit in hv (hasValueBitMap) is set
  * Returns the bit at pos starting at startByte
  * For our purposes the bits are numbered from left to right
- * but the bytes are stored in Little Endian (3 2 1 0)
- * to access the bytes in Big Endian order (0 1 2 3) we need to calculate
- * the address: numBytes = (numBytes - (numBytes % 4) + 3) - (numBytes % 4)
+ * but the bytes are stored in Little Endian (3 2 1 0).
+ * To access the bytes in Big Endian order (0 1 2 3) we need to calculate
+ * the address: bytePtr = (bytePtr - (bytePtr % 4) + 3) - (bytePtr % 4)
  * This can be simplyfied as follows
  */
 function nodeHasValue(pos: i32): i32 {
@@ -252,6 +252,15 @@ function rank(pos: i32, startByte: i32): i32 {
     return count as i32;
 }
 
+/**
+ * Find the position of the nth bit set in a 64bit word.
+ * The faster - non branching - algorithm from
+ * https://graphics.stanford.edu/~seander/bithacks.html#SelectPosFromMSBRank
+ * is not used here because it's larger in code size.
+ * The algorithm here first checks if the bit is in the first or the second
+ * 32bit-half of the word. Then it searches the nth bit in the respective
+ * half jumping over leading zeroes.
+ */
 function get1PosInDWord(dWord: i64, nth: i32): i32 {
     const first: i32 = (dWord >> 32) as i32;
     const pcntf: i32 = popcnt<i32>(first);
