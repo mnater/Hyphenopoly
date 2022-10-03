@@ -11,8 +11,8 @@
     "min/*.js",
     "*.deno.js",
     "test_deno/*.ts",
-    "deno_example.js",
-    "examples/webpack/src/*"
+    "examples/deno_example.js",
+    "examples/webpack/src/*.js"
   ],
   "plugins": [
     "security"
