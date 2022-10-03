@@ -8,7 +8,7 @@
  */
 
 /* eslint-env deno */
-/* global Deno, Buffer */
+/* global Deno */
 
 const cwd = "./";
 
@@ -417,7 +417,7 @@ function createWordHyphenator(lo, lang) {
     function isMixedCase(s) {
         return Array.prototype.map.call(s, (c) => {
             return (c === c.toLowerCase());
-        }).some((v, i, a) => {
+        }).some((v, _i, a) => {
             return (v !== a[0]);
         });
     }
@@ -460,7 +460,7 @@ const orphanController = (() => {
      * @returns {string} Treated end of text
      */
     function controlOrphans(
-        ignore,
+        _ignore,
         leadingWhiteSpace,
         lastWord,
         trailingWhiteSpace

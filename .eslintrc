@@ -7,7 +7,10 @@
     "browser": true,
     "es6": true
   },
-  "ignorePatterns": ["min/*.js"],
+  "ignorePatterns": [
+    "min/*.js",
+    "*.deno.js"
+  ],
   "plugins": [
     "security"
   ],
