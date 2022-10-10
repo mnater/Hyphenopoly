@@ -64,6 +64,7 @@
     ]
   },
   "c8": {
+    "reporter": ["lcov", "text"],
     "reports-dir": "./.c8"
   },
   "scripts": {
