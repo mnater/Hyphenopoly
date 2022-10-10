@@ -11,9 +11,12 @@ orbs:
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 jobs:
   test:
+    parameters:
+      node-version:
+        type: string
     executor:
       name: node/default
-      tag: 'lts'
+      tag: << parameters.node-version >>
     steps:
       - checkout
       - node/install-packages
@@ -21,11 +24,13 @@ jobs:
           command: npm run test
       - coveralls/upload:
           path_to_lcov: '.c8/lcov.info'
-          verbose: true
 workflows:
-  test_lts:
+  all-tests:
     jobs:
-      - test
+      - test:
+          matrix:
+            parameters:
+              node-version: ["current", "lts", "14.20.0"]
 #workflows:
 #  matrix-tests:
 #    jobs:
