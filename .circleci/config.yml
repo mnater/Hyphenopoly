@@ -20,7 +20,7 @@ jobs:
       - run:
           command: npm run test
       - coveralls/upload:
-          path_to_lcov: '.c8/'
+          path_to_lcov: '.c8/lcov.info'
           verbose: true
 workflows:
   test_lts:

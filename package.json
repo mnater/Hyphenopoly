@@ -65,7 +65,7 @@
   },
   "c8": {
     "reporter": ["lcov", "text"],
-    "reports-dir": ".c8/lcov.info"
+    "reports-dir": ".c8/"
   },
   "scripts": {
     "preinstall3rdparty": "rm -fR third-party",
