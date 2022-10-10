@@ -31,15 +31,3 @@ workflows:
           matrix:
             parameters:
               node-version: ["current", "lts", "14.20.0"]
-#workflows:
-#  matrix-tests:
-#    jobs:
-#      - node/test:
-#          version: current
-#          pkg-manager: npm
-#      - node/test:
-#          version: lts
-#          pkg-manager: npm
-#      - node/test:
-#          version: 14.20.0
-#          pkg-manager: npm
