@@ -11,6 +11,16 @@
   "commitConvention": "eslint",
   "contributors": [
     {
+      "login": "StephanHoyer",
+      "name": "Stephan Hoyer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/54701?v=4",
+      "profile": "https://github.com/StephanHoyer",
+      "contributions": [
+        "doc",
+        "code"
+      ]
+    },
+    {
       "login": "tbroadley",
       "name": "Thomas Broadley",
       "avatar_url": "https://avatars0.githubusercontent.com/u/8731922?v=4",
