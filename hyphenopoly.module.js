@@ -121,7 +121,12 @@ H.supportedLanguages = [
  * @returns {undefined}
  */
 function readFile(file, cb, sync) {
-    if (H.c.loader === "fs") {
+    if (typeof H.c.loader === "function") {
+        H.c.loader(file).then(
+            (res) => { cb(null, res); }, 
+            (err) => { cb(err); }
+        );
+    } else if (H.c.loader === "fs") {
         /* eslint-disable security/detect-non-literal-fs-filename */
         if (sync) {
             return loader.readFileSync(file);

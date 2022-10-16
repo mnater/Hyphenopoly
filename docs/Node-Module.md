@@ -122,6 +122,25 @@ const hyphenator = hyphenopoly.config({
 ````
 This is useful if the module is transformed to a script used in a web browser (e.g. by using [browserify](http://browserify.org)).
 
+You can also add your custom loader to handle the load of the language files. To do this, just set a callback function as a `loader`.
+It should return a `promise` that resolves with a buffer of the language file.
+
+````javascript
+async function loader(file) {
+  if (process.browser) {
+    const res = await fetch(file)
+    return res.arrayBuffer()
+  }
+  const fs = require('fs/promises')
+  return fs.readFile(file)
+}
+
+const hyphenator = hyphenopoly.config({
+    "require": […],
+    "loader": loader
+});
+
+````
 ### other options
 For documentation about the other options see the `Hyphenopoly.js`-documentation:
 
