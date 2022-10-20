@@ -2,7 +2,9 @@
 
 ## Version 5.0.0-beta-6 (2022-10-20)
 ### Breaking changes
-*   require loader function
+*   [require loader function](https://mnater.github.io/Hyphenopoly/Module.html)
+### Fixed
+*   bump devDependencies
 
 ## Version 5.0.0-beta-5 (2022-09-29)
 ### Fixed
