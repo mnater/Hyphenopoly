@@ -272,7 +272,7 @@ Hyphenopoly.config({
 });
 </script>
 ````
-By default Hyphenopoly only searches for the given [selectors](./Global-Hyphenopoly-Object.md#selectors) in `window.document`. With this option set to true, Hyphenopoly also searches for the given selectors in Web Components (if accessible, i.e. `open`).
+By default Hyphenopoly only searches for the given [selectors](./Config.md#selectors) in `window.document`. With this option set to true, Hyphenopoly also searches for the given selectors in Web Components (if accessible, i.e. `open`).
 
 ### safeCopy
 ````

@@ -11,7 +11,7 @@ If you [installed Hyphenopoly with npm](#using-npmjs) run `npm run prepare` to c
 All files have good compression rates when using gzip, deflate and the like. You may need to configure your server to be able to compress `.wasm`-files though!
 
 ### node
-Hyphenopoly_Loader.js and Hyphenopoly.js is designed for use in browsers. For usage in node.js see: [node module](./Node-Module.md)
+Hyphenopoly_Loader.js and Hyphenopoly.js is designed for use in browsers. For usage in node.js see: [node module](./Module.md)
 
 Let me now, if you have a use case for hyphenation in node.js
 
@@ -29,5 +29,5 @@ Let me now, if you have a use case for hyphenation in node.js
  
 ### Using npm.js
 1.  Run `npm i hyphenopoly` in your project folder
-2.  Tell Hyphenopoly where to find the files: [paths](./Global-Hyphenopoly-Object.md#paths)
+2.  Tell Hyphenopoly where to find the files: [paths](./Config.md#paths-optional)
 3.  Follow the instructions on [https://github.com/mnater/Hyphenopoly#usage-browser](https://github.com/mnater/Hyphenopoly#usage-browser) (don't forget to adapt the paths)

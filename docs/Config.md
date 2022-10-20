@@ -23,6 +23,11 @@ The first layer contains settings for the general behavior of Hyphenopoly_Loader
 
 The second layer defines the behavior of Hyphenopoly.js. There are global settings (like `defaultLanguage`, `safeCopy` etc.) that are independent of the respective element selectors. And there are selector based settings (like `minWordLength`, `leftmin` etc.) that apply only to the given selectors.
 
+## Calling Hyphenopoly.configure
+In most cases you'll call `Hyphenopoly.configure()` just once at the beginning of the pageload. In some cases (e.g. if a user changes the language of the site) you need to call this function again (and again).
+
+On every call of `Hyphenopoly.configure()` the settings are extended or overwritten and, if necessary, new .wasm-files are loaded.
+
 ## First layer
 ### require (mandatory)
 The config-Object must contain exactly one field called `require`. It defines the language(s) used on the page.
