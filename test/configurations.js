@@ -14,12 +14,22 @@ async function freshImport() {
     return H9Y;
 }
 
+// eslint-disable-next-line require-jsdoc
+async function loader(file) {
+    const {readFile} = await import("node:fs/promises");
+    const {dirname} = await import("node:path");
+    const {fileURLToPath} = await import("node:url");
+    const cwd = dirname(fileURLToPath(import.meta.url));
+    return readFile(`${cwd}/../patterns/${file}`);
+}
+
 t.test("set options: compound", function (t) {
     t.test("compound: all", async function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "compound": "all",
             "hyphen": "•",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Sil•ben•tren•nungs-\u200BAl•go•rith•mus");
@@ -30,6 +40,7 @@ t.test("set options: compound", function (t) {
         const hyphenator = await H9Y.config({
             "compound": "auto",
             "hyphen": "•",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Sil•ben•tren•nungs-Al•go•rith•mus");
@@ -40,6 +51,7 @@ t.test("set options: compound", function (t) {
         const hyphenator = await H9Y.config({
             "compound": "hyphen",
             "hyphen": "•",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Silbentrennungs-\u200BAlgorithmus");
@@ -50,6 +62,7 @@ t.test("set options: compound", function (t) {
         const hyphenator = await H9Y.config({
             "compound": "auto",
             "hyphen": "•",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Test-Algorithmus"), "Test-Al•go•rith•mus");
@@ -60,6 +73,7 @@ t.test("set options: compound", function (t) {
         const hyphenator = await H9Y.config({
             "compound": "all",
             "hyphen": "•",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Test-Algorithmus"), "Test-\u200BAl•go•rith•mus");
@@ -74,6 +88,7 @@ t.test("set options: exceptions", function (t) {
         const hyphenator = await H9Y.config({
             "exceptions": {"global": "Silben-trennung"},
             "hyphen": "•",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
@@ -87,6 +102,7 @@ t.test("set options: exceptions", function (t) {
                 "global": "Silben-trennung"
             },
             "hyphen": "•",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Silbentrennung Algorithmus"), "Silben•trennung Algo•rithmus");
@@ -97,6 +113,7 @@ t.test("set options: exceptions", function (t) {
         const hyphenator = await H9Y.config({
             "exceptions": {"de": "Algo-rithmus, Algo-rithmus"},
             "hyphen": "•",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Algorithmus"), "Algo•rithmus");
@@ -106,6 +123,7 @@ t.test("set options: exceptions", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
+            loader,
             "require": ["en-us"]
         });
         t.equal(hyphenator("reformation"), "ref•or•ma•tion");
@@ -119,6 +137,7 @@ t.test("set options: hyphen", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Silbentrennung"), "Sil•ben•tren•nung");
@@ -128,6 +147,7 @@ t.test("set options: hyphen", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "|",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Silbentrennung"), "Sil|ben|tren|nung");
@@ -142,6 +162,7 @@ t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "leftmin": 4,
+            loader,
             "require": ["de"],
             "rightmin": 5
         });
@@ -156,6 +177,7 @@ t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
             "leftminPerLang": {
                 "de": 4
             },
+            loader,
             "require": ["de"],
             "rightminPerLang": {
                 "de": 5
@@ -173,6 +195,7 @@ t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
         const hyphenator = await H9Y.config({
             "hyphen": "•",
             "leftmin": 2,
+            loader,
             "require": ["pt"],
             "rightmin": 2
         });
@@ -184,6 +207,7 @@ t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
+            loader,
             "require": ["pt"]
         });
         t.equal(hyphenator("relativo"), "re•la•tivo");
@@ -197,6 +221,7 @@ t.test("set options: minWordLength", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
+            loader,
             "minWordLength": 7,
             "require": ["de"]
         });
@@ -211,6 +236,7 @@ t.test("set options: mixedCase", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
+            loader,
             "mixedCase": false,
             "require": ["de"]
         });
@@ -225,6 +251,7 @@ t.test("set options: normalize", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
+            loader,
             "normalize": true,
             "require": ["de"]
         });
@@ -239,6 +266,7 @@ t.test("set options: orphanControl", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
+            loader,
             "require": ["de"]
         });
         t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de Ess•wa•ren");
@@ -248,6 +276,7 @@ t.test("set options: orphanControl", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
+            loader,
             "orphanControl": 2,
             "require": ["de"]
         });
@@ -258,6 +287,7 @@ t.test("set options: orphanControl", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "|",
+            loader,
             "orphanControl": 2,
             "require": ["de"]
         });
@@ -268,6 +298,7 @@ t.test("set options: orphanControl", function (t) {
         const H9Y = await freshImport();
         const hyphenator = await H9Y.config({
             "hyphen": "•",
+            loader,
             "orphanControl": 3,
             "require": ["de"]
         });

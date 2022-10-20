@@ -20,7 +20,7 @@
 *   [Hyphenation Errors](./Coping-with-hyphenation-errors.md)
 
 ## In node.js – hyphenopoly.module.js
-*   [hyphenopoly.module](./Node-Module.md)
+*   [hyphenopoly.module](./Module.md)
 
 ## Special use cases
 *   [Browserify hyphenopoly.module.js](./Special-use-cases.md#browserify-hyphenopolymodulejs)

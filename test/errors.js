@@ -14,29 +14,77 @@ async function freshImport() {
     return H9Y;
 }
 
+// eslint-disable-next-line require-jsdoc
+async function loader(file) {
+    const {readFile} = await import("node:fs/promises");
+    const {dirname} = await import("node:path");
+    const {fileURLToPath} = await import("node:url");
+    const cwd = dirname(fileURLToPath(import.meta.url));
+    return readFile(`${cwd}/../patterns/${file}`);
+}
+
 t.test("path to patternfile not resolvable", async function (t) {
     const H9Y = await freshImport();
     await H9Y.config({
-        "paths": {
-            "maindir": "./",
-            "patterndir": "./patterns/"
-        },
+        loader,
         "require": ["en"]
     }).catch(
         function (e) {
-            t.equal(e, "./patterns/en.wasm not found.");
+            t.equal(e, "en.wasm not found.");
             t.end();
         }
     );
 });
 
+t.test("loader not defined", async function (t) {
+    const H9Y = await freshImport();
+    try {
+        await H9Y.config({
+            "handleEvent": {
+                // eslint-disable-next-line require-jsdoc
+                error(e) {
+                    e.preventDefault();
+                    throw e.msg;
+                }
+            },
+            "require": ["en-us"]
+        });
+    } catch (e) {
+        t.equal(e, "loader/loaderSync has not been configured. <<link>>");
+        t.end();
+    }
+});
+
+t.test("loader not a function", async function (t) {
+    const H9Y = await freshImport();
+    try {
+        await H9Y.config({
+            "handleEvent": {
+                // eslint-disable-next-line require-jsdoc
+                error(e) {
+                    e.preventDefault();
+                    throw e.msg;
+                }
+            },
+            "loader": "fs",
+            "require": ["en-us"]
+        });
+    } catch (e) {
+        t.equal(e, "Loader must be a function. <<link>>");
+        t.end();
+    }
+});
+
 t.test("run config with two languages", async function (t) {
     const H9Y = await freshImport();
-    const hyphenators = await H9Y.config({"require": ["de", "en"]});
+    const hyphenators = await H9Y.config({
+        loader,
+        "require": ["de", "en"]
+    });
     t.test("get the hyphenator function for a language", async function (t) {
         await hyphenators.get("en").catch(
             function (e) {
-                t.equal(e.slice(-28), "/patterns/en.wasm not found.");
+                t.equal(e.slice(-28), "en.wasm not found.");
             }
         );
         t.end();
@@ -45,7 +93,9 @@ t.test("run config with two languages", async function (t) {
 
 t.test("incomplete setup (forget require)", async function (t) {
     const H9Y = await freshImport();
-    const laHyphenator = await H9Y.config({});
+    const laHyphenator = await H9Y.config({
+        loader
+    });
     t.test("get empty map", function (t) {
         t.equal(laHyphenator.size, 0);
         t.end();
@@ -55,7 +105,10 @@ t.test("incomplete setup (forget require)", async function (t) {
 
 t.test("fail when word is to long", async function (t) {
     const H9Y = await freshImport();
-    const nlHyphenator = await H9Y.config({"require": ["nl"]});
+    const nlHyphenator = await H9Y.config({
+        loader,
+        "require": ["nl"]
+    });
     t.test("hyphenate one word", function (t) {
         t.equal(nlHyphenator("Kindercarnavalsoptochtvoorbereidingswerkzaamhedenplankindercarnavals"), "Kindercarnavalsoptochtvoorbereidingswerkzaamhedenplankindercarnavals");
         t.end();

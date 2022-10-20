@@ -8,8 +8,12 @@ import {assertEquals} from "https://deno.land/std@0.135.0/testing/asserts.ts";
  * LEAKS MEMORY!
  */
 async function freshImport() {
-    const {"default": H9Y} = await import(`../hyphenopoly.deno.js?update=${Date.now()}`);
+    const {"default": H9Y} = await import(`../hyphenopoly.module.js?update=${Date.now()}`);
     return H9Y;
+}
+
+function loader(file: string) {
+    return Deno.readFile(`./patterns/${file}`);
 }
 
 Deno.test(
@@ -20,6 +24,7 @@ Deno.test(
             const hyphenator = await H9Y.config({
                 "compound": "all",
                 "hyphen": "•",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Silbentrennungs-Algorithmus"), "Sil•ben•tren•nungs-\u200BAl•go•rith•mus");
@@ -29,6 +34,7 @@ Deno.test(
             const hyphenator = await H9Y.config({
                 "compound": "auto",
                 "hyphen": "•",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Silbentrennungs-Algorithmus"), "Sil•ben•tren•nungs-Al•go•rith•mus");
@@ -38,6 +44,7 @@ Deno.test(
             const hyphenator = await H9Y.config({
                 "compound": "hyphen",
                 "hyphen": "•",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Silbentrennungs-Algorithmus"), "Silbentrennungs-\u200BAlgorithmus");
@@ -47,6 +54,7 @@ Deno.test(
             const hyphenator = await H9Y.config({
                 "compound": "auto",
                 "hyphen": "•",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Test-Algorithmus"), "Test-Al•go•rith•mus");
@@ -56,6 +64,7 @@ Deno.test(
             const hyphenator = await H9Y.config({
                 "compound": "all",
                 "hyphen": "•",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Test-Algorithmus"), "Test-\u200BAl•go•rith•mus");
@@ -71,6 +80,7 @@ Deno.test(
             const hyphenator = await H9Y.config({
                 "exceptions": {"global": "Silben-trennung"},
                 "hyphen": "•",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Silbentrennung"), "Silben•trennung");
@@ -83,6 +93,7 @@ Deno.test(
                     "global": "Silben-trennung"
                 },
                 "hyphen": "•",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Silbentrennung Algorithmus"), "Silben•trennung Algo•rithmus");
@@ -92,6 +103,7 @@ Deno.test(
             const hyphenator = await H9Y.config({
                 "exceptions": {"de": "Algo-rithmus, Algo-rithmus"},
                 "hyphen": "•",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Algorithmus"), "Algo•rithmus");
@@ -100,6 +112,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
+                loader,
                 "require": ["en-us"]
             });
             assertEquals(hyphenator("reformation"), "ref•or•ma•tion");
@@ -114,6 +127,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Silbentrennung"), "Sil•ben•tren•nung");
@@ -122,6 +136,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "|",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Silbentrennung"), "Sil|ben|tren|nung");
@@ -137,6 +152,7 @@ Deno.test(
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
                 "leftmin": 4,
+                loader,
                 "require": ["de"],
                 "rightmin": 5
             });
@@ -150,6 +166,7 @@ Deno.test(
                 "leftminPerLang": {
                     "de": 4
                 },
+                loader,
                 "require": ["de"],
                 "rightminPerLang": {
                     "de": 5
@@ -168,6 +185,7 @@ Deno.test(
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
                 "leftmin": 2,
+                loader,
                 "require": ["pt"],
                 "rightmin": 2
             });
@@ -178,6 +196,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
+                loader,
                 "require": ["pt"]
             });
             assertEquals(hyphenator("relativo"), "re•la•tivo");
@@ -192,6 +211,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
+                loader,
                 "minWordLength": 7,
                 "require": ["de"]
             });
@@ -207,6 +227,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
+                loader,
                 "mixedCase": false,
                 "require": ["de"]
             });
@@ -222,6 +243,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
+                loader,
                 "normalize": true,
                 "require": ["de"]
             });
@@ -237,6 +259,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
+                loader,
                 "require": ["de"]
             });
             assertEquals(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de Ess•wa•ren");
@@ -245,6 +268,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
+                loader,
                 "orphanControl": 2,
                 "require": ["de"]
             });
@@ -254,6 +278,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "|",
+                loader,
                 "orphanControl": 2,
                 "require": ["de"]
             });
@@ -263,6 +288,7 @@ Deno.test(
             const H9Y = await freshImport();
             const hyphenator = await H9Y.config({
                 "hyphen": "•",
+                loader,
                 "orphanControl": 3,
                 "require": ["de"]
             });

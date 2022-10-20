@@ -9,8 +9,12 @@ import {assertEquals} from "https://deno.land/std@0.135.0/testing/asserts.ts";
  * LEAKS MEMORY!
  */
 async function freshImport() {
-    const {"default": H9Y} = await import(`../hyphenopoly.deno.js?update=${Date.now()}`);
+    const {"default": H9Y} = await import(`../hyphenopoly.module.js?update=${Date.now()}`);
     return H9Y;
+}
+
+function loader(file: string) {
+    return Deno.readFile(`./patterns/${file}`);
 }
 
 Deno.test(
@@ -18,14 +22,11 @@ Deno.test(
     async () => {
         const H9Y = await freshImport();
         await H9Y.config({
-            "paths": {
-                "maindir": "./",
-                "patterndir": "./patterns/"
-            },
+            loader,
             "require": ["en"]
         }).catch(
             (e: string) => {
-                assertEquals(e, "./patterns/en.wasm not found.");
+                assertEquals(e, "en.wasm not found.");
             }
         );
     }
@@ -35,11 +36,14 @@ Deno.test({
     "name": "run config with two languages",
     async fn(t) {
         const H9Y = await freshImport();
-        const hyphenators = await H9Y.config({"require": ["de", "en"]});
+        const hyphenators = await H9Y.config({
+            loader,
+            "require": ["de", "en"]
+        });
         await t.step("get the hyphenator function for a language", async () => {
             await hyphenators.get("en").catch(
                 (e: string) => {
-                    assertEquals(e.slice(-28), "/patterns/en.wasm not found.");
+                    assertEquals(e.slice(-28), "en.wasm not found.");
                 }
             );
         });
@@ -52,7 +56,9 @@ Deno.test({
     "name": "incomplete setup (forget require)",
     async fn(t) {
         const H9Y = await freshImport();
-        const laHyphenator = await H9Y.config({});
+        const laHyphenator = await H9Y.config({
+            loader
+        });
         await t.step("get empty map", () => {
             assertEquals(laHyphenator.size, 0);
         });
@@ -65,7 +71,10 @@ Deno.test({
     "name": "fail when word is to long",
     async fn(t) {
         const H9Y = await freshImport();
-        const nlHyphenator = await H9Y.config({"require": ["nl"]});
+        const nlHyphenator = await H9Y.config({
+            loader,
+            "require": ["nl"]
+        });
         await t.step("hyphenate one word", () => {
             assertEquals(nlHyphenator("Kindercarnavalsoptochtvoorbereidingswerkzaamhedenplankindercarnavals"), "Kindercarnavalsoptochtvoorbereidingswerkzaamhedenplankindercarnavals");
         });

@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly.module.js 5.0.0-beta.5 - hyphenation for node
+ * @license Hyphenopoly.module.js 5.0.0-beta.6 - hyphenation for node
  * ©2022  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -8,17 +8,6 @@
  */
 
 /* eslint-env node */
-
-import {dirname} from "path";
-import {fileURLToPath} from "url";
-
-/*
- * Use 'fs' in node environment and fallback to http if the module gets executed
- * in a browser environment (e.g. browserified)
- */
-import loader from "fs";
-
-const cwd = dirname(fileURLToPath(import.meta.url));
 
 const decode = (() => {
     const utf16ledecoder = new TextDecoder("utf-16le");
@@ -112,47 +101,6 @@ H.supportedLanguages = [
     "uk",
     "zh-latn-pinyin"
 ];
-
-/**
- * Read a file and call callback
- * Use "fs" (node) or "http" (browser)
- * @param {string} file - the filename
- * @param {function} cb - callback function with args (error, data)
- * @returns {undefined}
- */
-function readFile(file, cb, sync) {
-    if (typeof H.c.loader === "function") {
-        H.c.loader(file).then(
-            (res) => {
-                cb(null, res);
-            },
-            (err) => {
-                cb(err);
-            }
-        );
-    } else if (H.c.loader === "fs") {
-        /* eslint-disable security/detect-non-literal-fs-filename */
-        if (sync) {
-            return loader.readFileSync(file);
-        }
-        loader.readFile(file, cb);
-        /* eslint-enable security/detect-non-literal-fs-filename */
-    } else {
-        import("https").then((https) => {
-            https.get(file, (res) => {
-                const rawData = [];
-                res.on("data", (chunk) => {
-                    rawData.push(chunk);
-                });
-                res.on("end", () => {
-                    cb(null, Buffer.concat(rawData));
-                });
-            });
-        });
-    }
-    return null;
-}
-
 
 /**
  * Create lang Object
@@ -337,25 +285,38 @@ function instantiateWasmEngine(lang) {
  * @returns {undefined}
  */
 function loadHyphenEngine(lang) {
+    const file = `${lang}.wasm`;
+    // eslint-disable-next-line require-jsdoc
+    const cb = (err, data) => {
+        if (err) {
+            H.events.dispatch("error", {
+                "key": lang,
+                "msg": `${lang}.wasm not found.`
+            });
+        } else {
+            H.binaries.set(lang, new Uint8Array(data).buffer);
+            instantiateWasmEngine(lang);
+        }
+    };
+
+    if (typeof H.c.loader !== "function") {
+        H.events.dispatch("error", {
+            "key": "",
+            "msg": "Loader must be a function. <<link>>"
+        });
+        return;
+    }
+
     if (H.c.sync) {
-        const data = readFile(`${H.c.paths.patterndir}${lang}.wasm`, null, true);
-        H.binaries.set(lang, new Uint8Array(data).buffer);
-        instantiateWasmEngine(lang);
+        cb(null, H.c.loaderSync(file));
     } else {
-        readFile(
-            `${H.c.paths.patterndir}${lang}.wasm`,
-            (err, data) => {
-                if (err) {
-                    H.events.dispatch("error", {
-                        "key": lang,
-                        "msg": `${H.c.paths.patterndir}${lang}.wasm not found.`
-                    });
-                } else {
-                    H.binaries.set(lang, new Uint8Array(data).buffer);
-                    instantiateWasmEngine(lang);
-                }
+        H.c.loader(file).then(
+            (res) => {
+                cb(null, res);
             },
-            false
+            (err) => {
+                cb(err, null);
+            }
         );
     }
 }
@@ -651,6 +612,18 @@ function createMapWithDefaults(defaultsMap) {
     });
 }
 
+/**
+ * Default loader emits error
+ * @returns null
+ */
+function defaultLoader() {
+    H.events.dispatch(
+        "error",
+        {"msg": "loader/loaderSync has not been configured. <<link>>"}
+    );
+    return null;
+}
+
 H.config = ((userConfig) => {
     const settings = createMapWithDefaults(new Map([
         ["compound", "hyphen"],
@@ -658,16 +631,12 @@ H.config = ((userConfig) => {
         ["hyphen", "\u00AD"],
         ["leftmin", 0],
         ["leftminPerLang", new Map()],
-        ["loader", "fs"],
+        ["loader", defaultLoader],
+        ["loaderSync", defaultLoader],
         ["minWordLength", 6],
         ["mixedCase", true],
         ["normalize", false],
         ["orphanControl", 1],
-        [
-            "paths", createMapWithDefaults(
-                new Map([["maindir", `${cwd}/`], ["patterndir", `${cwd}/patterns/`]])
-            )
-        ],
         ["require", []],
         ["rightmin", 0],
         ["rightminPerLang", new Map()],
@@ -724,8 +693,8 @@ H.config = ((userConfig) => {
                     }
                 });
                 H.events.addListener("error", (e) => {
-                    e.preventDefault();
                     if (e.key === lang || e.key === "hyphenEngine") {
+                        e.preventDefault();
                         reject(e.msg);
                     }
                 });

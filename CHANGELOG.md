@@ -1,5 +1,9 @@
 # Version History
 
+## Version 5.0.0-beta-6 (2022-10-20)
+### Breaking changes
+*   require loader function
+
 ## Version 5.0.0-beta-5 (2022-09-29)
 ### Fixed
 *   created and updated patterns for german

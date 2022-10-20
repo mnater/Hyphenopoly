@@ -8,15 +8,26 @@ import {assertEquals, assertInstanceOf} from "https://deno.land/std@0.135.0/test
  * LEAKS MEMORY!
  */
 async function freshImport() {
-    const {"default": H9Y} = await import(`../hyphenopoly.deno.js?update=${Date.now()}`);
+    const {"default": H9Y} = await import(`../hyphenopoly.module.js?update=${Date.now()}`);
     return H9Y;
+}
+
+function loader(file: string) {
+    return Deno.readFile(`./patterns/${file}`);
+}
+
+function loaderSync(file: string) {
+    return Deno.readFileSync(`./patterns/${file}`);
 }
 
 Deno.test(
     "run config with one language",
     async (t) => {
         const H9Y = await freshImport();
-        const deHyphenator = await H9Y.config({"require": ["de"]});
+        const deHyphenator = await H9Y.config({
+            loader,
+            "require": ["de"]
+        });
         await t.step("return a function", () => {
             assertEquals(typeof deHyphenator, "function", typeof deHyphenator);
         });
@@ -34,6 +45,7 @@ Deno.test(
     async (t) => {
         const H9Y = await freshImport();
         const deHyphenator = await H9Y.config({
+            loader,
             "require": ["de"],
             "substitute": {
                 "de": {
@@ -52,6 +64,7 @@ Deno.test(
     async (t) => {
         const H9Y = await freshImport();
         const deHyphenator = await H9Y.config({
+            loader,
             "require": ["en-us"],
             "substitute": {
                 "en-us": {
@@ -75,7 +88,10 @@ Deno.test(
     "try to hyphenate a word outside alphabet",
     async (t) => {
         const H9Y = await freshImport();
-        const deHyphenator = await H9Y.config({"require": ["de"]});
+        const deHyphenator = await H9Y.config({
+            loader,
+            "require": ["de"]
+        });
         await t.step("hyphenate ångström", () => {
             assertEquals(deHyphenator("ångström"), "ångström", deHyphenator("ångström"));
         });
@@ -86,7 +102,10 @@ Deno.test(
     "force .wasm.hyphenate to return 0",
     async (t) => {
         const H9Y = await freshImport();
-        const deHyphenator = await H9Y.config({"require": ["de"]});
+        const deHyphenator = await H9Y.config({
+            loader,
+            "require": ["de"]
+        });
         // eslint-disable-next-line prefer-regex-literals
         H9Y.languages.get("de").reNotAlphabet = RegExp("[^abcdefghijklmnopqrstuvwxyzåäöüßſ‌-]", "gi");
         await t.step("hyphenate ångström", () => {
@@ -95,31 +114,14 @@ Deno.test(
     }
 );
 
-/*
- * Disabled:
- * Deno.test(
- *     "disable Webassembly.Globals",
- *     async (t) => {
- *         const H9Y = await freshImport();
- *         const wag = WebAssembly.Global;
- *         WebAssembly.Global = null;
- *         const deHyphenator = await H9Y.config({"require": ["de"]});
- *         await t.step("hyphenate one word with Globals disabled", () => {
- *             assertEquals(
- *                 deHyphenator("Silbentrennung"),
- *                 "Sil\u00ADben\u00ADtren\u00ADnung",
- *                 deHyphenator("Silbentrennung"));
- *             WebAssembly.Global = wag;
- *         });
- *     }
- * );
- */
-
 Deno.test({
     "name": "run config with two languages",
     async fn(t) {
         const H9Y = await freshImport();
-        const hyphenators = await H9Y.config({"require": ["de", "en-us"]});
+        const hyphenators = await H9Y.config({
+            loader,
+            "require": ["de", "en-us"]
+        });
         await t.step("return a Map", () => {
             assertInstanceOf(hyphenators, Map);
         });
@@ -156,7 +158,10 @@ Deno.test({
     "name": "run config with two same languages",
     async fn(t) {
         const H9Y = await freshImport();
-        const deHyphenator2 = await H9Y.config({"require": ["de", "de"]});
+        const deHyphenator2 = await H9Y.config({
+            loader,
+            "require": ["de", "de"]
+        });
         await t.step("return a function", () => {
             assertEquals(typeof deHyphenator2, "function", typeof deHyphenator2);
         });
@@ -177,6 +182,7 @@ Deno.test({
     async fn(t) {
         const H9Y = await freshImport();
         const deHyphenator = H9Y.config({
+            loaderSync,
             "require": ["de"],
             "sync": true
         });
@@ -199,6 +205,7 @@ Deno.test({
     async fn(t) {
         const H9Y = await freshImport();
         const hyphenators = H9Y.config({
+            loaderSync,
             "require": ["de", "en-us"],
             "sync": true
         });

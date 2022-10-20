@@ -1,0 +1,274 @@
+# hyphenopoly module
+
+The Hyphenopoly-package contains a file called `hyphenopoly.module.js`.
+This module provides hyphenation of plain text for applications beyond the browser.
+
+_Note 1: The node module of Hyphenopoly does not support hyphenation of strings containing HTML - just plain text. If you need to hyphenate HTML-Strings [parse them first](./Special-use-cases.md#hyphenate-html-strings-using-hyphenopolymodulejs)._
+
+_Note 2: Even if it is possible, it is not recommended to use `hyphenopoly.module.js` in browser environments. Use `Hyphenopoly_Loader.js` and `Hyphenopoly.js` instead._
+
+## Install
+
+````
+npm install hyphenopoly
+````
+
+## Usage
+
+Hyphenopoly needs two things to run correctly:
+-   a [`loader`](#loader) or [`loaderSync`](#loadersync) function that tells how to load the language-specific Webassembly modules.
+-   an array of needed languages.
+
+These things are configured in the `hyphenopoly.config()` function.
+
+### Usage with one language:
+
+````javascript
+import {dirname} from "node:path";
+import {fileURLToPath} from "node:url";
+import hyphenopoly from "hyphenopoly";
+import {readFile} from "node:fs/promises";
+
+function loader(file) {
+    const cwd = dirname(fileURLToPath(import.meta.url));
+    return readFile(`${cwd}/../patterns/${file}`);
+}
+
+const textHyphenators = hyphenopoly.config({
+    "hyphen": "•",
+    loader,
+    "require": ["en-us"]
+});
+
+textHyphenators.then(
+    (hyphenateText) => {
+        console.log(hyphenateText("Hyphenation enhances justification."));
+    }
+).catch(
+    (e) => {
+        console.log(e);
+    }
+);
+````
+
+### More then one language:
+
+````javascript
+import {dirname} from "node:path";
+import {fileURLToPath} from "node:url";
+import hyphenopoly from "hyphenopoly";
+import {readFile} from "node:fs/promises";
+
+function loader(file) {
+    const cwd = dirname(fileURLToPath(import.meta.url));
+    return readFile(`${cwd}/../patterns/${file}`);
+}
+
+const textHyphenators = hyphenopoly.config({
+    "hyphen": "•",
+    loader,
+    "require": ["de", "en-us"]
+});
+
+textHyphenators.get("de").then(
+    (hyphenateText) => {
+        console.log(hyphenateText("Silbentrennung verbessert den Blocksatz."));
+    }
+);
+
+textHyphenators.get("en-us").then(
+    (hyphenateText) => {
+        console.log(hyphenateText("Hyphenation enhances justification."));
+    }
+);
+
+````
+
+## Synchronous mode
+
+By default, `hyphenopoly.config` returns a promise (or a `Map` of promises). Some code bases are not yet capable of handling async code.
+By setting `"sync" : true` the hyphenopoly module switches to a sync mode. Consequently, a synchronous loader `loaderSync` must also be used.
+
+````javascript
+import hyphenopoly from "../hyphenopoly.module.js";
+import {dirname} from "path";
+import {fileURLToPath} from "url";
+import {readFileSync} from "node:fs";
+
+function loaderSync(file) {
+    const cwd = dirname(fileURLToPath(import.meta.url));
+    return readFileSync(`${cwd}/../patterns/${file}`);
+}
+
+const hyphenator = hyphenopoly.config({
+    "exceptions": {
+        "en-us": "en-han-ces"
+    },
+    "hyphen": "•",
+    loaderSync,
+    "require": ["de", "en-us"],
+    "sync": true
+});
+
+const hy1 = hyphenator.get("en-us")("hyphenation enhances justification.");
+const hy2 = hyphenator.get("de")("Silbentrennung verbessert den Blocksatz.");
+
+
+console.log(hy1);
+console.log(hy2);
+
+````
+
+## Configuration
+
+The `.config`-method takes an object as argument:
+
+Defaults:
+````javascript
+{
+    "compound": "hyphen",
+    "exceptions": {},
+    "hyphen": String.fromCharCode(173),
+    "leftmin": 0,
+    "loader": undefined, //required
+    "loaderSync": undefined,
+    "minWordLength": 6,
+    "mixedCase": true,
+    "normalize": false,
+    "orphanControl": 1,
+    "require": [], //required
+    "rightmin": 0,
+    "sync": false
+}
+````
+
+### loader
+The `loader` function takes one string argument (the name of the .wasm file to load, e.g. `"en-us.wasm"`) and must return a `promise` that resolves with a buffer of the language file.
+
+Here are some examples:
+
+````javascript
+/* A typical node loader using fs/promises */
+import {dirname} from "node:path";
+import {fileURLToPath} from "node:url";
+import hyphenopoly from "hyphenopoly";
+import {readFile} from "node:fs/promises";
+
+function loader(file) {
+    const cwd = dirname(fileURLToPath(import.meta.url));
+    return readFile(`${cwd}/../patterns/${file}`);
+}
+const hyphenator = hyphenopoly.config({
+    loader,
+    "require": […]
+});
+````
+
+````javascript
+/* A typical deno loader using Deno.readFile (--allow-read) */
+import hyphenopoly from "hyphenopoly";
+
+function loader(file) {
+    return Deno.readFile(`./patterns/${file}`);
+}
+const hyphenator = hyphenopoly.config({
+    loader,
+    "require": […]
+});
+````
+
+````javascript
+/* A node loader using https */
+import hyphenopoly from "hyphenopoly";
+
+async function https(file) {
+    const https = await import("node:https");
+    return new Promise((resolve, reject) => {
+        https.get(`https://cdn.jsdelivr.net/npm/hyphenopoly@5.0.0-beta.5/patterns/${file}`, (res) => {
+            const rawData = [];
+            res.on("data", (chunk) => {
+                rawData.push(chunk);
+            });
+            res.on("end", () => {
+                resolve(Buffer.concat(rawData));
+            });
+            res.on("error", (e) => {
+                reject(e);
+            });
+        });
+    });
+}
+const hyphenator = hyphenopoly.config({
+    "loader": https,
+    "require": […]
+});
+````
+
+````javascript
+/* A node loader using fetch */
+import hyphenopoly from "hyphenopoly";
+
+function fetcher(file) {
+    return fetch(`https://cdn.jsdelivr.net/npm/hyphenopoly@5.0.0-beta.5/patterns/${file}`).then((response) => {
+        return response.arrayBuffer();
+    });
+}
+const hyphenator = hyphenopoly.config({
+    "loader": fetcher,
+    "require": […]
+});
+````
+
+### loaderSync
+If hyphenopoly is run in sync-mode a `loaderSync` must be defined instead of `loader`.
+The `loaderSync` function takes one string argument (the name of the .wasm file to load, e.g. `"en-us.wasm"`) and must return a buffer of the file data.
+Of course, this does not work with fetch and https, which are inherently async.
+
+````javascript
+/* A snchrounous node loader using fs */
+import hyphenopoly from "../hyphenopoly.module.js";
+import {dirname} from "path";
+import {fileURLToPath} from "url";
+import {readFileSync} from "node:fs";
+
+function loaderSync(file) {
+    const cwd = dirname(fileURLToPath(import.meta.url));
+    return readFileSync(`${cwd}/../patterns/${file}`);
+}
+
+const hyphenator = hyphenopoly.config({
+    loaderSync,
+    "require": […]
+});
+````
+
+### Other options
+For documentation about the other options see the `Hyphenopoly.js`-documentation:
+
+-   [compound](./Setup.md#compound)
+-   [exceptions](./Setup.md#exceptions)
+-   [hyphen](./Setup.md#hyphen)
+-   [leftmin](./Setup.md#leftmin-and-rightmin)
+-   [minWordLength](./Setup.md#minwordlength)
+-   [mixedCase](./Setup.md#mixedcase)
+-   [normalize](./Setup.md#normalize)
+-   [orphanControl](./Setup.md#orphancontrol)
+-   [rightmin](./Setup.md#leftmin-and-rightmin)
+
+## Supported languages
+A list of supported languages can be programmatically obtained by looking at `Hyphenopoly.supportedLanguages`:
+````javascript
+import hyphenopoly from "hyphenopoly";
+hyphenopoly.supportedLanguages.includes("en-us"); //true
+hyphenopoly.supportedLanguages.includes("en"); //false
+````
+
+## Performance
+
+On my machine with node.js 13.7.0:
+
+| module        | setup         | hyphenate 270 en words |
+| ------------- | -------------:| ----------------------:|
+| _hyphenopoly_ | _10ms_        | _0.5ms_                  |
+| [hyphen](https://www.npmjs.com/package/hyphen)        | 18ms          | 72ms                  |
+| [hypher](https://www.npmjs.com/package/hypher)        | 35ms          | 1.2ms                    |

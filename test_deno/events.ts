@@ -7,8 +7,12 @@
  * LEAKS MEMORY!
  */
 async function freshImport() {
-    const {"default": H9Y} = await import(`../hyphenopoly.deno.js?update=${Date.now()}`);
+    const {"default": H9Y} = await import(`../hyphenopoly.module.js?update=${Date.now()}`);
     return H9Y;
+}
+
+function loader(file: string) {
+    return Deno.readFile(`./patterns/${file}`);
 }
 
 Deno.test("set Event", async () => {
@@ -25,6 +29,7 @@ Deno.test("set Event", async () => {
                 e.preventDefault();
             }
         },
+        loader,
         "require": ["de"]
     });
 });
@@ -43,6 +48,7 @@ Deno.test("set unknown event", async () => {
                 e.preventDefault();
             }
         },
+        loader,
         "require": ["de"]
     });
 });
@@ -61,6 +67,7 @@ Deno.test("try to overwrite noncancellable event", async () => {
                 e.preventDefault();
             }
         },
+        loader,
         "require": ["de"]
     });
 });

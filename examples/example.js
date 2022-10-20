@@ -11,6 +11,13 @@ const hyphenator = hyphenopoly.config({
         "en-us": "en-han-ces"
     },
     "hyphen": "•",
+    "loader": async (file) => {
+        const {readFile} = await import("node:fs/promises");
+        const {dirname} = await import("node:path");
+        const {fileURLToPath} = await import("node:url");
+        const cwd = dirname(fileURLToPath(import.meta.url));
+        return readFile(`${cwd}/../patterns/${file}`);
+    },
     "require": ["de", "en-us"]
 });
 

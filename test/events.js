@@ -14,6 +14,15 @@ async function freshImport() {
     return H9Y;
 }
 
+// eslint-disable-next-line require-jsdoc
+async function loader(file) {
+    const {readFile} = await import("node:fs/promises");
+    const {dirname} = await import("node:path");
+    const {fileURLToPath} = await import("node:url");
+    const cwd = dirname(fileURLToPath(import.meta.url));
+    return readFile(`${cwd}/../patterns/${file}`);
+}
+
 t.test("set Event", async function (t) {
     const H9Y = await freshImport();
     await H9Y.config({
@@ -28,6 +37,7 @@ t.test("set Event", async function (t) {
                 e.preventDefault();
             }
         },
+        loader,
         "require": ["de"]
     });
     t.end();
@@ -47,6 +57,7 @@ t.test("set unknown event", async function (t) {
                 e.preventDefault();
             }
         },
+        loader,
         "require": ["de"]
     });
     t.end();
@@ -66,6 +77,7 @@ t.test("try to overwrite noncancellable event", async function (t) {
                 e.preventDefault();
             }
         },
+        loader,
         "require": ["de"]
     });
     t.end();

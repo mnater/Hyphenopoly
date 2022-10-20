@@ -111,6 +111,13 @@ import hyphenopoly from "hyphenopoly";
 const hyphenator = hyphenopoly.config({
     "require": ["de", "en-us"],
     "hyphen": "•",
+    "loader": async (file) => {
+        const {readFile} = await import("node:fs/promises");
+        const {dirname} = await import("node:path");
+        const {fileURLToPath} = await import("node:url");
+        const cwd = dirname(fileURLToPath(import.meta.url));
+        return readFile(`${cwd}/../patterns/${file}`);
+    },
     "exceptions": {
         "en-us": "en-han-ces"
     }
