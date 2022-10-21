@@ -12,58 +12,23 @@
 
 ## Webpack, using hyphenopoly.module.js {#webpack-hyphenopoly-module}
 
-**Note: A webpacked hyphenopoly.module.js is by far larger then the Hyphenopoly_Loader.js and Hyphenopoly.js scripts which are optimized for usage in browsers.**
+**Note: A webpacked hyphenopoly.module.js is by far larger than the Hyphenopoly_Loader.js and Hyphenopoly.js scripts which are optimized for usage in browsers.**
 
-**Note2: I am not a webpack expert. The following works for Webpack 5.4.0, but may not be the best way to use hyphenopoly.module.js in webpack.**
-
-`Webpack` will not shim "fs". Thus we have to tell `webpack` to shim the "fs" module with an empty object and how to polyfill other node-specific functions. And we configure `hyphenopoly` to use the "https"-loader.
-
-webpack.config.js
-
-```javascript
-const path = require("path");
-const webpack = require("webpack");
-
-module.exports = {
-    mode: "production",
-    entry: "./index.js",
-    output: {
-      filename: "main.js",
-      path: path.resolve(__dirname, "dist")
-    },
-    node: {
-      global: true
-    },
-    plugins: [
-      new webpack.ProvidePlugin({
-        process: "process/browser",
-        Buffer: ["buffer", "Buffer"],
-      })
-    ],
-    resolve: {
-      fallback: { 
-        "fs": false,
-        "https": require.resolve("https-browserify"),
-        "http": require.resolve("stream-http"),
-        "url": require.resolve("url/")
-      }
-    }
-};
-```
-
-index.js
+To use `hyphenopoly.module.js` in a browser environment, you'll need to provide a browser-friendly loader: use `fetch`:
 
 ```javascript
 import hyphenopoly from "hyphenopoly";
 
+function fetcher(file) {
+    return fetch(`https://cdn.jsdelivr.net/npm/hyphenopoly@5.0.0-beta.5/patterns/${file}`).then((response) => {
+        return response.arrayBuffer();
+    });
+}
+
 const hyphenator = hyphenopoly.config({
-    "require": ["de", "en-us"],
-    "paths": {
-        "maindir": "../node_modules/hyphenopoly/",
-        "patterndir": "../node_modules/hyphenopoly/patterns/"
-    },
     "hyphen": "•",
-    "loader": "https"
+    "loader": fetcher,
+    "require": ["de", "en-us"]
 });
 
 async function addDiv(lang, text) {
@@ -189,7 +154,7 @@ In CSS hyphenation can be restricted to special media-queries. If hyphenation on
 
 To polyfill hyphenation for browsers that don't support hyphenation (or don't support the required language) we'll have to tell Hyphenopoly to behave the same.
 
-The standard way to enable Hyphenopoly would just hyphenate, regardless of the screen-width. Well have to tell the browser to run Hyphenopoly_Loader.js only for small screens and react to changes of the screen width (e.g. when rotating a mobile device). Therefor, instead of including Hyphenopoly the standard way
+The standard way to enable Hyphenopoly would just hyphenate, regardless of the screen-width. We'll have to tell the browser to run Hyphenopoly_Loader.js only for small screens and react to changes of the screen width (e.g. when rotating a mobile device). Therefor, instead of including Hyphenopoly the standard way
 
 ```html
 <script>
@@ -209,7 +174,7 @@ The standard way to enable Hyphenopoly would just hyphenate, regardless of the s
 
 we'll define a `selectiveLoad` IIFE:
 
-```html
+```javascript
 <script>
   (function selectiveLoad() {
     let H9YLisLoaded = false;
