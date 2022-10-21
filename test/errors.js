@@ -50,7 +50,7 @@ t.test("loader not defined", async function (t) {
             "require": ["en-us"]
         });
     } catch (e) {
-        t.equal(e, "loader/loaderSync has not been configured. <<link>>");
+        t.equal(e, "loader/loaderSync has not been configured.");
         t.end();
     }
 });
@@ -70,7 +70,7 @@ t.test("loader not a function", async function (t) {
             "require": ["en-us"]
         });
     } catch (e) {
-        t.equal(e, "Loader must be a function. <<link>>");
+        t.equal(e, "Loader must be a function.");
         t.end();
     }
 });

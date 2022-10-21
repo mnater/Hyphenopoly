@@ -301,8 +301,7 @@ function loadHyphenEngine(lang) {
 
     if (typeof H.c.loader !== "function") {
         H.events.dispatch("error", {
-            "key": "",
-            "msg": "Loader must be a function. <<link>>"
+            "msg": "Loader must be a function."
         });
         return;
     }
@@ -528,7 +527,7 @@ function createTextHyphenator(lang) {
     );
 
     /**
-     * Dispatch error <name> with arguments <data>
+     * Dispatch event <name> with arguments <data>
      * @param {string} name The name of the event
      * @param {Object|undefined} data Data of the event
      * @returns {undefined}
@@ -617,10 +616,9 @@ function createMapWithDefaults(defaultsMap) {
  * @returns null
  */
 function defaultLoader() {
-    H.events.dispatch(
-        "error",
-        {"msg": "loader/loaderSync has not been configured. <<link>>"}
-    );
+    H.events.dispatch("error", {
+        "msg": "loader/loaderSync has not been configured."
+    });
     return null;
 }
 
@@ -693,8 +691,7 @@ H.config = ((userConfig) => {
                     }
                 });
                 H.events.addListener("error", (e) => {
-                    if (e.key === lang || e.key === "hyphenEngine") {
-                        e.preventDefault();
+                    if (e.key === lang) {
                         reject(e.msg);
                     }
                 });
