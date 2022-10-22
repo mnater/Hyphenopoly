@@ -18,7 +18,7 @@ Use this to create pull-requests or to fork the repository.
 
 ### Download tagged release
 
-While cloning gives you the most recent status, downloading a tagged release gives you a more thoughtfully tested (but never error free) version of Hyphenopoly.
+While cloning gives you the most recent status, downloading a tagged release gives you a more thoughtfully tested (but never error-free) version of Hyphenopoly.
 
 1.  Go to [https://github.com/mnater/Hyphenopoly/releases/latest](https://github.com/mnater/Hyphenopoly/releases/latest) and download the package.
 2.  Unpack the package.
@@ -47,7 +47,7 @@ Some dependencies are not available on npm. Run `npm run-script install3rdparty`
 This will install and compile [binaryen](https://github.com/WebAssembly/binaryen).
 
 ## Use the tools
-With the tools mentioned above installed you can run the following scripts:
+With the tools mentioned above installed, you can run the following scripts:
 
 *   `npm prepare` - recreates a minified subset of the files in the `min`-directory.
 *   `npm test` - runs the tap tests for Hyphenopoly.module.js

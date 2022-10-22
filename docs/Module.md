@@ -1,9 +1,9 @@
 # hyphenopoly module
 
-The Hyphenopoly-package contains a file called `hyphenopoly.module.js`.
+The Hyphenopoly package contains a file called `hyphenopoly.module.js`.
 This module provides hyphenation of plain text for applications beyond the browser.
 
-_Note 1: The node module of Hyphenopoly does not support hyphenation of strings containing HTML - just plain text. If you need to hyphenate HTML-Strings [parse them first](./Special-use-cases.md#hyphenate-html-strings-using-hyphenopolymodulejs)._
+_Note 1: The node module of Hyphenopoly does not support hyphenation of strings containing HTML — just plain text. If you need to hyphenate HTML-Strings, you must first [parse them](./Special-use-cases.md#hyphenate-html-strings-using-hyphenopolymodulejs)._
 
 _Note 2: Even if it is possible, it is not recommended to use `hyphenopoly.module.js` in browser environments. Use `Hyphenopoly_Loader.js` and `Hyphenopoly.js` instead._
 
@@ -121,7 +121,7 @@ console.log(hy2);
 
 ## Configuration
 
-The `.config`-method takes an object as argument:
+The `.config`-method takes an object as an argument:
 
 Defaults:
 ````javascript
@@ -220,7 +220,7 @@ const hyphenator = hyphenopoly.config({
 ````
 
 ### loaderSync
-If hyphenopoly is run in sync-mode a `loaderSync` must be defined instead of `loader`.
+If hyphenopoly is run in sync-mode, a `loaderSync` must be defined instead of `loader`.
 The `loaderSync` function takes one string argument (the name of the .wasm file to load, e.g. `"en-us.wasm"`) and must return a buffer of the file data.
 Of course, this does not work with fetch and https, which are inherently async.
 
@@ -262,13 +262,3 @@ import hyphenopoly from "hyphenopoly";
 hyphenopoly.supportedLanguages.includes("en-us"); //true
 hyphenopoly.supportedLanguages.includes("en"); //false
 ````
-
-## Performance
-
-On my machine with node.js 13.7.0:
-
-| module        | setup         | hyphenate 270 en words |
-| ------------- | -------------:| ----------------------:|
-| _hyphenopoly_ | _10ms_        | _0.5ms_                  |
-| [hyphen](https://www.npmjs.com/package/hyphen)        | 18ms          | 72ms                  |
-| [hypher](https://www.npmjs.com/package/hypher)        | 35ms          | 1.2ms                    |

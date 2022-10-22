@@ -15,16 +15,16 @@ This is a minimal embedding of Hyphenopoly on a website:
 ````
 The first script tag loads `Hyphenopoly_Loader.js` which registers the global object `window.Hyphenopoly`. This is the one and only global that is set by Hyphenopoly.
 
-In the second script tag Hyphenopoly gets configured. This also runs every step necessary to hyphenate the page.
+In the second script tag, Hyphenopoly gets configured. This also runs every step necessary to hyphenate the page.
 
-To configure Hyphenopoly you pass an object with the values defined here to the function `Hyphenopoly.config()`. The settings in this object have multiple layers and each layer (if present) has mandatory and optional settings.
+To configure Hyphenopoly, you pass an object with the values defined here to the function `Hyphenopoly.config()`. The settings in this object have multiple layers, and each layer (if present) has mandatory and optional settings.
 
-The first layer contains settings for the general behavior of Hyphenopoly_Loader.js (`require`, `handleEvent` etc.). This first layer may contain a property `setup` wich contains the second layer.
+The first layer contains settings for the general behavior of Hyphenopoly_Loader.js (`require`, `handleEvent` etc.). This first layer may contain a property called `setup` which contains the second layer.
 
-The second layer defines the behavior of Hyphenopoly.js. There are global settings (like `defaultLanguage`, `safeCopy` etc.) that are independent of the respective element selectors. And there are selector based settings (like `minWordLength`, `leftmin` etc.) that apply only to the given selectors.
+The second layer defines the behavior of Hyphenopoly.js. There are global settings (like `defaultLanguage`, `safeCopy` etc.) that are independent of the respective element selectors. And there are selector-based settings (like `minWordLength`, `leftmin` etc.) that apply only to the given selectors.
 
 ## Calling Hyphenopoly.configure
-In most cases you'll call `Hyphenopoly.configure()` just once at the beginning of the pageload. In some cases (e.g. if a user changes the language of the site) you need to call this function again (and again).
+In most cases, you'll call `Hyphenopoly.configure()` just once at the beginning of the page load. In some cases (e.g. if a user changes the language of the site), you need to call this function again (and again).
 
 On every call of `Hyphenopoly.configure()` the settings are extended or overwritten and, if necessary, new .wasm-files are loaded.
 
@@ -32,7 +32,7 @@ On every call of `Hyphenopoly.configure()` the settings are extended or overwrit
 ### require (mandatory)
 The config-Object must contain exactly one field called `require`. It defines the language(s) used on the page.
 
-The `require` field must be an object of key-value-pairs, where the keys are language codes and the values are a long word (>=12 characters) in the required language.
+The `require` field must be an object of key-value-pairs where the keys are language codes and the values are long words (>=12 characters) in the required language.
 ````javascript
 Hyphenopoly.config({
     require: {
@@ -42,14 +42,14 @@ Hyphenopoly.config({
 });
 ````
 Hyphenopoly_Loader.js feature tests the browser for CSS-hyphenation support of the required languages using the long word.
-If the feature test indicates that the browser doesn't support CSS-hyphenation for at least one language, all necessary resources will be loaded and Hyphenopoly.js gets executed.
+If the feature test indicates that the browser doesn't support CSS-hyphenation for at least one language, all the necessary resources will be loaded and Hyphenopoly.js will be executed.
 
-Use this to test support for every language used on the current page. If e.g. the language of the page is `lang="de-DE"` you must require `de-de` (case doesn't matter). For languages that aren't in the patterns directory a fallback must be defined (see below).
+Use this to test support for every language used on the current page. If, e.g. the language of the page is `lang="de-DE"`, you must require `de-de` (case doesn't matter). A fallback must be defined for languages that aren't in the patterns directory (see below).
 
-To force the usage of Hyphenopoly.js (e.g. for testing or if you prefer to use your own patterns) the special keyword `"FORCEHYPHENOPOLY"` can be used as value. Note: Disable CSS-hyphenation while using `"FORCEHYPHENOPOLY"`.
+To force the usage of Hyphenopoly.js (e.g. for testing or if you prefer to use Hyhenopolys own patterns), the special keyword `"FORCEHYPHENOPOLY"` can be used as value. Note: Disable CSS-hyphenation while using `"FORCEHYPHENOPOLY"`.
 
 ### paths (optional)
-By default Hyphenopoly looks in `../Hyphenopoly/patterns/` for .wasm-files and in `../Hyphenopoly/` for other resources.
+By default, Hyphenopoly looks in `../Hyphenopoly/patterns/` for .wasm-files and in `../Hyphenopoly/` for other resources.
 
 These paths can be reconfigured:
 The `paths` field must be an object with two key-value-pairs:
@@ -65,9 +65,9 @@ Hyphenopoly.config({
 
 ### fallbacks (optional)
 
-In some cases a fallback-language need to be defined:
-*   patterns for a given language are not (yet) available but patterns of an other language can be used.
-*   the language on the webpage has a region tag.
+In some cases, a fallback language needs to be defined:
+*   Patterns for a given language are not (yet) available; however patterns of an other language can be used.
+*   The language on the webpage has a region tag.
 
 E.g. you'd like to use `en-gb` patterns for `en-au` and `de` for `de-DE`:
 
@@ -89,11 +89,11 @@ Hyphenopoly.config({
 On the first run Hyphenopoly_Loader.js feature tests the client for support of **CSS-hyphenation**
 for each language in `Hyphenopoly.require`.
 
-The result of these tests is stored in `Hyphenopoly.cf` (cf = client features). Because these tests take 
+The result of these tests is stored in `Hyphenopoly.cf` (cf = client features). Because these tests may take 
 some time and may cause a reflow of the document, Hyphenopoly_Loader.js can store their
 results and retrieve these stored results for other pages in the same browsing session.
 
-The test results are stored in sessionStorage to assure that the tests are rerun when
+The test results are stored in sessionStorage to ensure that the tests are rerun when
 the browser occasionally gets updated.
 
 Because the law in some countries require a user opt-in or opt-out or whatever if you store
@@ -105,7 +105,7 @@ Hyphenopoly.config({
     "cacheFeatureTests": true
 });
 ````
-It's up to you to comply to the cookie-regulations of your country.
+It's up to you to comply with the the cookie-regulations of your country.
 
 ## Second Layer
 ### setup (optional)
@@ -129,11 +129,11 @@ Hyphenopoly.config({
     }
 });
 ````
-This list is not conclusive. For full documentation see [Setup](./Setup.md).
+This list is not conclusive. For full documentation, see [Setup](./Setup.md).
 
 #### selectors 
 
-With selectors elements can be selected very precisely without the need of adding classes to the HTML. The selectors-object is a list of key-value-pairs where the key is a selector and the value is an object of settings specific to the selected elements.
+With selectors, elements can be selected very precisely without the need to add classes to the HTML. The selectors-object is a list of key-value-pairs where the key is a selector and the value is an object of settings specific to the selected elements.
 
 ````javascript
 setup: {

@@ -6,16 +6,16 @@ Possible use cases are:
 *   hyphenating text provided by the user (e.g. in a preview window of a blogging software)
 *   …
 
-For this use cases Hyphenopoly.js exposes `hyphenators` – functions that hyphenate strings or DOM-Objects.
+For these use cases Hyphenopoly.js exposes `hyphenators` – functions that hyphenate strings or DOM-Objects.
 
 There are two types of `hyphenators`:
-*   language specific `hyphenators` that can only hyphenate `strings`
+*   language-specific `hyphenators` that can only hyphenate `strings`
 *   a polyglot `HTML`-hyphenator that can hyphenate DOM-objects of type `HTMLElement`
 
 ## Create and access `Hyphenopoly.hyphenators`
 
 Hyphenopoly_Loader.js creates a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) for a `hyphenator` for each language it loads (i.e. languages the UA doesn't support or languages you "FORCEHYPHENOPOLY"-ied).
-Additionally it creates a Promise for a `HTML`-hyphenator, that is able to hyphenate HTMLEntities of all loaded languages.
+It also creates a promise for an `HTML`-hyphenator that can hyphenate HTMLEntities from all loaded languages.
 
 ````html
 <script src="./Hyphenopoly_Loader.js"></script>
@@ -31,10 +31,10 @@ Additionally it creates a Promise for a `HTML`-hyphenator, that is able to hyphe
 </script>
 ````
 
-In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for `en-us`. Since the UA seems to support CSS3-hyphens for German, `Hyphenopoly.hyphenators` only contain a Promise for a `en-us`-hyphenator and a Promise for the `HTML`-hyphenator.
+In the example above, we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for `en-us`. Since the UA seems to support CSS3-hyphens for German, `Hyphenopoly.hyphenators` only contain a Promise for a `en-us`-hyphenator and a Promise for the `HTML`-hyphenator.
 
 ## Use `Hyphenopoly.hyphenators[<lang>]` for Strings
-`hyphenators` are Promises. They are resolved as soon as everything necessary is loaded and ready (or rejected when something goes wrong). `hyphenators` resolve to a language specific function (a `hyphenator`) that hyphenates its input according to the settings for selectors (default: `.hyphenate`):
+`hyphenators` are Promises. They are resolved as soon as everything necessary is loaded and ready (or rejected when something goes wrong). `hyphenators` resolve to a language-specific function (a `hyphenator`) that hyphenates its input according to the settings for selectors (default: `.hyphenate`):
 
 `function hyphenator({string}, [Optional: selector=".hyphenate"]) => {string|undefined}`
 
@@ -69,12 +69,12 @@ In the example above we enforced Hyphenopoly_Loader.js to use Hyphenopoly.js for
 </script>
 ````
 
-In the example a `string` is handed over to the `hyphenator` which returns a hyphenated string according to the settings for the `selector`. If no `selector` is defined it defaults to `".hyphenate"`.
+In the example, a `string` is handed over to the `hyphenator` which returns a hyphenated string according to the settings for the `selector`. If no `selector` is defined, it defaults to `".hyphenate"`.
 
 ## Use `Hyphenopoly.hyphenators.HTML` for DOM-Elements
-Objects of type `HTMLElement` can be hyphenated with the `HTML`-hyphenator (`Hyphenopoly.hyphenators.HTML`). The `HTML`-hyphenator hyphenates the handed over `HTMLElement` and all it's `childElements` if their language is one of the loaded languages directly and returns `null`.
+Objects of type `HTMLElement` can be hyphenated with the `HTML`-hyphenator (`Hyphenopoly.hyphenators.HTML`). The `HTML`-hyphenator hyphenates the handed over `HTMLElement` and all its `childElements` if their language is one of the loaded languages directly and returns `null`.
 
-Like string-hyphenators HTML-hyphenators take a selector as an optional second argument.
+Like string-hyphenators, HTML-hyphenators take a selector as an optional second argument.
 
 `function hyphenator({HTMLElement}, [Optional: selector=".hyphenate"]) => null`
 
@@ -118,7 +118,7 @@ Like string-hyphenators HTML-hyphenators take a selector as an optional second a
 </html>
 ````
 
-In the example above we assume that the browser supports hyphention for German. So the `HTML`-hyphenator only hyphenates Englisch elements.
+In the example above, we assume that the browser supports hyphenation for German. So the `HTML`-hyphenator only hyphenates Englisch elements.
 
 ## Further notes and compatibility
 Instead of using `.then` on the Promises we could also use `async/await`:
@@ -131,7 +131,7 @@ runHyphenator("hyphenateme");
 ````
 
 # Use case: Hyphenopoly in react
-`hyphenators` are very important in dynamically generated web-content (web-apps). The following describes some first steps in how to use Hyphenopoly in react-apps. Please note that I'm not an expert in react.js If you find a better way I'd highly appreciate your ideas.
+`hyphenators` are very important in dynamically generated web-content (web-apps). The following describes some first steps in how to use Hyphenopoly in react-apps. Please note that I'm not an expert in react.js If you find a better way, I'd highly appreciate your ideas.
 
 1.  [download](https://github.com/mnater/Hyphenopoly/releases/latest) and copy the latest version of Hyphenopoly to your react's `public` folder.
 

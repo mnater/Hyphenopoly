@@ -12,9 +12,9 @@
 
 ## Webpack, using hyphenopoly.module.js {#webpack-hyphenopoly-module}
 
-**Note: A webpacked hyphenopoly.module.js is by far larger than the Hyphenopoly_Loader.js and Hyphenopoly.js scripts which are optimized for usage in browsers.**
+**Note: The webpacked hyphenopoly.module.js is by far larger than the Hyphenopoly_Loader.js and Hyphenopoly.js scripts, which are optimized for usage in browsers.**
 
-To use `hyphenopoly.module.js` in a browser environment, you'll need to provide a browser-friendly loader: use `fetch`:
+To use `hyphenopoly.module.js` in a browser environment, you'll need to provide a browser-friendly loader: Use `fetch`:
 
 ```javascript
 import hyphenopoly from "hyphenopoly";
@@ -46,7 +46,7 @@ async function addDiv(lang, text) {
 
 ## Webpack, using Hyphenopoly_Loader.js {#webpack-hyphenopoly-loader}
 
-If you're working in a browser environment you can add the required files, such as Hyphenopoly.js and the essential patterns, by copying them with the [copy-webpack-plugin](https://www.npmjs.com/package/copy-webpack-plugin) into your distribution folder.
+If you're working in a browser environment, you can add the required files, such as Hyphenopoly.js and the essential patterns, by copying them with the [copy-webpack-plugin](https://www.npmjs.com/package/copy-webpack-plugin) into your distribution folder.
 
 _webpack.config.js_
 ```javascript
@@ -103,7 +103,7 @@ module.exports = {
 };
 ```
 
-Then, inside the vendor_head.js create the proper Hyphenopoly object describing the directories where the files are copied and finally import Hyphenopoly_Loader.js.
+Then, inside the vendor_head.js, create the proper Hyphenopoly object describing the directories where the files are copied and finally import Hyphenopoly_Loader.js.
 
 _vendor_head.js_
 ```javascript
@@ -131,7 +131,7 @@ A demo can be found at _/examples/webpack_. [Live preview.](./dist/index.html)
 
 ## Hyphenate depending on media queries
 
-In CSS hyphenation can be restricted to special media-queries. If hyphenation on a website must be dependent of e.g. the width of the window and only active on small screens, you'd do something like this:
+In CSS, hyphenation can be restricted to special media-queries. If hyphenation on a website must be dependent on e.g. the width of the window and only active on small screens, you'd do something like this:
 
 ```css
 @media (max-width: 600px) {
@@ -152,9 +152,9 @@ In CSS hyphenation can be restricted to special media-queries. If hyphenation on
 }
 ```
 
-To polyfill hyphenation for browsers that don't support hyphenation (or don't support the required language) we'll have to tell Hyphenopoly to behave the same.
+To polyfill hyphenation for browsers that don't support hyphenation (or don't support the required language), we'll have to tell Hyphenopoly to behave the same.
 
-The standard way to enable Hyphenopoly would just hyphenate, regardless of the screen-width. We'll have to tell the browser to run Hyphenopoly_Loader.js only for small screens and react to changes of the screen width (e.g. when rotating a mobile device). Therefor, instead of including Hyphenopoly the standard way
+The standard way to enable Hyphenopoly would just hyphenate, regardless of the screen width. We'll have to tell the browser to run Hyphenopoly_Loader.js only for small screens and react to changes in the screen width (e.g. when rotating a mobile device). Therefore, instead of including Hyphenopoly the standard way:
 
 ```html
 <script>
@@ -232,9 +232,9 @@ we'll define a `selectiveLoad` IIFE:
 
 ## Set .focus() while Hyphenopoly is running
 
-By default `Hyphenopoly_Loader.js` hides the whole document to prevent a "Flash of unhyphenated content" (FOUHC) until hyphenation has finished. If `focus()` is called while the document is hidden the focus will not change.
+By default `Hyphenopoly_Loader.js` hides the whole document to prevent a "Flash of unhyphenated content" (FOUHC) until hyphenation has finished. If `focus()` is called while the document is hidden, the focus will not change.
 
-To prevent this behavior experiment with [different settings for hiding](./Setup.md#hide). Using "element" or "text" should work in most cases.
+To prevent this behavior, experiment with [different settings for hiding](./Setup.md#hide). Using "element" or "text" should work in most cases.
 
 ## Format chars
 
@@ -296,7 +296,7 @@ console.log(hyphenateHtml("<p>Silbentrennung ist <b>wichtig</b> im <i>Blocksatz<
 ````
 
 ## Usage of <lang>.wasm Modules outside Hyphenopoly
-The Webassembly-modules provide some basic, language specific hyphenation
+The Webassembly-modules provide some basic, language-specific hyphenation
 functionality (hyphenation of a single word). These modules can be used in any
 system that supports instantiation and execution of Webassembly.
 
@@ -344,19 +344,19 @@ print(hyphenated)
 ````
 
 ### Exports of wasm-modules
--   `mem` - memory: The uInt16View into the first 64 values (128 Bytes) is where 
+-   `mem` - memory: The uInt16View into the first 64 values (128 bytes) is where 
 the word to be hyphenated is written to and read from after calling `hyphenate()`.
--   `lmi` - left min: The minimum of letters before the first hyphenation point.
+-   `lmi` - left min: The minimum number of letters before the first hyphenation point.
 The patterns have been computed with this value.
--   `rmi` - rigth min: The minimum of letters after the last hyphenation point.
+-   `rmi` - rigth min: The minimum number of letters after the last hyphenation point.
 The patterns have been computed with this value.
 -   `lct` - lettercount: The number of letters in the alphabet.
 -   `hyphenate(leftmin=lmi, rightmin=rmi, hyphenchar=0)` - This function expects
-a sequence of UTF-16 values (a single word) in the first 128 Bytes of `mem`. The 
-word must be preceeded and succeeded with a "." (value `46`) denoting the 
-beginning an end of the word. The last "." must be followed by `0`. The function 
+a sequence of UTF-16 values (a single word) in the first 128 bytes of `mem`. The 
+word must be preceded and succeeded with a "." (value `46`) denoting the 
+beginning and the end of the word. The last "." must be followed by `0`. The function 
 writes the hyphenated word back to the same memory location (without the ".") and
 returns the length of the hyphenated word.
-If something goes wrong the returned value is <= 0.
+If something goes wrong, the returned value is <= 0.
 -   `subst(ccl: i32, ccu: i32, replcc: i32): i32` - Substitute `ccl` (charcode lowercase)
 and `ccu` (charcode uppercase) with `replcc`. Returns the new length of the alphabet.

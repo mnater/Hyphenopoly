@@ -14,10 +14,10 @@ The package consists of the following parts:
 -   _hyphenopoly.module.js_: the node module to hyphenate plain text strings.
 
 ## Usage (Browser)
-Place all code for Hyphenopoly at the top of the header (immediately after the `<title>` tag) to ensure resources are loaded as early as possible.
+Place all the code for Hyphenopoly at the top of the header (immediately after the `<title>` tag) to ensure resources are loaded as early as possible.
 
-You'll have to insert two script blocks. In the first block load Hyphenopoly_Loader.js as external script.
-In the second block provide the initial configurations for Hyphenopoly_Loader as inline script. This also triggers all further steps.
+You'll have to insert two script blocks. In the first block, load Hyphenopoly_Loader.js as an external script.
+In the second block, provide the initial configurations for Hyphenopoly_Loader as an inline script. This also triggers all further steps.
 
 Also, don't forget to enable CSS hyphenation.
 
@@ -77,22 +77,22 @@ Let's go through this example step by step:
 Make sure your page is encoded as utf-8.
 
 ### script blocks – load, configure and run Hyphenopoly_Loader.js
-Hyphenopoly_Loader.js needs some information to run. This information is provided as a parameter object to the function `Hyphenopoly.config()`. This information is stored in a globally accessible Object called `window.Hyphenopoly`. Hyphenopoly_Loader.js and (if necessary) Hyphenopoly.js will add other methods and properties only to this object – there will be no other global variables/functions beyond this object.
+Hyphenopoly_Loader.js needs some information to run. This information is provided as a parameter object to the function `Hyphenopoly.config()`. This information is stored in a globally accessible Object called `window.Hyphenopoly`. Hyphenopoly_Loader.js and (if necessary) Hyphenopoly.js will add other methods and properties only to this object – there will be no other global variables or functions beyond this object.
 
 #### require
 The configuration object must have exactly one property called `require` which itself is an object containing at least one nameValuePair where the name is a language code string (Some languages are region-specific. See the patterns directory for supported languages. E.g. just using `en` won't work, use `en-us`or `en-gb`) and the value is a long word string in that language (preferably more than 12 characters long).
 
-If you want to force the usage of Hyphenopoly.js for a language (e.g. for testing purposes) write `"FORCEHYPHENOPOLY"` instead of the long word.
+If you want to force the usage of Hyphenopoly.js for a language (e.g. for testing purposes), write `"FORCEHYPHENOPOLY"` instead of the long word.
 
-Hyphenopoly_Loader.js tests if the client (aka browser, aka user agent) supports CSS hyphenation for the language(s) given in `require`. In the example above it will test if the client supports CSS-hyphenation for latin, german and us-english.
+Hyphenopoly_Loader.js tests if the client (aka browser, aka user agent) supports CSS hyphenation for the language(s) given in `require`. In the example above, it will test if the client supports CSS-hyphenation for Latin, German and US-English.
 
-If one of the given languages isn't supported, it automatically hides the documents contents and loads Hyphenopoly.js and the necessary WebAssembly modules.
+If one of the given languages isn't supported, it automatically hides the document's contents and loads Hyphenopoly.js and the necessary WebAssembly modules.
 
 Hyphenopoly.js – once loaded – will hyphenate the elements according to the settings and unhide the document when it's done.
 
-If something goes wrong and Hyphenopoly.js is unable to unhide the document Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and unhides the document and writes a message to the console.
+If something goes wrong and Hyphenopoly.js is unable to unhide the document, Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and unhides the document and writes a message to the console.
 
-If the browser supports all required languages the script deletes the `Hyphenopoly`-object and terminates without further ado.
+If the browser supports all required languages, the script deletes the `Hyphenopoly`-object and terminates without further ado.
 
 ### enable CSS-hyphenation
 Hyphenopoly by default hyphenates elements (and their children) with the classname `.hyphenate`. Don't forget to enable CSS-hyphenation for the classes eventually handled by Hyphenopoly.
@@ -151,7 +151,7 @@ The algorithm used for hyphenation was developed by Franklin M. Liang for TeX. I
 2.  Collect all patterns that are a substring of the word to be hyphenated.
 3.  Combine the numerical values between characters: higher values overwrite lower values.
 4.  Odd values are hyphenation points (except if the hyphenation point is left from `leftmin` and right from `rightmin`), replace them with a soft hyphen and drop the other values.
-5.  Repeat 2. - 4. for all words longer than minWordLength
+5.  Repeat steps 2. - 4. for all words longer than minWordLength
 
 Example:
 ````text
@@ -170,11 +170,11 @@ h0y3p0h0e2n5a4t2i0o2n
 Hy-phen-ation
 ````
 
-The patterns are precomputed and available for many languages on [CTAN](https://www.ctan.org/tex-archive/language/hyphenation/) and [tex-hyphen](https://github.com/hyphenation/tex-hyphen). For Hyphenopoly.js they are converted to a succinct trie data structure (including pattern license, metadata and the patterns).
+The patterns are precomputed and available for many languages on [CTAN](https://www.ctan.org/tex-archive/language/hyphenation/) and [tex-hyphen](https://github.com/hyphenation/tex-hyphen). For Hyphenopoly.js they are converted to a succinct trie data structure (including pattern license, metadata, and the patterns).
 
-The original patterns are computed from a large list of hyphenated words by a program called `patgen`. They aim to find some hyphenation points – not all – because it's better to miss a hyphenation point then to have some false hyphenation points. Most patterns are really good but none is error free.
+The original patterns are computed from a large list of hyphenated words by a program called `patgen`. They aim to find some hyphenation points – not all – because it's better to miss a hyphenation point than to have some false hyphenation points. Most patterns are really good, but none are error free.
 
-These pattern vary in size. This is mostly due to the different linguistic characteristics of the languages.
+These patterns vary in size. This is mostly due to the different linguistic characteristics of the languages.
 
 ## Contributors ✨
 

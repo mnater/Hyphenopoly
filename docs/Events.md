@@ -1,6 +1,6 @@
 # Events
-Hyphenopoly fires a bunch of events while executing. As a user you can extend or overwrite the actions performed by these events.
-Some events have a default action that may be prevented (if event is cancellable).
+Hyphenopoly fires a bunch of events while executing. As a user, you can extend or overwrite the actions performed by these events.
+Some events have a default action that may be prevented (if the event is cancellable).
 
 *   [afterElementHyphenation](#afterelementhyphenation-event)
 *   [beforeElementHyphenation](#beforeelementhyphenation-event)
@@ -26,7 +26,7 @@ Hyphenopoly.config({
 });
 ````
 
-Internally events in Hyphenopoly are implemented as Promises that fulfill with a certain value.
+Internally, events in Hyphenopoly are implemented as Promises that are fulfilled with a certain value.
 
 ## afterElementHyphenation-Event
 Fired after an element has been hyphenated.
@@ -64,7 +64,7 @@ cancellable: true
 Fields: e (Error)
 ````
 
-To silent errors prevent default of this event:
+To silence errors, prevent the default of this event:
 
 ````javascript
 Hyphenopoly.config({
@@ -106,7 +106,7 @@ Fields: null
 ````
 
 ## tearDown-Event
-Fired when Hyphenopoly_Loader.js decides NOT to load Hyphenopoly.js and before it deletes the global 'Hyphenopoly' object. This event can be used to invoke other scripts if native CSS hyphenation is available.
+Fired when Hyphenopoly_Loader.js decides NOT to load Hyphenopoly.js and before it deletes the global 'Hyphenopoly' object. This event can be used to invoke other scripts, if native CSS hyphenation is available.
 
 ````
 Default-action: `w.Hyphenopoly = null`

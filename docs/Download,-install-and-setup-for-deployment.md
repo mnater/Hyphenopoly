@@ -3,17 +3,17 @@
 ## General Notes
 
 ### Minifying
-While the .wasm files are already compact by design, the .js files are not minified. I highly recommend to use one of the es6-capable JavaScript minifier tools.
+While the .wasm files are already compact by design, the .js files are not minified. I highly recommend using one of the es6-capable JavaScript minifier tools.
 
 If you [installed Hyphenopoly with npm](#using-npmjs) run `npm run prepare` to create a directory called `min` that contains a full set of minified files (and the test suite) minified with `terser`.
 
 ### Compression
-All files have good compression rates when using gzip, deflate and the like. You may need to configure your server to be able to compress `.wasm`-files though!
+All files have good compression rates when using gzip, deflate, and the like. You may need to configure your server to be able to compress `.wasm`-files though!
 
 ### node
-Hyphenopoly_Loader.js and Hyphenopoly.js are optimized for usage in browsers. For usage as a module see: [node module](./Module.md)
+Hyphenopoly_Loader.js and Hyphenopoly.js are optimized for usage in browsers. For usage as a module, see: [node module](./Module.md)
 
-Let me now, if you have a use case for hyphenation in node.js
+Let me know, if you have a use case for hyphenation in node.js
 
 ## Download
 
@@ -24,7 +24,7 @@ Let me now, if you have a use case for hyphenation in node.js
     *   `Hyphenopoly.js`
     *   `patterns/`
 
-    (Of course you can delete the patterns for the language you won't need.)
+    (Of course, you can delete the patterns for the language you won't need.)
 3.  Then follow the instructions on [https://github.com/mnater/Hyphenopoly#usage-browser](https://github.com/mnater/Hyphenopoly#usage-browser)
  
 ### Using npm.js

@@ -1,11 +1,11 @@
 # Hyphenation errors
-Automatic hyphenation can not be error free! Because ...
+Automatic hyphenation can not be error-free! Because ...
 *   ... [homographs](https://en.wikipedia.org/wiki/Homograph) may be hyphenated differently.
     ````
     desert (arid land) -> des‧ert
     desert (to leave) -> de‧sert
     ````
-    In some patterns this is solved by not hyphenating ambiguous words at all.
+    In some patterns, this is solved by not hyphenating ambiguous words at all.
 *   ... [neologisms](https://en.wikipedia.org/wiki/Neologism) that are not in the list of words used for pattern creation may be hyphenated incorrectly.
     ````
     blogosphere -> blog·o·sphere (Merriam webster)
@@ -17,12 +17,12 @@ Automatic hyphenation can not be error free! Because ...
     dictionary -> dic‧tion‧ary (Wiktionary)
         // dic·tio·nary (Merriam-Webster)
     ````
-*   ... the patterns differ in quality. Some are very new and reflect the current state of the language others are older. Some are based on a very large list of words others are crafted by hand (which is not necessarily bad).
+*   ... the patterns differ in quality. Some are very new and reflect the current state of the language, others are older. Some are based on a very large list of words, others are crafted by hand (which is not necessarily bad).
 
 *   ... patterns are made for a specific set of characters (the alphabet of the respective language). So e.g.
-`en-us` patterns will not be able to correctly hyphenate a word that contains a character outside of the range `[a-z]` (Hyphenopoly doesn't even try to hyphenate in this case but rather leaves the word unchanged).
+`en-us` patterns will not be able to correctly hyphenate a word that contains a character outside of the range `[a-z]` (Hyphenopoly doesn't even try to hyphenate in this case, but rather leaves the word unchanged).
 
-In any case automatic hyphenation needs proofreading and may need some intervention.
+In any case, automatic hyphenation needs proofreading and may need some intervention.
 
 ## Proofread
 Use a visible hyphen character to display all hyphen opportunities:
@@ -47,7 +47,7 @@ There are three levels of fixing possibilities:
 3.  [Improve patterns](#help-to-improve-the-patterns)
 
 ### Fix hyphenation in the text
-Words containing a soft hyphen (&amp;shy;) will not be hyphenated by Hyphenopoly.js. Therefor you can simply add soft hyphens manually to 'overwrite' automatic hyphenation.
+Words containing a soft hyphen (&amp;shy;) will not be hyphenated by Hyphenopoly.js. Therefore, you can simply add soft hyphens manually to 'overwrite' automatic hyphenation.
 
 __pro:__
 -   easy to do
@@ -70,7 +70,7 @@ Hyphenopoly.config({
     }
 });
 ````
-In the example above Hyphenopoly.js will never hyphenate the word "desert" and hyphenate the words "dictionary", "dictionaries" and "blogosphere" at the positions marked with a hyphen-minus. Exceptions are case sensitive. The example above will not work for capitalized words (e.g. "Desert").
+In the example above, Hyphenopoly.js will never hyphenate the word "desert" and will hyphenate the words "dictionary", "dictionaries" and "blogosphere" at the positions marked with a hyphen-minus. Exceptions are case-sensitive. The example above will not work for capitalized words (e.g. "desert").
 
 __pro:__
 -   one place for all exceptions
