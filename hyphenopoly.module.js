@@ -26,8 +26,6 @@ const empty = () => {
 
 const H = empty();
 
-H.binaries = new Map();
-
 H.supportedLanguages = [
     "af",
     "as",
@@ -102,33 +100,18 @@ H.supportedLanguages = [
     "zh-latn-pinyin"
 ];
 
+H.languages = new Map();
+
 /**
  * Create lang Object
  * @param {string} lang The language
  * @returns {Object} The newly created lang object
  */
 function createLangObj(lang) {
-    if (!H.languages) {
-        H.languages = new Map();
-    }
     if (!H.languages.has(lang)) {
         H.languages.set(lang, empty());
     }
     return H.languages.get(lang);
-}
-
-/**
- * Convert exceptions to Map
- * @param {string} exc comma separated list of exceptions
- * @returns {Object} Map of exceptions
- */
-function convertExceptions(exc) {
-    const r = new Map();
-    exc.split(", ").forEach((e) => {
-        const key = e.replace(/-/g, "");
-        r.set(key, e);
-    });
-    return r;
 }
 
 /**
@@ -151,32 +134,29 @@ function prepareLanguagesObj(
     const lo = createLangObj(lang);
     if (!lo.engineReady) {
         lo.cache = new Map();
-        if (H.c.exceptions.has("global")) {
-            if (H.c.exceptions.get(lang)) {
-                H.c.exceptions.set(lang, H.c.exceptions.get(lang) + `, ${H.c.exceptions.get("global")}`);
-            } else {
-                H.c.exceptions.set(lang, H.c.exceptions.get("global"));
-            }
-        }
+        const exc = [];
         if (H.c.exceptions.has(lang)) {
-            lo.exceptions = convertExceptions(H.c.exceptions.get(lang));
-        } else {
-            lo.exceptions = new Map();
+            exc.push(...H.c.exceptions.get(lang).split(", "));
         }
+        if (H.c.exceptions.has("global")) {
+            exc.push(...H.c.exceptions.get("global").split(", "));
+        }
+        lo.exceptions = new Map(exc.map((e) => {
+            return [e.replace(/-/g, ""), e];
+        }));
+
         lo.alphabet = alphabet;
         lo.reNotAlphabet = RegExp(`[^${alphabet}]`, "i");
-        (() => {
-            H.c.leftminPerLang.set(lang, Math.max(
-                patternLeftmin,
-                H.c.leftmin,
-                Number(H.c.leftminPerLang.get(lang)) || 0
-            ));
-            H.c.rightminPerLang.set(lang, Math.max(
-                patternRightmin,
-                H.c.rightmin,
-                Number(H.c.rightminPerLang.get(lang)) || 0
-            ));
-        })();
+        lo.lm = Math.max(
+            patternLeftmin,
+            H.c.leftmin,
+            H.c.leftminPerLang.get(lang) || 0
+        );
+        lo.rm = Math.max(
+            patternRightmin,
+            H.c.rightmin,
+            H.c.rightminPerLang.get(lang) || 0
+        );
         lo.hyphenate = hyphenateFunction;
         lo.engineReady = true;
     }
@@ -224,7 +204,7 @@ function encloseHyphenateFunction(buf, hyphenateFunc) {
  * @param {string} lang The language
  * @returns {undefined}
  */
-function instantiateWasmEngine(lang) {
+function instantiateWasmEngine(lang, wasmdata) {
     /**
      * Register character substitutions in the .wasm-hyphenEngine
      * @param {number} alphalen - The length of the alphabet
@@ -269,11 +249,11 @@ function instantiateWasmEngine(lang) {
     }
     if (H.c.sync) {
         const heInstance = new WebAssembly.Instance(
-            new WebAssembly.Module(H.binaries.get(lang))
+            new WebAssembly.Module(wasmdata)
         );
         handleWasm(heInstance);
     } else {
-        WebAssembly.instantiate(H.binaries.get(lang)).then((res) => {
+        WebAssembly.instantiate(wasmdata).then((res) => {
             handleWasm(res.instance);
         });
     }
@@ -294,8 +274,7 @@ function loadHyphenEngine(lang) {
                 "msg": `${lang}.wasm not found.`
             });
         } else {
-            H.binaries.set(lang, new Uint8Array(data).buffer);
-            instantiateWasmEngine(lang);
+            instantiateWasmEngine(lang, new Uint8Array(data).buffer);
         }
     };
 
@@ -345,8 +324,8 @@ function createWordHyphenator(lo, lang) {
             return lo.hyphenate(
                 word,
                 H.c.hyphen.charCodeAt(0),
-                H.c.leftminPerLang.get(lang),
-                H.c.rightminPerLang.get(lang)
+                lo.lm,
+                lo.rm
             );
         }
         return word;
