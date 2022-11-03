@@ -212,9 +212,9 @@ function createTranslateMap(): void {
  * Checks if the bit in hv (hasValueBitMap) is set
  * Returns the bit at pos starting at startByte
  * For our purposes the bits are numbered from left to right
- * but the bytes are stored in Little Endian (3 2 1 0)
- * to access the bytes in Big Endian order (0 1 2 3) we need to calculate
- * the address: numBytes = (numBytes - (numBytes % 4) + 3) - (numBytes % 4)
+ * but the bytes are stored in Little Endian (3 2 1 0).
+ * To access the bytes in Big Endian order (0 1 2 3) we need to calculate
+ * the address: bytePtr = (bytePtr - (bytePtr % 4) + 3) - (bytePtr % 4)
  * This can be simplyfied as follows
  */
 function nodeHasValue(pos: i32): i32 {
@@ -252,26 +252,20 @@ function rank(pos: i32, startByte: i32): i32 {
     return count as i32;
 }
 
-function get1PosInDWord(dWord: i64, nth: i32): i32 {
-    const first: i32 = (dWord >> 32) as i32;
-    const pcntf: i32 = popcnt<i32>(first);
-    let word: i32 = 0;
-    let pos: i32 = -1;
-    if (pcntf >= nth) {
-        word = first;
-    } else {
-        word = (dWord & 0xFFFFFFFF) as i32;
-        nth -= pcntf;
-        pos = 31;
-    }
-    let shift: i32 = 0;
+/**
+ * Find the position of the nth 0 in a 64bit word.
+ * The algorithm numbers bits from right to left, but we need them numbered
+ * from left to right, so we convert nth (l2r)  to nth2 (r2l).
+ */
+function get0PosInDWord(dWord: i64, nth: i32): i32 {
+    let nth2: i64 = 65 - popcnt<i64>(dWord) - nth;
+    let dwn: i64 = dWord;
     do {
-        shift = clz<i32>(word) + 1;
-        word <<= shift;
-        pos += shift;
-        nth -= 1;
-    } while (nth);
-    return pos;
+        dWord |= dwn;
+        dwn = dWord + 1;
+        nth2 -= 1;
+    } while (nth2);
+    return 63 - <i32>ctz<i64>(dwn);
 }
 
 /**
@@ -297,14 +291,14 @@ function select(ith: i32, startByte: i32, endByte: i32): i32 {
             if (bytePos > endByte) {
                 return 0;
             }
-            dWord = ~load<i64>(bytePos, 0, 8);
-            dWord0Count = <i32>popcnt<i64>(dWord);
+            dWord = load<i64>(bytePos, 0, 8);
+            dWord0Count = 64 - <i32>popcnt<i64>(dWord);
             count += dWord0Count;
             bytePos += 8;
         } while (count < ith);
         count -= dWord0Count;
         bytePos -= 8;
-        posInByte = get1PosInDWord(dWord, ith - count);
+        posInByte = get0PosInDWord(dWord, ith - count);
         pos = ((bytePos - startByte) << 3) + posInByte;
         if (run === 0) {
             firstPos = pos;
