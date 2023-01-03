@@ -43,7 +43,8 @@
             if (msg) {
                 if (
                     msg.indexOf("WebAssembly.instantiateStreaming()") === 0 ||
-                    msg.indexOf("Refused to create a WebAssembly object") === 0
+                    msg.indexOf("Refused to create a WebAssembly object") === 0 ||
+                    msg.indexOf("call to WebAssembly.instantiateStreaming() blocked by CSP") === 0
                  ) {
                     result = true;
                  }
@@ -98,7 +99,7 @@
         <p id="desc">Check CSP handling</p>
         <div id="result"></div>
         <hr>
-        <h2>CSP Error (in webkit and chrome, but not in FF)</h2>
+        <h2>CSP Error</h2>
         <div id="errorlog">no error</div>
         <p id="test" class="test hyphenate" lang="en-us">hyphenation</p>
         <p id="ref" class="ref" lang="en-us">hy•phen•ation</p>
