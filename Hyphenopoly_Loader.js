@@ -56,10 +56,10 @@ window.Hyphenopoly = {};
             return promise;
         };
 
-        const controller = new AbortController();
+        H.ac = new AbortController();
         const fetchOptions = {
             "credentials": H.s.CORScredentials,
-            "signal": controller.signal
+            "signal": H.ac.signal
         };
 
         let stylesNode = null;
@@ -223,7 +223,10 @@ window.Hyphenopoly = {};
             H.hide(1, H.s.hide);
             H.timeOutHandler = w.setTimeout(() => {
                 H.hide(0, null);
-                controller.abort();
+                // eslint-disable-next-line no-bitwise
+                if (H.s.timeout & 1) {
+                    H.ac.abort();
+                }
                 // eslint-disable-next-line no-console
                 console.info(scriptName + " timed out.");
             }, H.s.timeout);
