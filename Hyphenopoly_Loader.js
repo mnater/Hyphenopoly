@@ -242,6 +242,7 @@ window.Hyphenopoly = {};
                                 script.src = URL.createObjectURL(blb);
                                 d.head[shortcuts.ac](script);
                                 mainScriptLoaded = true;
+                                URL.revokeObjectURL(script.src);
                             });
                         }
                     });
