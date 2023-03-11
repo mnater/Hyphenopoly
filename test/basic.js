@@ -193,3 +193,16 @@ t.test("run config with two same languages", async function (t) {
     });
     t.end();
 });
+
+t.test("use language with private use subtag", async function (t) {
+    const H9Y = await freshImport();
+    const deHyphenator2 = await H9Y.config({
+        loader,
+        "require": ["de-x-syllable"]
+    });
+    t.test("hyphenate one word", function (t) {
+        t.equal(deHyphenator2("Autorenlesung"), "Au\u00ADto\u00ADren\u00ADle\u00ADsung", deHyphenator2("Autorenlesung"));
+        t.end();
+    });
+    t.end();
+});

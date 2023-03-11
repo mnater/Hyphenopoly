@@ -7,6 +7,7 @@
 1.  [Words containing special format characters](#format-chars)
 1.  [Hyphenate HTML-Strings using using hyphenopoly.module.js](#hyphenate-html-strings-using-hyphenopolymodulejs)
 1.  [Usage of .wasm Modules outside Hyphenopoly](#usage-of-wasm-modules-outside-hyphenopoly)
+1.  [Syllabification (german only)](#syllabification)
 
 **Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators.md#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.**
 
@@ -360,3 +361,29 @@ returns the length of the hyphenated word.
 If something goes wrong, the returned value is <= 0.
 -   `subst(ccl: i32, ccu: i32, replcc: i32): i32` - Substitute `ccl` (charcode lowercase)
 and `ccu` (charcode uppercase) with `replcc`. Returns the new length of the alphabet.
+
+## Syllabification
+The main task of Hyphenopoly is to separate words at the end of lines. For reasons of readability not all possible separators are found (e.g. in German single letters are not separated: Abend instead of A-bend and misleading separations are avoided Au-toren instead of Au-to-ren).
+However, if syllables are to be found, the hyphenation pattern file `de-x-syllable` can be used for the German language. This way more possible "bad" hyphenations are found: A-bend, but also Ur-in-stinkt.
+
+````javascript
+Hyphenopoly.config({
+    require: {
+          "de-x-syllable": "FORCEHYPHENOPOLY",
+          "de": "FORCEHYPHENOPOLY"
+      },
+      fallbacks: {
+          "de": "de-x-syllable"
+      },
+    setup: {
+        selectors: {
+            ".hyphenate": {
+                hyphen: "•",
+                minWordLength: 4
+            }
+        }
+    }
+});
+````
+Now elements with `lang="de"` or `lang="de-x-syllable"` are syllabified instead of hyphenated.
+q 

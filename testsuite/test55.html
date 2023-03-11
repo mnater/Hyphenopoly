@@ -10,6 +10,9 @@
                     "de-x-syllable": "FORCEHYPHENOPOLY",
                     "de": "FORCEHYPHENOPOLY"
                 },
+                fallbacks: {
+                    "de": "de-x-syllable"
+                },
                 setup: {
                     selectors: {
                         ".hyphenate": {
@@ -26,7 +29,7 @@
             });
 
             function assert() {
-                var tests = 1;
+                var tests = 2;
                 var i = 1;
                 var test = "";
                 var ref = "";
@@ -83,6 +86,8 @@
         <hr>
         <p id="test1" class="test hyphenate" lang="de-x-syllable">Autorenlesung Abend Urinstinkt</p>
         <p id="ref1" class="ref" lang="de-x-syllable">Au•to•ren•le•sung A•bend Ur•in•stinkt</p>
+        <p id="test2" class="test hyphenate" lang="de">Autorenlesung Abend Urinstinkt</p>
+        <p id="ref2" class="ref" lang="de">Au•to•ren•le•sung A•bend Ur•in•stinkt</p>
 
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
