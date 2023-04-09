@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Test 054</title>
+        <script src="../Hyphenopoly_Loader.js"></script>
+        <script>
+            Hyphenopoly.config({
+                require: {
+                    "hu": "FORCEHYPHENOPOLY"
+                },
+                setup: {
+                    selectors: {
+                        ".hyphenate": {
+                            hyphen: "•"
+                        }
+                    },
+                    timeout: 101
+                }
+            });
+            Hyphenopoly.ac.signal.addEventListener("abort", (e) => {
+                assert();
+            });
+            function assert() {
+                var test = test = document.getElementById("test").innerHTML;
+                var ref = document.getElementById("ref").innerHTML;
+                var result = true;
+                if (test === ref) {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">passed</p>";
+                    result = true;
+                } else {
+                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">failed</p>";
+                    result = false;
+                }
+                if (parent != window) {
+                    parent.postMessage(JSON.stringify({
+                        desc: document.getElementById("desc").innerHTML,
+                        index: 54,
+                        result: (result ? "passed" : "failed")
+                    }), window.location.href);
+                }
+            }
+        </script>
+        <style type="text/css">
+            body {
+                width:50%;
+                margin-left:25%;
+                margin-right:25%;
+            }
+
+            .test {
+                background-color: #D8E2F9;
+            }
+            .ref {
+                background-color: #FEEFC0;
+            }
+
+            .hyphenate {
+                hyphens: auto;
+                -ms-hyphens: auto;
+                -moz-hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test53.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test55.html">Next&nbsp;&rarr;</a></div>
+
+        <h1>Test 054</h1>
+        <p id="desc">Let time out loading of ressources.</p>
+        <div id="result"></div>
+        <hr>
+        <p id="test" class="test hyphenate" lang="hu">automatikusan</p>
+        <p id="ref" class="ref" lang="hu">automatikusan</p>
+
+        <hr>
+        <div><span class="test">Test</span> <span class="ref">Ref</span></div>
+
+    </body>
+</html>

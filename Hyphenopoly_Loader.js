@@ -56,6 +56,12 @@ window.Hyphenopoly = {};
             return promise;
         };
 
+        H.ac = new AbortController();
+        const fetchOptions = {
+            "credentials": H.s.CORScredentials,
+            "signal": H.ac.signal
+        };
+
         let stylesNode = null;
 
         /**
@@ -175,7 +181,7 @@ window.Hyphenopoly = {};
                     fn,
                     {
                         "l": [lang],
-                        "w": w.fetch(H.paths.patterndir + fn + ".wasm", {"credentials": H.s.CORScredentials})
+                        "w": w.fetch(H.paths.patterndir + fn + ".wasm", fetchOptions)
                     }
                 );
             }
@@ -217,6 +223,10 @@ window.Hyphenopoly = {};
             H.hide(1, H.s.hide);
             H.timeOutHandler = w.setTimeout(() => {
                 H.hide(0, null);
+                // eslint-disable-next-line no-bitwise
+                if (H.s.timeout & 1) {
+                    H.ac.abort();
+                }
                 // eslint-disable-next-line no-console
                 console.info(scriptName + " timed out.");
             }, H.s.timeout);
@@ -224,10 +234,18 @@ window.Hyphenopoly = {};
                 H.main();
             } else {
                 // Load main script
-                const script = d[shortcuts.ce]("script");
-                script.src = H.paths.maindir + "Hyphenopoly.js";
-                d.head[shortcuts.ac](script);
-                mainScriptLoaded = true;
+                fetch(H.paths.maindir + "Hyphenopoly.js", fetchOptions).
+                    then((response) => {
+                        if (response.ok) {
+                            response.blob().then((blb) => {
+                                const script = d[shortcuts.ce]("script");
+                                script.src = URL.createObjectURL(blb);
+                                d.head[shortcuts.ac](script);
+                                mainScriptLoaded = true;
+                                URL.revokeObjectURL(script.src);
+                            });
+                        }
+                    });
             }
             H.hy6ors = mp();
             H.cf.langs.forEach((langDef, lang) => {
