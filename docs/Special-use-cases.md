@@ -386,4 +386,3 @@ Hyphenopoly.config({
 });
 ````
 Now elements with `lang="de"` or `lang="de-x-syllable"` are syllabified instead of hyphenated.
-q 

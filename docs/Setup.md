@@ -348,8 +348,6 @@ Hyphenopoly.config({
 </script>
 ````
 
-
-
 See [hide](#hide) about different ways of hiding.
 
 ## Selector-Based Settings
