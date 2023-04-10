@@ -42,19 +42,19 @@
     "url": "https://github.com/mnater/Hyphenopoly"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.53.0",
-    "@typescript-eslint/parser": "^5.53.0",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
     "all-contributors-cli": "^6.24.0",
     "c8": "^7.13.0",
-    "assemblyscript": "^0.27.0",
-    "eslint": "^8.34.0",
+    "assemblyscript": "^0.26.7",
+    "eslint": "^8.38.0",
     "eslint-plugin-security": "^1.7.1",
     "remark-cli": "^11.0.0",
     "remark-lint-no-consecutive-blank-lines": "^4.1.2",
     "remark-preset-lint-recommended": "^6.1.2",
     "tap": "^16.3.4",
-    "terser": "^5.16.4",
-    "typescript": "^4.9.5",
+    "terser": "^5.16.8",
+    "typescript": "^5.0.4",
     "yaml": "^2.2.1"
   },
   "remarkConfig": {
