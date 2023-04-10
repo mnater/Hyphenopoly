@@ -47,6 +47,7 @@ H.supportedLanguages = [
     "et",
     "eu",
     "fi",
+    "fo",
     "fr",
     "fur",
     "ga",

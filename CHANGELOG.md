@@ -2,6 +2,7 @@
 
 ## Version 5.1.0 (2023-04-dd)
 ### Added
+*   Faroese hyphenation (thanks to [Claus Eggers](https://github.com/clauseggers))
 *   syllabification patterns for german (de-x-syllable)
 *   use AbortController to halt fetches on timeout (https://mnater.github.io/Hyphenopoly/Setup.html#timeout)
 
