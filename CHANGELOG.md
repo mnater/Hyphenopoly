@@ -1,8 +1,9 @@
 # Version History
 
-## Version 5.1.0 (2023-03-dd)
+## Version 5.1.0 (2023-04-dd)
 ### Added
 *   syllabification patterns for german (de-x-syllable)
+*   use AbortController to halt fetches on timeout (https://mnater.github.io/Hyphenopoly/Setup.html#timeout)
 
 ## Version 5.0.0 (2023-01-03)
 Aggregation of the changes from beta-1 to beta-5

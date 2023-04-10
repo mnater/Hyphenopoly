@@ -58,7 +58,8 @@
         {"exec": true, "path": "test51.html"},
         {"exec": true, "path": "test52.html"},
         {"exec": true, "path": "test53.html"},
-        {"exec": true, "path": "test54.html"}
+        {"exec": true, "path": "test54.html"},
+        {"exec": true, "path": "test55.html"}
     ];
     var testframe = document.getElementById("testframe");
     var currentTest = 1;
