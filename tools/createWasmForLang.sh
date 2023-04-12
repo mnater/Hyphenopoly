@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Creates a wasm module containing hyphenEngine (from ../src/hyphenEngine.ts)
-# and license and patterns (from ../texPatterns/) for the specified language
+# and license and patterns (from ../texPatterns/converted/) for the specified language
 # in ../lang/<language>/
 #
 # sh createWasmForLang.sh language
@@ -30,10 +30,11 @@ echo "$LANG\c" > ./lang/$LANG/src/lang.txt
 
 echo '(E) compile WASM-Module'
 cd ./lang/$LANG/src/
-OLDSIZE=$(wc -c < ../$LANG.wasm)
-#asc hyphenEngine.ts -O3z --converge --noExportMemory -b ../$LANG.wasm
-#CODESIZE=$(wc -c < ../$LANG.wasm)
-#echo "codesize:    $CODESIZE"
+if [ -f "../$LANG.wasm" ]; then
+    OLDSIZE=$(wc -c < ../$LANG.wasm)
+else 
+    OLDSIZE=0
+fi
 
 asc hyphenEngine.ts -O3z --converge --noExportMemory --disable bulk-memory --transform ./mytransform.js -o ../$LANG.wasm
 
@@ -46,4 +47,4 @@ cd ../../../
 cp ./lang/$LANG/$LANG.wasm ./patterns/$LANG.wasm
 echo "size before: $OLDSIZE"
 echo "size now:    $NEWSIZE"
-#echo "zpped size:  $ZIPPED"
+#echo "zipped size:  $ZIPPED"
