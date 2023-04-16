@@ -11,7 +11,7 @@
 (() => {
     "use strict";
     const rawABC = {
-        "af": "' - aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ äÄ èÈ êÊ ëË îÎ ïÏ ôÔ öÖ ûÛ üÜ",
+        /*"af": "' - aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ äÄ èÈ êÊ ëË îÎ ïÏ ôÔ öÖ ûÛ üÜ",
         "as": "ঁ ং ঃ অ আ ই ঈ উ ঊ ঋ ঌ এ ঐ ও ঔ ক খ গ ঘ ঙ চ ছ জ ঝ ঞ ট ঠ ড ঢ ণ ত থ দ ধ ন প ফ ব ভ ম য র ল শ ষ স হ ় ঽ া ি ী ু ূ ৃ ৄ ে ৈ ো ৌ ্ ৎ ৗ ড় ঢ় য় ৠ ৡ ৢ ৣ ‌ ‍",
         "be": "' - аА бБ вВ гГ дД еЕ жЖ зЗ йЙ кК лЛ мМ нН оО пП рР сС тТ уУ фФ хХ цЦ чЧ шШ ыЫ ьЬ эЭ юЮ яЯ ёЁ іІ ўЎ ґҐ",
         "bg": "аА бБ вВ гГ дД еЕ жЖ зЗ иИ йЙ кК лЛ мМ нН оО пП рР сС тТ уУ фФ хХ цЦ чЧ шШ щЩ ъЪ юЮ яЯ",
@@ -22,14 +22,15 @@
         "da": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ åÅ æÆ øØ",
         "de": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sSſ tT uU vV wW xX yY zZ ß äÄ öÖ üÜ",
         "el-monoton": "' ʼ ΐ άΆ έΈ ήΉ ίΊ ΰ αΑ βΒ γΓ δΔ εΕ ζΖ ηΗ θΘ ιΙ κΚ λΛ μΜ νΝ ξΞ οΟ πΠ ρΡ ςΣ σΣ τΤ υΥ φΦ χΧ ψΨ ωΩ ϊΪ ϋΫ όΌ ύΎ ώΏ ϲϹ άΆ έΈ ήΉ ίΊ όΌ ύΎ ώΏ ᾽ ᾿ ’",
-        "el-polyton": "' ʼ ΐ άΆ έΈ ήΉ ίΊ ΰ αΑ βΒ γΓ δΔ εΕ ζΖ ηΗ θΘ ιΙ κΚ λΛ μΜ νΝ ξΞ οΟ πΠ ρΡ ςΣ σΣ τΤ υΥ φΦ χΧ ψΨ ωΩ ϊΪ ϋΫ όΌ ύΎ ώΏ ϲϹ ἀἈ ἁἉ ἂἊ ἃἋ ἄἌ ἅἍ ἆἎ ἇἏ ἐἘ ἑἙ ἒἚ ἓἛ ἔἜ ἕἝ ἠἨ ἡἩ ἢἪ ἣἫ ἤἬ ἥἭ ἦἮ ἧἯ ἰἸ ἱἹ ἲἺ ἳἻ ἴἼ ἵἽ ἶἾ ἷἿ ὀὈ ὁὉ ὂὊ ὃὋ ὄὌ ὅὍ ὐ ὑὙ ὒ ὓὛ ὔ ὕὝ ὖ ὗὟ ὠὨ ὡὩ ὢὪ ὣὫ ὤὬ ὥὭ ὦὮ ὧὯ ὰᾺ άΆ ὲῈ έΈ ὴῊ ήΉ ὶῚ ίΊ ὸῸ όΌ ὺῪ ύΎ ὼῺ ώΏ ᾀ ᾁ ᾂ ᾃ ᾄ ᾅ ᾆ ᾇ ᾐ ᾑ ᾒ ᾓ ᾔ ᾕ ᾖ ᾗ ᾠ ᾡ ᾢ ᾣ ᾤ ᾥ ᾦ ᾧ ᾲ ᾳ ᾴ ᾶ ᾷ ᾽ ᾿ ῂ ῃ ῄ ῆ ῇ ῒ ΐ ῖ ῗ ῢ ΰ ῤ ῥῬ ῦ ῧ ῲ ῳ ῴ ῶ ῷ ’",
-        "en-gb": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ",
+        */"el-polyton": "' ʼ ΐ άΆ έΈ ήΉ ίΊ ΰ αΑ βΒ γΓ δΔ εΕ ζΖ ηΗ θΘ ιΙ κΚ λΛ μΜ νΝ ξΞ οΟ πΠ ρΡ ςΣ σΣ τΤ υΥ φΦ χΧ ψΨ ωΩ ϊΪ ϋΫ όΌ ύΎ ώΏ ϲϹ ἀἈ ἁἉ ἂἊ ἃἋ ἄἌ ἅἍ ἆἎ ἇἏ ἐἘ ἑἙ ἒἚ ἓἛ ἔἜ ἕἝ ἠἨ ἡἩ ἢἪ ἣἫ ἤἬ ἥἭ ἦἮ ἧἯ ἰἸ ἱἹ ἲἺ ἳἻ ἴἼ ἵἽ ἶἾ ἷἿ ὀὈ ὁὉ ὂὊ ὃὋ ὄὌ ὅὍ ὐ ὑὙ ὒ ὓὛ ὔ ὕὝ ὖ ὗὟ ὠὨ ὡὩ ὢὪ ὣὫ ὤὬ ὥὭ ὦὮ ὧὯ ὰᾺ άΆ ὲῈ έΈ ὴῊ ήΉ ὶῚ ίΊ ὸῸ όΌ ὺῪ ύΎ ὼῺ ώΏ ᾀ ᾁ ᾂ ᾃ ᾄ ᾅ ᾆ ᾇ ᾐ ᾑ ᾒ ᾓ ᾔ ᾕ ᾖ ᾗ ᾠ ᾡ ᾢ ᾣ ᾤ ᾥ ᾦ ᾧ ᾲ ᾳ ᾴ ᾶ ᾷ ᾽ ᾿ ῂ ῃ ῄ ῆ ῇ ῒ ΐ ῖ ῗ ῢ ΰ ῤ ῥῬ ῦ ῧ ῲ ῳ ῴ ῶ ῷ ’",
+        /*"en-gb": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ",
         "en-us": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ",
         "eo": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP rR sS tT uU vV zZ ĉĈ ĝĜ ĥĤ ĵĴ ŝŜ ŭŬ",
         "es": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ áÁ éÉ íÍ ñÑ óÓ úÚ",
         "et": "aA bB dD eE fF gG hH iI jJ kK lL mM nN oO pP rR sS tT uU vV zZ äÄ õÕ öÖ üÜ šŠ žŽ",
         "eu": "aA bB cC dD eE fF gG iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ ñÑ",
         "fi": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV yY äÄ öÖ",
+        "fo": "aA áÁ bB cC dD ðÐ eE fF gG hH iI íÍ jJ kK lL mM nN oO óÓ pP qQ rR sS tT uU úÚ vV wW xX yY ýÝ æÆ øØ",
         "fr": "' aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ àÀ âÂ çÇ èÈ éÉ êÊ îÎ ïÏ ôÔ ûÛ œŒ",
         "fur": "' aAâ bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ çÇ",
         "ga": "aA bB cC dD eE fF gG hH iI lL mM nN oO pP rR sS tT uU vV wW xX yY zZ áÁ éÉ íÍ óÓ úÚ",
@@ -61,6 +62,7 @@
         "oc": "' aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX zZ çÇ ïÏ üÜ",
         "or": "ଁ ଂ ଃ ଅ ଆ ଇ ଈ ଉ ଊ ଋ ଌ ଏ ଐ ଓ ଔ କ ଖ ଗ ଘ ଙ ଚ ଛ ଜ ଝ ଞ ଟ ଠ ଡ ଢ ଣ ତ ଥ ଦ ଧ ନ ପ ଫ ବ ଭ ମ ଯ ର ଲ ଳ ଵ ଶ ଷ ସ ହ ା ି ୀ ୁ ୂ ୃ େ ୈ ୋ ୌ ୍ ୗ ୠ ୡ ‌ ‍",
         "pa": "ਁ ਂ ਃ ਅ ਆ ਇ ਈ ਉ ਊ ਏ ਐ ਓ ਔ ਕ ਖ ਗ ਘ ਙ ਚ ਛ ਜ ਝ ਞ ਟ ਠ ਡ ਢ ਣ ਤ ਥ ਦ ਧ ਨ ਪ ਫ ਬ ਭ ਮ ਯ ਰ ਲ ਲ਼ ਵ ਸ਼ ਸ ਹ ਾ ਿ ੀ ੁ ੂ ੇ ੈ ੋ ੌ ੍ ੰ ੱ ‌ ‍",
+        "pi": "aA bB cC dD eE gG hH iI jJ kK lL mM nN oO pP rR sS tT uU vV yY ñÑ āĀ īĪ ūŪ ḍḌ ḷḶ ṁṀ ṃṂ ṅṄ ṇṆ ṭṬ",
         "pl": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP rR sS tT uU vV wW xX yY zZ óÓ ąĄ ćĆ ęĘ łŁ ńŃ śŚ źŹ żŻ",
         "pms": "' aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ",
         "pt": "- aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX zZ áÁ âÂ ãÃ çÇ éÉ êÊ íÍ óÓ ôÔ õÕ úÚ",
@@ -71,6 +73,7 @@
         "sh-latn": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP rR sS tT uU vV zZ ćĆ čČ đĐ šŠ žŽ",
         "sk": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP rR sS tT uU vV wW xX yY zZ áÁ äÄ éÉ íÍ óÓ ôÔ úÚ ýÝ čČ ďĎ ľĽ ňŇ ŕŔ šŠ ťŤ žŽ",
         "sl": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ čČ šŠ žŽ",
+        "sq": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV xX yY zZ çÇ ëË",
         "sr-cyrl": "аА бБ вВ гГ дД еЕ жЖ зЗ иИ кК лЛ мМ нН оО пП рР сС тТ уУ фФ хХ цЦ чЧ шШ ђЂ јЈ љЉ њЊ ћЋ џЏ",
         "sv": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ äÄ åÅ éÉ öÖ",
         "ta": "ஂ ஃ அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ க ங ச ஜ ஞ ட ண த ந ன ப ம ய ர ற ல ள ழ வ ஷ ஸ ஹ ா ி ீ ு ூ ெ ே ை ொ ோ ௌ ் ௗ ‌ ‍",
@@ -80,7 +83,7 @@
         "tr": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP rR sS tT uU vV yY zZ âÂ çÇ îÎ öÖ ûÛ üÜ ğĞ ıI şŞ",
         "uk": "' - аА бБ вВ гГ дД еЕ жЖ зЗ иИ йЙ кК лЛ мМ нН оО пП рР сС тТ уУ фФ хХ цЦ чЧ шШ щЩ ьЬ юЮ яЯ єЄ іІ їЇ ґҐ",
         "zh-latn-pinyin": "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU wW xX yY zZ àÀ áÁ èÈ éÉ ìÌ íÍ òÒ óÓ ùÙ úÚ üÜ āĀ ēĒ ěĚ īĪ ōŌ ūŪ ǎǍ ǐǏ ǒǑ ǔǓ ǖǕ ǘǗ ǚǙ ǜǛ"
-    };
+    */};
 
     const primeNumbers = [
         10007,
@@ -5473,7 +5476,7 @@
      * last search up to p[2499]
      */
     function findSeeds() {
-        for (let a = 2250; a < 2500; a += 1) {
+        for (let a = 0; a < 2500; a += 1) {
             p1 = primeNumbers[a];
             console.log(`testing p[${a}]`);
             for (let b = 0; b < primeNumbers.length; b += 1) {
