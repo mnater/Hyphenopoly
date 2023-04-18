@@ -30,6 +30,7 @@
 *   [Words containing special format characters](./Special-use-cases.md#format-chars)
 *   [Hyphenate HTML-Strings using using hyphenopoly.module.js](./Special-use-cases.md#hyphenate-html-strings-using-hyphenopolymodulejs)
 *   [Usage of .wasm Modules outside Hyphenopoly](./Special-use-cases.md#usage-of-wasm-modules-outside-hyphenopoly)
+*   [Syllabification (german only)](./Special-use-cases.md#syllabification)
 
 ## Implementation Details
 *   [Succinct Data Structure](./SuccinctTrie.md)

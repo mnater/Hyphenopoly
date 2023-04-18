@@ -31,7 +31,6 @@
                 while (i <= tests) {
                     test = document.getElementById("test" + i).innerHTML;
                     ref = document.getElementById("ref" + i).innerHTML;
-                    console.log(test, ref);
                     if (test === ref) {
                         document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
                         result = result && true;

@@ -329,7 +329,12 @@ type: number
 default: 1000
 ````
 
-Sets a timeout in ms after which, in case of a failure, Hyphenopoly stops executing and unhides the text.
+To prevent a _Flash Of Unhyphenated Content (FOUHC)_ Hyphenopoly_Loader.js hides text to be hyphenated until hyphenation is done. If something goes wrong (e.g. a resource didn't load correctly), this timeout saves us from an empty page. The timeout is cleared when hyphenation succeeds.
+
+If the timeout time is an even number, the elements will still be hyphenated as soon as the resources have been loaded completely. This can lead to a reflow of the already displayed text.
+
+If the timeout time is an odd number (e.g. 1001ms), the loading of the requested resources will be aborted and no hyphenation and no reflow will take place.
+
 ````html
 <script>
 Hyphenopoly.config({
@@ -342,8 +347,6 @@ Hyphenopoly.config({
 });
 </script>
 ````
-To prevent a _Flash Of Unhyphenated Content (FOUHC)_ Hyphenopoly_Loader.js hides text to be hyphenated until hyphenation is done. If something goes wrong (e.g. a resource didn't load correctly), this timeout saves us from an empty page. The timeout is cleared when hyphenation succeeds.
-If the timeout kicks in, the `onTimeOut`event is fired.
 
 See [hide](#hide) about different ways of hiding.
 

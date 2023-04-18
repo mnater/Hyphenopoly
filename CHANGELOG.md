@@ -1,5 +1,30 @@
 # Version History
 
+## Version 5.1.0 (2023-04-dd)
+### Added
+*   Faroese hyphenation (thanks to [Claus Eggers](https://github.com/clauseggers))
+*   syllabification patterns for german (de-x-syllable)
+*   use AbortController to halt fetches on timeout (https://mnater.github.io/Hyphenopoly/Setup.html#timeout)
+
+## Version 5.0.0 (2023-01-03)
+Aggregation of the changes from beta-1 to beta-5
+### Breaking changes
+*   Changed API for embedding Hyphenopoly in webpages.
+*   Use esm instead of require
+*   [require loader function](https://mnater.github.io/Hyphenopoly/Module.html)
+### Fixed
+*   created and updated patterns for german
+*   updated patterns from tex-hyphen
+*   bump devDependencies
+### Added
+*   Albanian hyphenation
+*   Pali hyphenation
+### Doc
+*   Update documenation for esm module
+*   Added documentation for using .wasm modules outside Hyphenopoly
+### Test
+*   use c8 to check coverage
+
 ## Version 5.0.0-beta-6 (2022-10-20)
 ### Breaking changes
 *   [require loader function](https://mnater.github.io/Hyphenopoly/Module.html)

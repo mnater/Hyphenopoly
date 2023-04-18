@@ -20,6 +20,7 @@ async function freshImport() {
 // eslint-disable-next-line require-jsdoc
 function loaderSync(file) {
     const cwd = dirname(fileURLToPath(import.meta.url));
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     return readFileSync(`${cwd}/../patterns/${file}`);
 }
 

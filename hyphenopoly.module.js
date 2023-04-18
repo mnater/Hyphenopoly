@@ -1,6 +1,6 @@
 /**
- * @license Hyphenopoly.module.js 5.0.0-beta.6 - hyphenation for node
- * ©2022  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
+ * @license Hyphenopoly.module.js 5.1.0 - hyphenation for node
+ * ©2023  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
@@ -37,6 +37,7 @@ H.supportedLanguages = [
     "cy",
     "da",
     "de",
+    "de-x-syllable",
     "el-monoton",
     "el-polyton",
     "en-gb",
@@ -46,6 +47,7 @@ H.supportedLanguages = [
     "et",
     "eu",
     "fi",
+    "fo",
     "fr",
     "fur",
     "ga",

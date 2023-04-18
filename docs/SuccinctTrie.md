@@ -192,6 +192,8 @@ Dann ist das Muster nicht im Trie.
 Um die Trennwerte (Schritt 5) auszulesen, wird zuerst der `rank1` an der jeweiligen Position ausgelesen.
 Das gibt den Index des Trennmusters zurück. Nun Wird ein `select0` mit diesem Index auf dem Bitmuster der Trennwerte berechnet.
 Das gibt zusätzlich zur Position die Länge der Trennwerte aus. Mit der Position und der Länge können nun die Trennwerte ausgelesen werden.
+Es werden alle Trennwerte gespeichert, auch die Doubletten. Das scheint auf den ersten Blick verschwenderisch zu sein, wenn
+aber Doubletten vermieden werden sollten, müsste für jeden Trennwert eine 16Bit-Adresse (12 Bit für die Adresse und 4 Bit für die Länge. Auch nach der Dedublizierung weisen die meisten Sprachen mehr als 256 unterschiedliche Trennwerte auf.) gespeichert werden, was bei den meisten Mustern mehr Platz benötigt, da viele Trennwerte in einem Byte gespeichert werden können.
 
 ## Zusammenfassung
 Grosse Trennmuster lassen sich in einem "Succinct Trie" platzsparender abspeichern (kleine Musterdateien brauchen etwas mehr Platz, da sie weniger Redundanzen aufweisen und der Overhead durch die Bitmuster dann mehr ins Gewicht fällt). Nach der zusätzlichen Kompression (z.B. mittels deflate) sind die Mustergrössen vergleichbar.
