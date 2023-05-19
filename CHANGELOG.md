@@ -1,6 +1,6 @@
 # Version History
 
-## Version 5.1.0 (2023-04-dd)
+## Version 5.1.0 (2023-05-19)
 ### Added
 *   Faroese hyphenation (thanks to [Claus Eggers](https://github.com/clauseggers))
 *   syllabification patterns for german (de-x-syllable)

@@ -20,6 +20,7 @@
                 "et": "FORCEHYPHENOPOLY",
                 "eu": "FORCEHYPHENOPOLY",
                 "fi": "FORCEHYPHENOPOLY",
+                "fo": "FORCEHYPHENOPOLY",
                 "fr": "FORCEHYPHENOPOLY",
                 "fur": "FORCEHYPHENOPOLY",
                 "ga": "FORCEHYPHENOPOLY",
@@ -72,7 +73,7 @@
         });
 
         function assert() {
-            var tests = 44;
+            var tests = 45;
             var i = 1;
             var test = "";
             var ref = "";
@@ -300,6 +301,10 @@
         <h2>44: sq</h2>
         <p id="test44" class="test hyphenate" lang="sq">Me termin Tipografi përfshihet një fushë e dizajnit grafik që mirret me ndërtimin e llojeve të shkronjave.</p>
         <p id="ref44" class="ref" lang="sq">Me ter|min Ti|pog|ra|fi për|fshi|het një fushë e di|za|jnit gra|fik që mi|rret me ndër|ti|min e llo|je|ve të shkro|nja|ve.</p>
+
+        <h2>45: fo</h2>
+        <p id="test45" class="test hyphenate" lang="fo">Føroyskt er høvuðsmálið í Føroyum. Føroyskt er almenna málið í Føroyum, og tað er tjóðarmál føroyinga.</p>
+        <p id="ref45" class="ref" lang="fo">Før|oyskt er høv|uðs|málið í Før|oy|um. Før|oyskt er al|menna málið í Før|oy|um, og tað er tjóðar|mál før|oyinga.</p>
 
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
