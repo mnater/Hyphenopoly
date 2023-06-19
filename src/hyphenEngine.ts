@@ -397,31 +397,30 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     wordLength = charOffset;
     while (patternStartPos < wordLength) {
         charOffset = patternStartPos;
-        let currNode: i32 = 1;
+        let node: i32 = 1;
         while (charOffset < wordLength) {
-            const sel0: i32 = select(currNode, bm, cm);
-            let currChild: i32 = (sel0 >> 8) - currNode;
-            const childCount: i32 = sel0 & 255;
-            const to: i32 = currChild + childCount;
+            const sel0: i32 = select(node, bm, cm);
+            node = (sel0 >> 8) - node;
+            const to: i32 = node + (sel0 & 255);
             const currChar: i32 = load<u8>(charOffset, tw);
-            while (currChild < to) {
-                if (load<u8>(currChild, cm) === currChar) {
+            while (node < to) {
+                if (load<u8>(node, cm) === currChar) {
                     break;
                 }
-                currChild += 1;
+                node += 1;
             }
-            if (currChild === to) {
+            if (node === to) {
                 break;
             }
-            if (nodeHasValue(currChild) === 1) {
-                const pos: i32 = rank(currChild + 1, hv);
+            if (nodeHasValue(node) === 1) {
+                const pos: i32 = rank(node + 1, hv);
                 const sel: i32 = select(pos, vm, va - 1);
                 const valBitsStart: i32 = sel >> 8;
                 const valIdx: i32 = rank(valBitsStart, vm);
                 const len: i32 = sel & 255;
                 extractValuesToHp(valIdx, len, patternStartPos);
             }
-            currNode = currChild + 2;
+            node += 2;
             charOffset += 1;
         }
         patternStartPos += 1;
