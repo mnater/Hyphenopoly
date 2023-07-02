@@ -18,7 +18,7 @@ async function freshImport() {
 async function https(file) {
     const https = await import("node:https");
     return new Promise((resolve, reject) => {
-        https.get(`https://cdn.jsdelivr.net/npm/hyphenopoly@5.0.0-beta.5/patterns/${file}`, (res) => {
+        https.get(`https://cdn.jsdelivr.net/npm/hyphenopoly@5.2.0-beta.1/patterns/${file}`, (res) => {
             const rawData = [];
             res.on("data", (chunk) => {
                 rawData.push(chunk);
@@ -56,7 +56,7 @@ t.test("use https loader", async function (t) {
 
 // eslint-disable-next-line require-jsdoc
 function fetcher(file) {
-    return fetch(`https://cdn.jsdelivr.net/npm/hyphenopoly@5.1.0/patterns/${file}`).then((response) => {
+    return fetch(`https://cdn.jsdelivr.net/npm/hyphenopoly@5.2.0-beta.1/patterns/${file}`).then((response) => {
         return response.arrayBuffer();
     });
 }

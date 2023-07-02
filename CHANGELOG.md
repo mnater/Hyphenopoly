@@ -1,5 +1,13 @@
 # Version History
 
+## Version 5.2.0-beta.1 (2023-07-03)
+### Fixed
+*   Refactor how words are sent to wasm-modules: word delimiters are now added
+    in the wasm-module instead of js
+*   bump devDependencies
+### Doc
+*   Update docs for standalone wasm-usage
+
 ## Version 5.1.0 (2023-05-19)
 ### Added
 *   Faroese hyphenation (thanks to [Claus Eggers](https://github.com/clauseggers))
