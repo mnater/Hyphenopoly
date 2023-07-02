@@ -330,10 +330,8 @@ WORD = 'hyphenation'
 # Copy Unicode code points of the word to memory
 # precede with "." and end with ".\x00"
 WORD_LEN = len(WORD)
-mem[0] = 46
-mem[1:WORD_LEN + 1] = list(map(ord, WORD))
-mem[WORD_LEN + 1] = 46
-mem[WORD_LEN + 2] = 0
+mem[0:WORD_LEN] = list(map(ord, WORD))
+mem[WORD_LEN + 1] = 0
 
 # Call the hyphenate function
 # with leftmin and rightmin set to 2 and hyphen char set to "|"

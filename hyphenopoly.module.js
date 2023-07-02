@@ -186,11 +186,9 @@ function encloseHyphenateFunction(buf, hyphenateFunc) {
      */
     return ((word, hyphencc, leftmin, rightmin) => {
         wordStore.set([
-            46,
             ...[...word].map((c) => {
                 return c.charCodeAt(0);
             }),
-            46,
             0
         ]);
         const len = hyphenateFunc(leftmin, rightmin, hyphencc);
@@ -244,7 +242,7 @@ function instantiateWasmEngine(lang, wasmdata) {
                 exp.mem.buffer,
                 exp.hyphenate
             ),
-            decode(new Uint16Array(exp.mem.buffer, 1280, alphalen)),
+            decode(new Uint16Array(exp.mem.buffer, 1408, alphalen)),
             exp.lmi.value,
             exp.rmi.value
         );

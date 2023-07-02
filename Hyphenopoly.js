@@ -801,11 +801,9 @@
             const wordStore = new Uint16Array(buf, 0, 64);
             return ((word, hyphencc, leftmin, rightmin) => {
                 wordStore.set([
-                    46,
                     ...[...word].map((c) => {
                         return c.charCodeAt(0);
                     }),
-                    46,
                     0
                 ]);
                 const len = hyphenateFunc(leftmin, rightmin, hyphencc);
@@ -865,7 +863,7 @@
                             exp.mem.buffer,
                             exp.hyphenate
                         ),
-                        decode(new Uint16Array(exp.mem.buffer, 1280, alphalen)),
+                        decode(new Uint16Array(exp.mem.buffer, 1408, alphalen)),
                         /* eslint-disable multiline-ternary */
                         (wa.Global) ? exp.lmi.value : exp.lmi,
                         (wa.Global) ? exp.rmi.value : exp.rmi

@@ -36,7 +36,7 @@ else
     OLDSIZE=0
 fi
 
-asc hyphenEngine.ts -O3z --converge --noExportMemory --disable bulk-memory --transform ./mytransform.js -o ../$LANG.wasm
+asc hyphenEngine.ts -O3z --converge --noExportMemory --transform ./mytransform.js -o ../$LANG.wasm
 
 NEWSIZE=$(wc -c < ../$LANG.wasm)
 #gzip -k -9 ../$LANG.wasm

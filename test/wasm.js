@@ -25,7 +25,7 @@ t.test("load module", async (t) => {
     });
     t.test("check filesize", async (t) => {
         return t.ok(
-            hyphenEngine.buffer.byteLength <= 93648,
+            hyphenEngine.buffer.byteLength <= 93634,
             "update when de.wasm changes"
         );
     });
@@ -45,8 +45,8 @@ t.test("load module", async (t) => {
         });
         t.test("check translate table", async (t) => {
             const heapBuffer = result.instance.exports.mem.buffer;
-            const translateTableCC = new Uint16Array(heapBuffer, 256, 256);
-            const translateTableID = new Uint8Array(heapBuffer, 768, 256);
+            const translateTableCC = new Uint16Array(heapBuffer, 384, 256);
+            const translateTableID = new Uint8Array(heapBuffer, 896, 256);
             return t.same(
                 [
                     translateTableID[translateTableCC.indexOf(46)],
@@ -61,11 +61,9 @@ t.test("load module", async (t) => {
             const heapBuffer = result.instance.exports.mem.buffer;
             const wordStore = new Uint16Array(heapBuffer, 0, 64);
             wordStore.set([
-                46,
                 ...[..."Silbentrennung"].map((c) => {
                     return c.charCodeAt(0);
                 }),
-                46,
                 0
             ]);
             const len = result.instance.exports.hyphenate(2, 2, 8226);
@@ -84,11 +82,9 @@ t.test("load module", async (t) => {
             const heapBuffer = result.instance.exports.mem.buffer;
             const wordStore = new Uint16Array(heapBuffer, 0, 64);
             wordStore.set([
-                46,
                 ...[..."Jalapeños"].map((c) => {
                     return c.charCodeAt(0);
                 }),
-                46,
                 0
             ]);
             const len = result.instance.exports.hyphenate(2, 2, 8226);
@@ -107,11 +103,9 @@ t.test("load module", async (t) => {
             const heapBuffer = result.instance.exports.mem.buffer;
             const wordStore = new Uint16Array(heapBuffer, 0, 64);
             wordStore.set([
-                46,
                 ...[..."Test\u0563test"].map((c) => {
                     return c.charCodeAt(0);
                 }),
-                46,
                 0
             ]);
             const len = result.instance.exports.hyphenate(2, 2, 8226);
@@ -133,8 +127,8 @@ t.test("load module", async (t) => {
             });
             t.test("check translate table with char substitution", async (t) => {
                 const heapBuffer = result.instance.exports.mem.buffer;
-                const translateTableCC = new Uint16Array(heapBuffer, 256, 256);
-                const translateTableID = new Uint8Array(heapBuffer, 768, 256);
+                const translateTableCC = new Uint16Array(heapBuffer, 384, 256);
+                const translateTableID = new Uint8Array(heapBuffer, 896, 256);
                 return t.same(
                     [
                         translateTableID[translateTableCC.indexOf(241)],
@@ -148,11 +142,9 @@ t.test("load module", async (t) => {
                 const heapBuffer = result.instance.exports.mem.buffer;
                 const wordStore = new Uint16Array(heapBuffer, 0, 64);
                 wordStore.set([
-                    46,
                     ...[..."Jalapeños"].map((c) => {
                         return c.charCodeAt(0);
                     }),
-                    46,
                     0
                 ]);
                 const len = result.instance.exports.hyphenate(2, 2, 8226);
@@ -187,11 +179,9 @@ t.test("load module", async (t) => {
                 const heapBuffer = result.instance.exports.mem.buffer;
                 const wordStore = new Uint16Array(heapBuffer, 0, 64);
                 wordStore.set([
-                    46,
                     ...[..."Glasn\u043Est"].map((c) => {
                         return c.charCodeAt(0);
                     }),
-                    46,
                     0
                 ]);
                 const len = result.instance.exports.hyphenate(2, 2, 8226);

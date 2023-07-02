@@ -27,7 +27,10 @@
  * #--------------------# <- 192 (hp)
  * |    hyphenPoints    |
  * |  64 * Uint8 = 64B  |
- * #--------------------# <- 256 (translateMapOffset)
+ * #--------------------# <- 256 (originalWordOffset)
+ * |    originalWord    |
+ * | 64 * Uint16 = 128B |
+ * #--------------------# <- 384 (translateMapOffset)
  * |    translateMap    |
  * |         keys:      |
  * | 256 chars * 2Bytes |
@@ -37,12 +40,9 @@
  * |          +         |
  * |     collisions:    |
  * | 64 buckets * 4Byte |
- * #--------------------# <- 1280 (alphabetOffset)
+ * #--------------------# <- 1408 (alphabetOffset)
  * |      alphabet      |
  * | 256 chars * 2Bytes | 512B
- * #--------------------# <- 1792 (originalWordOffset)
- * |    originalWord    |
- * | 64 * Uint16 = 128B |
  * #--------------------# <- 1920   - DATAOFFSET
  * |      licence       |           |
  * #--------------------#           |
@@ -96,9 +96,9 @@ export let lct: i32 = 0;
  */
 const tw: i32 = 128;
 const hp: i32 = 192;
-const translateMapOffset:i32 = 256;
-const alphabetOffset: i32 = 1280;
-const originalWordOffset: i32 = 1792;
+const originalWordOffset: i32 = 256;
+const translateMapOffset:i32 = 384;
+const alphabetOffset: i32 = 1408;
 
 /*
  * Minimalistic hash function to map 16-bit to 8-bit
@@ -379,22 +379,28 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     let charOffset: i32 = 0;
     let hyphenPointsCount: i32 = 0;
 
-    // Translate UTF16 word to internal ints and clear hpPos-Array
+    /*
+     * Translate UTF16 word to internal ints and clear hpPos-Array.
+     * The translated word (tw) is delimited by the point char (.)
+     * with charcode 46 which is always translated to the internal
+     * code 0. We don't need to set these delimiters because memory
+     * is initialized with 0.
+     */
+    memory.fill(tw, 0, 256);
     let cc: i32 = load<u16>(0);
     while (cc !== 0) {
         const translatedChar: i32 = pullFromTranslateMap(cc);
         if (translatedChar === 255) {
             return 0;
         }
-        store<u8>(charOffset, translatedChar, tw);
+        store<u8>(charOffset + 1, translatedChar, tw);
         store<u16>(charOffset << 1, cc, originalWordOffset);
         charOffset += 1;
-        store<u8>(charOffset, 0, hp);
         cc = load<u16>(charOffset << 1);
     }
-    store<u16>(charOffset << 1, 0, originalWordOffset);
+
     // Find patterns and collect hyphenPoints
-    wordLength = charOffset;
+    wordLength = charOffset + 2;
     while (patternStartPos < wordLength) {
         charOffset = patternStartPos;
         let node: i32 = 1;
@@ -433,7 +439,7 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
     while (charOffset < wordLength) {
         store<u16>(
             (charOffset + hyphenPointsCount) << 1,
-            load<u16>(charOffset << 1, originalWordOffset + 2)
+            load<u16>(charOffset << 1, originalWordOffset)
         );
         if ((charOffset >= lmin - 1) && (charOffset <= rmin)) {
             if (load<u8>(charOffset, hp + 2) & 1) {
