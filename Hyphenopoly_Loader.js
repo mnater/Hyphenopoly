@@ -75,11 +75,7 @@ window.Hyphenopoly = {};
          * @param {integer} mode  - Mode
          */
         H.hide = (state, mode) => {
-            if (state === 0) {
-                if (stylesNode) {
-                    stylesNode.remove();
-                }
-            } else {
+            if (state) {
                 let vis = "{visibility:hidden!important}";
                 stylesNode = d[shortcuts.ce]("style");
                 let myStyle = "";
@@ -95,6 +91,8 @@ window.Hyphenopoly = {};
                 }
                 stylesNode[shortcuts.ac](d[shortcuts.ct](myStyle));
                 d.head[shortcuts.ac](stylesNode);
+            } else if (stylesNode) {
+                stylesNode.remove();
             }
         };
 
