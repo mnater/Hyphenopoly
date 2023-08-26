@@ -242,7 +242,7 @@ function instantiateWasmEngine(lang, wasmdata) {
                 exp.mem.buffer,
                 exp.hyphenate
             ),
-            decode(new Uint16Array(exp.mem.buffer, 1408, alphalen)),
+            decode(new Uint16Array(exp.mem.buffer, 1664, alphalen)),
             exp.lmi.value,
             exp.rmi.value
         );

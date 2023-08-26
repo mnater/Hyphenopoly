@@ -8,7 +8,7 @@ import fs from "fs";
 const lang = fs.readFileSync("./lang.txt", "utf8");
 const data = fs.readFileSync(`./${lang}.data`);
 
-const dataOffset = 1920;
+const dataOffset = 2176;
 const dataSize = data.buffer.byteLength;
 const heapSizeBytes = Math.max(
     Math.ceil((dataOffset + dataSize) / 65536) * 65536,

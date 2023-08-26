@@ -25,7 +25,7 @@ t.test("load module", async (t) => {
     });
     t.test("check filesize", async (t) => {
         return t.ok(
-            hyphenEngine.buffer.byteLength <= 93634,
+            hyphenEngine.buffer.byteLength <= 93590,
             "update when de.wasm changes"
         );
     });
@@ -45,14 +45,13 @@ t.test("load module", async (t) => {
         });
         t.test("check translate table", async (t) => {
             const heapBuffer = result.instance.exports.mem.buffer;
-            const translateTableCC = new Uint16Array(heapBuffer, 384, 256);
-            const translateTableID = new Uint8Array(heapBuffer, 896, 256);
+            const translateTable = new Uint16Array(heapBuffer, 384, 512);
             return t.same(
                 [
-                    translateTableID[translateTableCC.indexOf(46)],
-                    translateTableID[translateTableCC.indexOf(97)],
-                    translateTableID[translateTableCC.indexOf(98)],
-                    translateTableID[translateTableCC.indexOf(65)]
+                    translateTable[translateTable.indexOf(46) - 1],
+                    translateTable[translateTable.indexOf(97) - 1],
+                    translateTable[translateTable.indexOf(98) - 1],
+                    translateTable[translateTable.indexOf(65) - 1]
                 ],
                 [0, 1, 2, 1]
             );
@@ -127,13 +126,12 @@ t.test("load module", async (t) => {
             });
             t.test("check translate table with char substitution", async (t) => {
                 const heapBuffer = result.instance.exports.mem.buffer;
-                const translateTableCC = new Uint16Array(heapBuffer, 384, 256);
-                const translateTableID = new Uint8Array(heapBuffer, 896, 256);
+                const translateTable = new Uint16Array(heapBuffer, 384, 512);
                 return t.same(
                     [
-                        translateTableID[translateTableCC.indexOf(241)],
-                        translateTableID[translateTableCC.indexOf(209)],
-                        translateTableID[translateTableCC.indexOf(110)]
+                        translateTable[translateTable.indexOf(241) - 1],
+                        translateTable[translateTable.indexOf(209) - 1],
+                        translateTable[translateTable.indexOf(110) - 1]
                     ],
                     [14, 14, 14]
                 );
@@ -166,11 +164,11 @@ t.test("load module", async (t) => {
             });
             t.test("check translate table with char substitution", async (t) => {
                 const heapBuffer = result.instance.exports.mem.buffer;
-                const collisionsTable = new Uint16Array(heapBuffer, 1024, 128);
+                const collisionsTable = new Uint16Array(heapBuffer, 1280, 128);
                 return t.same(
                     [
-                        collisionsTable[collisionsTable.indexOf(1086) + 1],
-                        collisionsTable[collisionsTable.indexOf(1054) + 1]
+                        collisionsTable[collisionsTable.indexOf(1086) - 1],
+                        collisionsTable[collisionsTable.indexOf(1054) - 1]
                     ],
                     [15, 15]
                 );

@@ -1,9 +1,9 @@
-export const ao: i32 = 2044;
+export const ao: i32 = 2300;
 export const as: i32 = 60;
-export const bm: i32 = 2168;
-export const cm: i32 = 3136;
-export const hv: i32 = 7008;
-export const vm: i32 = 7496;
-export const va: i32 = 8760;
+export const bm: i32 = 2424;
+export const cm: i32 = 3392;
+export const hv: i32 = 7264;
+export const vm: i32 = 7752;
+export const va: i32 = 9016;
 export const lm: i32 = 2;
 export const rm: i32 = 2;

@@ -122,7 +122,7 @@ output.set(new Uint8Array(strieDat.values.buffer), valuesOffset);
 fs.writeFileSync(process.argv[3], output);
 
 let imports = "";
-const dataOffset = 1920;
+const dataOffset = 2176;
 imports += `export const ao: i32 = ${alphabetOffset + dataOffset};\n`;
 imports += `export const as: i32 = ${alphabet.length};\n`;
 imports += `export const bm: i32 = ${bitMapOffset + dataOffset};\n`;

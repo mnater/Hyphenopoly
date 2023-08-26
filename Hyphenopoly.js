@@ -863,7 +863,7 @@
                             exp.mem.buffer,
                             exp.hyphenate
                         ),
-                        decode(new Uint16Array(exp.mem.buffer, 1408, alphalen)),
+                        decode(new Uint16Array(exp.mem.buffer, 1664, alphalen)),
                         /* eslint-disable multiline-ternary */
                         (wa.Global) ? exp.lmi.value : exp.lmi,
                         (wa.Global) ? exp.rmi.value : exp.rmi

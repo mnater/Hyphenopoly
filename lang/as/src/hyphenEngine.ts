@@ -15,6 +15,8 @@
  * declare function logc(arg0: i32): void;
  */
 
+declare function log(arg0: i32): void;
+
 /*
  * MEMORY LAYOUT (static)
  *
@@ -32,18 +34,15 @@
  * | 64 * Uint16 = 128B |
  * #--------------------# <- 384 (translateMapOffset)
  * |    translateMap    |
- * |         keys:      |
- * | 256 chars * 2Bytes |
- * |          +         |
- * |       values:      | 1024B
- * | 256 chars * 1Byte  |
- * |          +         |
+ * |      key/value:    |
+ * | 256 chars * 4Bytes |
+ * |          +         | 1280B
  * |     collisions:    |
  * | 64 buckets * 4Byte |
- * #--------------------# <- 1408 (alphabetOffset)
+ * #--------------------# <- 1664 (alphabetOffset)
  * |      alphabet      |
  * | 256 chars * 2Bytes | 512B
- * #--------------------# <- 1920   - DATAOFFSET
+ * #--------------------# <- 2176   - DATAOFFSET
  * |      licence       |           |
  * #--------------------#           |
  * |      alphabet      |    (ao)   |
@@ -98,7 +97,7 @@ const tw: i32 = 128;
 const hp: i32 = 192;
 const originalWordOffset: i32 = 256;
 const translateMapOffset:i32 = 384;
-const alphabetOffset: i32 = 1408;
+const alphabetOffset: i32 = 1664;
 
 /*
  * Minimalistic hash function to map 16-bit to 8-bit
@@ -116,23 +115,18 @@ function hashCharCode(cc: i32): i32 {
  * v is it's 8-bit representation
  */
 function pushToTranslateMap(cc: i32, id: i32): void {
-    let ptr: i32 = hashCharCode(cc) << 1;
-    if (load<u16>(ptr, translateMapOffset) === 0) {
-        // No collision
-        store<u16>(ptr, cc, translateMapOffset);
-        store<u8>(ptr >> 1, id, translateMapOffset + 512);
-    } else {
+    let ptr: i32 = hashCharCode(cc) << 2;
+    if (load<u32>(ptr, translateMapOffset) !== 0) {
         // Handle collision
-        ptr = 0;
-        while (load<u16>(ptr, translateMapOffset + 768) !== 0) {
+        ptr = 1024;
+        while (load<u32>(ptr, translateMapOffset) !== 0) {
             ptr += 4;
-            if (ptr >= 256) {
+            if (ptr >= 1280) {
                 unreachable();
             }
         }
-        store<u16>(ptr, cc, translateMapOffset + 768);
-        store<u16>(ptr, id, translateMapOffset + 770);
     }
+    store<u32>(ptr, (cc << 16) + id, translateMapOffset);
 }
 
 /*
@@ -140,25 +134,25 @@ function pushToTranslateMap(cc: i32, id: i32): void {
  * Returns 255 if the char is not in the translateMap
  */
 function pullFromTranslateMap(cc: i32): i32 {
-    let ptr: i32 = hashCharCode(cc) << 1;
-    const val = load<u16>(ptr, translateMapOffset);
+    let ptr: i32 = hashCharCode(cc) << 2;
+    const val = load<u32>(ptr, translateMapOffset);
     if (val === 0) {
         // Unknown char
         return 255;
     }
-    if (val === cc) {
+    if ((val >>> 16) === cc) {
         // Known char
-        return load<u8>(ptr >> 1, translateMapOffset + 512);
+        return (val & 255);
     }
     // Find collided char
     ptr = 0;
-    while (load<u16>(ptr, translateMapOffset + 768) !== cc) {
+    while (load<u16>(ptr, translateMapOffset + 1026) !== cc) {
         ptr += 4;
         if (ptr >= 256) {
             return 255;
         }
     }
-    return load<u16>(ptr, translateMapOffset + 770);
+    return load<u16>(ptr, translateMapOffset + 1024);
 }
 
 /*
@@ -408,9 +402,8 @@ export function hyphenate(lmin: i32, rmin: i32, hc: i32): i32 {
             const sel0: i32 = select(node, bm, cm);
             node = (sel0 >> 8) - node;
             const to: i32 = node + (sel0 & 255);
-            const currChar: i32 = load<u8>(charOffset, tw);
             while (node < to) {
-                if (load<u8>(node, cm) === currChar) {
+                if (load<u8>(node, cm) === load<u8>(charOffset, tw)) {
                     break;
                 }
                 node += 1;
