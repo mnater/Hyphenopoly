@@ -4,8 +4,8 @@ version: 2.1
 # Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
 # See: https://circleci.com/docs/2.0/orb-intro/
 orbs:
-  node: circleci/node@5
-  coveralls: coveralls/coveralls@1.0.6
+  node: circleci/node@5.1.0
+  coveralls: coveralls/coveralls@2.2.1
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -30,4 +30,4 @@ workflows:
       - test:
           matrix:
             parameters:
-              node-version: ["current", "lts", "14.20.0"]
+              node-version: ["current", "lts", "16.20.2"]
