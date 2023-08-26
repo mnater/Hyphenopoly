@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/mnater/Hyphenopoly/tree/master.svg?style=shield)](https://circleci.com/gh/mnater/Hyphenopoly/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/mnater/Hyphenopoly/badge.svg?branch=master)](https://coveralls.io/github/mnater/Hyphenopoly?branch=master)
 [![npms score](https://badges.npms.io/hyphenopoly.svg)](https://npms.io/search?q=hyphenopoly)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/de50e1ae70a64a47b0bd9b5449f89353)](https://www.codacy.com/gh/mnater/Hyphenopoly/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mnater/Hyphenopoly&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/de50e1ae70a64a47b0bd9b5449f89353)](https://app.codacy.com/gh/mnater/Hyphenopoly/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 Hyphenopoly.js is a __JavaScript-polyfill for hyphenation in HTML__: it hyphenates text if the user agent does not support CSS-hyphenation at all or not for the required languages and it is a __Node.js-module__.
 
