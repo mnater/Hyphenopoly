@@ -1,6 +1,6 @@
 {
   "name": "hyphenopoly",
-  "version": "5.2.0-beta.1",
+  "version": "5.2.0-beta.2",
   "description": "Hyphenation for node and Polyfill for client-side hyphenation.",
   "keywords": [
     "hyphenation",

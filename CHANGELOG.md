@@ -1,5 +1,9 @@
 # Version History
 
+## Version 5.2.0-beta.2 (2023-08-26)
+### Fixed
+*   translateMap now uses lesser load/stores
+
 ## Version 5.2.0-beta.1 (2023-07-03)
 ### Fixed
 *   Refactor how words are sent to wasm-modules: word delimiters are now added
