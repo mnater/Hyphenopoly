@@ -22,8 +22,7 @@ jobs:
       - node/install-packages
       - run:
           command: npm run test
-      - coveralls/upload:
-          path_to_lcov: '.c8/lcov.info'
+      - coveralls/upload
 workflows:
   all-tests:
     jobs:
