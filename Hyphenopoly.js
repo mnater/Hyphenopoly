@@ -659,8 +659,11 @@
         H.unhyphenate = () => {
             H.res.els.list.forEach((els) => {
                 els.forEach((elo) => {
-                    const n = elo.element.firstChild;
-                    n.data = n.data.replace(RegExp(C[elo.selector].hyphen, "g"), "");
+                    elo.element.childNodes.forEach((n) => {
+                        if (n.nodeType === 3) {
+                            n.data = n.data.replace(RegExp(C[elo.selector].hyphen, "g"), "");
+                        }
+                    });
                 });
             });
             return Promise.resolve(H.res.els);
