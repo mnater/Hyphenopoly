@@ -1,5 +1,15 @@
 # Version History
 
+<!--
+## Version 5.2.0 (2023-10-dd)
+### Fixed
+*   unhyphenate all childNoded (issue #205)
+*   translateMap now uses lesser load/stores
+*   Refactor how words are sent to wasm-modules: word delimiters are now added in the wasm-module instead of js
+*   bump devDependencies
+### Doc
+*   Update docs for standalone wasm-usage
+-->
 ## Version 5.2.0-beta.2 (2023-08-26)
 ### Fixed
 *   translateMap now uses lesser load/stores
