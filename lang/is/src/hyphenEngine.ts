@@ -220,25 +220,25 @@ function nodeHasValue(pos: i32): i32 {
 }
 
 /*
- * Computes the rank at pos starting at startByte.
+ * Computes the rank at pos starting at currByte.
  * The rank is the number of bits set up to the given position.
- * We first count the bits set in the 32-bit blocks,
+ * We first count the bits set in the 64-bit blocks,
  * then we count the bits set until the final pos.
  */
-function rank(pos: i32, startByte: i32): i32 {
+function rank(pos: i32, currByte: i32): i32 {
+    let count: i64 = 0;
     // (pos / 64) << 3 === (pos >> 6) << 3
     const numBytes: i32 = (pos >> 6) << 3;
+    const endByte: i32 = currByte + numBytes;
+    while (currByte < endByte) {
+        count += popcnt<i64>(load<i64>(currByte, 0, 8));
+        currByte += 8;
+    }
     // BitHack: pos % 64 === pos & (64 - 1)
     const numBits: i32 = pos & 63;
-    let i: i32 = 0;
-    let count: i64 = 0;
-    while (i < numBytes) {
-        count += popcnt<i64>(load<i64>(startByte + i, 0, 8));
-        i += 8;
-    }
     if (numBits !== 0) {
         count += popcnt<i64>(
-            load<i64>(startByte + i, 0, 8) >>> (64 - numBits)
+            load<i64>(currByte, 0, 8) >>> (64 - numBits)
         );
     }
     return count as i32;
