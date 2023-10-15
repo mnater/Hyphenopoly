@@ -10,6 +10,13 @@ export default [
     js.configs.all,
     security.configs.recommended,
     {
+        "ignores": [
+            "min/*.js",
+            "examples/deno_example.js",
+            "examples/webpack/src/*.js"
+        ]
+    },
+    {
         "files": [
             "Hyphenopoly_Loader.js",
             "Hyphenopoly.js"
