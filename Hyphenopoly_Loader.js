@@ -131,7 +131,7 @@ window.Hyphenopoly = {};
                     if (H.cf.langs.has(lang)) {
                         return;
                     }
-                    fakeBody = fakeBody || d[shortcuts.ce]("body");
+                    fakeBody ||= d[shortcuts.ce]("body");
                     const testDiv = d[shortcuts.ce]("div");
                     const ha = "hyphens:auto";
                     testDiv.lang = lang;
@@ -297,7 +297,7 @@ window.Hyphenopoly = {};
             if (obj) {
                 o.entries(defaults).forEach(([k, v]) => {
                     // eslint-disable-next-line security/detect-object-injection
-                    obj[k] = obj[k] || v;
+                    obj[k] ||= v;
                 });
                 return obj;
             }

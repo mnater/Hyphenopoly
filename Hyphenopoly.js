@@ -763,9 +763,7 @@
                     Number(selSettings.rightminPerLang.get(lang)) || 0
                 ));
             });
-            if (!H.languages) {
-                H.languages = new Map();
-            }
+            H.languages ||= new Map();
             alphabet = alphabet.replace(/\\*-/g, "\\-");
             H.languages.set(lang, {
                 alphabet,
