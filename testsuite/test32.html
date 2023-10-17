@@ -31,6 +31,7 @@
                 }
                 assertRuns += 1;
                 if (assertRuns === 2 && parent != window) {
+                    window.parent.document.getElementById("testframe").style.width = "500px";
                     parent.postMessage(JSON.stringify({
                         desc: document.getElementById("desc").innerHTML,
                         index: 32,
@@ -77,7 +78,7 @@
                                         hyphenopolyEnd: function (e) {
                                             assert();
                                             if (parent != window) {
-                                                window.parent.document.getElementById("testframe").width = "800px";
+                                                window.parent.document.getElementById("testframe").style.width = "800px";
                                             }
                                         }
                                     }
