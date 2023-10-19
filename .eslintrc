@@ -15,7 +15,7 @@
     "examples/webpack/src/*.js"
   ],
   "plugins": [
-    "security"
+    "security", "html"
   ],
   "extends": [
     "eslint:all",
@@ -148,6 +148,18 @@
       "files": ["*.module.js", "*.deno.js", "example.js", "test/*", "tools/**", "src/*", "lang/*/src/*"],
       "parserOptions": {
         "sourceType": "module"
+      }
+    },
+    {
+      "files": ["*.html"],
+      "globals": {
+        "Hyphenopoly": "readonly"
+      },
+      "rules": {
+        "complexity": 0,
+        "require-jsdoc": 0,
+        "strict": 0,
+        "sort-keys": 0
       }
     }
   ],

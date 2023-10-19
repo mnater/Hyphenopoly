@@ -5,64 +5,69 @@
         <title>Test 010</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        Hyphenopoly.config({
-            require: {
-                "de": "FORCEHYPHENOPOLY"
-            },
-            setup: {
-                hide: "element",
-                safeCopy: true,
-                selectors: {
-                    ".class1": {
-                        hyphen: "·"
-                    },
-                    ".class2": {
-                        hyphen: String.fromCharCode(173)
+            (() => {
+                function assert() {
+                    const tests = 3;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).textContent;
+                        ref = document.getElementById("ref" + i).textContent;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                            result = false;
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 10,
+                            "result": (result
+                                ? "passed"
+                                : "failed"
+                            )
+                        }), window.location.href);
                     }
                 }
-            },
-            handleEvent: {
-                hyphenopolyEnd: function (e) {
-                    Hyphenopoly.hyphenators.HTML.then(function (hyphenateHTML) {
-                        hyphenateHTML(document.getElementById("test3"), ".class2");
-                        assert();
-                    });
-                }
-            }
-        });
-        function assert() {
-            var tests = 3;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            while (i <= tests) {
-                test = document.getElementById("test" + i).textContent;
-                ref = document.getElementById("ref" + i).textContent;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = false;
-                }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 10,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
-        document.addEventListener("DOMContentLoaded", function() {
-            document.getElementById("pastebin").addEventListener("keyup", function(e) {
-                this.value += "\n" + Array.prototype.map.call(this.value, function (x) {
-                    return x.charCodeAt(0)
+                Hyphenopoly.config({
+                    "require": {
+                        "de": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "hide": "element",
+                        "safeCopy": true,
+                        "selectors": {
+                            ".class1": {
+                                "hyphen": "·"
+                            },
+                            ".class2": {
+                                "hyphen": String.fromCharCode(173)
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        hyphenopolyEnd() {
+                            Hyphenopoly.hyphenators.HTML.then((hyphenateHTML) => {
+                                hyphenateHTML(document.getElementById("test3"), ".class2");
+                                assert();
+                            });
+                        }
+                    }
                 });
-            }, true);
-        });
+                document.addEventListener("DOMContentLoaded", () => {
+                    document.getElementById("pastebin").addEventListener("keyup", () => {
+                        this.value += "\n" + Array.prototype.map.call(this.value, (x) => {
+                            return x.charCodeAt(0);
+                        });
+                    }, true);
+                });
+            })();
         </script>
         <style type="text/css">
             body {

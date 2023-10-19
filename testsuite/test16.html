@@ -5,49 +5,52 @@
         <title>Test 016</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-            Hyphenopoly.config({
-                require: {
-                    "en-us": "FORCEHYPHENOPOLY",
-                    "de": "FORCEHYPHENOPOLY",
-                    "it": "FORCEHYPHENOPOLY"
-                },
-                setup: {
-                    selectors: {
-                        ".hyphenate": {
-                            hyphen: "•"
+            (() => {
+                let count = 0;
+                function assert(e) {
+                    count += 1;
+                    const test1 = "Engine for language 'it' loaded, but no elements found.";
+                    const test2 = "Engine for language 'de' loaded, but no elements found.";
+                    const ref = e.message;
+                    let result = true;
+                    if (test1 === ref || test2 === ref) {
+                        document.getElementById("result").innerHTML += `<span style="background-color: #d6ffd6">${count}</span> `;
+                        result = result && true;
+                    } else {
+                        document.getElementById("result").innerHTML += `<span style="background-color: #ffd6d6">${count}</span> `;
+                        result = false;
+                    }
+                    if (parent !== window && count === 2) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 16,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
+                }
+
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY",
+                        "de": "FORCEHYPHENOPOLY",
+                        "it": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "selectors": {
+                            ".hyphenate": {
+                                "hyphen": "•"
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        error(e) {
+                            assert(e);
                         }
                     }
-                },
-                handleEvent: {
-                    error: function (e) {
-                        //e.preventDefault();
-                        assert(e);
-                    }
-                }
-            });
-            let test = true;
-            let count = 0;
-            function assert(e) {
-                count += 1;
-                var test1 = "Engine for language 'it' loaded, but no elements found.";
-                var test2 = "Engine for language 'de' loaded, but no elements found.";
-                var ref = e.message;
-                var result = true;
-                if (test1 === ref || test2 === ref) {
-                    document.getElementById("result").innerHTML += `<span style="background-color: #d6ffd6">${count}</span> `;
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += `<span style="background-color: #ffd6d6">${count}</span> `;
-                    result = false;
-                }
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 16,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
-            }
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -61,13 +64,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

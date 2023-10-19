@@ -5,34 +5,37 @@
         <title>Test 018</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        function assert() {
-            const r = !Hyphenopoly
-                ? "passed"
-                : "failed";
-            if (r === "passed") {
-                document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">passed</p>";
-            } else {
-                document.getElementById("result").innerHTML = "<p style=\"background-color: #ffd6d6\">failed</p>";
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 18,
-                    result: r,
-                }), window.location.href);
-            }
-        }
-        Hyphenopoly.config({
-            require: {
-                "en-us": "supercalifragilisticexpialidocious"
-            },
-            handleEvent: {
-                tearDown: function () {
-                    window.onload = assert;
+            (() => {
+                function assert() {
+                    const r = Hyphenopoly
+                        ? "failed"
+                        : "passed";
+                    if (r === "passed") {
+                        document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">passed</p>";
+                    } else {
+                        document.getElementById("result").innerHTML = "<p style=\"background-color: #ffd6d6\">failed</p>";
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 18,
+                            "result": r
+                        }), window.location.href);
+                    }
                 }
-            }
-        });
-        window.setTimeout(assert, 1000);
+                const timeout = window.setTimeout(assert, 1000);
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "supercalifragilisticexpialidocious"
+                    },
+                    "handleEvent": {
+                        tearDown() {
+                            window.clearTimeout(timeout);
+                            window.onload = assert;
+                        }
+                    }
+                });
+            })();
         </script>
 
         <style type="text/css">
@@ -48,13 +51,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>
