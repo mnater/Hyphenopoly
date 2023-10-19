@@ -5,95 +5,100 @@
         <title>Test 038</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        var mode = window.location.search.substring(1);
-        var path = "../patterns/";
-        var result = true;
-        Hyphenopoly.config({
-            require: {
-                "de": "FORCEHYPHENOPOLY",
-                "en": "FORCEHYPHENOPOLY"
-            },
-            paths: {
-                patterndir: path
-            },
-            setup: {
-                selectors: {
-                    ".hyphenate": {
-                        hyphen: "|",
-                        minWordLength: 4
+            (() => {
+                const path = "../patterns/";
+                let result = true;
+                function assertError(e) {
+                    if (e.msg.indexOf("File en.wasm can't be loaded from ../patterns/") !== -1) {
+                        result = true;
+                    }
+                    if (result) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + 1 + " passed</p>";
                     }
                 }
-            }
-        });
-
-        window.onload = function () {
-            if (window.Promise) {
-                function hyphenate_en(text) {
-                    Hyphenopoly.hyphenators.en.then(
-                    function (enhyph) {
-                        document.getElementById("test1").innerText = enhyph(text);
-                        assertAll();
-                    }).catch(function(e) {
-                        assertError(e);
-                    });
+                function assertAll() {
+                    const tests = 2;
+                    let i = 2;
+                    let test = "";
+                    let ref = "";
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).innerHTML;
+                        ref = document.getElementById("ref" + i).innerHTML;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                            result = false;
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 38,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
                 }
-                function hyphenate_de(text) {
-                    Hyphenopoly.hyphenators.de.then(
-                    function (dehyph) {
-                        document.getElementById("test2").innerText = dehyph(text);
-                        assertAll();
-                    }).catch(function(e) {
-                        assertError(e);
-                    });
-                }
-                hyphenate_en("hyphenation algorithm");
-                hyphenate_de("Silbentrennungsalgorithmus");
-            } else {
-                result = false
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 38,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
-
-            }
-        };
-
-        function assertError(e) {
-            if (e.msg.indexOf("File en.wasm can't be loaded from ../patterns/") !== -1) {
-                result = true;
-            }
-            if (result) {
-                document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + 1 + " passed</p>";
-            }
-        }
-        function assertAll() {
-            var tests = 2;
-            var i = 2;
-            var test = "";
-            var ref = "";
-            while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = false;
-                }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 38,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
+                Hyphenopoly.config({
+                    "require": {
+                        "de": "FORCEHYPHENOPOLY",
+                        "en": "FORCEHYPHENOPOLY"
+                    },
+                    "paths": {
+                        "patterndir": path
+                    },
+                    "setup": {
+                        "selectors": {
+                            ".hyphenate": {
+                                "hyphen": "|",
+                                "minWordLength": 4
+                            }
+                        }
+                    }
+                });
+            
+                window.onload = () => {
+                    if (window.Promise) {
+                        const hyphenateEn = (text) => {
+                            Hyphenopoly.hyphenators.en.then(
+                                (enhyph) => {
+                                    document.getElementById("test1").innerText = enhyph(text);
+                                    assertAll();
+                                }
+                            ).catch((e) => {
+                                assertError(e);
+                            });
+                        };
+                        const hyphenateDe = (text) => {
+                            Hyphenopoly.hyphenators.de.then(
+                                (dehyph) => {
+                                    document.getElementById("test2").innerText = dehyph(text);
+                                    assertAll();
+                                }
+                            ).catch((e) => {
+                                assertError(e);
+                            });
+                        };
+                        hyphenateEn("hyphenation algorithm");
+                        hyphenateDe("Silbentrennungsalgorithmus");
+                    } else {
+                        result = false;
+                        if (parent !== window) {
+                            parent.postMessage(JSON.stringify({
+                                "desc": document.getElementById("desc").innerHTML,
+                                "index": 38,
+                                "result": (result
+                                    ? "passed"
+                                    : "failed")
+                            }), window.location.href);
+                        }
+                    }
+                };
+            })();
         </script>
         <style type="text/css">
             body {
@@ -109,7 +114,6 @@
             .ref {
                 background-color: #FEEFC0;
             }
-
         </style>
     </head>
     <body>

@@ -1,8 +1,9 @@
 # Version History
 
-## Version WIP ()
+## Version 5.2.1 (2023-10-19)
 ### Fixed
 *   created and updated patterns for german
+*   bump devDependencies
 ### Test
 *   refactor testsuite: lint code
 

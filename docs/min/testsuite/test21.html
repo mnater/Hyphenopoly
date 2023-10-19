@@ -5,56 +5,59 @@
         <title>Test 021</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        window.PagedConfig = {
-            auto: false
-        };
-        Hyphenopoly.config({
-            require: {
-                "en-us": "FORCEHYPHENOPOLY",
-                "hy": "FORCEHYPHENOPOLY"
-            },
-            handleEvent: {
-                hyphenopolyEnd: function (e) {
-                    // Run Paged.js after Hyphenopoly
-                    window.PagedPolyfill.preview();
-
-                    assert();
-                }
-            }
-        });
-        function assert() {
-            var tests = 2;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            var lang = "";
-            while (i <= tests) {
-                lang = document.getElementById("test" + i).lang;
-                if (Hyphenopoly.cf.langs.get(lang) === "CSS") {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
-                    result = result && true;
-                } else {
-                    test = document.getElementById("test" + i).innerHTML;
-                    ref = document.getElementById("ref" + i).innerHTML;
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                        result = result && true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                        result = false;
+            (() => {
+                window.PagedConfig = {
+                    "auto": false
+                };
+                function assert() {
+                    const tests = 2;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    let lang = "";
+                    while (i <= tests) {
+                        lang = document.getElementById("test" + i).lang;
+                        if (Hyphenopoly.cf.langs.get(lang) === "CSS") {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
+                            result = result && true;
+                        } else {
+                            test = document.getElementById("test" + i).innerHTML;
+                            ref = document.getElementById("ref" + i).innerHTML;
+                            if (test === ref) {
+                                document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                                result = result && true;
+                            } else {
+                                document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                                result = false;
+                            }
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 21,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
                     }
                 }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 21,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY",
+                        "hy": "FORCEHYPHENOPOLY"
+                    },
+                    "handleEvent": {
+                        hyphenopolyEnd() {
+                            // Run Paged.js after Hyphenopoly
+                            window.PagedPolyfill.preview();
+                            assert();
+                        }
+                    }
+                });
+            })();
         </script>
         <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
         <style type="text/css">
@@ -69,13 +72,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

@@ -5,70 +5,78 @@
         <title>Test 014</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-            Hyphenopoly.config({
-                require: {
-                    "de": "FORCEHYPHENOPOLY",
-                    "en-us": "FORCEHYPHENOPOLY"
-                },
-                setup: {
-                    selectors: {
-                        ".class1": {
-                            hyphen: "•",
-                            leftmin: 0,
-                            rightmin: 0
-                        },
-                        ".class2": {
-                            hyphen: "•",
-                            leftmin: 4,
-                            rightmin: 4
-                        },
-                        ".class3": {
-                            hyphen: "•",
-                            leftmin: 0,
-                            leftminPerLang: {
-                                "de": 4,
-                                "en-us": 4
+            (() => {
+                function assert() {
+                    const tests = 3;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).innerHTML;
+                        ref = document.getElementById("ref" + i).innerHTML;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + ((j) => {
+                                return (j < 10)
+                                    ? "0" + j
+                                    : j;
+                            })(i) + "</span> ";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + ((j) => {
+                                return (j < 10)
+                                    ? "0" + j
+                                    : j;
+                            })(i) + "</span> ";
+                            result = false;
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 14,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
+                }
+
+                Hyphenopoly.config({
+                    "require": {
+                        "de": "FORCEHYPHENOPOLY",
+                        "en-us": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "selectors": {
+                            ".class1": {
+                                "hyphen": "•",
+                                "leftmin": 0,
+                                "rightmin": 0
+                            },
+                            ".class2": {
+                                "hyphen": "•",
+                                "leftmin": 4,
+                                "rightmin": 4
+                            },
+                            ".class3": {
+                                "hyphen": "•",
+                                "leftmin": 0,
+                                "leftminPerLang": {
+                                    "de": 4,
+                                    "en-us": 4
+                                }
                             }
                         }
+                    },
+                    "handleEvent": {
+                        hyphenopolyEnd() {
+                            assert();
+                        }
                     }
-                },
-                handleEvent: {
-                    hyphenopolyEnd: function (e) {
-                        assert();
-                    }
-                }
-            });
-
-            function assert() {
-                var tests = 3;
-                var i = 1;
-                var test = "";
-                var ref = "";
-                var result = true;
-                while (i <= tests) {
-                    test = document.getElementById("test" + i).innerHTML;
-                    ref = document.getElementById("ref" + i).innerHTML;
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + (function (i) {
-                            return (i < 10) ? "0" + i : i; 
-                        }(i)) + "</span> ";
-                        result = result && true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + (function (i) {
-                            return (i < 10) ? "0" + i : i; 
-                        }(i)) + "</span> ";
-                        result = false;
-                    }
-                    i += 1;
-                }
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 14,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
-            }
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -82,13 +90,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

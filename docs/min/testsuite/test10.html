@@ -5,64 +5,69 @@
         <title>Test 010</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        Hyphenopoly.config({
-            require: {
-                "de": "FORCEHYPHENOPOLY"
-            },
-            setup: {
-                hide: "element",
-                safeCopy: true,
-                selectors: {
-                    ".class1": {
-                        hyphen: "·"
-                    },
-                    ".class2": {
-                        hyphen: String.fromCharCode(173)
+            (() => {
+                function assert() {
+                    const tests = 3;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).textContent;
+                        ref = document.getElementById("ref" + i).textContent;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                            result = false;
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 10,
+                            "result": (result
+                                ? "passed"
+                                : "failed"
+                            )
+                        }), window.location.href);
                     }
                 }
-            },
-            handleEvent: {
-                hyphenopolyEnd: function (e) {
-                    Hyphenopoly.hyphenators.HTML.then(function (hyphenateHTML) {
-                        hyphenateHTML(document.getElementById("test3"), ".class2");
-                        assert();
-                    });
-                }
-            }
-        });
-        function assert() {
-            var tests = 3;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            while (i <= tests) {
-                test = document.getElementById("test" + i).textContent;
-                ref = document.getElementById("ref" + i).textContent;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = false;
-                }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 10,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
-        document.addEventListener("DOMContentLoaded", function() {
-            document.getElementById("pastebin").addEventListener("keyup", function(e) {
-                this.value += "\n" + Array.prototype.map.call(this.value, function (x) {
-                    return x.charCodeAt(0)
+                Hyphenopoly.config({
+                    "require": {
+                        "de": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "hide": "element",
+                        "safeCopy": true,
+                        "selectors": {
+                            ".class1": {
+                                "hyphen": "·"
+                            },
+                            ".class2": {
+                                "hyphen": String.fromCharCode(173)
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        hyphenopolyEnd() {
+                            Hyphenopoly.hyphenators.HTML.then((hyphenateHTML) => {
+                                hyphenateHTML(document.getElementById("test3"), ".class2");
+                                assert();
+                            });
+                        }
+                    }
                 });
-            }, true);
-        });
+                document.addEventListener("DOMContentLoaded", () => {
+                    document.getElementById("pastebin").addEventListener("keyup", () => {
+                        this.value += "\n" + Array.prototype.map.call(this.value, (x) => {
+                            return x.charCodeAt(0);
+                        });
+                    }, true);
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -95,7 +100,7 @@
         <p id="ref1" class="ref" lang="de">Sil·ben·tren·nung: <span class="italic">Die Wort&shy;tren&shy;nung, auch Sil&shy;ben&shy;tren&shy;nung ge&shy;nannt, be&shy;zeich&shy;net in der Or&shy;tho&shy;gra&shy;phie die Art und Weise, wie die Wör&shy;ter ins&shy;be&shy;son&shy;de&shy;re am Zei&shy;len&shy;en&shy;de ge&shy;trennt wer&shy;den kön&shy;nen.</span></p>
         <h2>2: class1 with link</h2>
         <p id="test2" class="test class2" lang="de">Silbentrennung: <a href="https://github.com/mnater/Hyphenopoly">Hyphenopoly</a></p>
-        <p id="ref2" class="ref" lang="de">Sil&shy;ben&shy;tren&shy;nung: <a href="https://github.com/mnater/Hyphenopoly">Hy&shy;pheno&shy;po&shy;ly</a></p>
+        <p id="ref2" class="ref" lang="de">Sil&shy;ben&shy;tren&shy;nung: <a href="https://github.com/mnater/Hyphenopoly">Hy&shy;phen&shy;o&shy;po&shy;ly</a></p>
         <h2>3: class1 manually with hyphenator</h2>
         <p id="test3" class="test" lang="de">Silbentrennung <span>verbessert</span> den Blocksatz.</p>
         <p id="ref3" class="ref" lang="de">Sil&shy;ben&shy;tren&shy;nung <span>ver&shy;bes&shy;sert</span> den Block&shy;satz.</p>
