@@ -1,5 +1,11 @@
 # Version History
 
+## Version WIP ()
+### Fixed
+*   created and updated patterns for german
+### Test
+*   refactor testsuite: lint code
+
 ## Version 5.2.0 (2023-10-04)
 ### Fixed
 *   unhyphenate all childNodes (issue #205)
