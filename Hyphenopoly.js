@@ -41,7 +41,7 @@
             });
         }
         return {
-            "fire": ((eventName, eventData) => {
+            "fire": ((eventName, eventData = {}) => {
                 eventData.runDefault = true;
                 eventData.preventDefault = () => {
                     eventData.runDefault = false;
@@ -212,12 +212,7 @@
         const C = H.c;
         let mainLanguage = null;
 
-        event.fire(
-            "hyphenopolyStart",
-            {
-                "msg": "hyphenopolyStart"
-            }
-        );
+        event.fire("hyphenopolyStart");
 
         /**
          * Factory for elements
@@ -263,12 +258,7 @@
                     list.delete(lang);
                     counter[0] -= langCount;
                     if (counter[0] === 0) {
-                        event.fire(
-                            "hyphenopolyEnd",
-                            {
-                                "msg": "hyphenopolyEnd"
-                            }
-                        );
+                        event.fire("hyphenopolyEnd");
                         if (!C.keepAlive) {
                             window.Hyphenopoly = null;
                         }
@@ -690,12 +680,7 @@
             if (elements.counter[0] === 0) {
                 w.clearTimeout(H.timeOutHandler);
                 H.hide(0, null);
-                event.fire(
-                    "hyphenopolyEnd",
-                    {
-                        "msg": "hyphenopolyEnd"
-                    }
-                );
+                event.fire("hyphenopolyEnd");
                 if (!C.keepAlive) {
                     window.Hyphenopoly = null;
                 }
@@ -776,12 +761,7 @@
                 "reNotAlphabet": RegExp(`[^${alphabet}]`, "i")
             });
             H.hy6ors.get(lang).resolve(createStringHyphenator(lang));
-            event.fire(
-                "engineReady",
-                {
-                    lang
-                }
-            );
+            event.fire("engineReady", {lang});
             if (H.res.els) {
                 hyphenateLangElements(lang, H.res.els);
             }

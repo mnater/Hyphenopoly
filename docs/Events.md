@@ -32,7 +32,7 @@ Internally, events in Hyphenopoly are implemented as Promises that are fulfilled
 Fired after an element has been hyphenated.
 
 ````
-Default-action: null
+Default-action: none
 cancellable: true
 Fields: `el` (element), `lang` (language-code)
 ````
@@ -41,7 +41,7 @@ Fields: `el` (element), `lang` (language-code)
 Fired before an element gets hyphenated.
 
 ````
-Default-action: null
+Default-action: none
 cancellable: true
 Fields: `el` (element), `lang` (language-code)
 ````
@@ -50,9 +50,9 @@ Fields: `el` (element), `lang` (language-code)
 Fired when engine and pattern files are ready.
 
 ````
-Default-action: Starts hyphenation if elements are ready.
-cancellable: false
-Fields: msg (language code)
+Default-action: none
+cancellable: true
+Fields: `lang` (language-code)
 ````
 
 ## error-Event
@@ -82,8 +82,8 @@ Hyphenopoly.config({
 Fired when all collected elements are hyphenated.
 
 ````
-Default-action: clears FOUHC-timeout and unhides elements
-cancellable: false
+Default-action: none
+cancellable: true
 Fields: null
 ````
 
@@ -91,17 +91,17 @@ Fields: null
 Fired when Hyphenopoly starts.
 
 ````
-Default-action: null
+Default-action: none
 cancellable: true
-Fields: msg
+Fields: null
 ````
 
 ## polyfill-Event
 Fired when Hyphenopoly_Loader.js decides to load Hyphenopoly.js.
 
 ````
-Default-action: null
-cancellable: false
+Default-action: none
+cancellable: true
 Fields: null
 ````
 
@@ -109,7 +109,7 @@ Fields: null
 Fired when Hyphenopoly_Loader.js decides NOT to load Hyphenopoly.js and before it deletes the global 'Hyphenopoly' object. This event can be used to invoke other scripts, if native CSS hyphenation is available.
 
 ````
-Default-action: `w.Hyphenopoly = null`
-cancellable: false
+Default-action: none
+cancellable: true
 Fields: null
 ````

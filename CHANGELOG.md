@@ -1,5 +1,9 @@
 # Version History
 
+## Version WIP
+### Fixed
+*   simplify events and clarify in docs
+
 ## Version 5.2.1 (2023-10-19)
 ### Fixed
 *   created and updated patterns for german
