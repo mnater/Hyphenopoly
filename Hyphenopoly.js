@@ -836,7 +836,6 @@
              */
             function handleWasm(res) {
                 const exp = res.instance.exports;
-                // eslint-disable-next-line multiline-ternary
                 let alphalen = (wa.Global) ? exp.lct.value : exp.lct;
                 alphalen = registerSubstitutions(alphalen, exp);
                 heProm.l.forEach((l) => {
@@ -847,10 +846,8 @@
                             exp.hyphenate
                         ),
                         decode(new Uint16Array(exp.mem.buffer, 1664, alphalen)),
-                        /* eslint-disable multiline-ternary */
                         (wa.Global) ? exp.lmi.value : exp.lmi,
                         (wa.Global) ? exp.rmi.value : exp.rmi
-                        /* eslint-enable multiline-ternary */
                     );
                 });
             }
