@@ -10,7 +10,7 @@ https://github.com/mnater/Hyphenopoly/blob/master/CODE_OF_CONDUCT.md
 
 Please don't hesitate to open a new issue on GitHub - questions, enhancement suggestions, bugs are equally welcome;-)
 
-### How do I submit a (good) issue?
+### How to submit a (good) issue
 
 A good description helps to reproduce the issue and saves a lot of time. The following points are very helpful:
 
