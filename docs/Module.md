@@ -137,6 +137,7 @@ Defaults:
 The `loader` function is called with two arguments:
 *   a string (the name of the .wasm file to load, e.g. `"en-us.wasm"`)
 *   an URL-Object (`new URL('./patterns/', import.meta.url)`)
+
 It must return a `promise` that resolves with a buffer of the language file.
 
 Here are some examples:
@@ -215,7 +216,9 @@ If hyphenopoly is run in sync-mode, a `loaderSync` must be defined instead of `l
 The `loaderSync` function is called with two arguments:
 *   a string (the name of the .wasm file to load, e.g. `"en-us.wasm"`)
 *   an URL-Object (`new URL('./patterns/', import.meta.url)`)
+
 It must return a `promise` that resolves with a buffer of the language file.
+
 Of course, this does not work with fetch and https, which are inherently async.
 
 ````javascript
