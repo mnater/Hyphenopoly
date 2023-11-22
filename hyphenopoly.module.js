@@ -286,9 +286,9 @@ function loadHyphenEngine(lang) {
     }
 
     if (H.c.sync) {
-        cb(null, H.c.loaderSync(file));
+        cb(null, H.c.loaderSync(file, new URL('./patterns/', import.meta.url)));
     } else {
-        H.c.loader(file).then(
+        H.c.loader(file, new URL('./patterns/', import.meta.url)).then(
             (res) => {
                 cb(null, res);
             },

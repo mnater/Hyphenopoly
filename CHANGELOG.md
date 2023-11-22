@@ -1,6 +1,8 @@
 # Version History
 
 ## Version WIP
+### Added
+*   loader/loaderSync now has a second argument containing an URL to the patternDirectory (issue #207)
 ### Fixed
 *   simplify events and clarify in docs
 

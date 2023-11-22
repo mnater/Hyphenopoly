@@ -2,6 +2,7 @@
 /* eslint global-require: 0, func-names: 0, no-shadow: 0 */
 /* eslint-disable prefer-arrow-callback */
 
+import {readFileSync} from "node:fs";
 import t from "tap";
 
 /**
@@ -83,3 +84,58 @@ if (global.fetch) {
         t.end();
     });
 }
+
+// eslint-disable-next-line require-jsdoc
+function loaderSync(file, patDir) {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    return readFileSync(new URL(file, patDir));
+}
+
+t.test("use readFileSync with patDir argument", async function (t) {
+    const H9Y = await freshImport();
+    const deHyphenator = await H9Y.config({
+        loaderSync,
+        "require": ["de"],
+        "sync": true
+    });
+    t.test("return a function", function (t) {
+        t.equal(typeof deHyphenator, "function", typeof deHyphenator);
+        t.end();
+    });
+    t.test("hyphenate one word", function (t) {
+        t.equal(deHyphenator("Silbentrennung"), "Sil\u00ADben\u00ADtren\u00ADnung", deHyphenator("Silbentrennung"));
+        t.end();
+    });
+    t.test("hyphenate two words", function (t) {
+        t.equal(deHyphenator("Silbentrennung Algorithmus"), "Sil\u00ADben\u00ADtren\u00ADnung Al\u00ADgo\u00ADrith\u00ADmus", deHyphenator("Silbentrennung Algorithmus"));
+        t.end();
+    });
+    t.end();
+});
+
+// eslint-disable-next-line require-jsdoc
+async function loader(file, patDir) {
+    const {readFile} = await import("node:fs/promises");
+    return readFile(new URL(file, patDir));
+}
+
+t.test("use readFile with patDir argument", async function (t) {
+    const H9Y = await freshImport();
+    const deHyphenator = await H9Y.config({
+        loader,
+        "require": ["de"]
+    });
+    t.test("return a function", function (t) {
+        t.equal(typeof deHyphenator, "function", typeof deHyphenator);
+        t.end();
+    });
+    t.test("hyphenate one word", function (t) {
+        t.equal(deHyphenator("Silbentrennung"), "Sil\u00ADben\u00ADtren\u00ADnung", deHyphenator("Silbentrennung"));
+        t.end();
+    });
+    t.test("hyphenate two words", function (t) {
+        t.equal(deHyphenator("Silbentrennung Algorithmus"), "Sil\u00ADben\u00ADtren\u00ADnung Al\u00ADgo\u00ADrith\u00ADmus", deHyphenator("Silbentrennung Algorithmus"));
+        t.end();
+    });
+    t.end();
+});
