@@ -1,5 +1,3 @@
-/* eslint-disable object-property-newline */
-
 (function testDriver() {
     "use strict";
     const tests = [
