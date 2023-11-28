@@ -420,27 +420,19 @@
              * @returns {string} The hyphenated compound word
              */
             function hyphenateCompound(word) {
-                const zeroWidthSpace = "\u200B";
-                let parts = null;
-                let wordHyphenator = null;
-                if (selSettings.compound === "auto" ||
-                    selSettings.compound === "all") {
-                    wordHyphenator = createWordHyphenator(lo, lang, sel);
-                    parts = word.split("-").map((p) => {
-                        if (p.length >= selSettings.minWordLength) {
-                            return wordHyphenator(p);
-                        }
-                        return p;
-                    });
-                    if (selSettings.compound === "auto") {
-                        word = parts.join("-");
-                    } else {
-                        word = parts.join("-" + zeroWidthSpace);
+                let joiner = "-";
+                const parts = word.split(joiner).map((p) => {
+                    if (selSettings.compound !== "hyphen" &&
+                        p.length >= selSettings.minWordLength) {
+                        return createWordHyphenator(lo, lang, sel)(p);
                     }
-                } else {
-                    word = word.replace("-", "-" + zeroWidthSpace);
+                    return p;
+                });
+                if (selSettings.compound !== "auto") {
+                    // Add Zero Width Space
+                    joiner += "\u200B";
                 }
-                return word;
+                return parts.join(joiner);
             }
 
             /**
@@ -471,10 +463,10 @@
                         );
                     } else if (!selSettings.mixedCase && isMixedCase(word)) {
                         hw = word;
-                    } else if (word.indexOf("-") === -1) {
-                        hw = hyphenateNormal(word);
-                    } else {
+                    } else if (word.includes("-")) {
                         hw = hyphenateCompound(word);
+                    } else {
+                        hw = hyphenateNormal(word);
                     }
                     lo.cache.get(sel).set(word, hw);
                 }
