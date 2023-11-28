@@ -260,7 +260,7 @@
                     if (counter[0] === 0) {
                         event.fire("hyphenopolyEnd");
                         if (!C.keepAlive) {
-                            window.Hyphenopoly = null;
+                            w.Hyphenopoly = null;
                         }
                     }
                 }
@@ -682,7 +682,7 @@
                 H.hide(0, null);
                 event.fire("hyphenopolyEnd");
                 if (!C.keepAlive) {
-                    window.Hyphenopoly = null;
+                    w.Hyphenopoly = null;
                 }
             }
         }
@@ -805,7 +805,7 @@
          * @returns {undefined}
          */
         function instantiateWasmEngine(heProm, lang) {
-            const wa = window.WebAssembly;
+            const wa = w.WebAssembly;
 
             /**
              * Register character substitutions in the .wasm-hyphenEngine
