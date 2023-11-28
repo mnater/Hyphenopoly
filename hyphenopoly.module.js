@@ -337,27 +337,19 @@ function createWordHyphenator(lo, lang) {
      * @returns {string} The hyphenated compound word
      */
     function hyphenateCompound(word) {
-        const zeroWidthSpace = "\u200B";
-        let parts = null;
-        let wordHyphenator = null;
-        if (H.c.compound === "auto" ||
-            H.c.compound === "all") {
-            wordHyphenator = createWordHyphenator(lo, lang);
-            parts = word.split("-").map((p) => {
-                if (p.length >= H.c.minWordLength) {
-                    return wordHyphenator(p);
-                }
-                return p;
-            });
-            if (H.c.compound === "auto") {
-                word = parts.join("-");
-            } else {
-                word = parts.join("-" + zeroWidthSpace);
+        let joiner = "-";
+        const parts = word.split(joiner).map((p) => {
+            if (H.c.compound !== "hyphen" &&
+                p.length >= H.c.minWordLength) {
+                return createWordHyphenator(lo, lang)(p);
             }
-        } else {
-            word = word.replace("-", "-" + zeroWidthSpace);
+            return p;
+        });
+        if (H.c.compound !== "auto") {
+            // Add Zero Width Space
+            joiner += "\u200B";
         }
-        return word;
+        return parts.join(joiner);
     }
 
     /**
@@ -388,10 +380,10 @@ function createWordHyphenator(lo, lang) {
                 );
             } else if (!H.c.mixedCase && isMixedCase(word)) {
                 hw = word;
-            } else if (word.indexOf("-") === -1) {
-                hw = hyphenateNormal(word);
-            } else {
+            } else if (word.includes("-")) {
                 hw = hyphenateCompound(word);
+            } else {
+                hw = hyphenateNormal(word);
             }
             lo.cache.set(word, hw);
         }
