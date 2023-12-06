@@ -276,10 +276,10 @@ function select(ith: i32, startByte: i32, endByte: i32): i32 {
     let posInByte: i32 = 0;
     let pos: i32 = 0;
     let firstPos: i32 = 0;
-
-    do {
+  
+    while (run < 2) {
         ith += run;
-        do {
+        while (count < ith) {
             if (bytePos > endByte) {
                 return 0;
             }
@@ -287,16 +287,14 @@ function select(ith: i32, startByte: i32, endByte: i32): i32 {
             dWord0Count = 64 - <i32>popcnt<i64>(dWord);
             count += dWord0Count;
             bytePos += 8;
-        } while (count < ith);
-        count -= dWord0Count;
-        bytePos -= 8;
-        posInByte = get0PosInDWord(dWord, ith - count);
-        pos = ((bytePos - startByte) << 3) + posInByte;
+        }
+        posInByte = get0PosInDWord(dWord, ith - (count - dWord0Count));
+        pos = ((bytePos - 8 - startByte) << 3) + posInByte;
         if (run === 0) {
             firstPos = pos;
         }
         run += 1;
-    } while (run < 2);
+    }
     return (firstPos << 8) + (pos - firstPos - 1);
 }
 
