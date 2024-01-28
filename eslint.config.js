@@ -19,7 +19,8 @@ export default [
     {
         "files": [
             "Hyphenopoly_Loader.js",
-            "Hyphenopoly.js"
+            "Hyphenopoly.js",
+            "testsuite/testdriver.js"
         ],
         "languageOptions": {
             "ecmaVersion": "latest",
