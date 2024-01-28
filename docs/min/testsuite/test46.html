@@ -6,66 +6,68 @@
         <title>Test 046</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        var asserted = false;
-        Hyphenopoly.config({
-            require: {
-                "en-us": "FORCEHYPHENOPOLY"
-            },
-            setup: {
-                    timeout: 100,
-                    selectors: {
-                        ".hyphenate": {
-                            hyphen: "•"
+            (() => {
+                let asserted = false;
+                function assert(msg) {
+                    asserted = true;
+                    let test = "";
+                    let ref = "";
+                    let result = false;
+                    if (msg) {
+                        if (
+                            msg.indexOf("WebAssembly.instantiateStreaming()") === 0 ||
+                            msg.indexOf("Refused to create a WebAssembly object") === 0 ||
+                            msg.indexOf("call to WebAssembly.instantiateStreaming() blocked by CSP") === 0
+                        ) {
+                            result = true;
                         }
+                    } else {
+                        test = document.getElementById("test").innerHTML;
+                        ref = document.getElementById("ref").innerHTML;
+                        result = (test === ref);
                     }
-                },
-            handleEvent: {
-                error: function (e) {
-                    document.getElementById("errorlog").innerHTML = e.message;
-                    if (!asserted) {
-                        assert(e.message);
+                    if (result) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\"> passed</p>";
+                    } else {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\"> failed</p>";
                     }
-                },
-                hyphenopolyEnd: function () {
-                    if (!asserted) {
-                        assert();
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 46,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
                     }
                 }
-            }
-        });
-
-        function assert(msg) {
-            asserted = true;
-            var test = "";
-            var ref = "";
-            var lang = "";
-            var result = false;
-            if (msg) {
-                if (
-                    msg.indexOf("WebAssembly.instantiateStreaming()") === 0 ||
-                    msg.indexOf("Refused to create a WebAssembly object") === 0 ||
-                    msg.indexOf("call to WebAssembly.instantiateStreaming() blocked by CSP") === 0
-                 ) {
-                    result = true;
-                 }
-            } else {
-                test = document.getElementById("test").innerHTML;
-                ref = document.getElementById("ref").innerHTML;
-                result = (test === ref);
-            }
-            if (result) {
-                document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\"> passed</p>";
-            } else {
-                document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\"> failed</p>";
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 46,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "timeout": 100,
+                        "selectors": {
+                            ".hyphenate": {
+                                "hyphen": "•"
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        error(e) {
+                            document.getElementById("errorlog").innerHTML = e.message;
+                            if (!asserted) {
+                                assert(e.message);
+                            }
+                        },
+                        hyphenopolyEnd() {
+                            if (!asserted) {
+                                assert();
+                            }
+                        }
+                    }
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -82,13 +84,6 @@
             }
             #errorlog {
                 color: rgb(132, 167, 250)
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

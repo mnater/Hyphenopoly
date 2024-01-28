@@ -5,47 +5,52 @@
         <title>Test 035</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-            Hyphenopoly.config({
-                require: {
-                    "hu": "FORCEHYPHENOPOLY"
-                },
-                setup: {
-                    keepAlive: false,
-                    selectors: {
-                        ".hyphenate": {
-                            hyphen: "•"
-                        }
-                    }
-                },
-                handleEvent: {
-                    hyphenopolyEnd: function (e) {
-                        window.setTimeout(assert, 500);
-                    }
-                }
-            });
-            function assert() {
-                var test = document.getElementById("test1").innerHTML;;
-                var ref = document.getElementById("ref1").innerHTML;;
-                var result = true;
+            (() => {
+                function assert() {
+                    const test = document.getElementById("test1").innerHTML;
+                    const ref = document.getElementById("ref1").innerHTML;
+                    let result = true;
                     if (test === ref) {
                         result = result && true;
                     } else {
                         result = false;
                     }
-                result = result && !window.Hyphenopoly;
-                if (result) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">passed</p>";
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">failed</p>";
+                    result = result && !window.Hyphenopoly;
+                    if (result) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">passed</p>";
+                    } else {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">failed</p>";
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 35,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
                 }
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 35,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
-            }
+
+                Hyphenopoly.config({
+                    "require": {
+                        "hu": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "keepAlive": false,
+                        "selectors": {
+                            ".hyphenate": {
+                                "hyphen": "•"
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        hyphenopolyEnd() {
+                            window.setTimeout(assert, 500);
+                        }
+                    }
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -59,13 +64,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

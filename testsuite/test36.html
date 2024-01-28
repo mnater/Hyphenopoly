@@ -5,95 +5,103 @@
         <title>Test 036</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        var mode = window.location.search.substring(1);
-        var path = "../patterns/";
-        if (mode === "fail") {
-            path = "../pattern/"
-        }
-        Hyphenopoly.config({
-            require: {
-                "fur": "probabilmentri"
-            },
-            paths: {
-                patterndir: path
-            },
-            setup: {
-                selectors: {
-                    ".hyphenate": {
-                        hyphen: "|",
-                        minWordLength: 4
+            (() => {
+                const mode = window.location.search.substring(1);
+                let path = "../patterns/";
+                function assertError(e) {
+                    let result = false;
+                    if (e.message.indexOf("File fur.wasm can't be loaded from ../pattern/") !== -1) {
+                        result = true;
                     }
-                }
-            }
-        });
-
-        window.onload = function () {
-            function hyphenate_fur(text) {
-                if (window.Promise) {
-                    Hyphenopoly.hyphenators.fur.then(
-                    function (furhyph) {
-                        document.getElementById("test1").innerText = furhyph(text);
-                        assertAll();
-                    }).catch(function(e) {
-                        assertError(e);
-                    });
-                } else {
-                    var result = false
-                    if (parent != window) {
+                    if (result) {
+                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + 1 + " passed</p>";
+                    }
+                    if (parent !== window) {
                         parent.postMessage(JSON.stringify({
-                            desc: document.getElementById("desc").innerHTML,
-                            index: 36,
-                            result: (result ? "passed" : "failed")
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 36,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
                         }), window.location.href);
                     }
                 }
-            }
-            hyphenate_fur("Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont. Cualchi volte al ven clamât Ladin orientâl, parcè che al à diviers ponts in comun cul ladin, ma si è svilupât in un altri mût cul passâ dal timp, sot de influence des lenghis ator dal Friûl");
-        };
-
-        function assertError(e) {
-            var result = false;
-            if (e.message.indexOf("File fur.wasm can't be loaded from ../pattern/") !== -1) {
-                result = true;
-            }
-            if (result) {
-                document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + 1 + " passed</p>";
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 36,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
-        function assertAll() {
-            var tests = 1;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = false;
+                function assertAll() {
+                    const tests = 1;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).innerHTML;
+                        ref = document.getElementById("ref" + i).innerHTML;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                            result = false;
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 36,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
+                    window.location = "test36.html?fail";
                 }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 36,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-            window.location = "test36.html?fail";
-        }
+                if (mode === "fail") {
+                    path = "../pattern/";
+                }
+                Hyphenopoly.config({
+                    "require": {
+                        "fur": "probabilmentri"
+                    },
+                    "paths": {
+                        "patterndir": path
+                    },
+                    "setup": {
+                        "selectors": {
+                            ".hyphenate": {
+                                "hyphen": "|",
+                                "minWordLength": 4
+                            }
+                        }
+                    }
+                });
+            
+                window.onload = () => {
+                    function hyphenateFur(text) {
+                        if (window.Promise) {
+                            Hyphenopoly.hyphenators.fur.then(
+                                (furhyph) => {
+                                    document.getElementById("test1").innerText = furhyph(text);
+                                    assertAll();
+                                }
+                            ).catch((e) => {
+                                assertError(e);
+                            });
+                        } else {
+                            const result = false;
+                            if (parent !== window) {
+                                parent.postMessage(JSON.stringify({
+                                    "desc": document.getElementById("desc").innerHTML,
+                                    "index": 36,
+                                    "result": (result
+                                        ? "passed"
+                                        : "failed")
+                                }), window.location.href);
+                            }
+                        }
+                    }
+                    hyphenateFur("Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont. Cualchi volte al ven clamât Ladin orientâl, parcè che al à diviers ponts in comun cul ladin, ma si è svilupât in un altri mût cul passâ dal timp, sot de influence des lenghis ator dal Friûl");
+                };
+            })();
         </script>
         <style type="text/css">
             body {
@@ -109,7 +117,6 @@
             .ref {
                 background-color: #FEEFC0;
             }
-
         </style>
     </head>
     <body>

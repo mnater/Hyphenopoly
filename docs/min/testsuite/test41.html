@@ -5,57 +5,61 @@
         <title>Test 041</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        Hyphenopoly.config({
-            require: {
-                "en-us": "FORCEHYPHENOPOLY"
-            },
-            setup: {
-                selectors: {
-                    ".class1": {
-                        hyphen: "·"
-                    },
-                    ".class2": {
-                        hyphen: "·",
-                        orphanControl: 2
-                    },
-                    ".class3": {
-                        hyphen: "·",
-                        orphanControl: 3
+            (() => {
+                function assert() {
+                    const tests = 3;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).innerHTML;
+                        ref = document.getElementById("ref" + i).innerHTML;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                            result = false;
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 41,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
                     }
                 }
-            },
-            handleEvent: {
-                hyphenopolyEnd: function (e) {
-                    assert();
-                }
-            }
-        });
-        function assert() {
-            var tests = 3;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = false;
-                }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 41,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "selectors": {
+                            ".class1": {
+                                "hyphen": "·"
+                            },
+                            ".class2": {
+                                "hyphen": "·",
+                                "orphanControl": 2
+                            },
+                            ".class3": {
+                                "hyphen": "·",
+                                "orphanControl": 3
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        hyphenopolyEnd() {
+                            assert();
+                        }
+                    }
+                });
+            })();
         </script>
         
         <style type="text/css">
@@ -70,13 +74,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

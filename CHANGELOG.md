@@ -1,5 +1,19 @@
 # Version History
 
+## Version 5.3.0 (2023-11-24)
+### Added
+*   loader/loaderSync now has a second argument containing an URL to the patternDirectory (issue #207)
+### Fixed
+*   simplify events and clarify in docs
+*   bump devDependencies
+
+## Version 5.2.1 (2023-10-19)
+### Fixed
+*   created and updated patterns for german
+*   bump devDependencies
+### Test
+*   refactor testsuite: lint code
+
 ## Version 5.2.0 (2023-10-04)
 ### Fixed
 *   unhyphenate all childNodes (issue #205)

@@ -5,71 +5,77 @@
         <title>Test 009</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        Hyphenopoly.config({
-            require: {
-                "en-us": "FORCEHYPHENOPOLY"
-            },
-            setup: {
-                selectors: {
-                    ".class1": {
-                        hyphen: "·"
+            (() => {
+                function assert() {
+                    const tests = 2;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).innerHTML;
+                        ref = document.getElementById("ref" + i).innerHTML;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                            result = false;
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 9,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
+                }
+
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY"
                     },
-                    ".class2": {
-                        hyphen: "|",
-                        compound: "auto"
+                    "setup": {
+                        "selectors": {
+                            ".class1": {
+                                "hyphen": "·"
+                            },
+                            ".class2": {
+                                "hyphen": "|",
+                                "compound": "auto"
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        beforeElementHyphenation(e) {
+                            if (e.el.className.indexOf("class1") !== -1) {
+                                e.el.style.opacity = "0";
+                            }
+                        },
+                        afterElementHyphenation(e) {
+                            if (e.el.className.indexOf("class1") !== -1) {
+                                window.setTimeout(() => {
+                                    e.el.style.opacity = "1";
+                                    e.el.style.transition = "opacity 1000ms ease";
+                                }, 0);
+                            }
+                        },
+                        hyphenopolyEnd() {
+                            assert();
+                        }
                     }
+                });
+
+                if (!Hyphenopoly) {
+                    document.addEventListener("DOMContentLoaded", () => {
+                        assert();
+                    });
                 }
-            },
-            handleEvent: {
-                beforeElementHyphenation: function (e) {
-                    if (e.el.className.indexOf("class1") !== -1) {
-                        e.el.style.opacity = "0";
-                    }
-                },
-                afterElementHyphenation: function (e) {
-                    if (e.el.className.indexOf("class1") !== -1) {
-                        window.setTimeout(function () {
-                            e.el.style.opacity = "1";
-                            e.el.style.transition = "opacity 1000ms ease";
-                        }, 0);
-                    }
-                },
-                hyphenopolyEnd: function (e) {
-                    assert();
-                }
-            }
-        });
-        function assert() {
-            var tests = 2;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = false;
-                }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 9,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
-        if (!Hyphenopoly) {
-            document.addEventListener("DOMContentLoaded", function() {
-                assert();
-            });
-        }
+            })();
         </script>
         
         <style type="text/css">
@@ -87,13 +93,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

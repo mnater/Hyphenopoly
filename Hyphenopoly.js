@@ -1,6 +1,6 @@
 /**
- * @license Hyphenopoly 5.2.0 - client side hyphenation for webbrowsers
- * ©2023  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
+ * @license Hyphenopoly 5.3.0 - client side hyphenation for webbrowsers
+ * ©2024  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
@@ -41,7 +41,7 @@
             });
         }
         return {
-            "fire": ((eventName, eventData) => {
+            "fire": ((eventName, eventData = {}) => {
                 eventData.runDefault = true;
                 eventData.preventDefault = () => {
                     eventData.runDefault = false;
@@ -212,12 +212,7 @@
         const C = H.c;
         let mainLanguage = null;
 
-        event.fire(
-            "hyphenopolyStart",
-            {
-                "msg": "hyphenopolyStart"
-            }
-        );
+        event.fire("hyphenopolyStart");
 
         /**
          * Factory for elements
@@ -263,14 +258,9 @@
                     list.delete(lang);
                     counter[0] -= langCount;
                     if (counter[0] === 0) {
-                        event.fire(
-                            "hyphenopolyEnd",
-                            {
-                                "msg": "hyphenopolyEnd"
-                            }
-                        );
+                        event.fire("hyphenopolyEnd");
                         if (!C.keepAlive) {
-                            window.Hyphenopoly = null;
+                            w.Hyphenopoly = null;
                         }
                     }
                 }
@@ -430,27 +420,19 @@
              * @returns {string} The hyphenated compound word
              */
             function hyphenateCompound(word) {
-                const zeroWidthSpace = "\u200B";
-                let parts = null;
-                let wordHyphenator = null;
-                if (selSettings.compound === "auto" ||
-                    selSettings.compound === "all") {
-                    wordHyphenator = createWordHyphenator(lo, lang, sel);
-                    parts = word.split("-").map((p) => {
-                        if (p.length >= selSettings.minWordLength) {
-                            return wordHyphenator(p);
-                        }
-                        return p;
-                    });
-                    if (selSettings.compound === "auto") {
-                        word = parts.join("-");
-                    } else {
-                        word = parts.join("-" + zeroWidthSpace);
+                let joiner = "-";
+                const parts = word.split(joiner).map((p) => {
+                    if (selSettings.compound !== "hyphen" &&
+                        p.length >= selSettings.minWordLength) {
+                        return createWordHyphenator(lo, lang, sel)(p);
                     }
-                } else {
-                    word = word.replace("-", "-" + zeroWidthSpace);
+                    return p;
+                });
+                if (selSettings.compound !== "auto") {
+                    // Add Zero Width Space
+                    joiner += "\u200B";
                 }
-                return word;
+                return parts.join(joiner);
             }
 
             /**
@@ -481,10 +463,10 @@
                         );
                     } else if (!selSettings.mixedCase && isMixedCase(word)) {
                         hw = word;
-                    } else if (word.indexOf("-") === -1) {
-                        hw = hyphenateNormal(word);
-                    } else {
+                    } else if (word.includes("-")) {
                         hw = hyphenateCompound(word);
+                    } else {
+                        hw = hyphenateNormal(word);
                     }
                     lo.cache.get(sel).set(word, hw);
                 }
@@ -690,14 +672,9 @@
             if (elements.counter[0] === 0) {
                 w.clearTimeout(H.timeOutHandler);
                 H.hide(0, null);
-                event.fire(
-                    "hyphenopolyEnd",
-                    {
-                        "msg": "hyphenopolyEnd"
-                    }
-                );
+                event.fire("hyphenopolyEnd");
                 if (!C.keepAlive) {
-                    window.Hyphenopoly = null;
+                    w.Hyphenopoly = null;
                 }
             }
         }
@@ -774,12 +751,7 @@
                 "reNotAlphabet": RegExp(`[^${alphabet}]`, "i")
             });
             H.hy6ors.get(lang).resolve(createStringHyphenator(lang));
-            event.fire(
-                "engineReady",
-                {
-                    lang
-                }
-            );
+            event.fire("engineReady", {lang});
             if (H.res.els) {
                 hyphenateLangElements(lang, H.res.els);
             }
@@ -823,7 +795,7 @@
          * @returns {undefined}
          */
         function instantiateWasmEngine(heProm, lang) {
-            const wa = window.WebAssembly;
+            const wa = w.WebAssembly;
 
             /**
              * Register character substitutions in the .wasm-hyphenEngine
@@ -854,7 +826,6 @@
              */
             function handleWasm(res) {
                 const exp = res.instance.exports;
-                // eslint-disable-next-line multiline-ternary
                 let alphalen = (wa.Global) ? exp.lct.value : exp.lct;
                 alphalen = registerSubstitutions(alphalen, exp);
                 heProm.l.forEach((l) => {
@@ -865,10 +836,8 @@
                             exp.hyphenate
                         ),
                         decode(new Uint16Array(exp.mem.buffer, 1664, alphalen)),
-                        /* eslint-disable multiline-ternary */
                         (wa.Global) ? exp.lmi.value : exp.lmi,
                         (wa.Global) ? exp.rmi.value : exp.rmi
-                        /* eslint-enable multiline-ternary */
                     );
                 });
             }

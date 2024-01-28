@@ -5,43 +5,49 @@
         <title>Test 017</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-            Hyphenopoly.config({
-                require: {
-                    "en-us": "FORCEHYPHENOPOLY"
-                },
-                setup: {
-                    selectors: {
-                        ".hyphenate": {}
+            (() => {
+                let count = 0;
+                function assert(e) {
+                    const test1 = "Engine for language 'en-us' loaded, but no elements found.";
+                    const test2 = "Element with 'en' found, but 'en.wasm' not loaded. Check language tags!";
+                    const ref = e.message;
+                    let result = true;
+                    count += 1;
+                    if (test1 === ref || test2 === ref) {
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
+                        result = result && true;
+                    } else {
+                        document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">failed</span> ";
+                        result = false;
                     }
-                },
-                handleEvent: {
-                    error: function (e) {
-                        e.preventDefault();
-                        assert(e);
+                    if (parent !== window && count === 2) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 17,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
                     }
                 }
-            });
 
-            function assert(e) {
-                var test1 = "Engine for language 'en-us' loaded, but no elements found.";
-                var test2 = "Element with 'en' found, but 'en.wasm' not loaded. Check language tags!";
-                var ref = e.message;
-                var result = true;
-                if (test1 === ref || test2 === ref) {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">failed</span> ";
-                    result = false;
-                }
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 17,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
-            }
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "selectors": {
+                            ".hyphenate": {}
+                        }
+                    },
+                    "handleEvent": {
+                        error(e) {
+                            e.preventDefault();
+                            assert(e);
+                        }
+                    }
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -55,13 +61,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

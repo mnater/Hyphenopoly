@@ -1,53 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 048</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-            Hyphenopoly.config({
-                require: {
-                    "de": "FORCEHYPHENOPOLY"
-                },
-                setup: {
-                    selectors: {
-                        ".hyphenate": {
-                            hyphen: "•"
+            (() => {
+                function assert() {
+                    const tests = 6;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).innerHTML;
+                        ref = document.getElementById("ref" + i).innerHTML;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">" + ((j) => {
+                                return (j < 10)
+                                    ? "0" + j
+                                    : j;
+                            })(i) + "</span> ";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + ((j) => {
+                                return (j < 10)
+                                    ? "0" + j
+                                    : j;
+                            })(i) + "</span> ";
+                            result = false;
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 48,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
+                }
+
+                Hyphenopoly.config({
+                    "require": {
+                        "de": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "selectors": {
+                            ".hyphenate": {
+                                "hyphen": "•"
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        hyphenopolyEnd() {
+                            assert();
                         }
                     }
-                },
-                handleEvent: {
-                    hyphenopolyEnd: function (e) {
-                        assert();
-                    }
-                }
-            });
-            function assert() {
-                var tests = 1;
-                var i = 1;
-                var test = "";
-                var ref = "";
-                var result = true;
-                while (i <= tests) {
-                    test = document.getElementById("test" + i).innerHTML;
-                    ref = document.getElementById("ref" + i).innerHTML;
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                        result = result && true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                        result = false;
-                    }
-                    i += 1;
-                }
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 48,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
-            }
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -62,27 +75,34 @@
             .ref {
                 background-color: #FEEFC0;
             }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
-            }
         </style>
     </head>
     <body>
         <div id="navigate"><a href="index.html">&Larr;&nbsp;Index</a>&nbsp;|&nbsp;<a href="test47.html">&larr;&nbsp;Prev</a>&nbsp;|&nbsp;<a href="test49.html">Next&nbsp;&rarr;</a></div>
 
         <h1>Test 048</h1>
-        <p id="desc">Test special cases of german (de) patterns</p>
+        <p id="desc">Check difficult german words (recently added to wordlist)</p>
         <div id="result"></div>
         <hr>
-        <p id="test1" class="test hyphenate" lang="de">Darknet Regelgenerator</p>
-        <p id="ref1" class="ref" lang="de">Dark•net Re•gel•ge•nera•tor</p>
-
+        <h2>1:</h2>
+        <p id="test1" class="test hyphenate" lang="de">Darknet</p>
+        <p id="ref1" class="ref" lang="de">Dark•net</p>
+        <h2>2:</h2>
+        <p id="test2" class="test hyphenate" lang="de">Regelgenerator</p>
+        <p id="ref2" class="ref" lang="de">Re•gel•ge•nera•tor</p>
+        <h2>3:</h2>
+        <p id="test3" class="test hyphenate" lang="de">Zustandsexplosion</p>
+        <p id="ref3" class="ref" lang="de">Zu•stands•explo•si•on</p>
+        <h2>4:</h2>
+        <p id="test4" class="test hyphenate" lang="de">programmähnlich</p>
+        <p id="ref4" class="ref" lang="de">pro•gramm•ähn•lich</p>
+        <h2>5:</h2>
+        <p id="test5" class="test hyphenate" lang="de">Klimakleber</p>
+        <p id="ref5" class="ref" lang="de">Kli•ma•kle•ber</p>
+        <h2>6:</h2>
+        <p id="test6" class="test hyphenate" lang="de">nichtstrikt</p>
+        <p id="ref6" class="ref" lang="de">nicht•strikt</p>
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>
-
     </body>
 </html>

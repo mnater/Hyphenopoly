@@ -5,44 +5,48 @@
         <title>Test 004</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        var startTime;
-        Hyphenopoly.config({
-            require: {
-                "en-us": "FORCEHYPHENOPOLY"
-            },
-            handleEvent: {
-                hyphenopolyStart: function () {
-                    startTime = performance.now();
-                },
-                hyphenopolyEnd: function (e) {
-                    assert();
-                }
-            }
-            
-        });
-        function assert() {
-            var endTime = performance.now();
-            document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">" + (Math.round((endTime - startTime) * 100) / 100).toString() + " ms</p>";
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 4,
-                    result: Math.round((endTime - startTime) * 100) / 100
-                }), window.location.href);
-            }
-        }
-        if (!Hyphenopoly) {
-            document.addEventListener("DOMContentLoaded", function () {
-                    document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">" + "CSS</p>";
-                    if (parent != window) {
+            (() => {
+                let startTime = 0;
+                function assert() {
+                    const endTime = performance.now();
+                    document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">" + (Math.round((endTime - startTime) * 100) / 100).toString() + " ms</p>";
+                    if (parent !== window) {
                         parent.postMessage(JSON.stringify({
-                            desc: document.getElementById("desc").innerHTML,
-                            index: 4,
-                            result: "CSS"
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 4,
+                            "result": Math.round((endTime - startTime) * 100) / 100
                         }), window.location.href);
                     }
+                }
+
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY"
+                    },
+                    "handleEvent": {
+                        hyphenopolyStart() {
+                            startTime = performance.now();
+                        },
+                        hyphenopolyEnd() {
+                            assert();
+                        }
+                    }
+            
                 });
-        }
+
+                if (!Hyphenopoly) {
+                    document.addEventListener("DOMContentLoaded", () => {
+                        document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">CSS</p>";
+                        if (parent !== window) {
+                            parent.postMessage(JSON.stringify({
+                                "desc": document.getElementById("desc").innerHTML,
+                                "index": 4,
+                                "result": "CSS"
+                            }), window.location.href);
+                        }
+                    });
+                }
+            })();
         </script>
         
         <style type="text/css">

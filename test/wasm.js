@@ -140,20 +140,20 @@ t.test("load module", async (t) => {
                 const heapBuffer = result.instance.exports.mem.buffer;
                 const wordStore = new Uint16Array(heapBuffer, 0, 64);
                 wordStore.set([
-                    ...[..."Jalapeños"].map((c) => {
+                    ...[..."español"].map((c) => {
                         return c.charCodeAt(0);
                     }),
                     0
                 ]);
                 const len = result.instance.exports.hyphenate(2, 2, 8226);
                 t.test("check length of hwo", async (t) => {
-                    return t.equal(len, 12);
+                    return t.equal(len, 9);
                 });
                 t.test("check hyphenated word", async (t) => {
                     const hw = decode(
                         new Uint16Array(heapBuffer, 0, len)
                     );
-                    return t.equal(hw, "Ja•la•pe•ños");
+                    return t.equal(hw, "es•pa•ñol");
                 });
             });
         });

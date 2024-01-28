@@ -1,11 +1,8 @@
 import hyphenopoly from "../hyphenopoly.module.js";
-import {dirname} from "path";
-import {fileURLToPath} from "url";
 import {readFileSync} from "node:fs";
 
-function loaderSync(file) {
-    const cwd = dirname(fileURLToPath(import.meta.url));
-    return readFileSync(`${cwd}/../patterns/${file}`);
+function loaderSync(file, patDir) {
+    return readFileSync(new URL(file, patDir));
 }
 
 const hyphenator = hyphenopoly.config({

@@ -1,6 +1,6 @@
 /**
- * @license Hyphenopoly.module.js 5.2.0 - hyphenation for node
- * ©2023  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
+ * @license Hyphenopoly.module.js 5.3.0 - hyphenation for node
+ * ©2024  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
@@ -286,9 +286,9 @@ function loadHyphenEngine(lang) {
     }
 
     if (H.c.sync) {
-        cb(null, H.c.loaderSync(file));
+        cb(null, H.c.loaderSync(file, new URL('./patterns/', import.meta.url)));
     } else {
-        H.c.loader(file).then(
+        H.c.loader(file, new URL('./patterns/', import.meta.url)).then(
             (res) => {
                 cb(null, res);
             },
@@ -337,27 +337,19 @@ function createWordHyphenator(lo, lang) {
      * @returns {string} The hyphenated compound word
      */
     function hyphenateCompound(word) {
-        const zeroWidthSpace = "\u200B";
-        let parts = null;
-        let wordHyphenator = null;
-        if (H.c.compound === "auto" ||
-            H.c.compound === "all") {
-            wordHyphenator = createWordHyphenator(lo, lang);
-            parts = word.split("-").map((p) => {
-                if (p.length >= H.c.minWordLength) {
-                    return wordHyphenator(p);
-                }
-                return p;
-            });
-            if (H.c.compound === "auto") {
-                word = parts.join("-");
-            } else {
-                word = parts.join("-" + zeroWidthSpace);
+        let joiner = "-";
+        const parts = word.split(joiner).map((p) => {
+            if (H.c.compound !== "hyphen" &&
+                p.length >= H.c.minWordLength) {
+                return createWordHyphenator(lo, lang)(p);
             }
-        } else {
-            word = word.replace("-", "-" + zeroWidthSpace);
+            return p;
+        });
+        if (H.c.compound !== "auto") {
+            // Add Zero Width Space
+            joiner += "\u200B";
         }
-        return word;
+        return parts.join(joiner);
     }
 
     /**
@@ -388,10 +380,10 @@ function createWordHyphenator(lo, lang) {
                 );
             } else if (!H.c.mixedCase && isMixedCase(word)) {
                 hw = word;
-            } else if (word.indexOf("-") === -1) {
-                hw = hyphenateNormal(word);
-            } else {
+            } else if (word.includes("-")) {
                 hw = hyphenateCompound(word);
+            } else {
+                hw = hyphenateNormal(word);
             }
             lo.cache.set(word, hw);
         }

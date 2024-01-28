@@ -2,59 +2,63 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Test 001</title>
+        <title>Test 044</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        Hyphenopoly.config({
-            require: {
-                "en-us": "FORCEHYPHENOPOLY"
-            },
-            setup: {
-                selectors: {
-                    ".hyphenate": {
-                        hyphen: "•"
+            (() => {
+                function assert() {
+                    const tests = 4;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    let lang = "";
+                    while (i <= tests) {
+                        lang = document.getElementById("test" + i).lang;
+                        if (Hyphenopoly.cf.langs.get(lang) === "CSS") {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
+                            result = result && true;
+                        } else {
+                            test = document.getElementById("test" + i).innerHTML;
+                            ref = document.getElementById("ref" + i).innerHTML;
+                            if (test === ref) {
+                                document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                                result = result && true;
+                            } else {
+                                document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                                result = false;
+                            }
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 44,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
                     }
                 }
-            },
-            handleEvent: {
-                hyphenopolyEnd: function (e) {
-                    assert();
-                }
-            }
-        });
-        function assert() {
-            var tests = 3;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            var lang = "";
-            while (i <= tests) {
-                lang = document.getElementById("test" + i).lang;
-                if (Hyphenopoly.cf.langs.get(lang) === "CSS") {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
-                    result = result && true;
-                } else {
-                    test = document.getElementById("test" + i).innerHTML;
-                    ref = document.getElementById("ref" + i).innerHTML;
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                        result = result && true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                        result = false;
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "selectors": {
+                            ".hyphenate": {
+                                "hyphen": "•"
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        hyphenopolyEnd() {
+                            assert();
+                        }
                     }
-                }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 44,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -68,13 +72,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>
@@ -96,6 +93,10 @@
         <h2>3: Foreign infix</h2>
         <p id="test3" class="test hyphenate" lang="en-us">Reëlection</p>
         <p id="ref3" class="ref" lang="en-us">Reëlection</p>
+
+        <h2>4: Contains soft hyphen</h2>
+        <p id="test4" class="test hyphenate" lang="en-us">hyphen&shy;ation</p>
+        <p id="ref4" class="ref" lang="en-us">hyphen&shy;ation</p>
 
         <hr>
         <div><span class="test">Test</span> <span class="ref">Ref</span></div>

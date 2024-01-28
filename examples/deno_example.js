@@ -6,8 +6,8 @@ import hyphenopoly from "../hyphenopoly.module.js";
 // For local node:
 // import hyphenopoly from "../hyphenopoly.module.js";
 
-function loader(file) {
-    return Deno.readFile(`./patterns/${file}`);
+function loader(file, patDir) {
+    return Deno.readFile(new URL(file, patDir));
 }
 
 const hyphenator = hyphenopoly.config({

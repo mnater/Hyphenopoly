@@ -1,9 +1,6 @@
-/* eslint-disable object-property-newline */
-/* eslint-disable no-var */
-
 (function testDriver() {
     "use strict";
-    var tests = [
+    const tests = [
         {"exec": false, "path": "test0.html"},
         {"exec": true, "path": "test1.html"},
         {"exec": true, "path": "test2.html"},
@@ -59,25 +56,25 @@
         {"exec": true, "path": "test52.html"},
         {"exec": true, "path": "test53.html"},
         {"exec": true, "path": "test54.html"},
-        {"exec": true, "path": "test55.html"}
+        {"exec": true, "path": "test55.html"},
+        {"exec": true, "path": "test56.html"}
     ];
-    var testframe = document.getElementById("testframe");
-    var currentTest = 1;
-    var total = "passed";
+    const testframe = document.getElementById("testframe");
+    let total = "passed";
 
     /**
      * Add test result to the DOM
-     * @param {string} name – Filename
+     * @param {string} name - Filename
      * @param {string} desc - Test description
      * @param {string} result - Result (failed or passed)
      */
     function addTestResult(name, desc, result) {
-        var dl = document.getElementById("testresults");
-        var li = document.createElement("li");
-        var linkSpan = document.createElement("span");
-        var filelink = document.createElement("a");
-        var resultSpan = document.createElement("span");
-        var descSpan = document.createElement("span");
+        const dl = document.getElementById("testresults");
+        const li = document.createElement("li");
+        const linkSpan = document.createElement("span");
+        const filelink = document.createElement("a");
+        const resultSpan = document.createElement("span");
+        const descSpan = document.createElement("span");
 
         linkSpan.setAttribute("class", "testname");
         filelink.setAttribute("href", name);
@@ -100,28 +97,27 @@
      * Runs tests
      * @param {number} index - Index of the test
      */
-    function run(index) {
-        /* eslint-disable security/detect-object-injection */
-        if (tests[index]) {
-            currentTest = index;
-            if (tests[index].exec) {
+    function run(testidx) {
+        const test = tests.at(testidx);
+        if (test) {
+            if (test.exec) {
                 window.setTimeout(() => {
-                    testframe.src = tests[index].path;
+                    testframe.src = test.path;
                 }, 0);
             } else {
-                addTestResult(tests[index].path, "omitted", "omitted");
-                run(index + 1);
+                addTestResult(test.path, "omitted", "omitted");
+                run(testidx + 1);
             }
         } else {
             addTestResult("", navigator.userAgent, total);
+            document.getElementById("testframe").style.visibility = "hidden";
         }
-        /* eslint-enable security/detect-object-injection */
     }
 
     window.addEventListener(
         "message",
         (e) => {
-            var msg = JSON.parse(e.data);
+            const msg = JSON.parse(e.data);
             addTestResult(tests[msg.index].path, msg.desc, msg.result);
             if (msg.result === "failed") {
                 total = "failed";
@@ -131,5 +127,5 @@
         false
     );
 
-    run(currentTest);
+    run(1);
 }());

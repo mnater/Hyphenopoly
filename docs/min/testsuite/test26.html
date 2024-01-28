@@ -5,78 +5,80 @@
         <title>Test 026</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-            Hyphenopoly.config({
-                require: {
-                    "de": "FORCEHYPHENOPOLY"
-                },
-                setup: {
-                    selectors: {
-                        ".hyphenate": {
-                            hyphen: "•"
-                        },
-                        ".usePipe": {
-                            hyphen: "|"
-                        }
+            (() => {
+                function assertError(e) {
+                    let result = false;
+                    if (e.msg.indexOf("Promises not supported in this engine") !== -1) {
+                        result = true;
                     }
-                },
-                handleEvent: {
-                    hyphenopolyEnd: function (e) {
-                        /*async function hyphenate_de(text) {
-                            document.getElementById("test2").innerText = (await Hyphenopoly.hyphenators.de)(text);
-                            assert();
-                        }*/
-                        function hyphenate_de(text) {
-                            Hyphenopoly.hyphenators.de.then(function (dehyph) {
-                                document.getElementById("test2").innerText = dehyph(text, ".usePipe");
-                                assertAll();
-                            });
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 26,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
+                }
+                function assertAll() {
+                    const tests = 2;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).innerHTML;
+                        ref = document.getElementById("ref" + i).innerHTML;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                            result = false;
                         }
-                        hyphenate_de("Silbentrennung verbessert den Blocksatz.");
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 26,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
+                }
+                Hyphenopoly.config({
+                    "require": {
+                        "de": "FORCEHYPHENOPOLY"
                     },
-                    error: function (e) {
-                        assertError(e);
+                    "setup": {
+                        "selectors": {
+                            ".hyphenate": {
+                                "hyphen": "•"
+                            },
+                            ".usePipe": {
+                                "hyphen": "|"
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        hyphenopolyEnd() {
+                            function hyphenateDe(text) {
+                                Hyphenopoly.hyphenators.de.then((dehyph) => {
+                                    document.getElementById("test2").innerText = dehyph(text, ".usePipe");
+                                    assertAll();
+                                });
+                            }
+                            hyphenateDe("Silbentrennung verbessert den Blocksatz.");
+                        },
+                        error(e) {
+                            assertError(e);
+                        }
                     }
-                }
-            });
-            function assertError(e) {
-                var result = false;
-                if (e.msg.indexOf("Promises not supported in this engine") !== -1) {
-                    result = true;
-                }
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 26,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
-            }
-            function assertAll() {
-                var tests = 2;
-                var i = 1;
-                var test = "";
-                var ref = "";
-                var result = true;
-                while (i <= tests) {
-                    test = document.getElementById("test" + i).innerHTML;
-                    ref = document.getElementById("ref" + i).innerHTML;
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                        result = result && true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                        result = false;
-                    }
-                    i += 1;
-                }
-                if (parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 26,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
-            }
+                });
+            })();
         </script>
 
         <style type="text/css">
@@ -91,13 +93,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

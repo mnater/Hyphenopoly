@@ -5,68 +5,76 @@
         <title>Test 028</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        const hide_mode = window.sessionStorage.getItem("H9Y_hideMode") || "all";
-        Hyphenopoly.config({
-            require: {
-                "en-us": "FORCEHYPHENOPOLY"
-            },
-            setup: {
-                hide: hide_mode,
-                selectors: {
-                    ".hyphenate1": {
-                        hyphen: "•"
-                    },
-                    ".hyphenate2": {
-                        hyphen: "|"
+            const changeHandler = () => {
+                window.sessionStorage.setItem("H9Y_hideMode", document.getElementById("selHideMode").value);
+            };
+            const hideMode = window.sessionStorage.getItem("H9Y_hideMode") || "all";
+            (() => {
+                function assert() {
+                    const H9YStyles = document.getElementsByTagName("style")[0];
+                    let testresult = false;
+                    switch (hideMode) {
+                    case "all":
+                        testresult = (H9YStyles.innerHTML === "html{visibility:hidden!important}");
+                        break;
+                    case "element":
+                        testresult = (H9YStyles.innerHTML === ".hyphenate1{visibility:hidden!important}.hyphenate2{visibility:hidden!important}");
+                        break;
+                    case "text":
+                        testresult = (H9YStyles.innerHTML === ".hyphenate1{color:transparent!important}.hyphenate2{color:transparent!important}");
+                        break;
+                    default:
+                        testresult = (H9YStyles.innerHTML === "");
+                        break;
+                    }
+
+                    if (testresult) {
+                        document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">passed</p>";
+                    } else {
+                        document.getElementById("result").innerHTML = "<p style=\"background-color: #ffd6d6\">failed</p>";
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 28,
+                            "result": (testresult
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
                     }
                 }
-            },
-            handleEvent: {
-                hyphenopolyStart: function (e) {
-                    assert();
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "hide": hideMode,
+                        "selectors": {
+                            ".hyphenate1": {
+                                "hyphen": "•"
+                            },
+                            ".hyphenate2": {
+                                "hyphen": "|"
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        hyphenopolyStart() {
+                            assert();
+                        }
+                    }
+                });
+                if (!Hyphenopoly) {
+                    document.addEventListener("DOMContentLoaded", () => {
+                        assert();
+                    });
                 }
-            }
-        });
-        function assert() {
-            const H9YStyles = document.getElementsByTagName("style")[0];
-            let testresult = false;
-            switch (hide_mode) {
-            case "all":
-                testresult = (H9YStyles.innerHTML === "html{visibility:hidden!important}");
-                break;
-            case "element":
-                testresult = (H9YStyles.innerHTML === ".hyphenate1{visibility:hidden!important}.hyphenate2{visibility:hidden!important}");
-                break;
-            case "text":
-                testresult = (H9YStyles.innerHTML === ".hyphenate1{color:transparent!important}.hyphenate2{color:transparent!important}");
-                break;
-            default:
-                testresult = (H9YStyles.innerHTML === "");
-                break;
-            }
-            
-            if (testresult) {
-                document.getElementById("result").innerHTML = "<p style=\"background-color: #d6ffd6\">passed</p>";
-            } else {
-                document.getElementById("result").innerHTML = "<p style=\"background-color: #ffd6d6\">failed</p>";
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 28,
-                    result: (testresult ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
-
-        if (!Hyphenopoly) {
-            document.addEventListener("DOMContentLoaded", function() {
-                assert();
-            });
-        }
-        function changeHandler() {
-            window.sessionStorage.setItem("H9Y_hideMode", document.getElementById("selHideMode").value);
-        }
+                document.addEventListener("DOMContentLoaded", () => {
+                    document.getElementById("selHideMode").addEventListener("change", () => {
+                        changeHandler();
+                    });
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -89,7 +97,7 @@
 
         <h1>Test 028</h1>
         <p id="desc">See what hiding does (change mode and reload to see flicker)</p>
-        <select id="selHideMode" onchange="changeHandler();">
+        <select id="selHideMode">
             <option id="all" value="all">all</option>
             <option id="element" value="element">element</option>
             <option id="text" value="text">text</option>
@@ -102,7 +110,7 @@
 
 <hr>
 <script>
-    document.getElementById(hide_mode).selected = "selected";
+    document.getElementById(hideMode).selected = "selected";
 </script>
 </body>
 </html>

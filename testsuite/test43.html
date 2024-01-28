@@ -5,56 +5,61 @@
         <title>Test 043</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/5.0.0-beta.5/Hyphenopoly_Loader.js" integrity="sha512-VvJpnWiJ8eH2hmdDJE8sPk9lJcBUQ/XCvc7fyzfNtyt9t3g9W9IMUO9GsxBO026UAyGxjK5fFzBG/WaPUx3hZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
-        Hyphenopoly.config({
-            require: {
-                "en-us": "FORCEHYPHENOPOLY"
-            },
-            paths: {
-                maindir: "https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/5.0.0-beta.5/",
-                patterndir: "https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/5.0.0-beta.5/patterns/"
-            },
-            setup: {
-                "CORScredentials": "omit"
-            },
-            handleEvent: {
-                hyphenopolyEnd: function (e) {
-                    assert();
-                }
-            }
-        });
-        function assert() {
-            var tests = 1;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            var lang = "";
-            while (i <= tests) {
-                lang = document.getElementById("test" + i).lang;
-                if (Hyphenopoly.cf.langs[lang] === "CSS") {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
-                    result = result && true;
-                } else {
-                    test = document.getElementById("test" + i).innerHTML;
-                    ref = document.getElementById("ref" + i).innerHTML;
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                        result = result && true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                        result = false;
+            (() => {
+                function assert() {
+                    const tests = 1;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    let lang = "";
+                    while (i <= tests) {
+                        lang = document.getElementById("test" + i).lang;
+                        // eslint-disable-next-line security/detect-object-injection
+                        if (Hyphenopoly.cf.langs[lang] === "CSS") {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
+                            result = result && true;
+                        } else {
+                            test = document.getElementById("test" + i).innerHTML;
+                            ref = document.getElementById("ref" + i).innerHTML;
+                            if (test === ref) {
+                                document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                                result = result && true;
+                            } else {
+                                document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                                result = false;
+                            }
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 43,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
                     }
                 }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 43,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY"
+                    },
+                    "paths": {
+                        "maindir": "https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/5.0.0-beta.5/",
+                        "patterndir": "https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/5.0.0-beta.5/patterns/"
+                    },
+                    "setup": {
+                        "CORScredentials": "omit"
+                    },
+                    "handleEvent": {
+                        hyphenopolyEnd() {
+                            assert();
+                        }
+                    }
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -68,13 +73,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

@@ -5,77 +5,79 @@
         <title>Test 027</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-            Hyphenopoly.config({
-            require: {
-                "fur": "probabilmentri"
-            },
-            setup: {
-                selectors: {
-                    ".hyphenate": {
-                        hyphen: "|",
-                        minWordLength: 4
+            (() => {
+                function assertError(e) {
+                    let result = false;
+                    if (e.msg.indexOf("Promises not supported in this engine") !== -1) {
+                        result = true;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 27,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
                     }
                 }
-            },
-            handleEvent: {
-                polyfill: function (e) {
-                    /*async function hyphenate_de(text) {
-                        document.getElementById("test2").innerText = (await Hyphenopoly.hyphenators.fur)(text);
-                        assert();
-                    }*/
-                    function hyphenate_fur(text) {
-                        Hyphenopoly.hyphenators.fur.then(function (furhyph) {
-                            document.getElementById("test1").innerText = furhyph(text);
-                            assertAll();
-                        });
+                function assertAll() {
+                    const tests = 1;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).innerHTML;
+                        ref = document.getElementById("ref" + i).innerHTML;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                            result = false;
+                        }
+                        i += 1;
                     }
-                    hyphenate_fur("Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont. Cualchi volte al ven clamât Ladin orientâl, parcè che al à diviers ponts in comun cul ladin, ma si è svilupât in un altri mût cul passâ dal timp, sot de influence des lenghis ator dal Friûl");
-                },
-                error: function (e) {
-                    assertError(e);
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 27,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
                 }
-            }
-        });
 
-        function assertError(e) {
-            var result = false;
-            if (e.msg.indexOf("Promises not supported in this engine") !== -1) {
-                result = true;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 27,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
-        function assertAll() {
-            var tests = 1;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            while (i <= tests) {
-                test = document.getElementById("test" + i).innerHTML;
-                ref = document.getElementById("ref" + i).innerHTML;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = false;
-                }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 27,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
+                Hyphenopoly.config({
+                    "require": {
+                        "fur": "probabilmentri"
+                    },
+                    "setup": {
+                        "selectors": {
+                            ".hyphenate": {
+                                "hyphen": "|",
+                                "minWordLength": 4
+                            }
+                        }
+                    },
+                    "handleEvent": {
+                        polyfill() {
+                            function hyphenateFur(text) {
+                                Hyphenopoly.hyphenators.fur.then((furhyph) => {
+                                    document.getElementById("test1").innerText = furhyph(text);
+                                    assertAll();
+                                });
+                            }
+                            hyphenateFur("Il furlan e je une lenghe romanze de famee des lenghis retichis, che e je fevelade soredut intal Friûl, ma ancje vie pal mont. Cualchi volte al ven clamât Ladin orientâl, parcè che al à diviers ponts in comun cul ladin, ma si è svilupât in un altri mût cul passâ dal timp, sot de influence des lenghis ator dal Friûl");
+                        },
+                        error(e) {
+                            assertError(e);
+                        }
+                    }
+                });
+            })();
         </script>
         <style type="text/css">
             body {

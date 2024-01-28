@@ -6,18 +6,17 @@
         <script src="./Hyphenopoly_Loader.js"></script>
         <script>
         Hyphenopoly.config({
-            require: {
-                "la": "honorificabilitudinitas",
+            "paths": {
+                "maindir": "./",
+                "patterndir": "./patterns/"
+            },
+            "require": {
                 "de": "Silbentrennungsalgorithmus",
-                "en-us": "Supercalifragilisticexpialidocious"
+                "en-us": "Supercalifragilisticexpialidocious",
+                "la": "honorificabilitudinitas"
             },
-            paths: {
-                patterndir: "./patterns/",
-                maindir: "./"
-            },
-            setup: {
-                //hide: "none",
-                selectors: {
+            "setup": {
+                "selectors": {
                     ".container": {}
                 }
             }

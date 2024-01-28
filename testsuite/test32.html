@@ -4,42 +4,45 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Test 032</title>
         <script>
-            var result = true;
-            let assertRuns = 0;
-            function assert() {
-                const mql = window.matchMedia("(max-width: 600px)");
-                var tests = 4;
-                var i = 1;
-                var test = "";
-                var ref = "";
-                document.getElementById("result").innerHTML = "";
-                while (i <= tests) {
-                    test = document.getElementById("test" + i).innerHTML;
-                    if (mql.matches) {
-                        ref = document.getElementById("ref" + i).innerHTML;
-                    } else {
-                        ref = document.getElementById("ref" + i + "_u").innerHTML;
+            (() => {
+                let result = true;
+                let assertRuns = 0;
+                function assert() {
+                    const mql = window.matchMedia("(max-width: 600px)");
+                    const tests = 4;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    document.getElementById("result").innerHTML = "";
+                    while (i <= tests) {
+                        test = document.getElementById("test" + i).innerHTML;
+                        if (mql.matches) {
+                            ref = document.getElementById("ref" + i).innerHTML;
+                        } else {
+                            ref = document.getElementById("ref" + i + "_u").innerHTML;
+                        }
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                            result = false;
+                        }
+                        i += 1;
                     }
-                    if (test === ref) {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                        result = result && true;
-                    } else {
-                        document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                        result = false;
+                    assertRuns += 1;
+                    if (assertRuns === 2 && parent !== window) {
+                        window.parent.document.getElementById("testframe").style.width = "500px";
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 32,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
                     }
-                    i += 1;
                 }
-                assertRuns += 1;
-                if (assertRuns === 2 && parent != window) {
-                    parent.postMessage(JSON.stringify({
-                        desc: document.getElementById("desc").innerHTML,
-                        index: 32,
-                        result: (result ? "passed" : "failed")
-                    }), window.location.href);
-                }
-            }
 
-            (function selectiveLoad() {
                 let H9YLisLoaded = false;
                 let elements = null;
                 function handleSize(mql) {
@@ -59,51 +62,48 @@
                             loaderScript.src = "../Hyphenopoly_Loader.js";
                             loaderScript.onload = () => {
                                 Hyphenopoly.config({
-                                    require: {
+                                    "require": {
                                         "de": "FORCEHYPHENOPOLY",
                                         "en-us": "FORCEHYPHENOPOLY"
                                     },
-                                    setup: {
-                                        selectors: {
+                                    "setup": {
+                                        "selectors": {
                                             ".hyphenate": {
-                                                hyphen: "•"
+                                                "hyphen": "•"
                                             },
                                             ".hyphenate2": {
-                                                hyphen: "·"
+                                                "hyphen": "·"
                                             }
                                         }
                                     },
-                                    handleEvent: {
-                                        hyphenopolyEnd: function (e) {
+                                    "handleEvent": {
+                                        "hyphenopolyEnd"() {
                                             assert();
-                                            if (parent != window) {
-                                                window.parent.document.getElementById("testframe").width = "800px";
+                                            if (parent !== window) {
+                                                window.parent.document.getElementById("testframe").style.width = "800px";
                                             }
                                         }
                                     }
-                                })
+                                });
                             };
                             document.head.appendChild(loaderScript);
                             H9YLisLoaded = true;
                         }
+                    } else if (H9YLisLoaded) {
+                        window.Hyphenopoly.unhyphenate().then((els) => {
+                            elements = els;
+                            assert();
+                        });
                     } else {
-                        if (H9YLisLoaded) {
-                            window.Hyphenopoly.unhyphenate().then((els) => {
-                                elements = els;
-                                assert();
-                            });
-                        } else {
-                            window.onload = function() {
-                                assert();
-                            }
-                        }
+                        window.onload = () => {
+                            assert();
+                        };
                     }
                 }
                 const mql = window.matchMedia("(max-width: 600px)");
                 mql.addListener(handleSize);
                 handleSize(mql);
-            }());
-
+            })();
         </script>
         <style type="text/css">
             body {
@@ -117,14 +117,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-            @media (max-width: 600px) {
-                .hyphenate {
-                    hyphens: auto;
-                    -ms-hyphens: auto;
-                    -moz-hyphens: auto;
-                    -webkit-hyphens: auto;
-                }
             }
         </style>
     </head>

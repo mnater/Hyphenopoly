@@ -5,49 +5,53 @@
         <title>Test 039</title>
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
-        document.addEventListener("DOMContentLoaded", function(event) {
-            document.getElementById("myTextField").focus();
-        });
-        
-        Hyphenopoly.config({
-            require: {
-                "en-us": "FORCEHYPHENOPOLY"
-            },
-            setup: {
-                hide: "element"
-            },
-            handleEvent: {
-                hyphenopolyEnd: function (e) {
-                    assert();
+            (() => {
+                document.addEventListener("DOMContentLoaded", () => {
+                    document.getElementById("myTextField").focus();
+                });
+                function assert() {
+                    const tests = 1;
+                    let i = 1;
+                    let test = "";
+                    let ref = "";
+                    let result = true;
+                    while (i <= tests) {
+                        test = document.getElementById("myTextField");
+                        ref = document.activeElement;
+                        if (test === ref) {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
+                            result = result && true;
+                        } else {
+                            document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
+                            result = false;
+                        }
+                        i += 1;
+                    }
+                    if (parent !== window) {
+                        parent.postMessage(JSON.stringify({
+                            "desc": document.getElementById("desc").innerHTML,
+                            "index": 39,
+                            "result": (result
+                                ? "passed"
+                                : "failed")
+                        }), window.location.href);
+                    }
                 }
-            }
-        });
-        function assert() {
-            var tests = 1;
-            var i = 1;
-            var test = "";
-            var ref = "";
-            var result = true;
-            while (i <= tests) {
-                test = document.getElementById("myTextField");
-                ref = document.activeElement;
-                if (test === ref) {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                    result = result && true;
-                } else {
-                    document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
-                    result = false;
-                }
-                i += 1;
-            }
-            if (parent != window) {
-                parent.postMessage(JSON.stringify({
-                    desc: document.getElementById("desc").innerHTML,
-                    index: 39,
-                    result: (result ? "passed" : "failed")
-                }), window.location.href);
-            }
-        }
+
+                Hyphenopoly.config({
+                    "require": {
+                        "en-us": "FORCEHYPHENOPOLY"
+                    },
+                    "setup": {
+                        "hide": "element"
+                    },
+                    "handleEvent": {
+                        "hyphenopolyEnd"() {
+                            assert();
+                        }
+                    }
+                });
+            })();
         </script>
         <style type="text/css">
             body {
@@ -61,13 +65,6 @@
             }
             .ref {
                 background-color: #FEEFC0;
-            }
-
-            .hyphenate {
-                hyphens: auto;
-                -ms-hyphens: auto;
-                -moz-hyphens: auto;
-                -webkit-hyphens: auto;
             }
         </style>
     </head>

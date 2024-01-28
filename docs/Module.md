@@ -24,14 +24,11 @@ These things are configured in the `hyphenopoly.config()` function.
 ### Usage with one language:
 
 ````javascript
-import {dirname} from "node:path";
-import {fileURLToPath} from "node:url";
 import hyphenopoly from "hyphenopoly";
 import {readFile} from "node:fs/promises";
 
-function loader(file) {
-    const cwd = dirname(fileURLToPath(import.meta.url));
-    return readFile(`${cwd}/../patterns/${file}`);
+function loader(file, patDir) {
+    return readFile(new URL(file, patDir));
 }
 
 const textHyphenators = hyphenopoly.config({
@@ -54,14 +51,11 @@ textHyphenators.then(
 ### More then one language:
 
 ````javascript
-import {dirname} from "node:path";
-import {fileURLToPath} from "node:url";
 import hyphenopoly from "hyphenopoly";
 import {readFile} from "node:fs/promises";
 
-function loader(file) {
-    const cwd = dirname(fileURLToPath(import.meta.url));
-    return readFile(`${cwd}/../patterns/${file}`);
+function loader(file, patDir) {
+    return readFile(new URL(file, patDir));
 }
 
 const textHyphenators = hyphenopoly.config({
@@ -91,13 +85,10 @@ By setting `"sync" : true` the hyphenopoly module switches to a sync mode. Conse
 
 ````javascript
 import hyphenopoly from "../hyphenopoly.module.js";
-import {dirname} from "path";
-import {fileURLToPath} from "url";
 import {readFileSync} from "node:fs";
 
-function loaderSync(file) {
-    const cwd = dirname(fileURLToPath(import.meta.url));
-    return readFileSync(`${cwd}/../patterns/${file}`);
+function loaderSync(file, patDir) {
+    return readFileSync(new URL(file, patDir));
 }
 
 const hyphenator = hyphenopoly.config({
@@ -143,20 +134,21 @@ Defaults:
 ````
 
 ### loader
-The `loader` function takes one string argument (the name of the .wasm file to load, e.g. `"en-us.wasm"`) and must return a `promise` that resolves with a buffer of the language file.
+The `loader` function is called with two arguments:
+*   a string (the name of the .wasm file to load, e.g. `"en-us.wasm"`)
+*   an URL-Object (`new URL('./patterns/', import.meta.url)`)
+
+It must return a `promise` that resolves with a buffer of the language file.
 
 Here are some examples:
 
 ````javascript
 /* A typical node loader using fs/promises */
-import {dirname} from "node:path";
-import {fileURLToPath} from "node:url";
 import hyphenopoly from "hyphenopoly";
 import {readFile} from "node:fs/promises";
 
 function loader(file) {
-    const cwd = dirname(fileURLToPath(import.meta.url));
-    return readFile(`${cwd}/../patterns/${file}`);
+    return readFile(new URL(file, patDir));
 }
 const hyphenator = hyphenopoly.config({
     loader,
@@ -169,7 +161,7 @@ const hyphenator = hyphenopoly.config({
 import hyphenopoly from "hyphenopoly";
 
 function loader(file) {
-    return Deno.readFile(`./patterns/${file}`);
+    return Deno.readFile(new URL(file, patDir));
 }
 const hyphenator = hyphenopoly.config({
     loader,
@@ -221,19 +213,21 @@ const hyphenator = hyphenopoly.config({
 
 ### loaderSync
 If hyphenopoly is run in sync-mode, a `loaderSync` must be defined instead of `loader`.
-The `loaderSync` function takes one string argument (the name of the .wasm file to load, e.g. `"en-us.wasm"`) and must return a buffer of the file data.
+The `loaderSync` function is called with two arguments:
+*   a string (the name of the .wasm file to load, e.g. `"en-us.wasm"`)
+*   an URL-Object (`new URL('./patterns/', import.meta.url)`)
+
+It must return a `promise` that resolves with a buffer of the language file.
+
 Of course, this does not work with fetch and https, which are inherently async.
 
 ````javascript
 /* A snchrounous node loader using fs */
 import hyphenopoly from "../hyphenopoly.module.js";
-import {dirname} from "path";
-import {fileURLToPath} from "url";
 import {readFileSync} from "node:fs";
 
 function loaderSync(file) {
-    const cwd = dirname(fileURLToPath(import.meta.url));
-    return readFileSync(`${cwd}/../patterns/${file}`);
+    return readFileSync(new URL(file, patDir));
 }
 
 const hyphenator = hyphenopoly.config({
