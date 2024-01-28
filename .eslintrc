@@ -19,7 +19,7 @@
   ],
   "extends": [
     "eslint:all",
-    "plugin:security/recommended"
+    "plugin:security/recommended-legacy"
   ],
   "rules": {
     "no-undef": "error",
