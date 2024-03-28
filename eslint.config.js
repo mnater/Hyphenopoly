@@ -3,9 +3,6 @@ import globals from "globals";
 import js from "@eslint/js";
 import security from "eslint-plugin-security";
 
-// Convert to flat config style, may be removed if the plugin gets updated
-security.configs.recommended.plugins = {security};
-
 export default [
     js.configs.all,
     security.configs.recommended,
