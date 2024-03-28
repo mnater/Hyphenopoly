@@ -10,7 +10,7 @@
         *   [paths](./Config.md#paths)
         *   [setup](./Config.md#setup)
         *   [events](./Events.md)
-        *   [cacheFeatureTests](./cacheFeatureTests.md)
+        *   [cacheFeatureTests](./Config.md#cachefeaturetests-optional)
     *   [Optional fields in setup](./Setup.md)
         *   [Global Settings](./Setup.md#global-settings)
         *   [Selector Based Settings](./Setup.md#selector-based-settings)
