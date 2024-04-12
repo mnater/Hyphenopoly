@@ -35,7 +35,7 @@
   "main": "hyphenopoly.module.js",
   "type": "module",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "repository": {
     "type": "git",
@@ -49,10 +49,10 @@
     "c8": "^9.1.0",
     "eslint": "^8.57.0",
     "eslint-plugin-html": "^8.0.0",
-    "eslint-plugin-security": "^2.1.1",
+    "eslint-plugin-security": "^3.0.0",
     "remark-cli": "^12.0.0",
-    "remark-lint-no-consecutive-blank-lines": "^4.1.3",
-    "remark-preset-lint-recommended": "^6.1.3",
+    "remark-lint-no-consecutive-blank-lines": "^5.0.0",
+    "remark-preset-lint-recommended": "^7.0.0",
     "tap": "^18.7.2",
     "terser": "^5.30.0",
     "typescript": "^5.4.3",
@@ -62,7 +62,10 @@
     "plugins": [
       "remark-preset-lint-recommended",
       "remark-lint-no-consecutive-blank-lines"
-    ]
+    ],
+    "settings": {
+      "list-item-indent": 3
+    }
   },
   "c8": {
     "reporter": [
