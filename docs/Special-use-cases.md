@@ -1,13 +1,13 @@
 # Special use cases and how-to's
 
-1.  [Webpack, using hyphenopoly.module.js](#webpack-hyphenopoly-module)
-1.  [Webpack, using Hyphenopoly_Loader.js](#webpack-hyphenopoly-loader)
-1.  [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
-1.  [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
-1.  [Words containing special format characters](#format-chars)
-1.  [Hyphenate HTML-Strings using using hyphenopoly.module.js](#hyphenate-html-strings-using-hyphenopolymodulejs)
-1.  [Usage of .wasm Modules outside Hyphenopoly](#usage-of-wasm-modules-outside-hyphenopoly)
-1.  [Syllabification (german only)](#syllabification)
+1. [Webpack, using hyphenopoly.module.js](#webpack-hyphenopoly-module)
+1. [Webpack, using Hyphenopoly_Loader.js](#webpack-hyphenopoly-loader)
+1. [Hyphenate depending on media queries](#hyphenate-depending-on-media-queries)
+1. [Set .focus() while Hyphenopoly is running](#set-focus-while-hyphenopoly-is-running)
+1. [Words containing special format characters](#format-chars)
+1. [Hyphenate HTML-Strings using using hyphenopoly.module.js](#hyphenate-html-strings-using-hyphenopolymodulejs)
+1. [Usage of .wasm Modules outside Hyphenopoly](#usage-of-wasm-modules-outside-hyphenopoly)
+1. [Syllabification (german only)](#syllabification)
 
 **Note: It's not recommended to use `hyphenopoly.module.js` in a browser environment. See e.g. [this guide](./Hyphenators.md#use-case-hyphenopoly-in-react) on how to use Hyphenopoly in react.**
 
@@ -241,10 +241,10 @@ To prevent this behavior, experiment with [different settings for hiding](./Setu
 
 Hyphenopoly does NOT hyphenate words that contain one of the following special format characters:
 
-*   SOFT HYPHEN (\u00AD)
-*   ZERO WIDTH SPACE (\u200B)
-*   ZERO WIDTH NON-JOINER (\u200C)
-*   ZERO WIDTH JOINER (\u200D)
+* SOFT HYPHEN (\u00AD)
+* ZERO WIDTH SPACE (\u200B)
+* ZERO WIDTH NON-JOINER (\u200C)
+* ZERO WIDTH JOINER (\u200D)
 
 ## Hyphenate HTML-Strings using hyphenopoly.module.js
 
@@ -343,21 +343,21 @@ print(hyphenated)
 ````
 
 ### Exports of wasm-modules
--   `mem` - memory: The uInt16View into the first 64 values (128 bytes) is where 
+- `mem` - memory: The uInt16View into the first 64 values (128 bytes) is where 
 the word to be hyphenated is written to and read from after calling `hyphenate()`.
--   `lmi` - left min: The minimum number of letters before the first hyphenation point.
+- `lmi` - left min: The minimum number of letters before the first hyphenation point.
 The patterns have been computed with this value.
--   `rmi` - rigth min: The minimum number of letters after the last hyphenation point.
+- `rmi` - rigth min: The minimum number of letters after the last hyphenation point.
 The patterns have been computed with this value.
--   `lct` - lettercount: The number of letters in the alphabet.
--   `hyphenate(leftmin=lmi, rightmin=rmi, hyphenchar=0)` - This function expects
+- `lct` - lettercount: The number of letters in the alphabet.
+- `hyphenate(leftmin=lmi, rightmin=rmi, hyphenchar=0)` - This function expects
 a sequence of UTF-16 values (a single word) in the first 128 bytes of `mem`. The 
 word must be preceded and succeeded with a "." (value `46`) denoting the 
 beginning and the end of the word. The last "." must be followed by `0`. The function 
 writes the hyphenated word back to the same memory location (without the ".") and
 returns the length of the hyphenated word.
 If something goes wrong, the returned value is <= 0.
--   `subst(ccl: i32, ccu: i32, replcc: i32): i32` - Substitute `ccl` (charcode lowercase)
+- `subst(ccl: i32, ccu: i32, replcc: i32): i32` - Substitute `ccl` (charcode lowercase)
 and `ccu` (charcode uppercase) with `replcc`. Returns the new length of the alphabet.
 
 ## Syllabification

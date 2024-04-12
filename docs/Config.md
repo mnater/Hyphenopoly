@@ -66,8 +66,8 @@ Hyphenopoly.config({
 ### fallbacks (optional)
 
 In some cases, a fallback language needs to be defined:
-*   Patterns for a given language are not (yet) available; however patterns of an other language can be used.
-*   The language on the webpage has a region tag.
+* Patterns for a given language are not (yet) available; however patterns of an other language can be used.
+* The language on the webpage has a region tag.
 
 E.g. you'd like to use `en-gb` patterns for `en-au` and `de` for `de-DE`:
 

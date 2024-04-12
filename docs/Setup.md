@@ -1,26 +1,26 @@
 # optional fields in `setup`
 This page documents the optional fields in `setup`:
-*   [Global Settings](#global-settings)
-    *   [CORScredentials](#corscredentials)
-    *   [defaultLanguage](#defaultlanguage)
-    *   [dontHyphenate](#donthyphenate)
-    *   [dontHyphenateClass](#donthyphenateclass)
-    *   [exceptions](#exceptions)
-    *   [hide](#hide)
-    *   [keepAlive](#keepalive)
-    *   [normalize](#normalize)
-    *   [processShadows](#processshadows)
-    *   [safeCopy](#safecopy)
-    *   [substitute](#substitute)
-    *   [timeout](#timeout)
-*   [Selector Based Settings](#selector-based-settings)
-    *   [compound](#compound)
-    *   [hyphen](#hyphen)
-    *   [leftmin and rightmin](#leftmin-and-rightmin)
-    *   [leftminPerLang and rightminPerLang](#leftminperlang-and-rightminperlang)
-    *   [minWordLength](#minwordlength)
-    *   [mixedCase](#mixedcase)
-    *   [orphanControl](#orphancontrol)
+* [Global Settings](#global-settings)
+    * [CORScredentials](#corscredentials)
+    * [defaultLanguage](#defaultlanguage)
+    * [dontHyphenate](#donthyphenate)
+    * [dontHyphenateClass](#donthyphenateclass)
+    * [exceptions](#exceptions)
+    * [hide](#hide)
+    * [keepAlive](#keepalive)
+    * [normalize](#normalize)
+    * [processShadows](#processshadows)
+    * [safeCopy](#safecopy)
+    * [substitute](#substitute)
+    * [timeout](#timeout)
+* [Selector Based Settings](#selector-based-settings)
+    * [compound](#compound)
+    * [hyphen](#hyphen)
+    * [leftmin and rightmin](#leftmin-and-rightmin)
+    * [leftminPerLang and rightminPerLang](#leftminperlang-and-rightminperlang)
+    * [minWordLength](#minwordlength)
+    * [mixedCase](#mixedcase)
+    * [orphanControl](#orphancontrol)
 
 ## Global Settings
 These settings apply to Hyphenopoly in general.
@@ -205,10 +205,10 @@ Hyphenopoly.config({
 ````
 To prevent a flash of unhyphenated content (FOUHC) Hyphenopoly hides the elements being hyphenated. Depending on the structure of your page, this can lead to visual flicker. You can change the way Hyphenopoly hides the content:
 
--   `all` hides the whole page by inserting the following CSS-rule `html {visibility: hidden !important}`
--   `element` hides the selected elements by inserting the following CSS-rule for each selector: `<selector> {visibility: hidden !important}`
--   `text` hides only the text of the selected elements by inserting the following CSS-rule for each selector: `<selector> {color: transparent !important}`
--   any other keyword prevents hiding.
+- `all` hides the whole page by inserting the following CSS-rule `html {visibility: hidden !important}`
+- `element` hides the selected elements by inserting the following CSS-rule for each selector: `<selector> {visibility: hidden !important}`
+- `text` hides only the text of the selected elements by inserting the following CSS-rule for each selector: `<selector> {color: transparent !important}`
+- any other keyword prevents hiding.
 
 These CSS-rules are removed when Hyphenopoly has finished its job or when the [timeout](#timeout) gets fired.
 
@@ -526,6 +526,6 @@ Hyphenopoly.config({
 </script>
 ````
 There are three stages:
-1.  Allow orphans
-2.  Do not hyphenate the last word of an element.
-3.  Do not hyphenate an element's last word and replace the preceding space with a no-breaking space.
+1. Allow orphans
+2. Do not hyphenate the last word of an element.
+3. Do not hyphenate an element's last word and replace the preceding space with a no-breaking space.

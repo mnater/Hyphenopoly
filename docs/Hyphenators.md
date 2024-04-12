@@ -2,15 +2,15 @@
 While the main functionality of Hyphenopoly is to just hyphenate your HTML with no further ado, it is sometimes useful to have a function at hand that hyphenates text.
 
 Possible use cases are:
-*   dynamically loaded text
-*   hyphenating text provided by the user (e.g. in a preview window of a blogging software)
-*   …
+* dynamically loaded text
+* hyphenating text provided by the user (e.g. in a preview window of a blogging software)
+* …
 
 For these use cases Hyphenopoly.js exposes `hyphenators` – functions that hyphenate strings or DOM-Objects.
 
 There are two types of `hyphenators`:
-*   language-specific `hyphenators` that can only hyphenate `strings`
-*   a polyglot `HTML`-hyphenator that can hyphenate DOM-objects of type `HTMLElement`
+* language-specific `hyphenators` that can only hyphenate `strings`
+* a polyglot `HTML`-hyphenator that can hyphenate DOM-objects of type `HTMLElement`
 
 ## Create and access `Hyphenopoly.hyphenators`
 
@@ -133,9 +133,9 @@ runHyphenator("hyphenateme");
 # Use case: Hyphenopoly in react
 `hyphenators` are very important in dynamically generated web-content (web-apps). The following describes some first steps in how to use Hyphenopoly in react-apps. Please note that I'm not an expert in react.js If you find a better way, I'd highly appreciate your ideas.
 
-1.  [download](https://github.com/mnater/Hyphenopoly/releases/latest) and copy the latest version of Hyphenopoly to your react's `public` folder.
+1. [download](https://github.com/mnater/Hyphenopoly/releases/latest) and copy the latest version of Hyphenopoly to your react's `public` folder.
 
-2.  Configure `window.Hyphenopoly` and load `Hyphenopoly_Loader.js` in your react's index.html:
+2. Configure `window.Hyphenopoly` and load `Hyphenopoly_Loader.js` in your react's index.html:
 
 ````html
 <!DOCTYPE html>
@@ -180,7 +180,7 @@ runHyphenator("hyphenateme");
 </html>
 ````
 
-3.  Define a `React.Component` that triggers Hyphenopoly (if necessary) on `componentDidUpdate`.
+3. Define a `React.Component` that triggers Hyphenopoly (if necessary) on `componentDidUpdate`.
 
 `hyphenateText.js`:
 ````javascript

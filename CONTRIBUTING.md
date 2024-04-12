@@ -14,10 +14,10 @@ Please don't hesitate to open a new issue on GitHub - questions, enhancement sug
 
 A good description helps to reproduce the issue and saves a lot of time. The following points are very helpful:
 
-*   Please check that the issue still exists in the latest version of the main branch.
-*   Please explain what happened and what you expected to see instead.
-*   Describe the exact steps to reproduce the problem.
-*   Code samples help a lot, please use [code blocks](https://help.github.com/articles/creating-and-highlighting-code-blocks/).
+* Please check that the issue still exists in the latest version of the main branch.
+* Please explain what happened and what you expected to see instead.
+* Describe the exact steps to reproduce the problem.
+* Code samples help a lot, please use [code blocks](https://help.github.com/articles/creating-and-highlighting-code-blocks/).
 
 ## Pull Requests
 Pull requests are welcome. Please keep the code as small as possible, run the tests and check it with ESLint.

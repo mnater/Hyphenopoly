@@ -8,10 +8,10 @@
 Hyphenopoly.js is a __JavaScript-polyfill for hyphenation in HTML__: it hyphenates text if the user agent does not support CSS-hyphenation at all or not for the required languages and it is a __Node.js-module__.
 
 The package consists of the following parts:
--   _Hyphenopoly_Loader.js_ (~11KB unpacked, ~2KB minified and compressed): feature-checks the client and loads other resources if necessary.
--   _Hyphenopoly.js_ (~36KB unpacked, ~5KB minified and compressed): does the whole DOM-foo and wraps wasm.
--   _wasm-Modules_ (sizes differ! e.g. en-us.wasm: ~21KB uncompressed, ~15KB compressed): core hyphenation functions and hyphenation patterns in a space saving binary format (including pattern license).
--   _hyphenopoly.module.js_: the node module to hyphenate plain text strings.
+- _Hyphenopoly_Loader.js_ (~11KB unpacked, ~2KB minified and compressed): feature-checks the client and loads other resources if necessary.
+- _Hyphenopoly.js_ (~36KB unpacked, ~5KB minified and compressed): does the whole DOM-foo and wraps wasm.
+- _wasm-Modules_ (sizes differ! e.g. en-us.wasm: ~21KB uncompressed, ~15KB compressed): core hyphenation functions and hyphenation patterns in a space saving binary format (including pattern license).
+- _hyphenopoly.module.js_: the node module to hyphenate plain text strings.
 
 ## Usage (Browser)
 Place all the code for Hyphenopoly at the top of the header (immediately after the `<title>` tag) to ensure resources are loaded as early as possible.
@@ -147,11 +147,11 @@ hyphenate_de("Silbentrennung verbessert den Blocksatz.");
 ## Automatic hyphenation
 The algorithm used for hyphenation was developed by Franklin M. Liang for TeX. It works more or less like this:
 
-1.  Load a set of precomputed language specific patterns. The patterns are stored in a structure called a trie, which is very efficient for this task.
-2.  Collect all patterns that are a substring of the word to be hyphenated.
-3.  Combine the numerical values between characters: higher values overwrite lower values.
-4.  Odd values are hyphenation points (except if the hyphenation point is left from `leftmin` and right from `rightmin`), replace them with a soft hyphen and drop the other values.
-5.  Repeat steps 2. - 4. for all words longer than minWordLength
+1. Load a set of precomputed language specific patterns. The patterns are stored in a structure called a trie, which is very efficient for this task.
+2. Collect all patterns that are a substring of the word to be hyphenated.
+3. Combine the numerical values between characters: higher values overwrite lower values.
+4. Odd values are hyphenation points (except if the hyphenation point is left from `leftmin` and right from `rightmin`), replace them with a soft hyphen and drop the other values.
+5. Repeat steps 2. - 4. for all words longer than minWordLength
 
 Example:
 ````text

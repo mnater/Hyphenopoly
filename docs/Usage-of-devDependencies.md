@@ -20,8 +20,8 @@ Use this to create pull-requests or to fork the repository.
 
 While cloning gives you the most recent status, downloading a tagged release gives you a more thoughtfully tested (but never error-free) version of Hyphenopoly.
 
-1.  Go to [https://github.com/mnater/Hyphenopoly/releases/latest](https://github.com/mnater/Hyphenopoly/releases/latest) and download the package.
-2.  Unpack the package.
+1. Go to [https://github.com/mnater/Hyphenopoly/releases/latest](https://github.com/mnater/Hyphenopoly/releases/latest) and download the package.
+2. Unpack the package.
 
 This will create a directory called `Hyphenopoly` in your current working directory containing all the files on the Hyphenopoly-GitHub-Repository. Those files are __NOT__ 'connected' to the repository (you can't do `git pull` and a like).
 
@@ -31,13 +31,13 @@ Use this if you don't plan to make changes to Hyphenopoly that need to go upstre
 In your `Hyphenopoly`-directory run `npm install`. This will install the devDependencies listed in the `package.json`-file to a directory called `node_modules`.
 
 This will install:
-*   [assemblyscript](https://github.com/AssemblyScript)
-*   [eslint](https://eslint.org)
-*   [eslint-plugin-security](https://github.com/nodesecurity/eslint-plugin-security)
-*   [remark-cli](https://www.npmjs.com/package/remark-cli)
-*   [remark-preset-lint-recommended](https://github.com/remarkjs/remark-lint/tree/master/packages/remark-preset-lint-recommended)
-*   [tap](https://www.npmjs.com/package/tap)
-*   [terser](https://github.com/fabiosantoscode/terser)
+* [assemblyscript](https://github.com/AssemblyScript)
+* [eslint](https://eslint.org)
+* [eslint-plugin-security](https://github.com/nodesecurity/eslint-plugin-security)
+* [remark-cli](https://www.npmjs.com/package/remark-cli)
+* [remark-preset-lint-recommended](https://github.com/remarkjs/remark-lint/tree/master/packages/remark-preset-lint-recommended)
+* [tap](https://www.npmjs.com/package/tap)
+* [terser](https://github.com/fabiosantoscode/terser)
 
 and their dependencies.
 
@@ -49,9 +49,9 @@ This will install and compile [binaryen](https://github.com/WebAssembly/binaryen
 ## Use the tools
 With the tools mentioned above installed, you can run the following scripts:
 
-*   `npm prepare` - recreates a minified subset of the files in the `min`-directory.
-*   `npm test` - runs the tap tests for Hyphenopoly.module.js
-*   `npm run testsuite` - opens a browser and runs the test suite
-*   `npm run lint` - runs the linter on all .js and .md files
-*   `npm run createAllWasm` - compiles language-specific hyphenEngines from AssemblyScript and textPatterns (not included) to './lang/' and copies the '.wasm'-files to './patterns/'
-*   `npm run doc` - build and open documentation page locally
+* `npm prepare` - recreates a minified subset of the files in the `min`-directory.
+* `npm test` - runs the tap tests for Hyphenopoly.module.js
+* `npm run testsuite` - opens a browser and runs the test suite
+* `npm run lint` - runs the linter on all .js and .md files
+* `npm run createAllWasm` - compiles language-specific hyphenEngines from AssemblyScript and textPatterns (not included) to './lang/' and copies the '.wasm'-files to './patterns/'
+* `npm run doc` - build and open documentation page locally

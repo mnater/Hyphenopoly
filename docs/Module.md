@@ -16,8 +16,8 @@ npm install hyphenopoly
 ## Usage
 
 Hyphenopoly needs two things to run correctly:
--   a [`loader`](#loader) or [`loaderSync`](#loadersync) function that tells how to load the language-specific Webassembly modules.
--   an array of needed languages.
+- a [`loader`](#loader) or [`loaderSync`](#loadersync) function that tells how to load the language-specific Webassembly modules.
+- an array of needed languages.
 
 These things are configured in the `hyphenopoly.config()` function.
 
@@ -135,8 +135,8 @@ Defaults:
 
 ### loader
 The `loader` function is called with two arguments:
-*   a string (the name of the .wasm file to load, e.g. `"en-us.wasm"`)
-*   an URL-Object (`new URL('./patterns/', import.meta.url)`)
+* a string (the name of the .wasm file to load, e.g. `"en-us.wasm"`)
+* an URL-Object (`new URL('./patterns/', import.meta.url)`)
 
 It must return a `promise` that resolves with a buffer of the language file.
 
@@ -214,8 +214,8 @@ const hyphenator = hyphenopoly.config({
 ### loaderSync
 If hyphenopoly is run in sync-mode, a `loaderSync` must be defined instead of `loader`.
 The `loaderSync` function is called with two arguments:
-*   a string (the name of the .wasm file to load, e.g. `"en-us.wasm"`)
-*   an URL-Object (`new URL('./patterns/', import.meta.url)`)
+* a string (the name of the .wasm file to load, e.g. `"en-us.wasm"`)
+* an URL-Object (`new URL('./patterns/', import.meta.url)`)
 
 It must return a `promise` that resolves with a buffer of the language file.
 
@@ -239,15 +239,15 @@ const hyphenator = hyphenopoly.config({
 ### Other options
 For documentation about the other options see the `Hyphenopoly.js`-documentation:
 
--   [compound](./Setup.md#compound)
--   [exceptions](./Setup.md#exceptions)
--   [hyphen](./Setup.md#hyphen)
--   [leftmin](./Setup.md#leftmin-and-rightmin)
--   [minWordLength](./Setup.md#minwordlength)
--   [mixedCase](./Setup.md#mixedcase)
--   [normalize](./Setup.md#normalize)
--   [orphanControl](./Setup.md#orphancontrol)
--   [rightmin](./Setup.md#leftmin-and-rightmin)
+- [compound](./Setup.md#compound)
+- [exceptions](./Setup.md#exceptions)
+- [hyphen](./Setup.md#hyphen)
+- [leftmin](./Setup.md#leftmin-and-rightmin)
+- [minWordLength](./Setup.md#minwordlength)
+- [mixedCase](./Setup.md#mixedcase)
+- [normalize](./Setup.md#normalize)
+- [orphanControl](./Setup.md#orphancontrol)
+- [rightmin](./Setup.md#leftmin-and-rightmin)
 
 ## Supported languages
 A list of supported languages can be programmatically obtained by looking at `Hyphenopoly.supportedLanguages`:
