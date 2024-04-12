@@ -1,5 +1,14 @@
 # Version History
 
+## Current (not versioned nor released, yet)
+### Breaking changes
+* Drop support for outdated (eol) node versions. Hyphenopoly.module now requires node >= 18
+### Fixed
+* bump devDependencies
+* small perf related refactorings
+### Test
+* use eslint flatConfig
+
 ## Version 5.3.0 (2023-11-24)
 ### Added
 * loader/loaderSync now has a second argument containing an URL to the patternDirectory (issue #207)
