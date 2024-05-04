@@ -10,7 +10,7 @@
         "tT",
         "yY"
     ],
-    "lic": "Hyphenation patterns for American English\nCopyright (C) 1990, 2004, 2005 Gerard D.C. Kuiken\nlicence: Copying and distribution of this file, with or without modification, are permitted in any medium without royalty provided the copyright notice and this notice are preserved.",
+    "lic": "Hyphenation patterns for debugging\nCopyright (C) 2024 Mathias Nater\nlicence: MIT",
     "lrmin": [
         2,
         3
