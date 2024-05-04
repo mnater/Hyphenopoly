@@ -4,6 +4,6 @@ export const bm: i32 = 2544;
 export const cm: i32 = 11496;
 export const hv: i32 = 47296;
 export const vm: i32 = 51776;
-export const va: i32 = 62624;
+export const va: i32 = 62616;
 export const lm: i32 = 2;
 export const rm: i32 = 2;

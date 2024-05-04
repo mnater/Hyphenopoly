@@ -202,17 +202,24 @@ function createTranslateMap(): void {
 
 /*
  * Checks if the bit in hv (hasValueBitMap) is set
- * Returns the bit at pos starting at startByte
- * For our purposes the bits are numbered from left to right
- * but the bytes are stored in Little Endian (3 2 1 0).
+ * Returns the bit at pos starting at hv.
+ *
+ * When the succinct trie is created (see tools/modules/sTrie.js and
+ * tools/modules/bits.js) the bytes are swapped (0 1 2 3 -> 3 2 1 0).
+ * This is intended because we access them in the select and rank functions
+ * with i64 instructions; wasm is little-endian and thus loads 0 1 2 3.
+ * But here the bits are numbered from left to right, so we need to swap the
+ * pointer to the byte.
  * To access the bytes in Big Endian order (0 1 2 3) we need to calculate
  * the address: bytePtr = (bytePtr - (bytePtr % 4) + 3) - (bytePtr % 4)
- * This can be simplyfied as follows
+ *                      =  bytePtr + 3 - (2 * (bytePtr % 4))
+ * with BitHack (bytePtr % 4) === bytePtr & (4 - 1)
+ *              bytePtr =  bytePtr + 3 - ((bytePtr & 3) << 1)
  */
 function nodeHasValue(pos: i32): i32 {
-    // BE:
+    // BE bytePointer = pos / 8;
     let bytePtr: i32 = pos >> 3;
-    // LE:
+    // LE bytePointer:
     bytePtr = bytePtr + 7 - ((bytePtr & 7) << 1);
     // BitHack: pos % 8 === pos & (8 - 1)
     const numBits: i32 = 7 - (pos & 7);
