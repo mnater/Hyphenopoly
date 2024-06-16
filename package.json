@@ -46,17 +46,17 @@
     "@typescript-eslint/parser": "^7.8.0",
     "all-contributors-cli": "^6.26.1",
     "assemblyscript": "^0.27.27",
-    "c8": "^9.1.0",
+    "c8": "^10.1.2",
     "eslint": "^8.57.0",
     "eslint-plugin-html": "^8.1.1",
     "eslint-plugin-security": "^3.0.0",
     "remark-cli": "^12.0.1",
     "remark-lint-no-consecutive-blank-lines": "^5.0.0",
     "remark-preset-lint-recommended": "^7.0.0",
-    "tap": "^18.7.2",
-    "terser": "^5.31.0",
+    "tap": "^19.2.5",
+    "terser": "^5.31.1",
     "typescript": "^5.4.5",
-    "yaml": "^2.4.2"
+    "yaml": "^2.4.5"
   },
   "remarkConfig": {
     "plugins": [
