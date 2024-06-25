@@ -107,7 +107,7 @@ npm i hyphenopoly
 ````javascript
 import hyphenopoly from "hyphenopoly";
 
-const hyphenator = hyphenopoly.config({
+const hyphenator = await hyphenopoly.config({
     "require": ["de", "en-us"],
     "hyphen": "•",
     "loader": async (file) => {
