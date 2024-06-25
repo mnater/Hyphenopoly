@@ -106,34 +106,21 @@ npm i hyphenopoly
 
 ````javascript
 import hyphenopoly from "hyphenopoly";
+import { resolve } from "node:path";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
-const hyphenator = await hyphenopoly.config({
-    "require": ["de", "en-us"],
-    "hyphen": "•",
-    "loader": async (file) => {
-        const {readFile} = await import("node:fs/promises");
-        const {dirname} = await import("node:path");
-        const {fileURLToPath} = await import("node:url");
-        const cwd = dirname(fileURLToPath(import.meta.url));
-        return readFile(`${cwd}/../patterns/${file}`);
-    },
-    "exceptions": {
-        "en-us": "en-han-ces"
-    }
+const hyphenate = await hyphenopoly.config({
+	require: ["en-us"],
+	sync: false,
+	loader: async (file: string, module_path: URL) => {
+		return readFile(
+			resolve(fileURLToPath(module_path), `../patterns/${file}`)
+		);
+	},
 });
 
-async function hyphenate_en(text) {
-    const hyphenateText = await hyphenator.get("en-us");
-    console.log(hyphenateText(text));
-}
-
-async function hyphenate_de(text) {
-    const hyphenateText = await hyphenator.get("de");
-    console.log(hyphenateText(text));
-}
-
-hyphenate_en("hyphenation enhances justification.");
-hyphenate_de("Silbentrennung verbessert den Blocksatz.");
+console.log(hyphenate("hyphenation enhances justification"));
 ````
 
 ## Support this project
