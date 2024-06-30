@@ -671,9 +671,7 @@ H.config = ((userConfig) => {
         }
         loadHyphenEngine(lang);
     });
-    return (result.size === 1)
-        ? result.get(H.c.require[0])
-        : result;
+    return result;
 });
 
 export default H;

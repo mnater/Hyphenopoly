@@ -30,7 +30,7 @@ t.test("execute synchronically with one language", async function (t) {
         loaderSync,
         "require": ["de"],
         "sync": true
-    });
+    }).get("de");
     t.test("return a function", function (t) {
         t.equal(typeof deHyphenator, "function", typeof deHyphenator);
         t.end();

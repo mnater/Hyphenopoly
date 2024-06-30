@@ -25,10 +25,11 @@ async function loader(file) {
 
 t.test("path to patternfile not resolvable", async function (t) {
     const H9Y = await freshImport();
-    await H9Y.config({
+    const hc = H9Y.config({
         loader,
         "require": ["en"]
-    }).catch(
+    });
+    await hc.get("en").catch(
         function (e) {
             t.equal(e, "en.wasm not found.");
             t.end();
@@ -39,7 +40,7 @@ t.test("path to patternfile not resolvable", async function (t) {
 t.test("loader not defined", async function (t) {
     const H9Y = await freshImport();
     try {
-        await H9Y.config({
+        H9Y.config({
             "handleEvent": {
                 // eslint-disable-next-line require-jsdoc
                 error(e) {
@@ -58,7 +59,7 @@ t.test("loader not defined", async function (t) {
 t.test("loader not a function", async function (t) {
     const H9Y = await freshImport();
     try {
-        await H9Y.config({
+        H9Y.config({
             "handleEvent": {
                 // eslint-disable-next-line require-jsdoc
                 error(e) {
@@ -77,7 +78,7 @@ t.test("loader not a function", async function (t) {
 
 t.test("run config with two languages", async function (t) {
     const H9Y = await freshImport();
-    const hyphenators = await H9Y.config({
+    const hyphenators = H9Y.config({
         loader,
         "require": ["de", "en"]
     });
@@ -93,7 +94,7 @@ t.test("run config with two languages", async function (t) {
 
 t.test("incomplete setup (forget require)", async function (t) {
     const H9Y = await freshImport();
-    const laHyphenator = await H9Y.config({
+    const laHyphenator = H9Y.config({
         loader
     });
     t.test("get empty map", function (t) {
@@ -105,10 +106,11 @@ t.test("incomplete setup (forget require)", async function (t) {
 
 t.test("fail when word is to long", async function (t) {
     const H9Y = await freshImport();
-    const nlHyphenator = await H9Y.config({
+    const hc = H9Y.config({
         loader,
         "require": ["nl"]
     });
+    const nlHyphenator = await hc.get("nl");
     t.test("hyphenate one word", function (t) {
         t.equal(nlHyphenator("Kindercarnavalsoptochtvoorbereidingswerkzaamhedenplankindercarnavals"), "Kindercarnavalsoptochtvoorbereidingswerkzaamhedenplankindercarnavals");
         t.end();

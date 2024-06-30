@@ -31,7 +31,7 @@ t.test("set options: compound", function (t) {
             "hyphen": "•",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Sil•ben•tren•nungs-\u200BAl•go•rith•mus");
         t.end();
     });
@@ -42,7 +42,7 @@ t.test("set options: compound", function (t) {
             "hyphen": "•",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Sil•ben•tren•nungs-Al•go•rith•mus");
         t.end();
     });
@@ -53,7 +53,7 @@ t.test("set options: compound", function (t) {
             "hyphen": "•",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Silbentrennungs-Algorithmus"), "Silbentrennungs-\u200BAlgorithmus");
         t.end();
     });
@@ -64,7 +64,7 @@ t.test("set options: compound", function (t) {
             "hyphen": "•",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Test-Algorithmus"), "Test-Al•go•rith•mus");
         t.end();
     });
@@ -75,7 +75,7 @@ t.test("set options: compound", function (t) {
             "hyphen": "•",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Test-Algorithmus"), "Test-\u200BAl•go•rith•mus");
         t.end();
     });
@@ -90,7 +90,7 @@ t.test("set options: exceptions", function (t) {
             "hyphen": "•",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
         t.end();
     });
@@ -104,7 +104,7 @@ t.test("set options: exceptions", function (t) {
             "hyphen": "•",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Silbentrennung Algorithmus"), "Silben•trennung Algo•rithmus");
         t.end();
     });
@@ -115,7 +115,7 @@ t.test("set options: exceptions", function (t) {
             "hyphen": "•",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Algorithmus"), "Algo•rithmus");
         t.end();
     });
@@ -125,7 +125,7 @@ t.test("set options: exceptions", function (t) {
             "hyphen": "•",
             loader,
             "require": ["en-us"]
-        });
+        }).get("en-us");
         t.equal(hyphenator("reformation"), "ref•or•ma•tion");
         t.end();
     });
@@ -139,7 +139,7 @@ t.test("set options: hyphen", function (t) {
             "hyphen": "•",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Silbentrennung"), "Sil•ben•tren•nung");
         t.end();
     });
@@ -149,7 +149,7 @@ t.test("set options: hyphen", function (t) {
             "hyphen": "|",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Silbentrennung"), "Sil|ben|tren|nung");
         t.end();
     });
@@ -165,7 +165,7 @@ t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
             loader,
             "require": ["de"],
             "rightmin": 5
-        });
+        }).get("de");
         t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
         t.end();
     });
@@ -182,7 +182,7 @@ t.test("set options: left-/rightmin (patterns: 2/2)", function (t) {
             "rightminPerLang": {
                 "de": 5
             }
-        });
+        }).get("de");
         t.equal(hyphenator("Silbentrennung"), "Silben•trennung");
         t.end();
     });
@@ -198,7 +198,7 @@ t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
             loader,
             "require": ["pt"],
             "rightmin": 2
-        });
+        }).get("pt");
         t.equal(hyphenator("relativo"), "re•la•tivo");
         t.end();
     });
@@ -209,7 +209,7 @@ t.test("set options: left-/rightmin (patterns: 2/3)", function (t) {
             "hyphen": "•",
             loader,
             "require": ["pt"]
-        });
+        }).get("pt");
         t.equal(hyphenator("relativo"), "re•la•tivo");
         t.end();
     });
@@ -224,7 +224,7 @@ t.test("set options: minWordLength", function (t) {
             loader,
             "minWordLength": 7,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lieber ge•sun•de Ess•wa•ren");
         t.end();
     });
@@ -239,7 +239,7 @@ t.test("set options: mixedCase", function (t) {
             loader,
             "mixedCase": false,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("silbentrennen Silbentrennung camelCase"), "sil•ben•tren•nen Silbentrennung camelCase");
         t.end();
     });
@@ -254,7 +254,7 @@ t.test("set options: normalize", function (t) {
             loader,
             "normalize": true,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Ba\u0308rento\u0308ter"), "Bä•ren•tö•ter");
         t.end();
     });
@@ -268,7 +268,7 @@ t.test("set options: orphanControl", function (t) {
             "hyphen": "•",
             loader,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de Ess•wa•ren");
         t.end();
     });
@@ -279,7 +279,7 @@ t.test("set options: orphanControl", function (t) {
             loader,
             "orphanControl": 2,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de Esswaren");
         t.end();
     });
@@ -290,7 +290,7 @@ t.test("set options: orphanControl", function (t) {
             loader,
             "orphanControl": 2,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie|ber ge|sun|de Esswaren");
         t.end();
     });
@@ -301,7 +301,7 @@ t.test("set options: orphanControl", function (t) {
             loader,
             "orphanControl": 3,
             "require": ["de"]
-        });
+        }).get("de");
         t.equal(hyphenator("Die Asse essen lieber gesunde Esswaren"), "Die Asse essen lie•ber ge•sun•de\u00A0Esswaren");
         t.end();
     });

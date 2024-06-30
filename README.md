@@ -108,32 +108,29 @@ npm i hyphenopoly
 import hyphenopoly from "hyphenopoly";
 
 const hyphenator = hyphenopoly.config({
-    "require": ["de", "en-us"],
-    "hyphen": "•",
-    "loader": async (file) => {
-        const {readFile} = await import("node:fs/promises");
-        const {dirname} = await import("node:path");
-        const {fileURLToPath} = await import("node:url");
-        const cwd = dirname(fileURLToPath(import.meta.url));
-        return readFile(`${cwd}/../patterns/${file}`);
-    },
     "exceptions": {
         "en-us": "en-han-ces"
-    }
+    },
+    "hyphen": "•",
+    "loader": async (file, patDir) => {
+        const {readFile} = await import("node:fs/promises");
+        return readFile(new URL(file, patDir));
+    },
+    "require": ["de", "en-us"]
 });
 
-async function hyphenate_en(text) {
+async function hyphenateEn(text) {
     const hyphenateText = await hyphenator.get("en-us");
     console.log(hyphenateText(text));
 }
 
-async function hyphenate_de(text) {
+async function hyphenateDe(text) {
     const hyphenateText = await hyphenator.get("de");
     console.log(hyphenateText(text));
 }
 
-hyphenate_en("hyphenation enhances justification.");
-hyphenate_de("Silbentrennung verbessert den Blocksatz.");
+hyphenateEn("hyphenation enhances justification.");
+hyphenateDe("Silbentrennung verbessert den Blocksatz.");
 ````
 
 ## Support this project

@@ -39,7 +39,7 @@ t.test("use https loader", async function (t) {
     const deHyphenator = await H9Y.config({
         "loader": https,
         "require": ["de"]
-    });
+    }).get("de");
     t.test("return a function", function (t) {
         t.equal(typeof deHyphenator, "function", typeof deHyphenator);
         t.end();
@@ -68,7 +68,7 @@ if (global.fetch) {
         const deHyphenator = await H9Y.config({
             "loader": fetcher,
             "require": ["de"]
-        });
+        }).get("de");
         t.test("return a function", function (t) {
             t.equal(typeof deHyphenator, "function", typeof deHyphenator);
             t.end();
@@ -93,11 +93,11 @@ function loaderSync(file, patDir) {
 
 t.test("use readFileSync with patDir argument", async function (t) {
     const H9Y = await freshImport();
-    const deHyphenator = await H9Y.config({
+    const deHyphenator = H9Y.config({
         loaderSync,
         "require": ["de"],
         "sync": true
-    });
+    }).get("de");
     t.test("return a function", function (t) {
         t.equal(typeof deHyphenator, "function", typeof deHyphenator);
         t.end();
@@ -124,7 +124,7 @@ t.test("use readFile with patDir argument", async function (t) {
     const deHyphenator = await H9Y.config({
         loader,
         "require": ["de"]
-    });
+    }).get("de");
     t.test("return a function", function (t) {
         t.equal(typeof deHyphenator, "function", typeof deHyphenator);
         t.end();

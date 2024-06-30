@@ -25,10 +25,11 @@ async function loader(file) {
 
 t.test("run config with one language", async function (t) {
     const H9Y = await freshImport();
-    const deHyphenator = await H9Y.config({
+    const hc = H9Y.config({
         loader,
         "require": ["de"]
     });
+    const deHyphenator = await hc.get("de");
     t.test("return a function", function (t) {
         t.equal(typeof deHyphenator, "function", typeof deHyphenator);
         t.end();
@@ -46,7 +47,7 @@ t.test("run config with one language", async function (t) {
 
 t.test("substitue characters", async function (t) {
     const H9Y = await freshImport();
-    const deHyphenator = await H9Y.config({
+    const hc = H9Y.config({
         loader,
         "require": ["de"],
         "substitute": {
@@ -55,6 +56,7 @@ t.test("substitue characters", async function (t) {
             }
         }
     });
+    const deHyphenator = await hc.get("de");
     t.test("hyphenate Béchamel", function (t) {
         t.equal(deHyphenator("Béchamel"), "Bé\u00ADcha\u00ADmel", deHyphenator("Béchamel"));
         t.end();
@@ -64,7 +66,7 @@ t.test("substitue characters", async function (t) {
 
 t.test("substitue characters unicase", async function (t) {
     const H9Y = await freshImport();
-    const deHyphenator = await H9Y.config({
+    const hc = H9Y.config({
         loader,
         "require": ["en-us"],
         "substitute": {
@@ -79,8 +81,9 @@ t.test("substitue characters unicase", async function (t) {
             }
         }
     });
+    const enHyphenator = await hc.get("en-us");
     t.test("hyphenate 1337speak", function (t) {
-        t.equal(deHyphenator("48501u73"), "48\u00AD501u73", deHyphenator("48501u73"));
+        t.equal(enHyphenator("48501u73"), "48\u00AD501u73", enHyphenator("48501u73"));
         t.end();
     });
     t.end();
@@ -88,10 +91,11 @@ t.test("substitue characters unicase", async function (t) {
 
 t.test("try to hyphenate a word outside alphabet", async function (t) {
     const H9Y = await freshImport();
-    const deHyphenator = await H9Y.config({
+    const hc = H9Y.config({
         loader,
         "require": ["de"]
     });
+    const deHyphenator = await hc.get("de");
     t.test("hyphenate ångström", function (t) {
         t.equal(deHyphenator("ångström"), "ångström", deHyphenator("ångström"));
         t.end();
@@ -101,10 +105,11 @@ t.test("try to hyphenate a word outside alphabet", async function (t) {
 
 t.test("force .wasm.hyphenate to return 0", async function (t) {
     const H9Y = await freshImport();
-    const deHyphenator = await H9Y.config({
+    const hc = H9Y.config({
         loader,
         "require": ["de"]
     });
+    const deHyphenator = await hc.get("de");
     // eslint-disable-next-line prefer-regex-literals
     H9Y.languages.get("de").reNotAlphabet = RegExp("[^abcdefghijklmnopqrstuvwxyzåäöüßſ‌-]", "gi");
     t.test("hyphenate ångström", function (t) {
@@ -118,10 +123,11 @@ t.test("disable Webassembly.Globals", async function (t) {
     const H9Y = await freshImport();
     const wag = WebAssembly.Global;
     WebAssembly.Global = null;
-    const deHyphenator = await H9Y.config({
+    const hc = H9Y.config({
         loader,
         "require": ["de"]
     });
+    const deHyphenator = await hc.get("de");
     t.test("hyphenate one word with Globals disabled", function (t) {
         t.equal(deHyphenator("Silbentrennung"), "Sil\u00ADben\u00ADtren\u00ADnung", deHyphenator("Silbentrennung"));
         t.end();
@@ -132,7 +138,7 @@ t.test("disable Webassembly.Globals", async function (t) {
 
 t.test("run config with two languages", async function (t) {
     const H9Y = await freshImport();
-    const hyphenators = await H9Y.config({
+    const hyphenators = H9Y.config({
         loader,
         "require": ["de", "en-us"]
     });
@@ -175,10 +181,11 @@ t.test("run config with two languages", async function (t) {
 
 t.test("run config with two same languages", async function (t) {
     const H9Y = await freshImport();
-    const deHyphenator2 = await H9Y.config({
+    const hc = H9Y.config({
         loader,
         "require": ["de", "de"]
     });
+    const deHyphenator2 = await hc.get("de");
     t.test("return a function", function (t) {
         t.equal(typeof deHyphenator2, "function", typeof deHyphenator2);
         t.end();
@@ -196,10 +203,11 @@ t.test("run config with two same languages", async function (t) {
 
 t.test("use language with private use subtag", async function (t) {
     const H9Y = await freshImport();
-    const deHyphenator2 = await H9Y.config({
+    const hc = H9Y.config({
         loader,
         "require": ["de-x-syllable"]
     });
+    const deHyphenator2 = await hc.get("de-x-syllable");
     t.test("hyphenate one word", function (t) {
         t.equal(deHyphenator2("Autorenlesung"), "Au\u00ADto\u00ADren\u00ADle\u00ADsung", deHyphenator2("Autorenlesung"));
         t.end();

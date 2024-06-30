@@ -19,7 +19,7 @@ Hyphenopoly needs two things to run correctly:
 - a [`loader`](#loader) or [`loaderSync`](#loadersync) function that tells how to load the language-specific Webassembly modules.
 - an array of needed languages.
 
-These things are configured in the `hyphenopoly.config()` function.
+These things are configured in the `hyphenopoly.config()` function, which returns a `Map` of either promises for language specific hyphenators (default async case) or a `Map` of language specific hyphenators (sync case).
 
 ### Usage with one language:
 
@@ -37,7 +37,7 @@ const textHyphenators = hyphenopoly.config({
     "require": ["en-us"]
 });
 
-textHyphenators.then(
+textHyphenators.get("en-us").then(
     (hyphenateText) => {
         console.log(hyphenateText("Hyphenation enhances justification."));
     }
@@ -75,13 +75,12 @@ textHyphenators.get("en-us").then(
         console.log(hyphenateText("Hyphenation enhances justification."));
     }
 );
-
 ````
 
 ## Synchronous mode
 
-By default, `hyphenopoly.config` returns a promise (or a `Map` of promises). Some code bases are not yet capable of handling async code.
-By setting `"sync" : true` the hyphenopoly module switches to a sync mode. Consequently, a synchronous loader `loaderSync` must also be used.
+By default, `hyphenopoly.config` returns a `Map` of promises. Some code bases are not yet capable of handling async code.
+By setting `"sync" : true` the hyphenopoly module switches to a sync mode and returns a `Map` of hyphenators. Consequently, a synchronous loader `loaderSync` must also be used.
 
 ````javascript
 import hyphenopoly from "../hyphenopoly.module.js";
