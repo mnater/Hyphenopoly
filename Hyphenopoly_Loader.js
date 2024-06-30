@@ -1,5 +1,5 @@
 /**
- * @license Hyphenopoly_Loader 5.3.0 - client side hyphenation
+ * @license Hyphenopoly_Loader 6.0.0 - client side hyphenation
  * ©2024  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *

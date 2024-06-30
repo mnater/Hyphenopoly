@@ -1,6 +1,6 @@
 # Version History
 
-## Current (not versioned nor released, yet)
+## Version 6.0.0 (2024-06-30)
 ### Breaking changes
 * Hyphenopoly.config() in hyphenopoly.module.js now always returns a `Map` (issue #209)
 * Drop support for outdated (eol) node versions. Hyphenopoly.module now requires node >= 18

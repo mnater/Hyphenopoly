@@ -57,7 +57,8 @@
         {"exec": true, "path": "test53.html"},
         {"exec": true, "path": "test54.html"},
         {"exec": true, "path": "test55.html"},
-        {"exec": true, "path": "test56.html"}
+        {"exec": true, "path": "test56.html"},
+        {"exec": true, "path": "test57.html"}
     ];
     const testframe = document.getElementById("testframe");
     let total = "passed";

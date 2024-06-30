@@ -97,8 +97,6 @@ If the browser supports all required languages, the script deletes the `Hyphenop
 Hyphenopoly by default hyphenates elements (and their children) with the classname `.hyphenate`. Don't forget to enable CSS-hyphenation for the classes eventually handled by Hyphenopoly.
 
 ## Usage (node)
-[![Try hyphenopoly on RunKit](https://badge.runkitcdn.com/hyphenopoly.svg)](https://npm.runkit.com/hyphenopoly)
-
 Install:
 ````shell
 npm i hyphenopoly
