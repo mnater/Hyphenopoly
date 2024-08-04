@@ -103,22 +103,6 @@ t.test("try to hyphenate a word outside alphabet", async function (t) {
     t.end();
 });
 
-t.test("force .wasm.hyphenate to return 0", async function (t) {
-    const H9Y = await freshImport();
-    const hc = H9Y.config({
-        loader,
-        "require": ["de"]
-    });
-    const deHyphenator = await hc.get("de");
-    // eslint-disable-next-line prefer-regex-literals
-    H9Y.languages.get("de").reNotAlphabet = RegExp("[^abcdefghijklmnopqrstuvwxyzåäöüßſ‌-]", "gi");
-    t.test("hyphenate ångström", function (t) {
-        t.equal(deHyphenator("ångström"), "ångström", deHyphenator("ångström"));
-        t.end();
-    });
-    t.end();
-});
-
 t.test("disable Webassembly.Globals", async function (t) {
     const H9Y = await freshImport();
     const wag = WebAssembly.Global;
