@@ -328,10 +328,10 @@ mem = instance.exports.mem.uint16_view()
 WORD = 'hyphenation'
 
 # Copy Unicode code points of the word to memory
-# precede with "." and end with ".\x00"
+# and end with 0
 WORD_LEN = len(WORD)
 mem[0:WORD_LEN] = list(map(ord, WORD))
-mem[WORD_LEN + 1] = 0
+mem[WORD_LEN] = 0
 
 # Call the hyphenate function
 # with leftmin and rightmin set to 2 and hyphen char set to "|"
@@ -351,10 +351,9 @@ The patterns have been computed with this value.
 The patterns have been computed with this value.
 - `lct` - lettercount: The number of letters in the alphabet.
 - `hyphenate(leftmin=lmi, rightmin=rmi, hyphenchar=0)` - This function expects
-a sequence of UTF-16 values (a single word) in the first 128 bytes of `mem`. The 
-word must be preceded and succeeded with a "." (value `46`) denoting the 
-beginning and the end of the word. The last "." must be followed by `0`. The function 
-writes the hyphenated word back to the same memory location (without the ".") and
+a sequence of UTF-16 values (a single word) in the first 128 bytes of `mem`.
+The last value must be followed by `0`. The function 
+writes the hyphenated word back to the same memory location and
 returns the length of the hyphenated word.
 If something goes wrong, the returned value is <= 0.
 - `subst(ccl: i32, ccu: i32, replcc: i32): i32` - Substitute `ccl` (charcode lowercase)
