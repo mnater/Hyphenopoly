@@ -96,7 +96,7 @@
 
     /**
      * Runs tests
-     * @param {number} index - Index of the test
+     * @param {number} testidx - Index of the test
      */
     function run(testidx) {
         const test = tests.at(testidx);

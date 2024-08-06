@@ -1,5 +1,3 @@
-/* eslint-disable require-await */
-/* eslint-disable no-shadow */
 /* eslint-env node */
 import * as fs from "fs";
 import t from "tap";

@@ -1,5 +1,6 @@
 /**
- * @license Hyphenopoly.module.js 6.0.0 - hyphenation for node
+ * @license MIT
+ * Hyphenopoly.module.js 6.0.0 - hyphenation for node
  * ©2024  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
@@ -18,7 +19,7 @@ const decode = (() => {
 
 /**
  * Create Object without standard Object-prototype
- * @returns {Object} empty object
+ * @returns {object} empty object
  */
 const empty = () => {
     return Object.create(null);
@@ -108,7 +109,6 @@ const languages = new Map();
  * Create a Map with a default Map behind the scenes. This mimics
  * kind of a prototype chain of an object, but without the object-
  * injection security risk.
- *
  * @param {Map} defaultsMap - A Map with default values
  * @returns {Proxy} - A Proxy for the Map (dot-notation or get/set)
  */
@@ -117,8 +117,8 @@ function createMapWithDefaults(defaultsMap) {
 
     /**
      * The get-trap: get the value from userMap or else from defaults
-     * @param {Sring} key - The key to retrieve the value for
-     * @returns {*}
+     * @param {string} key - The key to retrieve the value for
+     * @returns {*} Value
      */
     function get(key) {
         return (userMap.has(key))
@@ -128,14 +128,15 @@ function createMapWithDefaults(defaultsMap) {
 
     /**
      * The set-trap: set the value to userMap and don't touch defaults
-     * @param {Sring} key - The key for the value
+     * @param {string} key - The key for the value
      * @param {*} value - The value
-     * @returns {*}
+     * @returns {*} - The value set
      */
     function set(key, value) {
         userMap.set(key, value);
     }
     return new Proxy(defaultsMap, {
+        // eslint-disable-next-line jsdoc/require-jsdoc
         "get": (_target, prop) => {
             if (prop === "set") {
                 return set;
@@ -157,7 +158,7 @@ const events = empty();
     /**
      * Create Event Object
      * @param {string} name The Name of the event
-     * @param {function|null} defFunc The default method of the event
+     * @param {Function|null} defFunc The default method of the event
      * @param {boolean} cancellable Is the default cancellable
      * @returns {undefined}
      */
@@ -187,11 +188,12 @@ const events = empty();
     /**
      * Dispatch event <name> with arguments <data>
      * @param {string} name The name of the event
-     * @param {Object|undefined} data Data of the event
+     * @param {object|undefined} data Data of the event
      * @returns {undefined}
      */
     function dispatch(name, data) {
         data.defaultPrevented = false;
+        // eslint-disable-next-line jsdoc/require-jsdoc
         data.preventDefault = (() => {
             data.defaultPrevented = true;
         });
@@ -206,7 +208,7 @@ const events = empty();
     /**
      * Add EventListender <handler> to event <name>
      * @param {string} name The name of the event
-     * @param {function} handler Function to register
+     * @param {Function} handler Function to register
      * @returns {undefined}
      */
     function addListener(name, handler) {
@@ -226,7 +228,7 @@ const events = empty();
 
 /**
  * Default loader emits error
- * @returns null
+ * @returns {null} - there's no default loader
  */
 function defaultLoader() {
     events.dispatch("error", {
@@ -257,7 +259,7 @@ const settings = createMapWithDefaults(new Map([
 /**
  * Create lang Object
  * @param {string} lang The language
- * @returns {Object} The newly created lang object
+ * @returns {object} The newly created lang object
  */
 function createLangObj(lang) {
     if (!languages.has(lang)) {
@@ -269,7 +271,7 @@ function createLangObj(lang) {
 /**
  * Setup a language object (lo) and dispatch "engineReady"
  * @param {string} lang The language
- * @param {function} hyphenateFunction The hyphenateFunction
+ * @param {Function} hyphenateFunction The hyphenateFunction
  * @param {string} alphabet List of used characters
  * @param {number} patternLeftmin leftmin as defined in patterns
  * @param {number} patternRightmin rightmin as defined in patterns
@@ -317,9 +319,9 @@ function prepareLanguagesObj(
 
 /**
  * Setup env for hyphenateFunction
- * @param {Object} baseData baseData
- * @param {function} hyphenateFunc hyphenateFunction
- * @returns {function} hyphenateFunction with closured environment
+ * @param {object} buf baseData
+ * @param {Function} hyphenateFunc hyphenateFunction
+ * @returns {Function} hyphenateFunction with closured environment
  */
 function encloseHyphenateFunction(buf, hyphenateFunc) {
     const wordStore = new Uint16Array(buf, 0, 64);
@@ -328,11 +330,11 @@ function encloseHyphenateFunction(buf, hyphenateFunc) {
      * The hyphenateFunction that encloses the env above
      * Copies the word to wasm-Memory, calls wasm.hyphenateFunc and reads
      * the hyphenated word from wasm-Memory (eventually replacing hyphenchar)
-     * @param {String} word - the word that has to be hyphenated
-     * @param {String} hyphenchar - the hyphenate character
-     * @param {Number} leftmin - min number of chars to remain on line
-     * @param {Number} rightmin - min number of chars to go to new line
-     * @returns {String} the hyphenated word
+     * @param {string} word - the word that has to be hyphenated
+     * @param {string} hyphencc - the hyphenate character
+     * @param {number} leftmin - min number of chars to remain on line
+     * @param {number} rightmin - min number of chars to go to new line
+     * @returns {string} the hyphenated word
      */
     return ((word, hyphencc, leftmin, rightmin) => {
         wordStore.set([
@@ -352,13 +354,14 @@ function encloseHyphenateFunction(buf, hyphenateFunc) {
 /**
  * Instantiate Wasm Engine
  * @param {string} lang The language
- * @returns {undefined}
+ * @param {ArrayBuffer} wasmdata Uint8Array buffer
  */
 function instantiateWasmEngine(lang, wasmdata) {
     /**
      * Register character substitutions in the .wasm-hyphenEngine
      * @param {number} alphalen - The length of the alphabet
      * @param {object} exp - Export-object of the hyphenEngine
+     * @returns {number} - The new length of the alphabet
      */
     function registerSubstitutions(alphalen, exp) {
         if (settings.substitute.has(lang)) {
@@ -380,7 +383,7 @@ function instantiateWasmEngine(lang, wasmdata) {
 
     /**
      * Instantiate the hyphenEngine
-     * @param {object} res - The fetched ressource
+     * @param {WebAssembly.Instance} inst - a wasm instance
      */
     function handleWasm(inst) {
         const exp = inst.exports;
@@ -416,7 +419,7 @@ function instantiateWasmEngine(lang, wasmdata) {
  */
 function loadHyphenEngine(lang) {
     const file = `${lang}.wasm`;
-    // eslint-disable-next-line require-jsdoc
+    // eslint-disable-next-line jsdoc/require-jsdoc
     const cb = (err, data) => {
         if (err) {
             events.dispatch("error", {
@@ -453,9 +456,9 @@ const wordHyphenatorPool = new Map();
 
 /**
  * Factory for hyphenatorFunctions for a specific language and class
- * @param {Object} lo Language-Object
+ * @param {object} lo Language-Object
  * @param {string} lang The language
- * @returns {function} The hyphenate function
+ * @returns {Function} The hyphenate function
  */
 function createWordHyphenator(lo, lang) {
     if (wordHyphenatorPool.has(lang)) {
@@ -576,7 +579,7 @@ const orphanController = (() => {
 /**
  * Encloses hyphenateTextFunction
  * @param {string} lang - The language
- * @return {function} The hyphenateText-function
+ * @returns {Function} The hyphenateText-function
  */
 function createTextHyphenator(lang) {
     const lo = languages.get(lang);
@@ -595,7 +598,6 @@ function createTextHyphenator(lang) {
     /**
      * Hyphenate text
      * @param {string} text The text
-     * @param {string} lang The language of the text
      * @returns {string} Hyphenated text
      */
     return ((text) => {
@@ -613,6 +615,11 @@ function createTextHyphenator(lang) {
     });
 }
 
+/**
+ * API exposed config
+ * @param {object} userConfig - the user supplied configuration
+ * @returns {Map} - userConfig complemented with defaults
+ */
 H.config = ((userConfig) => {
     Object.entries(userConfig).forEach(([key, value]) => {
         switch (key) {

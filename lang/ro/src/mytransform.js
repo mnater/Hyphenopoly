@@ -1,4 +1,4 @@
-/* eslint-disable require-jsdoc */
+/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable security/detect-non-literal-fs-filename */
 /* eslint-env node */
 

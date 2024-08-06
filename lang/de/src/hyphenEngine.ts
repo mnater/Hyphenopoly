@@ -255,6 +255,9 @@ function rank(pos: i32, currByte: i32): i32 {
  * Find the position of the nth 0 in a 64bit word.
  * The algorithm numbers bits from right to left, but we need them numbered
  * from left to right, so we convert nth (l2r)  to nth2 (r2l).
+ * @param {i64} dWord - doubleWord sized bit vector to be searched
+ * @param {i32} nth - nth 0 to get the position of
+ * @returns {i32} - index of the nth 0 in dWord
  */
 function get0PosInDWord(dWord: i64, nth: i32): i32 {
     let nth2: i64 = 65 - popcnt<i64>(dWord) - nth;
@@ -264,7 +267,7 @@ function get0PosInDWord(dWord: i64, nth: i32): i32 {
         dwn = dWord + 1;
         nth2 -= 1;
     } while (nth2);
-    return 63 - <i32>ctz<i64>(dwn);
+    return 63 - (ctz<i64>(dwn) as i32);
 }
 
 /**
@@ -273,6 +276,10 @@ function get0PosInDWord(dWord: i64, nth: i32): i32 {
  * The return values are compacted in one i32 number:
  * bits 0-23: position
  * bits 24-31: child count
+ * @param {i32} ith - number of the 0 to select
+ * @param {i32} startByte - memory index where to start
+ * @param {i32} endByte - memory index where to end if not found yet
+ * @returns {i32} - position and childcount
  */
 function select(ith: i32, startByte: i32, endByte: i32): i32 {
     let bytePos: i32 = startByte;
@@ -291,7 +298,7 @@ function select(ith: i32, startByte: i32, endByte: i32): i32 {
                 return 0;
             }
             dWord = load<i64>(bytePos, 0, 8);
-            dWord0Count = 64 - <i32>popcnt<i64>(dWord);
+            dWord0Count = 64 - (popcnt<i64>(dWord) as i32);
             count += dWord0Count;
             bytePos += 8;
         }

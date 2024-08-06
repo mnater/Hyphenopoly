@@ -11,13 +11,14 @@ import t from "tap";
  * Imports and returns the defaults of the hyphenopoly module.
  * Circumvents module caching by appending a query to the URL
  * LEAKS MEMORY!
+ * @returns {object} Hyphenopoly module
  */
 async function freshImport() {
     const {"default": H9Y} = await import(`../hyphenopoly.module.js?update=${Date.now()}`);
     return H9Y;
 }
 
-// eslint-disable-next-line require-jsdoc
+// eslint-disable-next-line jsdoc/require-jsdoc
 function loaderSync(file) {
     const cwd = dirname(fileURLToPath(import.meta.url));
     // eslint-disable-next-line security/detect-non-literal-fs-filename

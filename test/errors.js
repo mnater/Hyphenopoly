@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-env node */
 /* eslint global-require: 0, func-names: 0, no-shadow: 0 */
 /* eslint-disable prefer-arrow-callback */
@@ -8,13 +9,13 @@ import t from "tap";
  * Imports and returns the defaults of the hyphenopoly module.
  * Circumvents module caching by appending a query to the URL
  * LEAKS MEMORY!
+ * @returns {object} Hyphenopoly module
  */
 async function freshImport() {
     const {"default": H9Y} = await import(`../hyphenopoly.module.js?update=${Date.now()}`);
     return H9Y;
 }
 
-// eslint-disable-next-line require-jsdoc
 async function loader(file) {
     const {readFile} = await import("node:fs/promises");
     const {dirname} = await import("node:path");
@@ -42,7 +43,6 @@ t.test("loader not defined", async function (t) {
     try {
         H9Y.config({
             "handleEvent": {
-                // eslint-disable-next-line require-jsdoc
                 error(e) {
                     e.preventDefault();
                     throw e.msg;
@@ -61,7 +61,6 @@ t.test("loader not a function", async function (t) {
     try {
         H9Y.config({
             "handleEvent": {
-                // eslint-disable-next-line require-jsdoc
                 error(e) {
                     e.preventDefault();
                     throw e.msg;

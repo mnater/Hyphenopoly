@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-env node */
 /* eslint global-require: 0, func-names: 0, no-shadow: 0 */
 /* eslint-disable prefer-arrow-callback */
@@ -9,13 +10,13 @@ import t from "tap";
  * Imports and returns the defaults of the hyphenopoly module.
  * Circumvents module caching by appending a query to the URL
  * LEAKS MEMORY!
+ * @returns {object} Hyphenopoly module
  */
 async function freshImport() {
     const {"default": H9Y} = await import(`../hyphenopoly.module.js?update=${Date.now()}`);
     return H9Y;
 }
 
-// eslint-disable-next-line require-jsdoc
 async function https(file) {
     const https = await import("node:https");
     return new Promise((resolve, reject) => {
@@ -55,7 +56,6 @@ t.test("use https loader", async function (t) {
     t.end();
 });
 
-// eslint-disable-next-line require-jsdoc
 function fetcher(file) {
     return fetch(`https://cdn.jsdelivr.net/npm/hyphenopoly@5.2.0/patterns/${file}`).then((response) => {
         return response.arrayBuffer();
@@ -85,7 +85,6 @@ if (global.fetch) {
     });
 }
 
-// eslint-disable-next-line require-jsdoc
 function loaderSync(file, patDir) {
     // eslint-disable-next-line security/detect-non-literal-fs-filename
     return readFileSync(new URL(file, patDir));
@@ -113,7 +112,6 @@ t.test("use readFileSync with patDir argument", async function (t) {
     t.end();
 });
 
-// eslint-disable-next-line require-jsdoc
 async function loader(file, patDir) {
     const {readFile} = await import("node:fs/promises");
     return readFile(new URL(file, patDir));
