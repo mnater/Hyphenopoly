@@ -53,10 +53,10 @@
     "remark-cli": "^12.0.1",
     "remark-lint-no-consecutive-blank-lines": "^5.0.0",
     "remark-preset-lint-recommended": "^7.0.0",
-    "tap": "^20.0.3",
+    "tap": "^21.0.0",
     "terser": "^5.31.3",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.0",
+    "typescript-eslint": "^8.0.1",
     "yaml": "^2.5.0"
   },
   "remarkConfig": {
