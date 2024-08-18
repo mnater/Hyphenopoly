@@ -1,5 +1,12 @@
 # Version History
 
+## Next
+### Fixed
+* refactor hyphenopoly.module.js to keep some internal structures private
+* bump devDependencies
+### Test
+* update to eslint v9 and typescript-eslint v8
+
 ## Version 6.0.0 (2024-06-30)
 ### Breaking changes
 * Hyphenopoly.config() in hyphenopoly.module.js now always returns a `Map` (issue #209)
