@@ -6,16 +6,17 @@
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
             (() => {
+                // eslint-disable-next-line complexity
                 function assert() {
                     const test = document.getElementById("test1").innerHTML;
                     const ref = document.getElementById("ref1").innerHTML;
                     let result = true;
                     if (test === ref) {
-                        result = result && true;
+                        result &&= true;
                     } else {
                         result = false;
                     }
-                    result = result && !window.Hyphenopoly;
+                    result &&= !window.Hyphenopoly;
                     if (result) {
                         document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">passed</p>";
                     } else {

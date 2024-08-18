@@ -22,7 +22,7 @@
                                 ? "0" + j
                                 : j;
                         })(i) + "</span> ";
-                        result = result && true;
+                        result &&= true;
                     } else {
                         document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">" + i + "</span> ";
                         result = false;

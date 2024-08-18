@@ -3,6 +3,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import security from "eslint-plugin-security";
 import jsdoc from 'eslint-plugin-jsdoc';
+import html from 'eslint-plugin-html';
 
 const jsConfigs = [
     eslint.configs.recommended,
@@ -18,7 +19,11 @@ const jsConfigs = [
         "files": [
             "Hyphenopoly_Loader.js",
             "Hyphenopoly.js",
-            "testsuite/testdriver.js"
+            "testsuite/testdriver.js",
+            "testsuite/*.html"
+        ],
+        "ignores": [
+            "testsuite/test28.html"
         ],
         "languageOptions": {
             "ecmaVersion": "latest",
@@ -27,7 +32,10 @@ const jsConfigs = [
             },
             "sourceType": "script",
         },
-        "name": "browser"
+        "name": "browser",
+        "plugins": {
+            html
+        }
     },
     {
         "files": [
@@ -113,6 +121,27 @@ const jsConfigs = [
                 }
             ],
             "wrap-iife": 1
+        }
+    },
+    {
+        "files": [
+            "testsuite/*.html"
+        ],
+        "languageOptions": {
+            "ecmaVersion": "latest",
+            "globals": {
+                ...globals.browser,
+                "Hyphenopoly": "readable"
+            },
+            "sourceType": "script",
+        },
+        "name": "inline",
+        "plugins": {
+            html
+        },
+        "rules": {
+            "jsdoc/require-jsdoc": 0,
+            "sort-keys": 0
         }
     }
 ];

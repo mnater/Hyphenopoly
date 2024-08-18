@@ -6,6 +6,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/hyphenopoly/5.0.0-beta.5/Hyphenopoly_Loader.js" integrity="sha512-VvJpnWiJ8eH2hmdDJE8sPk9lJcBUQ/XCvc7fyzfNtyt9t3g9W9IMUO9GsxBO026UAyGxjK5fFzBG/WaPUx3hZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
             (() => {
+                // eslint-disable-next-line complexity
                 function assert() {
                     const tests = 1;
                     let i = 1;
@@ -18,13 +19,13 @@
                         // eslint-disable-next-line security/detect-object-injection
                         if (Hyphenopoly.cf.langs[lang] === "CSS") {
                             document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
-                            result = result && true;
+                            result &&= true;
                         } else {
                             test = document.getElementById("test" + i).innerHTML;
                             ref = document.getElementById("ref" + i).innerHTML;
                             if (test === ref) {
                                 document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                                result = result && true;
+                                result &&= true;
                             } else {
                                 document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
                                 result = false;

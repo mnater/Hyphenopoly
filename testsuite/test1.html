@@ -6,6 +6,7 @@
         <script src="../Hyphenopoly_Loader.js"></script>
         <script>
             (() => {
+                // eslint-disable-next-line complexity
                 function assert(mode) {
                     const tests = 2;
                     let i = 1;
@@ -17,13 +18,13 @@
                         lang = document.getElementById("test" + i).lang;
                         if (mode === "native" || Hyphenopoly.cf.langs.get(lang) === "CSS") {
                             document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed (CSS)</p>";
-                            result = result && true;
+                            result &&= true;
                         } else {
                             test = document.getElementById("test" + i).innerHTML;
                             ref = document.getElementById("ref" + i).innerHTML;
                             if (test === ref) {
                                 document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                                result = result && true;
+                                result &&= true;
                             } else {
                                 document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
                                 result = false;

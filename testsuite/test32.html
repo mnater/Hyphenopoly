@@ -7,6 +7,7 @@
             (() => {
                 let result = true;
                 let assertRuns = 0;
+                // eslint-disable-next-line complexity
                 function assert() {
                     const mql = window.matchMedia("(max-width: 600px)");
                     const tests = 4;
@@ -23,7 +24,7 @@
                         }
                         if (test === ref) {
                             document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                            result = result && true;
+                            result &&= true;
                         } else {
                             document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
                             result = false;

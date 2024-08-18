@@ -7,6 +7,7 @@
         <script>
             (() => {
                 let count = 0;
+                // eslint-disable-next-line complexity
                 function assert(e) {
                     const test1 = "Engine for language 'en-us' loaded, but no elements found.";
                     const test2 = "Element with 'en' found, but 'en.wasm' not loaded. Check language tags!";
@@ -15,7 +16,7 @@
                     count += 1;
                     if (test1 === ref || test2 === ref) {
                         document.getElementById("result").innerHTML += "<span style=\"background-color: #d6ffd6\">passed</span> ";
-                        result = result && true;
+                        result &&= true;
                     } else {
                         document.getElementById("result").innerHTML += "<span style=\"background-color: #ffd6d6\">failed</span> ";
                         result = false;
