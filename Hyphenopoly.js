@@ -289,7 +289,6 @@
          * @param {boolean} fallback Will falback to mainlanguage
          * @returns {string|null} The language or null
          */
-        // eslint-disable-next-line complexity
         function getLang(el, parentLang = "", fallback = true) {
             // Find closest el with lang attr not empty
             el = el.closest("[lang]:not([lang=''])");
@@ -334,7 +333,6 @@
              * @param {boolean} isChild If el is a child element
              * @returns {undefined}
              */
-            // eslint-disable-next-line complexity
             function processElements(el, pLang, sel, isChild = false) {
                 const eLang = getLang(el, pLang);
                 const langDef = H.cf.langs.get(eLang);

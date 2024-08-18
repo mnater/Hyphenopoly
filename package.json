@@ -42,6 +42,7 @@
     "url": "https://github.com/mnater/Hyphenopoly"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.6.4",
     "all-contributors-cli": "^6.26.1",
     "assemblyscript": "^0.27.29",
     "c8": "^10.1.2",
