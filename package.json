@@ -46,7 +46,7 @@
     "all-contributors-cli": "^6.26.1",
     "assemblyscript": "^0.27.29",
     "c8": "^10.1.2",
-    "eslint": "^9.9.0",
+    "eslint": "^9.9.1",
     "eslint-plugin-html": "^8.1.1",
     "eslint-plugin-jsdoc": "^50.2.2",
     "eslint-plugin-security": "^3.0.1",
@@ -57,7 +57,7 @@
     "tap": "^21.0.1",
     "terser": "^5.31.6",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.2.0",
+    "typescript-eslint": "^8.3.0",
     "yaml": "^2.5.0"
   },
   "remarkConfig": {
