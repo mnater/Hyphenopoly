@@ -16,7 +16,7 @@
     "html-webpack-plugin": "^5.6.0",
     "webpack": "^5.94.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4"
+    "webpack-dev-server": "^5.1.0"
   },
   "dependencies": {
     "hyphenopoly": "^6.0.0"
