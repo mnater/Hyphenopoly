@@ -77,19 +77,15 @@ window.Hyphenopoly = {};
          */
         H.hide = (state, mode) => {
             if (state) {
-                let vis = "{visibility:hidden!important}";
+                const vis = (mode === 2)
+                ? "{color:transparent!important}"
+                : "{visibility:hidden!important}";
+                const myStyle = (mode === 0)
+                    ? "html" + vis
+                    : (mode !== -1)
+                        ? o.keys(H.s.selectors).join(vis) + vis
+                        : "";
                 stylesNode = d[shortcuts.ce]("style");
-                let myStyle = "";
-                if (mode === 0) {
-                    myStyle = "html" + vis;
-                } else if (mode !== -1) {
-                    if (mode === 2) {
-                        vis = "{color:transparent!important}";
-                    }
-                    o.keys(H.s.selectors).forEach((sel) => {
-                        myStyle += sel + vis;
-                    });
-                }
                 stylesNode[shortcuts.ac](d[shortcuts.ct](myStyle));
                 d.head[shortcuts.ac](stylesNode);
             } else if (stylesNode) {
