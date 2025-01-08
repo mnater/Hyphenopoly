@@ -190,7 +190,7 @@ window.Hyphenopoly = {};
         });
         const testContainer = tester.ap();
         if (testContainer) {
-            testContainer.querySelectorAll("div").forEach((n) => {
+            testContainer.childNodes.forEach((n) => {
                 if (checkCSSHyphensSupport(n.style) && n.offsetHeight > 12) {
                     H.cf.langs.set(n.lang, "CSS");
                 } else {
