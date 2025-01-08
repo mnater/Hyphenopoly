@@ -23,9 +23,6 @@ const jsConfigs = [
             "testsuite/testdriver.js",
             "testsuite/*.html"
         ],
-        "ignores": [
-            "testsuite/test28.html"
-        ],
         "languageOptions": {
             "ecmaVersion": "latest",
             "globals": {
