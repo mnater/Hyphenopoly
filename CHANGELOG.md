@@ -1,9 +1,13 @@
 # Version History
 
 ## Next
+### Added
+* fi-x-school patterns
 ### Fixed
 * refactor hyphenopoly.module.js to keep some internal structures private
+* updated patterns: pt, rm, sq
 * bump devDependencies
+* small perf improvements
 ### Test
 * update to eslint v9 and typescript-eslint v8
 
