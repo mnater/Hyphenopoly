@@ -1,5 +1,5 @@
+/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable security/detect-object-injection */
-/* eslint-disable require-jsdoc */
 /* eslint-env node */
 
 export default function charData() {

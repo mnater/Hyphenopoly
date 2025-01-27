@@ -1,4 +1,4 @@
-/* eslint-disable require-jsdoc */
+/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-env node */
 /*
  * Extract chr, hyp, lic and pat from hyph-<lang>.tex files
@@ -14,6 +14,7 @@
 
 import fs from "fs";
 import path from "path";
+import process from 'node:process';
 import yaml from "yaml";
 
 const patternsFileName = process.argv[2];
@@ -22,6 +23,8 @@ const langName = path.basename(patternsFileName, ".tex");
 
 /**
  * Read .pat.txt File
+ * @param {string} file filename
+ * @returns {string} content of TeXFile
  */
 function getTeXFile(file) {
     // eslint-disable-next-line security/detect-non-literal-fs-filename
@@ -77,7 +80,8 @@ function getLRMFromMeta(meta) {
 function createChrFile(patternlist) {
     /**
      * Collect and sort all lowerCase Characters
-     * @param {String} patterns - The patterns
+     * @param {string} patterns - The patterns
+     * @returns {Set} lowerCaseSet
      */
     function collectLowerCase(patterns) {
         const lowerCaseSet = new Set();
@@ -98,10 +102,10 @@ function createChrFile(patternlist) {
     /**
      * Add uppercase chars
      * @param {Set} lowerCaseSet set of lower case chars
+     * @returns {Set} mixedCaseSet set of both case chars
      */
     function addUpperCase(lowerCaseSet) {
         const mixedCaseSet = new Set();
-        // eslint-disable-next-line complexity
         lowerCaseSet.forEach((lc) => {
             let uc = (lc.toUpperCase().length > 1 || lc === lc.toUpperCase())
                 ? ""

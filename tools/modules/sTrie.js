@@ -1,5 +1,5 @@
+/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable security/detect-object-injection */
-/* eslint-disable require-jsdoc */
 /* eslint-env node */
 
 /**
@@ -154,35 +154,6 @@ export default (function sTrie() {
         });
     }
 
-    function lookup(word) {
-        let pos = 0;
-        let currentNode = 0;
-        while (pos < word.length) {
-            const translatedCC = trns.ord(word.charCodeAt(pos));
-            const childCount = bits.countChildren(currentNode);
-            let nthChild = 0;
-            let nthChildIdx = 0;
-            while (nthChild < childCount) {
-                nthChildIdx = bits.getChild(currentNode, nthChild);
-                if (chars.get(nthChildIdx - 1) === translatedCC) {
-                    break;
-                }
-                nthChild += 1;
-            }
-            currentNode = nthChildIdx;
-            if (nthChild === childCount) {
-                break;
-            }
-            if (valueStore.hasValue(currentNode)) {
-                // eslint-disable-next-line no-console
-                console.log(valueStore.getValue(currentNode));
-            }
-            pos += 1;
-        }
-        // eslint-disable-next-line no-console
-        console.log("end");
-    }
-
     function dump() {
         return {
             "bits": bits.asUint8ArraySwapped(),
@@ -196,7 +167,6 @@ export default (function sTrie() {
     return {
         add,
         build,
-        dump,
-        lookup
+        dump
     };
 }());
