@@ -1,6 +1,5 @@
 /* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable security/detect-non-literal-fs-filename */
-/* eslint-env node */
 
 import {Transform} from "assemblyscript/transform";
 import fs from "fs";

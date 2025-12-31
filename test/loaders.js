@@ -1,5 +1,4 @@
 /* eslint-disable jsdoc/require-jsdoc */
-/* eslint-env node */
 /* eslint global-require: 0, func-names: 0, no-shadow: 0 */
 /* eslint-disable prefer-arrow-callback */
 
@@ -20,7 +19,7 @@ async function freshImport() {
 async function https(file) {
     const https = await import("node:https");
     return new Promise((resolve, reject) => {
-        https.get(`https://cdn.jsdelivr.net/npm/hyphenopoly@5.2.0/patterns/${file}`, (res) => {
+        https.get(`https://cdn.jsdelivr.net/npm/hyphenopoly@6.0.0/patterns/${file}`, (res) => {
             const rawData = [];
             res.on("data", (chunk) => {
                 rawData.push(chunk);
@@ -57,7 +56,7 @@ t.test("use https loader", async function (t) {
 });
 
 function fetcher(file) {
-    return fetch(`https://cdn.jsdelivr.net/npm/hyphenopoly@5.2.0/patterns/${file}`).then((response) => {
+    return fetch(`https://cdn.jsdelivr.net/npm/hyphenopoly@6.0.0/patterns/${file}`).then((response) => {
         return response.arrayBuffer();
     });
 }

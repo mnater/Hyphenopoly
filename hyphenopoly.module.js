@@ -1,14 +1,12 @@
 /**
  * @license MIT
- * Hyphenopoly.module.js 6.0.0 - hyphenation for node
- * ©2024  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
+ * Hyphenopoly.module.js 6.1.0 - hyphenation for node
+ * ©2026  Mathias Nater, Güttingen (mathiasnater at gmail dot com)
  * https://github.com/mnater/Hyphenopoly
  *
  * Released under the MIT license
  * http://mnater.github.io/Hyphenopoly/LICENSE
  */
-
-/* eslint-env node */
 
 const decode = (() => {
     const utf16ledecoder = new TextDecoder("utf-16le");

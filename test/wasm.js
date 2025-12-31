@@ -1,4 +1,3 @@
-/* eslint-env node */
 import * as fs from "fs";
 import t from "tap";
 

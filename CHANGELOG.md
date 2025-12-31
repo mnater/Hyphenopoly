@@ -1,6 +1,6 @@
 # Version History
 
-## Next
+## Version 6.1.0 (2026-01-01)
 ### Added
 * fi-x-school patterns
 ### Fixed
