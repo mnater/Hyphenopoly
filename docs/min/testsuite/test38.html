@@ -26,7 +26,7 @@
                         ref = document.getElementById("ref" + i).innerHTML;
                         if (test === ref) {
                             document.getElementById("result").innerHTML += "<p style=\"background-color: #d6ffd6\">" + i + " passed</p>";
-                            result = result && true;
+                            result &&= true;
                         } else {
                             document.getElementById("result").innerHTML += "<p style=\"background-color: #ffd6d6\">" + i + " failed</p>";
                             result = false;
