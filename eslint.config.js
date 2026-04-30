@@ -110,6 +110,7 @@ const jsConfigs = [
                 }
             ],
             "no-template-curly-in-string": 2,
+            "no-useless-assignment": 0,
             "object-shorthand": 1,
             "one-var": 0,
             "prefer-arrow-callback": 1,
@@ -165,6 +166,7 @@ const asConfigs = defineConfig({
         ],
         "jsdoc/require-jsdoc": 0,
         "no-bitwise": 0,
+        "no-useless-assignment": 0,
     },
 });
 
