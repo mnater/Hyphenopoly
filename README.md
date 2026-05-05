@@ -91,6 +91,8 @@ Hyphenopoly.js – once loaded – will hyphenate the elements according to the 
 
 If something goes wrong and Hyphenopoly.js is unable to unhide the document, Hyphenopoly_Loader.js has a timeout that kicks in after some time (defaults to 1000ms) and unhides the document and writes a message to the console.
 
+Console output is controlled by the [`logLevel`](docs/Setup.md#loglevel) setup option.
+
 If the browser supports all required languages, the script deletes the `Hyphenopoly`-object and terminates without further ado.
 
 ### enable CSS-hyphenation

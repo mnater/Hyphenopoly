@@ -172,8 +172,10 @@ const events = empty();
     define(
         "error",
         (e) => {
-            // eslint-disable-next-line no-console
-            console.error(e.msg);
+            if (settings.logLevel !== "silent") {
+                // eslint-disable-next-line no-console
+                console.error(e.msg);
+            }
         },
         true
     );
@@ -244,6 +246,7 @@ const settings = createMapWithDefaults(new Map([
     ["leftminPerLang", new Map()],
     ["loader", defaultLoader],
     ["loaderSync", defaultLoader],
+    ["logLevel", "warn"],
     ["minWordLength", 6],
     ["mixedCase", true],
     ["normalize", false],

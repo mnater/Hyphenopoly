@@ -222,8 +222,10 @@ window.Hyphenopoly = {};
                 if (H.s.timeout & 1) {
                     H.ac.abort();
                 }
-                // eslint-disable-next-line no-console
-                console.info(scriptName + " timed out.");
+                if (H.s.logLevel === "info") {
+                    // eslint-disable-next-line no-console
+                    console.info(scriptName + " timed out.");
+                }
             }, H.s.timeout);
             if (mainScriptLoaded) {
                 H.main();
@@ -337,6 +339,7 @@ window.Hyphenopoly = {};
         H.s = setDefaults(c.setup, {
             "CORScredentials": "include",
             "hide": "all",
+            "logLevel": "warn",
             "selectors": {".hyphenate": {}},
             "timeout": 1000
         });

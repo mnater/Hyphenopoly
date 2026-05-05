@@ -1,5 +1,9 @@
 # Version History
 
+## Unreleased
+### Added
+* `setup.logLevel` option (`"silent" | "error" | "warn" | "info"`) to control console output. Default `"warn"` suppresses the loader's timeout `console.info` (set `"info"` to restore previous behavior).
+
 ## Version 6.1.0 (2026-01-01)
 ### Added
 * fi-x-school patterns

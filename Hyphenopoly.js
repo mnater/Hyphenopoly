@@ -23,7 +23,7 @@
             [
                 "error", [
                     (e) => {
-                        if (e.runDefault) {
+                        if (e.runDefault && H.s.logLevel !== "silent" && H.s.logLevel !== "error") {
                             w.console.warn(e);
                         }
                     }

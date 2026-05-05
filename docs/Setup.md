@@ -8,6 +8,7 @@ This page documents the optional fields in `setup`:
     * [exceptions](#exceptions)
     * [hide](#hide)
     * [keepAlive](#keepalive)
+    * [logLevel](#loglevel)
     * [normalize](#normalize)
     * [processShadows](#processshadows)
     * [safeCopy](#safecopy)
@@ -322,6 +323,14 @@ These problems can be solved with letter substitutions. If you want to use the l
 "communiqué" is then separated (com-mu-niqué).
 
 The substitute object must contain language-codes as keys. The values are objects themselves, with the characters to be substituted as keys and the substituting characters as values (both lowercase only – Hyphenopoly handles all the letter casing, if necessary).
+
+### logLevel
+````
+type: string ("silent" | "error" | "warn" | "info")
+default: "warn"
+````
+
+Controls Hyphenopoly's console output. `silent` suppresses all logs; `error`, `warn`, and `info` enable progressively more. The loader's `Hyphenopoly_Loader.js timed out.` message is `info`-level — set `logLevel: "info"` to restore pre-6.2 behavior. Invalid values fall back to the default.
 
 ### timeout
 ````
