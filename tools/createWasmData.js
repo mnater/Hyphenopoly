@@ -1,5 +1,4 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
-/* eslint-env node */
 /* global console */
 
 /**
