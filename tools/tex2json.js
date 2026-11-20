@@ -1,5 +1,5 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
-/* eslint-env node */
+/* globals process */
 
 /**
  * Convert from TeX pattern format to JSON for simpler usage in other scripts.
@@ -63,10 +63,10 @@ hypFileLines.forEach((line) => {
                 convertedHyp.push("9");
                 lastWasHyp = true;
             } else if (lastWasHyp) {
-                convertedHyp.push(c);
+                convertedHyp.push(c.toLocaleLowerCase());
                 lastWasHyp = false;
             } else {
-                convertedHyp.push("8", c);
+                convertedHyp.push("8", c.toLocaleLowerCase());
                 lastWasHyp = false;
             }
         });
