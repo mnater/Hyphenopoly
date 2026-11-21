@@ -5,7 +5,7 @@ version: 2.1
 # See: https://circleci.com/docs/2.0/orb-intro/
 orbs:
   node: circleci/node@7.2.1
-  coveralls: coveralls/coveralls@2.2.1
+  coveralls: coveralls/coveralls@2.2.6
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -29,4 +29,4 @@ workflows:
       - test:
           matrix:
             parameters:
-              node-version: ["current", "lts", "20.18.1"]
+              node-version: ["current", "lts", "22.23.5"]
